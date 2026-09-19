@@ -83,7 +83,7 @@
 
   <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
       <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
         <p id="statTotal" class="text-2xl font-black mt-1">0</p>
@@ -99,6 +99,10 @@
       <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
         <p id="statRevenue" class="text-2xl font-black mt-1">$0.00</p>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-purple-500">Net Profit</p>
+        <p id="statProfit" class="text-2xl font-black mt-1 text-purple-600 dark:text-purple-400">$0.00</p>
       </div>
     </div>
 
@@ -138,9 +142,15 @@
               <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 14 Pro Max">
             </div>
 
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Quoted Price ($)</label>
-              <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-emerald-600 dark:text-emerald-400" placeholder="0.00">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Quoted Price ($)</label>
+                <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-emerald-600 dark:text-emerald-400" placeholder="0.00">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Cost ($)</label>
+                <input type="number" id="partPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-600 dark:text-amber-400" placeholder="0.00">
+              </div>
             </div>
 
             <div>
@@ -391,6 +401,7 @@
         description: item.description || item.notes || '',
         links: Array.isArray(item.links) ? item.links : (typeof item.links === 'string' ? item.links.split(',') : []),
         amount: parseFloat(item.amount) || 0,
+        part_price: parseFloat(item.part_price ?? item.partPrice) || 0,
         status: (item.status || 'pending').toLowerCase()
       };
     }
@@ -514,6 +525,7 @@
         description: document.getElementById('repairDescription').value.trim(),
         links: linksArr,
         amount: parseFloat(repairAmountInput.value) || 0,
+        part_price: parseFloat(document.getElementById('partPrice').value) || 0,
         status: 'pending'
       };
 
@@ -585,7 +597,13 @@
       document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
       
       const totalRev = repairs.reduce((acc, r) => acc + (parseFloat(r.amount) || 0), 0);
+      const totalParts = repairs.reduce((acc, r) => acc + (parseFloat(r.part_price) || 0), 0);
+      const netProfit = totalRev - totalParts;
+
       document.getElementById('statRevenue').innerText = `$${totalRev.toFixed(2)}`;
+      if (document.getElementById('statProfit')) {
+        document.getElementById('statProfit').innerText = `$${netProfit.toFixed(2)}`;
+      }
 
       if (filtered.length === 0) {
         repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs matching your search criteria.</div>`;
@@ -593,6 +611,10 @@
       }
 
       repairsList.innerHTML = filtered.map(item => {
+        const amount = parseFloat(item.amount) || 0;
+        const partPrice = parseFloat(item.part_price) || 0;
+        const profit = amount - partPrice;
+
         return `
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3 transition">
             <div class="flex items-start justify-between">
@@ -604,7 +626,14 @@
                 <p class="text-sm font-medium text-slate-500 dark:text-slate-400">${escapeHtml(item.make_model)}</p>
               </div>
               <div class="text-right">
-                <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${(parseFloat(item.amount) || 0).toFixed(2)}</span>
+                <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${amount.toFixed(2)}</span>
+                ${partPrice > 0 ? `
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    Part: <span class="text-amber-600 dark:text-amber-400 font-medium">$${partPrice.toFixed(2)}</span>
+                    <span class="mx-0.5 opacity-40">|</span>
+                    Profit: <span class="text-emerald-600 dark:text-emerald-400 font-semibold">$${profit.toFixed(2)}</span>
+                  </div>
+                ` : ''}
               </div>
             </div>
 
