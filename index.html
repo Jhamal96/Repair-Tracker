@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FixTrack Pro - Repair Tracker & To-Do</title>
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FixTrack Pro">
+    <meta name="description" content="Track device repairs, customer details, parts, links, and earnings effortlessly.">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbars and sleek UI adjustments */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.6);
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .touch-action-manipulation {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased transition-colors duration-200 pb-20 md:pb-8 selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 w-full bg-slate-900/80 border-b border-slate-800 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20 text-white">
+                        <i data-lucide="wrench" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                            FixTrack<span class="text-cyan-400">Pro</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 hidden sm:block">Device Repair Management System</p>
+                    </div>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- Install PWA Button -->
+                    <button id="pwa-install-btn" class="hidden items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all duration-200 transform active:scale-95">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Add to Home Screen</span>
+                        <span class="sm:hidden">Install</span>
+                    </button>
+
+                    <!-- iOS Install Help Button -->
+                    <button id="ios-install-btn" class="hidden items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg border border-emerald-500/30 transition-all">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                        <span>Install App</span>
+                    </button>
+
+                    <!-- Add New Repair Button (Top Bar) -->
+                    <button onclick="openModal()" class="flex items-center space-x-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg transition-all duration-200 shadow-md shadow-cyan-500/20 active:scale-95">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">New Repair Job</span>
+                        <span class="sm:hidden">New Job</span>
+                    </button>
+
+                    <!-- Data Reset Demo Button -->
+                    <button onclick="resetDemoData()" title="Reset to Demo Data" class="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        <!-- Analytics / Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <!-- Total Active Jobs -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Active Repairs</p>
+                    <p id="stat-active-count" class="text-xl sm:text-2xl font-bold text-white mt-1">0</p>
+                </div>
+                <div class="p-3 bg-cyan-500/10 text-cyan-400 rounded-lg">
+                    <i data-lucide="clock" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+            </div>
+
+            <!-- Total Quoted Value (Active) -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Pending Revenue</p>
+                    <p id="stat-pending-revenue" class="text-xl sm:text-2xl font-bold text-amber-400 mt-1">$0.00</p>
+                </div>
+                <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg">
+                    <i data-lucide="dollar-sign" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+            </div>
+
+            <!-- Ready for Pickup -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Ready for Pickup</p>
+                    <p id="stat-ready-count" class="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+            </div>
+
+            <!-- Total Completed Revenue -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Completed Total</p>
+                    <p id="stat-completed-revenue" class="text-xl sm:text-2xl font-bold text-blue-400 mt-1">$0.00</p>
+                </div>
+                <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg">
+                    <i data-lucide="trending-up" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter Control Bar -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-6 bg-slate-800/40 p-3 sm:p-4 rounded-xl border border-slate-800">
+            <!-- Search Input -->
+            <div class="relative flex-1">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="search-input" placeholder="Search by customer name, device, make, model or notes..."
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+            </div>
+
+            <!-- Status Filters (Scrollable on small screens) -->
+            <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+                <button onclick="setFilter('All')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 whitespace-nowrap transition-all" data-status="All">
+                    All Jobs (<span id="count-all">0</span>)
+                </button>
+                <button onclick="setFilter('Pending')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all" data-status="Pending">
+                    Pending
+                </button>
+                <button onclick="setFilter('In Progress')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all" data-status="In Progress">
+                    In Progress
+                </button>
+                <button onclick="setFilter('Waiting for Parts')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all" data-status="Waiting for Parts">
+                    Parts
+                </button>
+                <button onclick="setFilter('Ready for Pickup')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all" data-status="Ready for Pickup">
+                    Ready
+                </button>
+                <button onclick="setFilter('Completed')" class="filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all" data-status="Completed">
+                    Completed
+                </button>
+            </div>
+        </div>
+
+        <!-- Repairs Container Grid -->
+        <div id="repairs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Repair cards dynamically rendered here -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-center">
+            <div class="p-4 bg-slate-800/60 rounded-full text-slate-500 mb-3 border border-slate-700/50">
+                <i data-lucide="inbox" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-base font-semibold text-slate-200">No repairs found</h3>
+            <p class="text-sm text-slate-400 max-w-sm mt-1">Try adjusting your search criteria or add a new repair job to get started.</p>
+            <button onclick="openModal()" class="mt-4 px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-sm font-medium transition-colors">
+                + Create Repair Entry
+            </button>
+        </div>
+    </main>
+
+    <!-- Floating Action Button for Mobile -->
+    <button onclick="openModal()" class="fixed right-5 bottom-6 md:hidden z-30 p-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold rounded-full shadow-lg shadow-cyan-500/30 active:scale-90 transition-transform">
+        <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
+    </button>
+
+    <!-- Add / Edit Repair Modal -->
+    <div id="repair-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 glass-panel overflow-y-auto">
+        <div class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden my-8">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-800/40">
+                <div class="flex items-center space-x-2">
+                    <i id="modal-icon" data-lucide="plus-circle" class="w-5 h-5 text-cyan-400"></i>
+                    <h2 id="modal-title" class="text-lg font-bold text-slate-100">Add Repair Job</h2>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="repair-form" onsubmit="saveRepair(event)" class="p-6 space-y-4">
+                <input type="hidden" id="repair-id">
+
+                <!-- Customer Name -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Customer Name *</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" id="customer-name" required placeholder="e.g. John Doe" 
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                    </div>
+                </div>
+
+                <!-- Device Type & Status Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Device Type Dropdown -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Device Type *</label>
+                        <select id="device-type" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                            <option value="iPhone">iPhone</option>
+                            <option value="iPad">iPad</option>
+                            <option value="Apple Watch">Apple Watch</option>
+                            <option value="Samsung">Samsung Phone</option>
+                            <option value="Samsung Tablet">Samsung Tablet</option>
+                            <option value="Android Phone">Android Phone</option>
+                            <option value="Android Tablet">Android Tablet</option>
+                            <option value="MacBook/Laptop">Laptop / PC</option>
+                            <option value="Game Console">Game Console</option>
+                            <option value="Other">Other Device</option>
+                        </select>
+                    </div>
+
+                    <!-- Status Dropdown -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Current Status</label>
+                        <select id="repair-status" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Waiting for Parts">Waiting for Parts</option>
+                            <option value="Ready for Pickup">Ready for Pickup</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Make & Model -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Make & Model *</label>
+                    <div class="relative">
+                        <i data-lucide="smartphone" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" id="make-model" required placeholder="e.g. Apple iPhone 14 Pro Max" 
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                    </div>
+                </div>
+
+                <!-- Quoted Amount / Price -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Estimated / Quoted Cost ($)</label>
+                    <div class="relative">
+                        <i data-lucide="dollar-sign" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="number" step="0.01" id="repair-amount" min="0" placeholder="0.00" 
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                    </div>
+                </div>
+
+                <!-- Multi-Link / Reference Links Area -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Parts & Reference Links</label>
+                        <span class="text-[10px] text-slate-400">Separate multiple URLs with commas or lines</span>
+                    </div>
+                    <textarea id="repair-links" rows="2" placeholder="https://amazon.com/screen-part, https://ifixit.com/guide..."
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-mono"></textarea>
+                </div>
+
+                <!-- Repair Details / Notes -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Issue Description & Repair Notes</label>
+                    <textarea id="repair-notes" rows="3" placeholder="Cracked OLED display, battery health 74%, passcode is 1234..."
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"></textarea>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-semibold rounded-lg text-sm shadow-md shadow-cyan-500/20 transition-all">
+                        Save Repair Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- iOS / Desktop Installation Instructions Modal -->
+    <div id="pwa-guide-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 glass-panel">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 text-slate-100 shadow-2xl relative">
+            <button onclick="closePwaGuide()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                    <i data-lucide="smartphone" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Install FixTrack Pro</h3>
+                    <p class="text-xs text-slate-400">Add to your Home Screen for quick offline access</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm text-slate-300 bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                <p class="font-semibold text-slate-200">For iOS (Safari):</p>
+                <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-400">
+                    <li>Tap the <span class="text-white font-medium">Share</span> icon at the bottom of Safari <i data-lucide="share" class="w-3.5 h-3.5 inline text-cyan-400"></i></li>
+                    <li>Scroll down and tap <span class="text-white font-medium">"Add to Home Screen"</span></li>
+                    <li>Tap <span class="text-white font-medium">"Add"</span> in the top right corner</li>
+                </ol>
+
+                <div class="border-t border-slate-700/50 pt-3 mt-3">
+                    <p class="font-semibold text-slate-200">For Android / Chrome:</p>
+                    <p class="text-xs text-slate-400 mt-1">Tap the menu button (3 dots) top right and select <span class="text-white font-medium">"Install App"</span> or <span class="text-white font-medium">"Add to Home Screen"</span>.</p>
+                </div>
+            </div>
+
+            <button onclick="closePwaGuide()" class="w-full mt-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg text-sm transition-colors">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        const STORAGE_KEY = 'fixtrack_pro_repairs_v1';
+        let repairs = [];
+        let currentFilter = 'All';
+        let deferredPrompt = null;
+
+        // Demo Initial Data
+        const DEMO_REPAIRS = [
+            {
+                id: 'demo-1',
+                customerName: 'Marcus Vance',
+                deviceType: 'iPhone',
+                makeModel: 'Apple iPhone 13 Pro',
+                notes: 'Front glass shattered, touch screen unresponsive. Needs full OLED assembly replacement. Test true-tone after repair.',
+                amount: 179.99,
+                links: ['https://www.ifixit.com/Guide/iPhone+13+Pro+Screen+Replacement', 'https://www.amazon.com/s?k=iphone+13+pro+oled+screen'],
+                status: 'In Progress',
+                createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+            },
+            {
+                id: 'demo-2',
+                customerName: 'Elena Rostova',
+                deviceType: 'Samsung',
+                makeModel: 'Samsung Galaxy S23 Ultra',
+                notes: 'Battery discharging rapidly within 3 hours. Needs OEM battery swap & new adhesive seal.',
+                amount: 95.00,
+                links: ['https://www.samsung.com/support/parts/'],
+                status: 'Waiting for Parts',
+                createdAt: new Date(Date.now() - 3600000 * 48).toISOString()
+            },
+            {
+                id: 'demo-3',
+                customerName: 'David Miller',
+                deviceType: 'iPad',
+                makeModel: 'iPad Air (5th Gen)',
+                notes: 'USB-C charging port broken pin. Cleaned port, requires soldering new charge port board.',
+                amount: 120.00,
+                links: [],
+                status: 'Ready for Pickup',
+                createdAt: new Date(Date.now() - 3600000 * 72).toISOString()
+            },
+            {
+                id: 'demo-4',
+                customerName: 'Sarah Jenkins',
+                deviceType: 'Apple Watch',
+                makeModel: 'Apple Watch Series 7 45mm',
+                notes: 'Swollen battery popped screen off housing. Replace battery and digitizer gasket.',
+                amount: 85.00,
+                links: ['https://www.ifixit.com/Device/Apple_Watch_Series_7'],
+                status: 'Completed',
+                createdAt: new Date(Date.now() - 3600000 * 96).toISOString()
+            }
+        ];
+
+        // --- PWA Web Manifest Injector ---
+        function setupManifest() {
+            const manifest = {
+                name: "FixTrack Pro Repair Manager",
+                short_name: "FixTrack",
+                start_url: "./",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                description: "Track device repairs, customer details, parts, and earnings.",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230284c7'/><path d='M35 65 L65 35 M60 30 L70 40 M30 60 L40 70' stroke='white' stroke-width='8' stroke-linecap='round'/></svg>",
+                        sizes: "192x192 512x512",
+                        type: "image/svg+xml"
+                    }
+                ]
+            };
+            const stringManifest = JSON.stringify(manifest);
+            const blob = new Blob([stringManifest], {type: 'application/json'});
+            const manifestURL = URL.createObjectURL(blob);
+            const linkEl = document.createElement('link');
+            linkEl.rel = 'manifest';
+            linkEl.href = manifestURL;
+            document.head.appendChild(linkEl);
+        }
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            setupManifest();
+            loadRepairs();
+            setupEventListeners();
+            setupPWA();
+            lucide.createIcons();
+        });
+
+        // Load data from LocalStorage
+        function loadRepairs() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    repairs = JSON.parse(saved);
+                } catch (e) {
+                    repairs = [...DEMO_REPAIRS];
+                }
+            } else {
+                repairs = [...DEMO_REPAIRS];
+                saveToStorage();
+            }
+            render();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(repairs));
+        }
+
+        function resetDemoData() {
+            if (confirm("Reset all repairs back to initial demo data?")) {
+                repairs = [...DEMO_REPAIRS];
+                saveToStorage();
+                render();
+            }
+        }
+
+        // --- PWA Installation Events ---
+        function setupPWA() {
+            const installBtn = document.getElementById('pwa-install-btn');
+            const iosBtn = document.getElementById('ios-install-btn');
+
+            // Detect iOS Safari
+            const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+            if (isIos && !isStandalone) {
+                iosBtn.classList.remove('hidden');
+                iosBtn.classList.add('flex');
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.classList.remove('hidden');
+                installBtn.classList.add('flex');
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            });
+
+            iosBtn.addEventListener('click', () => {
+                document.getElementById('pwa-guide-modal').classList.remove('hidden');
+            });
+        }
+
+        function closePwaGuide() {
+            document.getElementById('pwa-guide-modal').classList.add('hidden');
+        }
+
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', () => {
+                render();
+            });
+        }
+
+        function setFilter(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const btnStatus = btn.getAttribute('data-status');
+                if (btnStatus === status) {
+                    btn.className = "filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 whitespace-nowrap transition-all";
+                } else {
+                    btn.className = "filter-btn text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:text-slate-200 whitespace-nowrap transition-all";
+                }
+            });
+            render();
+        }
+
+        function openModal(repairId = null) {
+            const modal = document.getElementById('repair-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('repair-form');
+
+            form.reset();
+
+            if (repairId) {
+                const job = repairs.find(r => r.id === repairId);
+                if (job) {
+                    title.textContent = 'Edit Repair Job';
+                    document.getElementById('repair-id').value = job.id;
+                    document.getElementById('customer-name').value = job.customerName;
+                    document.getElementById('device-type').value = job.deviceType;
+                    document.getElementById('make-model').value = job.makeModel;
+                    document.getElementById('repair-status').value = job.status;
+                    document.getElementById('repair-amount').value = job.amount || '';
+                    document.getElementById('repair-links').value = (job.links || []).join('\n');
+                    document.getElementById('repair-notes').value = job.notes || '';
+                }
+            } else {
+                title.textContent = 'Add Repair Job';
+                document.getElementById('repair-id').value = '';
+                document.getElementById('repair-status').value = 'Pending';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('repair-modal').classList.add('hidden');
+        }
+
+        function saveRepair(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('repair-id').value;
+            const customerName = document.getElementById('customer-name').value.trim();
+            const deviceType = document.getElementById('device-type').value;
+            const makeModel = document.getElementById('make-model').value.trim();
+            const status = document.getElementById('repair-status').value;
+            const amount = parseFloat(document.getElementById('repair-amount').value) || 0;
+            const rawLinks = document.getElementById('repair-links').value;
+            const notes = document.getElementById('repair-notes').value.trim();
+
+            // Process URLs into list
+            const links = rawLinks
+                .split(/[\n,]+/)
+                .map(link => link.trim())
+                .filter(link => link.length > 0)
+                .map(link => (link.startsWith('http://') || link.startsWith('https://')) ? link : `https://${link}`);
+
+            if (id) {
+                // Update existing
+                const index = repairs.findIndex(r => r.id === id);
+                if (index !== -1) {
+                    repairs[index] = {
+                        ...repairs[index],
+                        customerName,
+                        deviceType,
+                        makeModel,
+                        status,
+                        amount,
+                        links,
+                        notes,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Create new
+                const newJob = {
+                    id: 'repair_' + Date.now(),
+                    customerName,
+                    deviceType,
+                    makeModel,
+                    status,
+                    amount,
+                    links,
+                    notes,
+                    createdAt: new Date().toISOString()
+                };
+                repairs.unshift(newJob);
+            }
+
+            saveToStorage();
+            closeModal();
+            render();
+        }
+
+        function deleteRepair(id) {
+            if (confirm("Are you sure you want to delete this repair entry?")) {
+                repairs = repairs.filter(r => r.id !== id);
+                saveToStorage();
+                render();
+            }
+        }
+
+        function updateJobStatus(id, newStatus) {
+            const job = repairs.find(r => r.id === id);
+            if (job) {
+                job.status = newStatus;
+                job.updatedAt = new Date().toISOString();
+                saveToStorage();
+                render();
+            }
+        }
+
+        // Helpers
+        function getStatusBadgeStyle(status) {
+            switch (status) {
+                case 'Pending':
+                    return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+                case 'In Progress':
+                    return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
+                case 'Waiting for Parts':
+                    return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+                case 'Ready for Pickup':
+                    return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+                case 'Completed':
+                    return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                default:
+                    return 'bg-slate-700 text-slate-300 border-slate-600';
+            }
+        }
+
+        function getDeviceIcon(deviceType) {
+            switch (deviceType) {
+                case 'iPhone':
+                case 'Android Phone':
+                case 'Samsung':
+                    return 'smartphone';
+                case 'iPad':
+                case 'Samsung Tablet':
+                case 'Android Tablet':
+                    return 'tablet';
+                case 'Apple Watch':
+                    return 'watch';
+                case 'MacBook/Laptop':
+                    return 'laptop';
+                case 'Game Console':
+                    return 'gamepad-2';
+                default:
+                    return 'wrench';
+            }
+        }
+
+        function render() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+            const grid = document.getElementById('repairs-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            // 1. Calculate Analytics Metrics
+            const activeJobs = repairs.filter(r => r.status !== 'Completed');
+            const readyJobs = repairs.filter(r => r.status === 'Ready for Pickup');
+            const pendingRevenue = activeJobs.reduce((sum, r) => sum + (r.amount || 0), 0);
+            const completedRevenue = repairs.filter(r => r.status === 'Completed').reduce((sum, r) => sum + (r.amount || 0), 0);
+
+            document.getElementById('stat-active-count').textContent = activeJobs.length;
+            document.getElementById('stat-ready-count').textContent = readyJobs.length;
+            document.getElementById('stat-pending-revenue').textContent = `$${pendingRevenue.toFixed(2)}`;
+            document.getElementById('stat-completed-revenue').textContent = `$${completedRevenue.toFixed(2)}`;
+
+            // Filter Counts for Buttons
+            document.getElementById('count-all').textContent = repairs.length;
+
+            // 2. Filter Repairs List
+            let filtered = repairs.filter(job => {
+                const matchesFilter = currentFilter === 'All' || job.status === currentFilter;
+                const matchesSearch = !searchVal || 
+                    job.customerName.toLowerCase().includes(searchVal) ||
+                    job.makeModel.toLowerCase().includes(searchVal) ||
+                    job.deviceType.toLowerCase().includes(searchVal) ||
+                    (job.notes && job.notes.toLowerCase().includes(searchVal));
+
+                return matchesFilter && matchesSearch;
+            });
+
+            // Toggle Empty State
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+            }
+
+            // 3. Render Cards
+            grid.innerHTML = filtered.map(job => {
+                const badgeStyle = getStatusBadgeStyle(job.status);
+                const deviceIcon = getDeviceIcon(job.deviceType);
+                const hasLinks = job.links && job.links.length > 0;
+
+                return `
+                    <div class="bg-slate-800/80 border border-slate-700/70 hover:border-slate-600 rounded-2xl p-5 shadow-lg flex flex-col justify-between transition-all duration-200 group">
+                        <!-- Top Header: Customer & Device Icon -->
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-3">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-base font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">
+                                            ${escapeHtml(job.customerName)}
+                                        </h3>
+                                    </div>
+                                    <p class="text-xs text-slate-400 font-medium mt-0.5">${escapeHtml(job.makeModel)}</p>
+                                </div>
+                                
+                                <div class="p-2.5 bg-slate-700/50 text-cyan-400 rounded-xl shrink-0 border border-slate-600/40">
+                                    <i data-lucide="${deviceIcon}" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+
+                            <!-- Device Category & Quoted Cost -->
+                            <div class="flex items-center justify-between text-xs py-2 px-3 bg-slate-900/60 rounded-xl mb-3 border border-slate-800">
+                                <span class="text-slate-400">Category: <strong class="text-slate-200 font-medium">${job.deviceType}</strong></span>
+                                <span class="text-emerald-400 font-bold text-sm">$${(job.amount || 0).toFixed(2)}</span>
+                            </div>
+
+                            <!-- Notes Section -->
+                            ${job.notes ? `
+                                <div class="mb-3">
+                                    <p class="text-xs text-slate-300 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80 line-clamp-3 whitespace-pre-wrap">
+                                        ${escapeHtml(job.notes)}
+                                    </p>
+                                </div>
+                            ` : ''}
+
+                            <!-- Multi-Links Chips -->
+                            ${hasLinks ? `
+                                <div class="mb-3 space-y-1">
+                                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Parts & Links (${job.links.length})</p>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${job.links.map((link, idx) => `
+                                            <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" 
+                                                class="inline-flex items-center space-x-1 px-2.5 py-1 bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-800/60 rounded-md text-xs transition-colors">
+                                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                                                <span class="max-w-[140px] truncate">Link ${idx + 1}</span>
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Card Footer Controls -->
+                        <div class="pt-3 border-t border-slate-700/60 flex items-center justify-between gap-2 mt-2">
+                            <!-- Direct Status Selector -->
+                            <select onchange="updateJobStatus('${job.id}', this.value)" 
+                                class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border focus:outline-none transition-all cursor-pointer ${badgeStyle}">
+                                <option value="Pending" ${job.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${job.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Waiting for Parts" ${job.status === 'Waiting for Parts' ? 'selected' : ''}>Waiting Parts</option>
+                                <option value="Ready for Pickup" ${job.status === 'Ready for Pickup' ? 'selected' : ''}>Ready</option>
+                                <option value="Completed" ${job.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+
+                            <!-- Actions -->
+                            <div class="flex items-center space-x-1">
+                                <button onclick="openModal('${job.id}')" title="Edit Repair" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-700/50 rounded-lg transition-colors">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteRepair('${job.id}')" title="Delete Repair" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-700/50 rounded-lg transition-colors">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Sanitize string helper
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
