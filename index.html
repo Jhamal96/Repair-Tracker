@@ -9,8 +9,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Tracker">
   
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -30,12 +33,13 @@
     }
   </script>
 
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%232563eb'%2F%3E%3Cpath%20d%3D'M30%2070%20L50%2030%20L70%2070%20M40%2055%20L60%2055'%20stroke%3D'white'%20stroke-width%3D'8'%20stroke-linecap%3D'round'%20fill%3D'none'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%232563eb'%2F%3E%3Cpath%20d%3D'M30%2070%20L50%2030%20L70%2070%20M40%2055%20L60%2055'%20stroke%3D'white'%20stroke-width%3D'8'%20stroke-linecap%3D'round'%20fill%3D'none'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
   <style>
     @keyframes pulse-light {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      50% { opacity: 0.3; }
     }
     .status-pulse {
       animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -44,39 +48,44 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-  <!-- Header -->
   <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3 sm:px-6">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md">
+        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">AJD's Wireless Repair Tracker</h1>
           <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
-            <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-500 status-pulse"></span>
-            <span id="cloudStatusText">Connecting Cloud...</span>
+            <span id="cloudStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse"></span>
+            <span id="cloudStatusText">Initializing...</span>
           </div>
         </div>
       </div>
       
       <div class="flex items-center space-x-2">
-        <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition" title="Customize Prices">
+        <!-- Price Config Trigger -->
+        <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Prices">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </button>
-        <button id="themeToggle" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition" title="Toggle Dark Mode">
-          <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-        </button>
+        
+        <!-- System Device Theme Switcher Dropdown -->
+        <div class="relative inline-block text-left">
+          <select id="themeSelect" class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 outline-none cursor-pointer">
+            <option value="system">📱 System Theme</option>
+            <option value="dark">🌙 Dark Mode</option>
+            <option value="light">☀️ Light Mode</option>
+          </select>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-    <!-- Metrics Summary -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
       <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Repairs</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
         <p id="statTotal" class="text-2xl font-black mt-1">0</p>
       </div>
       <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
@@ -88,20 +97,19 @@
         <p id="statCompleted" class="text-2xl font-black mt-1">0</p>
       </div>
       <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Revenue</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
         <p id="statRevenue" class="text-2xl font-black mt-1">$0.00</p>
       </div>
     </div>
 
-    <!-- Main Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Form Section -->
+      <!-- Repair Entry Form -->
       <div class="lg:col-span-1">
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20">
           <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
             <span>New Repair Entry</span>
-            <span class="text-xs font-normal text-slate-400">Syncs Live</span>
+            <span id="syncBadge" class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">Sync Enabled</span>
           </h2>
           
           <form id="repairForm" class="space-y-4">
@@ -127,22 +135,22 @@
 
             <div>
               <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Make & Model *</label>
-              <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 13 Pro Max">
+              <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 14 Pro Max">
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Amount ($)</label>
-              <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="0.00">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Quoted Price ($)</label>
+              <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-emerald-600 dark:text-emerald-400" placeholder="0.00">
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Description / Issue</label>
-              <textarea id="repairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Screen crack, battery replacement, water damage..."></textarea>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Description / Problem</label>
+              <textarea id="repairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Shattered front glass, unresponsive touch screen..."></textarea>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Reference Links (comma separated)</label>
-              <input type="text" id="repairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="https://partssupplier.com/screen, https://...">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Links (Comma Separated)</label>
+              <input type="text" id="repairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="https://amazon.com/part, https://ifixit.com/...">
             </div>
 
             <button type="submit" id="submitBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
@@ -153,13 +161,11 @@
         </div>
       </div>
 
-      <!-- Repairs List Section -->
+      <!-- Repairs Output Column -->
       <div class="lg:col-span-2 space-y-4">
-        
-        <!-- Controls -->
         <div class="flex flex-col sm:flex-row gap-3">
           <div class="relative flex-1">
-            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer, make, model...">
+            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer name, make, model or details...">
             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
           <select id="statusFilter" class="px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
@@ -170,21 +176,19 @@
           </select>
         </div>
 
-        <!-- List Container -->
         <div id="repairsList" class="space-y-3">
-          <div class="p-8 text-center text-slate-400">Loading repairs from cloud...</div>
+          <div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">Connecting to repair database...</div>
         </div>
-
       </div>
 
     </div>
   </main>
 
-  <!-- Price Configuration Modal -->
+  <!-- Price Config Modal -->
   <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <h3 class="text-lg font-bold">Customize Default Prices</h3>
+        <h3 class="text-lg font-bold">Customize Preset Prices</h3>
         <button id="closePriceModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
@@ -193,18 +197,46 @@
       <div id="priceInputs" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
 
       <div class="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-        <button id="savePricesBtn" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition">Save Prices</button>
+        <button id="savePricesBtn" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition">Save Default Rates</button>
       </div>
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-center">
+      <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mx-auto flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold">Delete Repair Job?</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">This action cannot be undone. Are you sure you want to remove this repair job?</p>
+      </div>
+      <div class="flex space-x-3 pt-2">
+        <button id="cancelConfirmBtn" class="flex-1 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl transition">Cancel</button>
+        <button id="actionConfirmBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl shadow-md transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
   <script>
-    // Supabase Configuration
+    // Supabase Credentials
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let supabaseClient = null;
 
-    // Initial Pricing Presets
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) {
+      console.warn('Supabase initialization failed:', e);
+    }
+
+    // Default pricing rules
     const defaultPrices = {
       'iPhone': 90,
       'iPad': 120,
@@ -220,7 +252,101 @@
     let repairs = [];
     let isCloudConnected = false;
 
-    // UI Elements
+    // --- SYSTEM THEME SYNCHRONIZATION LOGIC ---
+    const themeSelect = document.getElementById('themeSelect');
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Toast Notification helper (replaces browser alerts)
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error' 
+        ? 'bg-red-600 text-white' 
+        : (type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900');
+      
+      toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl shadow-xl text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgClass}`;
+      toast.innerText = message;
+      
+      container.appendChild(toast);
+      
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Confirmation Modal state management
+    let pendingDeleteId = null;
+    const confirmModal = document.getElementById('confirmModal');
+    const actionConfirmBtn = document.getElementById('actionConfirmBtn');
+    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+
+    cancelConfirmBtn.addEventListener('click', () => {
+      pendingDeleteId = null;
+      confirmModal.classList.add('hidden');
+    });
+
+    actionConfirmBtn.addEventListener('click', async () => {
+      if (!pendingDeleteId) return;
+      const id = pendingDeleteId;
+      pendingDeleteId = null;
+      confirmModal.classList.add('hidden');
+
+      if (isCloudConnected && supabaseClient) {
+        const { error } = await supabaseClient.from('repairs').delete().eq('id', id);
+        if (error) {
+          console.error("Delete failed:", error);
+          showToast("Failed to delete record: " + error.message, 'error');
+        } else {
+          showToast("Repair record deleted", 'success');
+          await fetchRepairsFromCloud();
+        }
+      } else {
+        repairs = repairs.filter(r => r.id !== id);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+        showToast("Repair record removed locally", 'info');
+      }
+    });
+
+    function applyThemeMode(mode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (mode === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        // Mode is 'system' -> Sync directly with system preference
+        if (systemThemeQuery.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+
+    // Saved preference or default to 'system'
+    const savedThemePref = localStorage.getItem('ajd_theme_pref') || 'system';
+    themeSelect.value = savedThemePref;
+    applyThemeMode(savedThemePref);
+
+    // Dynamic Device Listener: reacts in real-time when system theme changes
+    systemThemeQuery.addEventListener('change', (e) => {
+      if (themeSelect.value === 'system') {
+        applyThemeMode('system');
+      }
+    });
+
+    themeSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      localStorage.setItem('ajd_theme_pref', selected);
+      applyThemeMode(selected);
+    });
+
+    // --- UI Elements ---
     const form = document.getElementById('repairForm');
     const deviceTypeSelect = document.getElementById('deviceType');
     const repairAmountInput = document.getElementById('repairAmount');
@@ -228,30 +354,26 @@
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
 
-    // Theme setup
-    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    });
-
-    // Cloud Status UI Update
     function updateCloudStatus(connected, message) {
       isCloudConnected = connected;
       const dot = document.getElementById('cloudStatusDot');
       const text = document.getElementById('cloudStatusText');
+      const badge = document.getElementById('syncBadge');
+
       if (connected) {
-        dot.className = "w-2 h-2 rounded-full bg-emerald-500";
-        text.innerText = message || "Cloud Sync Active";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+        text.innerText = message || "Cloud Sync Live";
+        badge.innerText = "Cloud Online";
+        badge.className = "text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400";
       } else {
-        dot.className = "w-2 h-2 rounded-full bg-amber-500 status-pulse";
-        text.innerText = message || "Local Fallback Mode";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse";
+        text.innerText = message || "Offline Storage Mode";
+        badge.innerText = "Local Mode";
+        badge.className = "text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400";
       }
     }
 
-    // Auto Price Filler
+    // Auto price filler
     deviceTypeSelect.addEventListener('change', (e) => {
       const selected = e.target.value;
       if (priceSettings[selected] !== undefined) {
@@ -259,56 +381,124 @@
       }
     });
 
-    // Initialize Application Data
-    async function initApp() {
+    // Helper: Map data safely between DB columns & JSON local fallbacks
+    function normalizeRepair(item) {
+      return {
+        id: item.id || 'local_' + Date.now(),
+        customer_name: item.customer_name || item.customerName || 'Unknown Customer',
+        device_type: item.device_type || item.deviceType || 'Other',
+        make_model: item.make_model || item.makeModel || 'N/A',
+        description: item.description || item.notes || '',
+        links: Array.isArray(item.links) ? item.links : (typeof item.links === 'string' ? item.links.split(',') : []),
+        amount: parseFloat(item.amount) || 0,
+        status: (item.status || 'pending').toLowerCase()
+      };
+    }
+
+    async function fetchRepairsFromCloud() {
+      if (!supabaseClient || !isCloudConnected) return;
       try {
-        const { data, error } = await supabase.from('repairs').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabaseClient
+          .from('repairs')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && data) {
+          repairs = data.map(normalizeRepair);
+          render();
+        }
+      } catch (e) {
+        console.warn("Failed to fetch repairs from cloud:", e);
+      }
+    }
+
+    // Initial Data Fetching
+    async function initApp() {
+      if (!supabaseClient) {
+        useLocalFallback();
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('repairs')
+          .select('*')
+          .order('created_at', { ascending: false });
+
         if (error) throw error;
 
-        repairs = data || [];
-        updateCloudStatus(true, "Cloud Sync Active");
+        repairs = (data || []).map(normalizeRepair);
+        updateCloudStatus(true, "Cloud Sync Connected");
 
-        // Migrate existing local storage items to cloud if any
+        // Sync local unsaved records to cloud if present
         const localData = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-        if (localData.length > 0 && repairs.length === 0) {
+        if (localData.length > 0) {
           const formattedLocal = localData.map(item => ({
-            customer_name: item.customerName,
-            device_type: item.deviceType,
-            make_model: item.makeModel,
+            customer_name: item.customer_name,
+            device_type: item.device_type,
+            make_model: item.make_model,
             description: item.description,
             links: item.links,
-            amount: parseFloat(item.amount) || 0,
+            amount: item.amount,
             status: item.status
           }));
-          await supabase.from('repairs').insert(formattedLocal);
+          await supabaseClient.from('repairs').insert(formattedLocal);
           localStorage.removeItem('ajd_repairs_backup');
           return initApp();
         }
 
+        setupRealtimeSubscriptions();
       } catch (err) {
-        console.warn("Cloud connection error, using local storage backup:", err);
-        updateCloudStatus(false, "Offline / Local Mode");
-        repairs = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
+        console.warn("Cloud connection error, reverting to local backup:", err);
+        useLocalFallback();
       }
 
       render();
-      setupRealtimeSubscriptions();
     }
 
-    // Realtime Supabase Sync
+    function useLocalFallback() {
+      updateCloudStatus(false, "Local Offline Mode");
+      const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
+      repairs = local.map(normalizeRepair);
+      render();
+    }
+
     function setupRealtimeSubscriptions() {
-      supabase.channel('public:repairs')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'repairs' }, async () => {
-          const { data } = await supabase.from('repairs').select('*').order('created_at', { ascending: false });
-          if (data) {
-            repairs = data;
-            render();
-          }
-        })
-        .subscribe();
+      if (!supabaseClient) return;
+
+      // Detect if WebSocket connections are allowed in this runtime environment
+      let wsSupported = false;
+      try {
+        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket?apikey=' + SUPABASE_KEY + '&vsn=2.0.0');
+        testWs.close();
+        wsSupported = true;
+      } catch (e) {
+        console.warn("WebSocket connections are restricted in this preview environment. Using HTTP REST polling for sync.");
+      }
+
+      if (!wsSupported) {
+        // Fall back to HTTP polling every 15 seconds
+        setInterval(fetchRepairsFromCloud, 15000);
+        return;
+      }
+
+      try {
+        supabaseClient
+          .channel('public:repairs')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'repairs' }, async () => {
+            await fetchRepairsFromCloud();
+          })
+          .subscribe((status, err) => {
+            if (status === 'CHANNEL_ERROR' || err) {
+              console.warn('Realtime subscription notice:', err || status);
+            }
+          });
+      } catch (err) {
+        console.warn("Could not initiate realtime subscription, falling back to HTTP polling:", err);
+        setInterval(fetchRepairsFromCloud, 15000);
+      }
     }
 
-    // Add Job
+    // Form submission handler
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -317,69 +507,79 @@
         .map(l => l.trim())
         .filter(l => l.length > 0);
 
-      const newRepair = {
-        customer_name: document.getElementById('customerName').value,
+      const payload = {
+        customer_name: document.getElementById('customerName').value.trim(),
         device_type: deviceTypeSelect.value,
-        make_model: document.getElementById('makeModel').value,
-        description: document.getElementById('repairDescription').value,
+        make_model: document.getElementById('makeModel').value.trim(),
+        description: document.getElementById('repairDescription').value.trim(),
         links: linksArr,
         amount: parseFloat(repairAmountInput.value) || 0,
         status: 'pending'
       };
 
-      if (isCloudConnected) {
-        const { error } = await supabase.from('repairs').insert([newRepair]);
-        if (error) alert("Error adding repair: " + error.message);
+      if (isCloudConnected && supabaseClient) {
+        const { error } = await supabaseClient.from('repairs').insert([payload]);
+        if (error) {
+          showToast("Cloud sync error: " + error.message, 'error');
+          saveLocally(payload);
+        } else {
+          showToast("Repair job created & synced!", 'success');
+          await fetchRepairsFromCloud();
+        }
       } else {
-        newRepair.id = Date.now().toString();
-        repairs.unshift(newRepair);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
+        saveLocally(payload);
+        showToast("Repair job saved locally", 'info');
       }
 
       form.reset();
     });
 
-    // Update Repair Status
+    function saveLocally(payload) {
+      payload.id = 'local_' + Date.now();
+      repairs.unshift(normalizeRepair(payload));
+      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+      render();
+    }
+
+    // Status Updater
     async function updateStatus(id, newStatus) {
-      if (isCloudConnected) {
-        await supabase.from('repairs').update({ status: newStatus }).eq('id', id);
+      if (isCloudConnected && supabaseClient) {
+        const { error } = await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
+        if (error) console.error("Update failed:", error);
+        else {
+          showToast("Status updated", 'success');
+          await fetchRepairsFromCloud();
+        }
       } else {
         repairs = repairs.map(r => r.id === id ? { ...r, status: newStatus } : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
+        showToast("Status updated locally", 'info');
       }
     }
 
-    // Delete Repair
-    async function deleteRepair(id) {
-      if (!confirm("Delete this repair record?")) return;
-      
-      if (isCloudConnected) {
-        await supabase.from('repairs').delete().eq('id', id);
-      } else {
-        repairs = repairs.filter(r => r.id !== id);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-      }
+    // Delete Repair Trigger
+    function deleteRepair(id) {
+      pendingDeleteId = id;
+      confirmModal.classList.remove('hidden');
     }
 
-    // Render Function
+    // Main Renderer
     function render() {
-      const search = searchInput.value.toLowerCase();
+      const search = searchInput.value.toLowerCase().trim();
       const status = statusFilter.value;
 
       const filtered = repairs.filter(item => {
         const matchesSearch = 
-          (item.customer_name || item.customerName || '').toLowerCase().includes(search) ||
-          (item.make_model || item.makeModel || '').toLowerCase().includes(search) ||
-          (item.description || '').toLowerCase().includes(search);
+          item.customer_name.toLowerCase().includes(search) ||
+          item.make_model.toLowerCase().includes(search) ||
+          item.description.toLowerCase().includes(search);
         
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
       });
 
-      // Update Metrics
+      // Update Dashboard Metrics
       document.getElementById('statTotal').innerText = repairs.length;
       document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
       document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
@@ -387,58 +587,52 @@
       const totalRev = repairs.reduce((acc, r) => acc + (parseFloat(r.amount) || 0), 0);
       document.getElementById('statRevenue').innerText = `$${totalRev.toFixed(2)}`;
 
-      // Render Cards
       if (filtered.length === 0) {
-        repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs found.</div>`;
+        repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs matching your search criteria.</div>`;
         return;
       }
 
       repairsList.innerHTML = filtered.map(item => {
-        const custName = item.customer_name || item.customerName;
-        const devType = item.device_type || item.deviceType;
-        const model = item.make_model || item.makeModel;
-        const links = item.links || [];
-
         return `
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3 transition">
             <div class="flex items-start justify-between">
               <div>
                 <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 mb-1">
-                  ${devType}
+                  ${item.device_type}
                 </span>
-                <h3 class="text-base font-bold">${custName}</h3>
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">${model}</p>
+                <h3 class="text-base font-bold">${escapeHtml(item.customer_name)}</h3>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">${escapeHtml(item.make_model)}</p>
               </div>
               <div class="text-right">
-                <span class="text-lg font-black text-brand-600 dark:text-brand-400">$${(parseFloat(item.amount) || 0).toFixed(2)}</span>
+                <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${(parseFloat(item.amount) || 0).toFixed(2)}</span>
               </div>
             </div>
 
             ${item.description ? `
-              <p class="text-sm text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                ${item.description}
+              <p class="text-sm text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                ${escapeHtml(item.description)}
               </p>
             ` : ''}
 
-            ${links.length > 0 ? `
+            ${item.links && item.links.length > 0 ? `
               <div class="flex flex-wrap gap-2 text-xs">
-                ${links.map((link, idx) => `
-                  <a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
+                ${item.links.map((link, idx) => `
+                  <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    <span>Link ${idx + 1}</span>
+                    <span>Part Link ${idx + 1}</span>
                   </a>
                 `).join('')}
               </div>
             ` : ''}
 
             <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60">
-              <select onchange="updateStatus('${item.id}', this.value)" class="text-xs px-2.5 py-1.5 font-medium rounded-lg bg-slate-100 dark:bg-slate-700 border-none outline-none">
+              <select onchange="updateStatus('${item.id}', this.value)" class="text-xs px-2.5 py-1.5 font-semibold rounded-xl bg-slate-100 dark:bg-slate-700 border-none outline-none cursor-pointer">
                 <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pending</option>
                 <option value="in-progress" ${item.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
                 <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>Completed</option>
               </select>
 
-              <button onclick="deleteRepair('${item.id}')" class="text-slate-400 hover:text-red-500 p-1 transition">
+              <button onclick="deleteRepair('${item.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg transition" title="Delete Record">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
               </button>
             </div>
@@ -447,7 +641,12 @@
       }).join('');
     }
 
-    // Modal Price Customization Logic
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Modal Rates Configuration
     const priceModal = document.getElementById('priceModal');
     const priceInputs = document.getElementById('priceInputs');
 
@@ -464,9 +663,7 @@
       priceModal.classList.remove('hidden');
     });
 
-    document.getElementById('closePriceModal').addEventListener('click', () => {
-      priceModal.classList.add('hidden');
-    });
+    document.getElementById('closePriceModal').addEventListener('click', () => priceModal.classList.add('hidden'));
 
     document.getElementById('savePricesBtn').addEventListener('click', () => {
       document.querySelectorAll('.price-edit-input').forEach(input => {
@@ -477,11 +674,11 @@
       priceModal.classList.add('hidden');
     });
 
-    // Event Listeners for Filters
+    // Event Listeners
     searchInput.addEventListener('input', render);
     statusFilter.addEventListener('change', render);
 
-    // Initialize application
+    // Boot App
     initApp();
   </script>
 </body>
