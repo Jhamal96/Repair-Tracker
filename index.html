@@ -38,11 +38,21 @@
 
   <style>
     @keyframes pulse-light {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.98); }
     }
     .status-pulse {
       animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .animated-gradient {
+      background: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite linear;
     }
 
     @media print {
@@ -58,7 +68,7 @@
         padding: 0 !important;
         margin: 0 !important;
       }
-      #viewInvoices {
+      #viewInvoices, #viewCustomerTracker {
         display: block !important;
       }
       .printable-invoice-card {
@@ -76,19 +86,19 @@
   <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3 sm:px-6 no-print">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <button id="hamburgerBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition md:hidden focus:outline-none" aria-label="Toggle navigation menu">
+        <button id="hamburgerBtn" onclick="toggleMobileDrawer()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition md:hidden focus:outline-none" aria-label="Toggle navigation menu">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
 
-        <!-- Official AJD Brand Banner Header -->
-        <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center shrink-0">
+        <!-- Brand Banner Header -->
+        <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center shrink-0 cursor-pointer" onclick="switchTab('repairs')">
           <svg class="w-8 h-8 sm:w-9 sm:h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor">
             <circle cx="50" cy="50" r="42" stroke-width="6"/>
             <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div>
-          <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)] leading-tight">AJD's Wireless Repairs</h1>
+          <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)] leading-tight cursor-pointer" onclick="switchTab('repairs')">AJD's Wireless Repairs</h1>
           <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tracking-wide hidden sm:block">Phone, Tablet & Laptop Repairs</p>
           <div class="flex items-center space-x-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
             <span id="cloudStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse"></span>
@@ -97,7 +107,7 @@
         </div>
       </div>
       
-      <nav class="hidden md:flex items-center space-x-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
+      <nav id="topNavControls" class="hidden md:flex items-center space-x-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
         <button id="navRepairsDesktop" onclick="switchTab('repairs')" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm">
           📋 Repairs Tracker
         </button>
@@ -107,12 +117,12 @@
       </nav>
 
       <div class="flex items-center space-x-2">
-        <button onclick="openAIInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5" title="AI Business Analytics & Insights">
+        <button id="aiInsightsBtn" onclick="openAIInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5" title="AI Business Analytics & Insights">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
           <span class="hidden sm:inline">AI Insights</span>
         </button>
 
-        <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Preset Prices">
+        <button id="priceModalBtn" onclick="openPriceModal()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Preset Prices & Payment Methods">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </button>
         
@@ -127,10 +137,10 @@
     </div>
 
     <div id="mobileDrawer" class="hidden md:hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
-      <button onclick="switchTab('repairs'); closeDrawer();" id="navRepairsMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+      <button onclick="switchTab('repairs'); toggleMobileDrawer();" id="navRepairsMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
         📋 Repairs Tracker
       </button>
-      <button onclick="switchTab('invoices'); closeDrawer();" id="navInvoicesMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+      <button onclick="switchTab('invoices'); toggleMobileDrawer();" id="navInvoicesMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
         📄 Invoices & Receipts
       </button>
     </div>
@@ -140,27 +150,31 @@
 
     <div id="viewRepairs" class="space-y-6">
       
-      <!-- Summary Metric Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
-          <p id="statTotal" class="text-2xl font-black mt-1">0</p>
+      <!-- Metrics Dashboard -->
+      <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 sm:gap-4">
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
+          <p id="statTotal" class="text-xl sm:text-2xl font-black mt-1">0</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-xs font-semibold uppercase tracking-wider text-amber-500">Pending</p>
-          <p id="statPending" class="text-2xl font-black mt-1">0</p>
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-500">Pending</p>
+          <p id="statPending" class="text-xl sm:text-2xl font-black mt-1">0</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-500">Completed</p>
-          <p id="statCompleted" class="text-2xl font-black mt-1">0</p>
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-emerald-500">Completed</p>
+          <p id="statCompleted" class="text-xl sm:text-2xl font-black mt-1">0</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
-          <p id="statRevenue" class="text-2xl font-black mt-1">$0.00</p>
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
+          <p id="statRevenue" class="text-xl sm:text-2xl font-black mt-1">$0.00</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-xs font-semibold uppercase tracking-wider text-purple-500">Net Profit</p>
-          <p id="statProfit" class="text-2xl font-black mt-1 text-purple-600 dark:text-purple-400">$0.00</p>
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-500">Deposits Paid</p>
+          <p id="statDeposits" class="text-xl sm:text-2xl font-black mt-1 text-indigo-600 dark:text-indigo-400">$0.00</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-rose-500">Unpaid Balance</p>
+          <p id="statBalance" class="text-xl sm:text-2xl font-black mt-1 text-rose-600 dark:text-rose-400">$0.00</p>
         </div>
       </div>
 
@@ -168,8 +182,8 @@
 
         <!-- Form Column -->
         <div class="lg:col-span-1">
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20">
-            <div class="flex items-center justify-between mb-4">
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20 space-y-4">
+            <div class="flex items-center justify-between">
               <h2 class="text-lg font-bold">New Repair Entry</h2>
               <button type="button" onclick="openAIEstimateModal()" class="px-2.5 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -213,7 +227,7 @@
                 </div>
               </div>
 
-              <!-- Replacement Parts & Materials Section -->
+              <!-- Replacement Parts Section -->
               <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2 flex items-center justify-between">
                 <span>Replacement Parts & Materials</span>
                 <span class="text-[10px] font-normal text-slate-400">Inventory & Hardware</span>
@@ -237,7 +251,7 @@
 
               <!-- Service Pricing Section -->
               <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
-                Service Pricing Breakdown
+                Service Pricing & Deposits
               </div>
 
               <div class="grid grid-cols-2 gap-3">
@@ -249,6 +263,37 @@
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Charged ($)</label>
                   <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-black text-emerald-600 dark:text-emerald-400" placeholder="0.00">
                 </div>
+              </div>
+
+              <div class="space-y-2 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-semibold text-indigo-700 dark:text-indigo-300">Deposit Paid</label>
+                  <div class="flex items-center space-x-1">
+                    <button type="button" onclick="applyDepositPreset('repairForm', 25)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">25%</button>
+                    <button type="button" onclick="applyDepositPreset('repairForm', 50)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">50%</button>
+                    <button type="button" onclick="applyDepositPreset('repairForm', 75)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">75%</button>
+                    <button type="button" onclick="applyDepositPreset('repairForm', 100)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">100%</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit ($)</label>
+                    <input type="number" id="depositAmount" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0.00">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit (%)</label>
+                    <input type="number" id="depositPercent" step="1" min="0" max="100" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0%">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Balance Due ($)</label>
+                    <input type="number" id="balanceDue" readonly class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-rose-600 dark:text-rose-400 outline-none cursor-not-allowed" placeholder="0.00">
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method / Notes</label>
+                <input type="text" id="paymentInfo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. Zelle, CashApp, Cash, Card, Apple Pay...">
               </div>
 
               <div>
@@ -268,7 +313,7 @@
         <div class="lg:col-span-2 space-y-4">
           <div class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
-              <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer, make, model, parts, or notes...">
+              <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer, make, model, parts, notes, or payment method...">
               <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
             <select id="statusFilter" class="px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
@@ -297,7 +342,7 @@
               <span>Select Repair Job</span>
               <span class="text-xs text-slate-400 font-normal">For Invoice</span>
             </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Choose a job from the list below to build, preview, and print a formal receipt with Replacement Parts & Materials breakdown for your customer.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Choose a job from the list below to build, preview, and print a formal receipt with Replacement Parts, Deposit, and Balance Due breakdown.</p>
             
             <input type="text" id="invoiceSearchInput" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Filter customer name or model...">
 
@@ -329,23 +374,51 @@
       </div>
     </div>
 
+    <!-- Customer Live Tracker View -->
+    <div id="viewCustomerTracker" class="hidden max-w-3xl mx-auto space-y-6">
+      <div class="no-print flex items-center justify-between">
+        <button onclick="switchTab('repairs')" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-xl transition flex items-center space-x-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          <span>← Back to Shop Dashboard</span>
+        </button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <span>Print Receipt</span>
+        </button>
+      </div>
+
+      <div id="customerTrackerCard" class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 space-y-8">
+        <div class="text-center py-12 text-slate-400">Loading live repair tracking status...</div>
+      </div>
+    </div>
+
   </main>
 
-  <!-- Modals -->
-  <!-- Price Modal -->
+  <!-- Price & Payment Settings Modal -->
   <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <h3 class="text-lg font-bold">Customize Preset Prices</h3>
-        <button id="closePriceModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <h3 class="text-lg font-bold">Preset Rates & Payment Methods</h3>
+        <button onclick="closePriceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
-      <div id="priceInputs" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
+      <div class="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 mb-2">Default Category Preset Rates ($)</h4>
+          <div id="priceInputs" class="space-y-2"></div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-700">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Where to Pay / Payment Handles</h4>
+          <p class="text-[11px] text-slate-400 mb-2">This payment info will appear on your customer live tracking portals & invoices so customers know where to send payments.</p>
+          <textarea id="shopPaymentInstructions" rows="3" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Zelle: repairs@ajd.com | CashApp: $AJDRepairs | Venmo: @AJDRepairs | Cash accepted at pickup"></textarea>
+        </div>
+      </div>
 
       <div class="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-        <button id="savePricesBtn" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition">Save Default Rates</button>
+        <button id="savePricesBtn" onclick="savePricesAndSettings()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition">Save Settings</button>
       </div>
     </div>
   </div>
@@ -371,8 +444,8 @@
   <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 my-8">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <h3 class="text-lg font-bold">Edit Repair Job</h3>
-        <button id="closeEditModal" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <h3 class="text-lg font-bold">Edit Repair Job & Payments</h3>
+        <button onclick="closeEditModal()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
@@ -435,7 +508,7 @@
         </div>
 
         <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
-          Service Pricing Breakdown
+          Service Pricing, Deposit & Payment
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -449,13 +522,44 @@
           </div>
         </div>
 
+        <div class="space-y-2 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-semibold text-indigo-700 dark:text-indigo-300">Deposit Paid</label>
+            <div class="flex items-center space-x-1">
+              <button type="button" onclick="applyDepositPreset('editForm', 25)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">25%</button>
+              <button type="button" onclick="applyDepositPreset('editForm', 50)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">50%</button>
+              <button type="button" onclick="applyDepositPreset('editForm', 75)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">75%</button>
+              <button type="button" onclick="applyDepositPreset('editForm', 100)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">100%</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit ($)</label>
+              <input type="number" id="editDepositAmount" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit (%)</label>
+              <input type="number" id="editDepositPercent" step="1" min="0" max="100" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0%">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Balance Due ($)</label>
+              <input type="number" id="editBalanceDue" readonly class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-rose-600 dark:text-rose-400 outline-none cursor-not-allowed">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method / Notes</label>
+          <input type="text" id="editPaymentInfo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. Zelle, CashApp, Cash, Card...">
+        </div>
+
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Problem & Notes</label>
           <textarea id="editRepairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
         </div>
 
         <div class="flex justify-end space-x-3 pt-2 border-t border-slate-200 dark:border-slate-700">
-          <button type="button" id="cancelEditBtn" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl transition">Cancel</button>
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl transition">Cancel</button>
           <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition shadow-md">Save Changes</button>
         </div>
       </form>
@@ -472,7 +576,7 @@
           </div>
           <div>
             <h3 class="text-base font-bold">✨ AI Repair Assistant</h3>
-            <p class="text-[11px] text-slate-400">Powered by Gemini 3 Flash & Google Search</p>
+            <p class="text-[11px] text-slate-400">Powered by Gemini 3 Flash</p>
           </div>
         </div>
         <button onclick="closeAIEstimateModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -480,7 +584,7 @@
         </button>
       </div>
 
-      <p class="text-xs text-slate-500 dark:text-slate-400">Describe the device issue below. Gemini will search online repair specs to estimate part costs, labor rates, and detailed fix notes!</p>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Describe the device issue below. Gemini will estimate part costs, labor rates, and detailed fix notes!</p>
 
       <div class="space-y-3">
         <div>
@@ -584,14 +688,6 @@
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
 
-    try {
-      if (window.supabase && typeof window.supabase.createClient === 'function') {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-    } catch (e) {
-      console.warn('Supabase initialization failed:', e);
-    }
-
     const defaultPrices = {
       'iPhone': 90,
       'iPad': 120,
@@ -604,1220 +700,1012 @@
     };
 
     let priceSettings = JSON.parse(localStorage.getItem('ajd_price_settings')) || defaultPrices;
+    let shopPaymentInfo = localStorage.getItem('ajd_payment_info') || 'Zelle: repairs@ajd.com | CashApp: $AJDRepairs | Cash accepted at pickup';
     let repairs = [];
     let isCloudConnected = false;
-    let selectedInvoiceJobId = null;
+    let activeTrackedJobId = null;
+    let pendingDeleteId = null;
 
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const mobileDrawer = document.getElementById('mobileDrawer');
-
-    hamburgerBtn.addEventListener('click', () => {
-      mobileDrawer.classList.toggle('hidden');
-    });
-
-    function closeDrawer() {
-      mobileDrawer.classList.add('hidden');
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
-    // --- GEMINI LLM API UTILITIES ---
-    async function callGeminiTextAPI(prompt, systemInstruction = '', enableGrounding = false, jsonSchema = null) {
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
 
-      const payload = {
-        contents: [{ parts: [{ text: prompt }] }]
-      };
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold text-white transition-all duration-300 transform translate-y-2 opacity-0 flex items-center space-x-2 max-w-xs sm:max-w-md ${
+        type === 'success' ? 'bg-emerald-600' :
+        type === 'error' ? 'bg-rose-600' :
+        type === 'warning' ? 'bg-amber-600' : 'bg-slate-800'
+      }`;
 
-      if (systemInstruction) {
-        payload.systemInstruction = { parts: [{ text: systemInstruction }] };
-      }
+      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+      toast.innerHTML = `<span>${icon}</span><span>${escapeHtml(message)}</span>`;
 
-      if (enableGrounding) {
-        payload.tools = [{ "google_search": {} }];
-      }
+      container.appendChild(toast);
 
-      if (jsonSchema) {
-        payload.generationConfig = {
-          responseMimeType: "application/json",
-          responseSchema: jsonSchema
-        };
-      }
-
-      let attempt = 0;
-      let delay = 1000;
-      while (attempt < 3) {
-        try {
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) throw new Error(`API HTTP Error ${response.status}`);
-          const result = await response.json();
-          const candidate = result.candidates?.[0];
-          if (candidate && candidate.content?.parts?.[0]?.text) {
-            return candidate.content.parts[0].text;
-          }
-          throw new Error("Invalid API response format");
-        } catch (err) {
-          attempt++;
-          if (attempt >= 3) throw err;
-          await new Promise(r => setTimeout(r, delay));
-          delay *= 2;
-        }
-      }
-    }
-
-    // Convert Base64 Array Buffer
-    function base64ToArrayBuffer(base64) {
-      const binaryString = window.atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      return bytes.buffer;
-    }
-
-    // Convert PCM16 to WAV format
-    function pcmToWav(pcm16Data, sampleRate) {
-      const numChannels = 1;
-      const bitsPerSample = 16;
-      const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
-      const blockAlign = (numChannels * bitsPerSample) / 8;
-      const dataSize = pcm16Data.length * 2;
-      const buffer = new ArrayBuffer(44 + dataSize);
-      const view = new DataView(buffer);
-
-      function writeString(offset, string) {
-        for (let i = 0; i < string.length; i++) {
-          view.setUint8(offset + i, string.charCodeAt(i));
-        }
-      }
-
-      writeString(0, 'RIFF');
-      view.setUint32(4, 36 + dataSize, true);
-      writeString(8, 'WAVE');
-      writeString(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, numChannels, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, byteRate, true);
-      view.setUint16(32, blockAlign, true);
-      view.setUint16(34, bitsPerSample, true);
-      writeString(36, 'data');
-      view.setUint32(40, dataSize, true);
-
-      let offset = 44;
-      for (let i = 0; i < pcm16Data.length; i++, offset += 2) {
-        view.setInt16(offset, pcm16Data[i], true);
-      }
-
-      return new Blob([buffer], { type: 'audio/wav' });
-    }
-
-    async function generateTTSAudioUrl(textToSay) {
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-      const payload = {
-        contents: [{
-          parts: [{ text: `Say clearly and cheerfully: ${textToSay}` }]
-        }],
-        generationConfig: {
-          responseModalities: ["AUDIO"],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: "Puck" }
-            }
-          }
-        }
-      };
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
       });
 
-      if (!response.ok) throw new Error("TTS generation failed");
-      const result = await response.json();
-      const inlineData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
-
-      if (inlineData && inlineData.data) {
-        const mimeType = inlineData.mimeType || "audio/L16;rate=24000";
-        const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-        const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
-        
-        const arrayBuffer = base64ToArrayBuffer(inlineData.data);
-        const pcm16 = new Int16Array(arrayBuffer);
-        const wavBlob = pcmToWav(pcm16, sampleRate);
-        return URL.createObjectURL(wavBlob);
-      }
-      throw new Error("No audio payload returned");
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3500);
     }
 
-    function switchTab(tab) {
-      const repairsView = document.getElementById('viewRepairs');
-      const invoicesView = document.getElementById('viewInvoices');
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobileDrawer');
+      if (drawer) drawer.classList.toggle('hidden');
+    }
 
-      const navRepairsD = document.getElementById('navRepairsDesktop');
-      const navInvoicesD = document.getElementById('navInvoicesDesktop');
-      const navRepairsM = document.getElementById('navRepairsMobile');
-      const navInvoicesM = document.getElementById('navInvoicesMobile');
+    function switchTab(tabName) {
+      const viewRepairs = document.getElementById('viewRepairs');
+      const viewInvoices = document.getElementById('viewInvoices');
+      const viewCustomerTracker = document.getElementById('viewCustomerTracker');
 
-      if (tab === 'invoices') {
-        repairsView.classList.add('hidden');
-        invoicesView.classList.remove('hidden');
+      if (viewRepairs) viewRepairs.classList.add('hidden');
+      if (viewInvoices) viewInvoices.classList.add('hidden');
+      if (viewCustomerTracker) viewCustomerTracker.classList.add('hidden');
 
-        navInvoicesD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
-        navRepairsD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+      const navRepairsDesktop = document.getElementById('navRepairsDesktop');
+      const navInvoicesDesktop = document.getElementById('navInvoicesDesktop');
+      const activeClassDesktop = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
+      const inactiveClassDesktop = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
 
-        navInvoicesM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
-        navRepairsM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700";
+      if (navRepairsDesktop && navInvoicesDesktop) {
+        navRepairsDesktop.className = tabName === 'repairs' ? activeClassDesktop : inactiveClassDesktop;
+        navInvoicesDesktop.className = tabName === 'invoices' ? activeClassDesktop : inactiveClassDesktop;
+      }
 
+      if (tabName === 'repairs' && viewRepairs) {
+        viewRepairs.classList.remove('hidden');
+      } else if (tabName === 'invoices' && viewInvoices) {
+        viewInvoices.classList.remove('hidden');
         renderInvoiceSelectionList();
+      } else if (tabName === 'tracker' && viewCustomerTracker) {
+        viewCustomerTracker.classList.remove('hidden');
+      }
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
       } else {
-        invoicesView.classList.add('hidden');
-        repairsView.classList.remove('hidden');
-
-        navRepairsD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
-        navInvoicesD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
-
-        navRepairsM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
-        navInvoicesM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700";
+        document.documentElement.classList.remove('dark');
       }
     }
 
     const themeSelect = document.getElementById('themeSelect');
-    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (themeSelect) {
+      const savedTheme = localStorage.getItem('ajd_theme') || 'system';
+      themeSelect.value = savedTheme;
+      applyTheme(savedTheme);
 
-    function applyThemeMode(mode) {
-      if (mode === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else if (mode === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        if (systemThemeQuery.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+      themeSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        localStorage.setItem('ajd_theme', val);
+        applyTheme(val);
+      });
+    }
+
+    function calculateTotal(formPrefix) {
+      const isEdit = formPrefix === 'editForm';
+      const quotedElem = document.getElementById(isEdit ? 'editQuotedPrice' : 'quotedPrice');
+      const partsElem = document.getElementById(isEdit ? 'editPartPrice' : 'partPrice');
+      const totalElem = document.getElementById(isEdit ? 'editRepairAmount' : 'repairAmount');
+      const depositElem = document.getElementById(isEdit ? 'editDepositAmount' : 'depositAmount');
+      const percentElem = document.getElementById(isEdit ? 'editDepositPercent' : 'depositPercent');
+      const balanceElem = document.getElementById(isEdit ? 'editBalanceDue' : 'balanceDue');
+
+      if (!quotedElem || !partsElem || !totalElem) return;
+
+      const quoted = parseFloat(quotedElem.value) || 0;
+      const parts = parseFloat(partsElem.value) || 0;
+      const total = quoted + parts;
+      totalElem.value = total > 0 ? total.toFixed(2) : '';
+
+      const deposit = parseFloat(depositElem ? depositElem.value : 0) || 0;
+      if (total > 0 && deposit > 0 && percentElem && document.activeElement !== percentElem) {
+        percentElem.value = Math.min(100, Math.round((deposit / total) * 100));
+      }
+
+      if (balanceElem) {
+        const balance = Math.max(0, total - deposit);
+        balanceElem.value = balance.toFixed(2);
       }
     }
 
-    const savedThemePref = localStorage.getItem('ajd_theme_pref') || 'system';
-    themeSelect.value = savedThemePref;
-    applyThemeMode(savedThemePref);
+    function applyDepositPreset(formPrefix, percent) {
+      const isEdit = formPrefix === 'editForm';
+      const totalElem = document.getElementById(isEdit ? 'editRepairAmount' : 'repairAmount');
+      const depositElem = document.getElementById(isEdit ? 'editDepositAmount' : 'depositAmount');
+      const percentElem = document.getElementById(isEdit ? 'editDepositPercent' : 'depositPercent');
+      const balanceElem = document.getElementById(isEdit ? 'editBalanceDue' : 'balanceDue');
 
-    systemThemeQuery.addEventListener('change', () => {
-      if (themeSelect.value === 'system') applyThemeMode('system');
-    });
+      const total = parseFloat(totalElem ? totalElem.value : 0) || 0;
+      const deposit = (total * (percent / 100));
 
-    themeSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      localStorage.setItem('ajd_theme_pref', selected);
-      applyThemeMode(selected);
-    });
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      const bgClass = type === 'error' 
-        ? 'bg-red-600 text-white' 
-        : (type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900');
-      
-      toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl shadow-xl text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgClass}`;
-      toast.innerText = message;
-      
-      container.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      if (depositElem) depositElem.value = deposit.toFixed(2);
+      if (percentElem) percentElem.value = percent;
+      if (balanceElem) balanceElem.value = Math.max(0, total - deposit).toFixed(2);
     }
-
-    let pendingDeleteId = null;
-    const confirmModal = document.getElementById('confirmModal');
-    document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
-      pendingDeleteId = null;
-      confirmModal.classList.add('hidden');
-    });
-
-    document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
-      if (!pendingDeleteId) return;
-      const id = pendingDeleteId;
-      pendingDeleteId = null;
-      confirmModal.classList.add('hidden');
-
-      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-        const { error } = await supabaseClient.from('repairs').delete().eq('id', id);
-        if (error) {
-          showToast("Failed to delete record: " + error.message, 'error');
-        } else {
-          showToast("Repair record deleted", 'success');
-          await fetchRepairsFromCloud();
-        }
-      } else {
-        repairs = repairs.filter(r => String(r.id) !== String(id));
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-        renderInvoiceSelectionList();
-        showToast("Repair record removed locally", 'info');
-      }
-    });
-
-    const deviceTypeSelect = document.getElementById('deviceType');
-    const quotedPriceInput = document.getElementById('quotedPrice');
-    const partPriceInput = document.getElementById('partPrice');
-    const repairAmountInput = document.getElementById('repairAmount');
-
-    deviceTypeSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      if (priceSettings[selected] !== undefined) {
-        quotedPriceInput.value = priceSettings[selected];
-        calculateTotal('repairForm');
-      }
-    });
-
-    function calculateTotal(formType) {
-      if (formType === 'repairForm') {
-        const quoted = parseFloat(quotedPriceInput.value) || 0;
-        const part = parseFloat(partPriceInput.value) || 0;
-        repairAmountInput.value = (quoted + part).toFixed(2);
-      } else if (formType === 'editForm') {
-        const quoted = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
-        const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
-        document.getElementById('editRepairAmount').value = (quoted + part).toFixed(2);
-      }
-    }
-
-    function calculateQuotedFromTotal(formType) {
-      if (formType === 'repairForm') {
-        const total = parseFloat(repairAmountInput.value) || 0;
-        const part = parseFloat(partPriceInput.value) || 0;
-        quotedPriceInput.value = Math.max(0, total - part).toFixed(2);
-      } else if (formType === 'editForm') {
-        const total = parseFloat(document.getElementById('editRepairAmount').value) || 0;
-        const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
-        document.getElementById('editQuotedPrice').value = Math.max(0, total - part).toFixed(2);
-      }
-    }
-
-    quotedPriceInput.addEventListener('input', () => calculateTotal('repairForm'));
-    partPriceInput.addEventListener('input', () => calculateTotal('repairForm'));
-    repairAmountInput.addEventListener('input', () => calculateQuotedFromTotal('repairForm'));
-
-    document.getElementById('editQuotedPrice').addEventListener('input', () => calculateTotal('editForm'));
-    document.getElementById('editPartPrice').addEventListener('input', () => calculateTotal('editForm'));
-    document.getElementById('editRepairAmount').addEventListener('input', () => calculateQuotedFromTotal('editForm'));
 
     function normalizeRepair(item) {
-      let description = item.description || item.notes || '';
-      let part_name = item.part_name || item.partName || '';
-      let model_number = item.model_number || item.modelNumber || '';
+      let desc = item.description || '';
+      let meta = {};
 
-      let rawPartPrice = item.part_price !== undefined ? item.part_price : item.partPrice;
-      let rawLaborPrice = item.labor_price !== undefined ? item.labor_price : item.laborPrice;
-
-      let part_price = (rawPartPrice !== null && rawPartPrice !== undefined && rawPartPrice !== '' && !isNaN(rawPartPrice)) ? parseFloat(rawPartPrice) : null;
-      let labor_price = (rawLaborPrice !== null && rawLaborPrice !== undefined && rawLaborPrice !== '' && !isNaN(rawLaborPrice)) ? parseFloat(rawLaborPrice) : null;
-
-      if (description.includes('[META:')) {
+      const metaMatch = desc.match(/\[META:({.*?})\]/);
+      if (metaMatch) {
         try {
-          const metaMatch = description.match(/\[META:({.*?})\]/s);
-          if (metaMatch && metaMatch[1]) {
-            const meta = JSON.parse(metaMatch[1]);
-            if (!part_name && meta.part_name) part_name = meta.part_name;
-            if (!model_number && meta.model_number) model_number = meta.model_number;
-            
-            if ((part_price === null || part_price === 0) && meta.part_price !== undefined && meta.part_price !== null) {
-              part_price = parseFloat(meta.part_price);
-            }
-            if ((labor_price === null || labor_price === 0) && meta.labor_price !== undefined && meta.labor_price !== null) {
-              labor_price = parseFloat(meta.labor_price);
-            }
-            
-            description = description.replace(/\[META:{.*?}\]/s, '').trim();
-          }
-        } catch (e) {
-          console.warn("Error parsing metadata:", e);
-        }
+          meta = JSON.parse(metaMatch[1]);
+          desc = desc.replace(/\[META:{.*?}\]/, '').trim();
+        } catch (e) {}
       }
 
       const amount = parseFloat(item.amount) || 0;
-
-      if ((part_price === null || part_price === 0) && labor_price !== null && labor_price > 0 && amount > labor_price) {
-        part_price = amount - labor_price;
-      } else if ((labor_price === null || labor_price === 0) && part_price !== null && part_price > 0 && amount > part_price) {
-        labor_price = amount - part_price;
-      }
-
-      const finalPartPrice = (part_price !== null && !isNaN(part_price)) ? part_price : 0;
-      const finalLaborPrice = (labor_price !== null && !isNaN(labor_price)) ? labor_price : Math.max(0, amount - finalPartPrice);
+      const partPrice = parseFloat(item.part_price !== undefined ? item.part_price : (meta.part_price !== undefined ? meta.part_price : 0)) || 0;
+      const laborPrice = parseFloat(item.labor_price !== undefined ? item.labor_price : (meta.labor_price !== undefined ? meta.labor_price : Math.max(0, amount - partPrice))) || 0;
+      const depositAmount = parseFloat(item.deposit_amount !== undefined ? item.deposit_amount : (meta.deposit_amount !== undefined ? meta.deposit_amount : 0)) || 0;
 
       return {
-        id: item.id || 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        customer_name: item.customer_name || item.customerName || 'Unknown Customer',
-        device_type: item.device_type || item.deviceType || 'Other',
-        make_model: item.make_model || item.makeModel || 'N/A',
-        model_number: model_number,
-        part_name: part_name,
-        description: description,
-        links: Array.isArray(item.links) ? item.links : (typeof item.links === 'string' ? item.links.split(',') : []),
-        amount: amount > 0 ? amount : (finalLaborPrice + finalPartPrice),
-        part_price: finalPartPrice,
-        labor_price: finalLaborPrice,
-        status: (item.status || 'pending').toLowerCase(),
+        id: String(item.id),
+        customerName: item.customer_name || item.customerName || 'Customer',
+        deviceType: item.device_type || item.deviceType || 'Other',
+        makeModel: item.make_model || item.makeModel || 'Device',
+        modelNumber: item.model_number || item.modelNumber || meta.model_number || '',
+        partName: item.part_name || item.partName || meta.part_name || '',
+        partPrice: partPrice,
+        laborPrice: laborPrice,
+        amount: amount,
+        depositAmount: depositAmount,
+        balanceDue: Math.max(0, amount - depositAmount),
+        paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || '',
+        description: desc,
+        links: Array.isArray(item.links) ? item.links : [],
+        status: item.status || 'pending',
         created_at: item.created_at || new Date().toISOString()
       };
+    }
+
+    function getTrackerUrl(id) {
+      const baseUrl = window.location.href.split('#')[0];
+      return `${baseUrl}#track=${id}`;
+    }
+
+    function copyTrackerLink(id) {
+      const url = getTrackerUrl(id);
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast("Live Tracker Link copied to clipboard!", "success");
+        }).catch(() => {
+          fallbackCopyText(url);
+        });
+      } else {
+        fallbackCopyText(url);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Live Tracker Link copied!", "success");
+      } catch (err) {
+        showToast("Could not copy link automatically", "warning");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function previewTracker(id) {
+      window.location.hash = `track=${id}`;
+      checkAndLoadHashRoute();
     }
 
     function updateCloudStatus(connected, message) {
       isCloudConnected = connected;
       const dot = document.getElementById('cloudStatusDot');
       const text = document.getElementById('cloudStatusText');
-
-      if (connected) {
-        dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
-        text.innerText = message || "Cloud Sync Live";
-      } else {
-        dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse";
-        text.innerText = message || "Offline Storage Mode";
+      if (dot && text) {
+        if (connected) {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+          text.innerText = message || "Cloud Sync Active";
+        } else {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse";
+          text.innerText = message || "Offline / Local Backup Mode";
+        }
       }
-    }
-
-    async function insertRepairToCloud(payload) {
-      if (!supabaseClient) return { error: { message: 'No Supabase client' } };
-      
-      const metaObj = {
-        part_name: payload.part_name,
-        part_price: payload.part_price,
-        labor_price: payload.labor_price,
-        model_number: payload.model_number
-      };
-      
-      let cleanDesc = (payload.description || '').replace(/\[META:{.*?}\]/s, '').trim();
-      const payloadWithMeta = {
-        ...payload,
-        description: cleanDesc + (cleanDesc ? '\n' : '') + '[META:' + JSON.stringify(metaObj) + ']'
-      };
-
-      let { error } = await supabaseClient.from('repairs').insert([payloadWithMeta]);
-      
-      if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
-        const fallbackPayload = {
-          customer_name: payload.customer_name,
-          device_type: payload.device_type,
-          make_model: payload.make_model,
-          description: payloadWithMeta.description,
-          links: payload.links,
-          amount: payload.amount,
-          status: payload.status
-        };
-        const retry = await supabaseClient.from('repairs').insert([fallbackPayload]);
-        error = retry.error;
-      }
-      return { error };
-    }
-
-    async function updateRepairInCloud(id, payload) {
-      if (!supabaseClient) return { error: { message: 'No Supabase client' } };
-      
-      if (String(id).startsWith('local_')) {
-        return await insertRepairToCloud(payload);
-      }
-
-      const metaObj = {
-        part_name: payload.part_name,
-        part_price: payload.part_price,
-        labor_price: payload.labor_price,
-        model_number: payload.model_number
-      };
-      
-      let cleanDesc = (payload.description || '').replace(/\[META:{.*?}\]/s, '').trim();
-      const payloadWithMeta = {
-        ...payload,
-        description: cleanDesc + (cleanDesc ? '\n' : '') + '[META:' + JSON.stringify(metaObj) + ']'
-      };
-
-      let { error } = await supabaseClient.from('repairs').update(payloadWithMeta).eq('id', id);
-      
-      if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
-        const fallbackPayload = {
-          customer_name: payload.customer_name,
-          device_type: payload.device_type,
-          make_model: payload.make_model,
-          description: payloadWithMeta.description,
-          links: payload.links,
-          amount: payload.amount
-        };
-        const retry = await supabaseClient.from('repairs').update(fallbackPayload).eq('id', id);
-        error = retry.error;
-      }
-      return { error };
     }
 
     async function fetchRepairsFromCloud() {
-      if (!supabaseClient || !isCloudConnected) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('repairs')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (!error && data) {
-          repairs = data.map(normalizeRepair);
-          render();
-          renderInvoiceSelectionList();
-        }
-      } catch (e) {
-        console.warn("Cloud fetch error:", e);
-      }
-    }
-
-    async function initApp() {
-      if (!supabaseClient) {
-        useLocalFallback();
-        return;
-      }
-
-      try {
-        const { data, error } = await supabaseClient
-          .from('repairs')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        repairs = (data || []).map(normalizeRepair);
-        updateCloudStatus(true, "Cloud Sync Connected");
-
-        const localData = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-        if (localData.length > 0) {
-          for (const item of localData) {
-            const formatted = {
-              customer_name: item.customer_name,
-              device_type: item.device_type,
-              make_model: item.make_model,
-              model_number: item.model_number,
-              part_name: item.part_name,
-              description: item.description,
-              links: item.links,
-              amount: item.amount,
-              part_price: item.part_price,
-              labor_price: item.labor_price,
-              status: item.status
-            };
-            await insertRepairToCloud(formatted);
-          }
-          localStorage.removeItem('ajd_repairs_backup');
-          return initApp();
-        }
-
-        setupRealtimeSubscriptions();
-      } catch (err) {
-        console.warn("Reverting to local fallback:", err);
-        useLocalFallback();
-      }
-
-      render();
-      renderInvoiceSelectionList();
-    }
-
-    function useLocalFallback() {
-      updateCloudStatus(false, "Local Offline Mode");
-      const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-      repairs = local.map(normalizeRepair);
-      render();
-      renderInvoiceSelectionList();
-    }
-
-    function setupRealtimeSubscriptions() {
       if (!supabaseClient) return;
-
-      let wsSupported = false;
       try {
-        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket?apikey=' + SUPABASE_KEY + '&vsn=2.0.0');
-        testWs.close();
-        wsSupported = true;
-      } catch (e) {
-        console.warn("WebSockets restricted. Using polling mode.");
-      }
-
-      if (!wsSupported) {
-        setInterval(fetchRepairsFromCloud, 15000);
-        return;
-      }
-
-      try {
-        supabaseClient
-          .channel('public:repairs')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'repairs' }, async () => {
-            await fetchRepairsFromCloud();
-          })
-          .subscribe();
+        const { data, error } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        repairs = (data || []).map(normalizeRepair);
+        updateCloudStatus(true, "Cloud Sync Active");
+        render();
+        renderInvoiceSelectionList();
       } catch (err) {
-        setInterval(fetchRepairsFromCloud, 15000);
+        console.warn("Cloud fetch error, using local cache:", err);
+        updateCloudStatus(false, "Offline Backup Mode");
+        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
+        render();
+        renderInvoiceSelectionList();
       }
     }
 
-    document.getElementById('repairForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    async function insertRepairToCloud(repairObj) {
+      const meta = {
+        model_number: repairObj.modelNumber,
+        part_name: repairObj.partName,
+        part_price: repairObj.partPrice,
+        labor_price: repairObj.laborPrice,
+        deposit_amount: repairObj.depositAmount,
+        payment_info: repairObj.paymentInfo
+      };
       
-      const linksArr = document.getElementById('repairLinks').value
-        .split(',')
-        .map(l => l.trim())
-        .filter(l => l.length > 0);
-
-      const quoted = parseFloat(quotedPriceInput.value) || 0;
-      const part = parseFloat(partPriceInput.value) || 0;
-      const total = parseFloat(repairAmountInput.value) || (quoted + part);
-
       const payload = {
-        customer_name: document.getElementById('customerName').value.trim(),
-        device_type: deviceTypeSelect.value,
-        make_model: document.getElementById('makeModel').value.trim(),
-        model_number: document.getElementById('modelNumber').value.trim(),
-        part_name: document.getElementById('partName').value.trim(),
-        description: document.getElementById('repairDescription').value.trim(),
-        links: linksArr,
-        amount: total,
-        part_price: part,
-        labor_price: quoted,
-        status: 'pending'
+        customer_name: repairObj.customerName,
+        device_type: repairObj.deviceType,
+        make_model: repairObj.makeModel,
+        model_number: repairObj.modelNumber,
+        part_name: repairObj.partName,
+        part_price: repairObj.partPrice,
+        labor_price: repairObj.laborPrice,
+        deposit_amount: repairObj.depositAmount,
+        payment_info: repairObj.paymentInfo,
+        amount: repairObj.amount,
+        status: repairObj.status,
+        links: repairObj.links,
+        description: repairObj.description ? `${repairObj.description} [META:${JSON.stringify(meta)}]` : `[META:${JSON.stringify(meta)}]`
       };
 
       if (isCloudConnected && supabaseClient) {
-        const { error } = await insertRepairToCloud(payload);
+        const { error } = await supabaseClient.from('repairs').insert([payload]);
         if (error) {
-          showToast("Database error: " + error.message, 'error');
-          saveLocally(payload);
-        } else {
-          showToast("Repair job saved & synced!", 'success');
-          await fetchRepairsFromCloud();
+          delete payload.model_number;
+          delete payload.part_name;
+          delete payload.part_price;
+          delete payload.labor_price;
+          delete payload.deposit_amount;
+          delete payload.payment_info;
+          await supabaseClient.from('repairs').insert([payload]);
         }
+        await fetchRepairsFromCloud();
       } else {
-        saveLocally(payload);
-        showToast("Repair job saved locally", 'info');
+        repairObj.id = 'local_' + Date.now();
+        repairs.unshift(repairObj);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+        renderInvoiceSelectionList();
       }
+    }
 
-      document.getElementById('repairForm').reset();
-    });
+    async function updateRepairInCloud(id, repairObj) {
+      const meta = {
+        model_number: repairObj.modelNumber,
+        part_name: repairObj.partName,
+        part_price: repairObj.partPrice,
+        labor_price: repairObj.laborPrice,
+        deposit_amount: repairObj.depositAmount,
+        payment_info: repairObj.paymentInfo
+      };
 
-    function saveLocally(payload) {
-      const normalized = normalizeRepair(payload);
-      repairs.unshift(normalized);
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      render();
-      renderInvoiceSelectionList();
+      const payload = {
+        customer_name: repairObj.customerName,
+        device_type: repairObj.deviceType,
+        make_model: repairObj.makeModel,
+        model_number: repairObj.modelNumber,
+        part_name: repairObj.partName,
+        part_price: repairObj.partPrice,
+        labor_price: repairObj.laborPrice,
+        deposit_amount: repairObj.depositAmount,
+        payment_info: repairObj.paymentInfo,
+        amount: repairObj.amount,
+        status: repairObj.status,
+        links: repairObj.links,
+        description: repairObj.description ? `${repairObj.description} [META:${JSON.stringify(meta)}]` : `[META:${JSON.stringify(meta)}]`
+      };
+
+      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
+        const { error } = await supabaseClient.from('repairs').update(payload).eq('id', id);
+        if (error) {
+          delete payload.model_number;
+          delete payload.part_name;
+          delete payload.part_price;
+          delete payload.labor_price;
+          delete payload.deposit_amount;
+          delete payload.payment_info;
+          await supabaseClient.from('repairs').update(payload).eq('id', id);
+        }
+        await fetchRepairsFromCloud();
+      } else {
+        repairs = repairs.map(r => String(r.id) === String(id) ? { ...repairObj, id: id } : r);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+        renderInvoiceSelectionList();
+      }
     }
 
     async function updateStatus(id, newStatus) {
       if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-        const { error } = await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
-        if (error) {
-          showToast("Failed to update status: " + error.message, 'error');
-        } else {
-          showToast("Status updated", 'success');
-          await fetchRepairsFromCloud();
-        }
+        await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
+        await fetchRepairsFromCloud();
       } else {
         repairs = repairs.map(r => String(r.id) === String(id) ? { ...r, status: newStatus } : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
-        showToast("Status updated locally", 'info');
       }
     }
 
-    function deleteRepair(id) {
+    function promptDeleteRepair(id) {
       pendingDeleteId = id;
-      confirmModal.classList.remove('hidden');
+      const modal = document.getElementById('confirmModal');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function render() {
-      const search = document.getElementById('searchInput').value.toLowerCase().trim();
-      const status = document.getElementById('statusFilter').value;
+      const searchInput = document.getElementById('searchInput');
+      const statusFilter = document.getElementById('statusFilter');
+      const repairsList = document.getElementById('repairsList');
+      if (!repairsList) return;
+
+      const search = searchInput ? searchInput.value.toLowerCase() : '';
+      const status = statusFilter ? statusFilter.value : 'all';
 
       const filtered = repairs.filter(item => {
         const matchesSearch = 
-          item.customer_name.toLowerCase().includes(search) ||
-          item.make_model.toLowerCase().includes(search) ||
-          item.model_number.toLowerCase().includes(search) ||
-          item.part_name.toLowerCase().includes(search) ||
+          item.customerName.toLowerCase().includes(search) ||
+          item.makeModel.toLowerCase().includes(search) ||
+          item.modelNumber.toLowerCase().includes(search) ||
+          item.partName.toLowerCase().includes(search) ||
+          item.paymentInfo.toLowerCase().includes(search) ||
           item.description.toLowerCase().includes(search);
         
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
       });
 
-      document.getElementById('statTotal').innerText = repairs.length;
-      document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
-      document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
+      // Update Dashboard Metrics
+      const statTotal = document.getElementById('statTotal');
+      const statPending = document.getElementById('statPending');
+      const statCompleted = document.getElementById('statCompleted');
+      const statRevenue = document.getElementById('statRevenue');
+      const statDeposits = document.getElementById('statDeposits');
+      const statBalance = document.getElementById('statBalance');
+
+      if (statTotal) statTotal.innerText = repairs.length;
+      if (statPending) statPending.innerText = repairs.filter(r => r.status === 'pending' || r.status === 'in-progress').length;
+      if (statCompleted) statCompleted.innerText = repairs.filter(r => r.status === 'completed').length;
       
-      const totalRev = repairs.reduce((acc, r) => acc + (parseFloat(r.amount) || 0), 0);
-      const totalParts = repairs.reduce((acc, r) => acc + (parseFloat(r.part_price) || 0), 0);
-      const netProfit = totalRev - totalParts;
+      const totalRev = repairs.reduce((acc, r) => acc + r.amount, 0);
+      const totalDep = repairs.reduce((acc, r) => acc + r.depositAmount, 0);
+      const totalBal = repairs.reduce((acc, r) => acc + r.balanceDue, 0);
 
-      document.getElementById('statRevenue').innerText = `$${totalRev.toFixed(2)}`;
-      document.getElementById('statProfit').innerText = `$${netProfit.toFixed(2)}`;
+      if (statRevenue) statRevenue.innerText = `$${totalRev.toFixed(2)}`;
+      if (statDeposits) statDeposits.innerText = `$${totalDep.toFixed(2)}`;
+      if (statBalance) statBalance.innerText = `$${totalBal.toFixed(2)}`;
 
-      const repairsList = document.getElementById('repairsList');
       if (filtered.length === 0) {
-        repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs matching your search criteria.</div>`;
+        repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs found matching criteria.</div>`;
         return;
       }
 
-      repairsList.innerHTML = filtered.map(item => {
-        const amount = parseFloat(item.amount) || 0;
-        const partPrice = parseFloat(item.part_price) || 0;
-        const laborPrice = parseFloat(item.labor_price) || Math.max(0, amount - partPrice);
-
-        return `
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3 transition">
-            <div class="flex items-start justify-between">
-              <div>
-                <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 mb-1">
-                  ${item.device_type}
+      repairsList.innerHTML = filtered.map(item => `
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center space-x-2 mb-1">
+                <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  ${escapeHtml(item.deviceType)}
                 </span>
-                <h3 class="text-base font-bold">${escapeHtml(item.customer_name)}</h3>
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
-                  ${escapeHtml(item.make_model)}
-                  ${item.model_number ? `<span class="text-xs font-mono font-semibold text-brand-600 dark:text-brand-400 ml-1.5 px-1.5 py-0.5 bg-brand-50 dark:bg-brand-900/40 rounded-md">#${escapeHtml(item.model_number)}</span>` : ''}
-                </p>
-              </div>
-              <div class="text-right">
-                <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${amount.toFixed(2)}</span>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 space-x-1">
-                  <span>Part: <strong class="text-amber-600 dark:text-amber-400">$${partPrice.toFixed(2)}</strong></span>
-                  <span class="opacity-40">|</span>
-                  <span>Labor: <strong class="text-brand-600 dark:text-brand-400">$${laborPrice.toFixed(2)}</strong></span>
-                </div>
-              </div>
-            </div>
-
-            ${item.part_name || partPrice > 0 || (item.links && item.links.length > 0) ? `
-              <div class="p-3 bg-amber-50/60 dark:bg-amber-950/20 rounded-xl border border-amber-200/60 dark:border-amber-900/40 space-y-1.5">
-                <div class="flex items-center justify-between text-[11px] font-bold text-amber-800 dark:text-amber-300">
-                  <span class="flex items-center space-x-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                    <span>Replacement Parts & Materials</span>
+                ${item.modelNumber ? `
+                  <span class="inline-block px-2 py-0.5 text-[10px] font-mono rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:amber-400 border border-amber-200/50 dark:border-amber-900/50">
+                    #${escapeHtml(item.modelNumber)}
                   </span>
-                  <span class="font-mono font-bold">$${partPrice.toFixed(2)}</span>
-                </div>
-                ${item.part_name ? `<p class="text-xs font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(item.part_name)}</p>` : ''}
-                
-                ${item.links && item.links.length > 0 ? `
-                  <div class="flex flex-wrap gap-2 text-xs pt-1">
-                    ${item.links.map((link, idx) => `
-                      <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        <span>Supplier Part ${idx + 1}</span>
-                      </a>
-                    `).join('')}
-                  </div>
                 ` : ''}
               </div>
-            ` : ''}
-
-            ${item.description ? `
-              <p class="text-sm text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                ${escapeHtml(item.description)}
-              </p>
-            ` : ''}
-
-            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60">
-              <select onchange="updateStatus('${item.id}', this.value)" class="text-xs px-2.5 py-1.5 font-semibold rounded-xl bg-slate-100 dark:bg-slate-700 border-none outline-none cursor-pointer">
-                <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pending</option>
-                <option value="in-progress" ${item.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>Completed</option>
-              </select>
-
-              <div class="flex items-center space-x-1">
-                <button onclick="openAIMessageModal('${item.id}')" class="text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 p-1.5 rounded-lg transition flex items-center space-x-1 text-xs font-semibold" title="Generate AI Customer Update">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                  <span class="hidden sm:inline">AI Update</span>
-                </button>
-                <button onclick="openInvoiceForJob('${item.id}')" class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 p-1.5 rounded-lg transition" title="Generate Invoice">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </button>
-                <button onclick="openEditModal('${item.id}')" class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 p-1.5 rounded-lg transition" title="Edit Record">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                </button>
-                <button onclick="deleteRepair('${item.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg transition" title="Delete Record">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
-              </div>
+              <h3 class="text-base font-bold">${escapeHtml(item.customerName)}</h3>
+              <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">${escapeHtml(item.makeModel)}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${item.amount.toFixed(2)}</span>
+              ${item.depositAmount > 0 ? `
+                <p class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">Dep: $${item.depositAmount.toFixed(2)}</p>
+                <p class="text-[10px] font-bold text-rose-500">Bal: $${item.balanceDue.toFixed(2)}</p>
+              ` : ''}
             </div>
           </div>
-        `;
-      }).join('');
-    }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
+          ${(item.partName || item.partPrice > 0) ? `
+            <div class="bg-amber-50/60 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-100 dark:border-amber-900/30 text-xs space-y-1">
+              <div class="flex items-center justify-between text-amber-800 dark:text-amber-300 font-semibold">
+                <span>🔩 Parts: ${escapeHtml(item.partName || 'Hardware Module')}</span>
+                <span>$${item.partPrice.toFixed(2)}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Labor/Service Charge:</span>
+                <span class="font-bold text-slate-700 dark:text-slate-300">$${item.laborPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          ` : ''}
 
-    // --- GEMINI AI FEATURES LOGIC ---
-    function openAIEstimateModal() {
-      const makeModel = document.getElementById('makeModel').value;
-      const desc = document.getElementById('repairDescription').value;
-      if (makeModel) document.getElementById('aiDeviceInput').value = makeModel;
-      if (desc) document.getElementById('aiSymptomInput').value = desc;
+          ${item.description ? `
+            <p class="text-xs text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+              ${escapeHtml(item.description)}
+            </p>
+          ` : ''}
 
-      document.getElementById('aiEstimateStatus').classList.add('hidden');
-      document.getElementById('aiEstimateModal').classList.remove('hidden');
-    }
+          ${item.paymentInfo ? `
+            <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              💳 Payment: <span class="text-slate-700 dark:text-slate-200 font-semibold">${escapeHtml(item.paymentInfo)}</span>
+            </p>
+          ` : ''}
 
-    function closeAIEstimateModal() {
-      document.getElementById('aiEstimateModal').classList.add('hidden');
-    }
+          ${item.links.length > 0 ? `
+            <div class="flex flex-wrap gap-2 text-xs pt-1">
+              ${item.links.map((link, idx) => `
+                <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  <span>Link ${idx + 1}</span>
+                </a>
+              `).join('')}
+            </div>
+          ` : ''}
 
-    async function runAIEstimator() {
-      const device = document.getElementById('aiDeviceInput').value.trim();
-      const symptoms = document.getElementById('aiSymptomInput').value.trim();
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/60">
+            <select onchange="updateStatus('${item.id}', this.value)" class="text-xs px-2.5 py-1.5 font-bold rounded-xl bg-slate-100 dark:bg-slate-700 border-none outline-none cursor-pointer">
+              <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+              <option value="in-progress" ${item.status === 'in-progress' ? 'selected' : ''}>🔧 In Progress</option>
+              <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>✅ Completed</option>
+            </select>
 
-      if (!device) {
-        showToast("Please enter a device model", "error");
-        return;
-      }
-
-      const statusEl = document.getElementById('aiEstimateStatus');
-      const btnEl = document.getElementById('runAIEstimateBtn');
-      statusEl.classList.remove('hidden');
-      btnEl.disabled = true;
-
-      const prompt = `Research market repair specifications and parts for device: "${device}" with issue/symptoms: "${symptoms || 'General screen or battery diagnostic'}".
-      Provide an accurate repair estimate with recommended replacement part name, estimated parts cost, suggested technician labor cost, and technical repair notes.`;
-
-      const systemPrompt = `You are an expert wireless and electronics repair technician. Perform grounded market lookup and respond with JSON matching the required schema.`;
-
-      const jsonSchema = {
-        type: "OBJECT",
-        properties: {
-          part_name: { type: "STRING" },
-          part_price: { type: "NUMBER" },
-          labor_price: { type: "NUMBER" },
-          description: { type: "STRING" }
-        },
-        required: ["part_name", "part_price", "labor_price", "description"]
-      };
-
-      try {
-        const jsonText = await callGeminiTextAPI(prompt, systemPrompt, true, jsonSchema);
-        const parsed = JSON.parse(jsonText);
-
-        if (parsed.part_name) document.getElementById('partName').value = parsed.part_name;
-        if (parsed.part_price) document.getElementById('partPrice').value = parsed.part_price.toFixed(2);
-        if (parsed.labor_price) document.getElementById('quotedPrice').value = parsed.labor_price.toFixed(2);
-        if (parsed.description) document.getElementById('repairDescription').value = parsed.description;
-        if (device && !document.getElementById('makeModel').value) document.getElementById('makeModel').value = device;
-
-        calculateTotal('repairForm');
-        closeAIEstimateModal();
-        showToast("✨ AI Repair estimate applied to form!", "success");
-      } catch (err) {
-        console.error("AI Estimator Error:", err);
-        showToast("AI Estimation failed: " + err.message, "error");
-      } finally {
-        statusEl.classList.add('hidden');
-        btnEl.disabled = false;
-      }
-    }
-
-    let currentAIMessageText = "";
-    let audioObject = null;
-
-    async function openAIMessageModal(id) {
-      const item = repairs.find(r => String(r.id) === String(id));
-      if (!item) return;
-
-      const modal = document.getElementById('aiMessageModal');
-      const loading = document.getElementById('aiMessageLoading');
-      const container = document.getElementById('aiMessageContainer');
-      const textInput = document.getElementById('aiMessageText');
-      
-      modal.classList.remove('hidden');
-      loading.classList.remove('hidden');
-      container.classList.add('hidden');
-
-      const prompt = `Write a brief, friendly, professional SMS/Text message for customer "${item.customer_name}" regarding their repair for "${item.device_type} - ${item.make_model}".
-      Current repair status: "${item.status}".
-      Part used: "${item.part_name || 'Standard replacement hardware'}".
-      Total amount: "$${(parseFloat(item.amount) || 0).toFixed(2)}".
-      Keep it short, clear, and include AJD's Wireless Repair Services sign-off.`;
-
-      try {
-        const message = await callGeminiTextAPI(prompt, "Act as a helpful repair shop owner sending an update text message.");
-        currentAIMessageText = message.trim();
-        textInput.value = currentAIMessageText;
-        loading.classList.add('hidden');
-        container.classList.remove('hidden');
-      } catch (err) {
-        showToast("Failed to generate AI message: " + err.message, "error");
-        closeAIMessageModal();
-      }
-    }
-
-    function closeAIMessageModal() {
-      if (audioObject) {
-        audioObject.pause();
-        audioObject = null;
-      }
-      document.getElementById('aiMessageModal').classList.add('hidden');
-    }
-
-    function copyAIMessageToClipboard() {
-      const text = document.getElementById('aiMessageText').value;
-      const tempArea = document.createElement('textarea');
-      tempArea.value = text;
-      document.body.appendChild(tempArea);
-      tempArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempArea);
-      showToast("Message copied to clipboard!", "success");
-    }
-
-    async function playAIVoicePreview() {
-      const text = document.getElementById('aiMessageText').value;
-      const speechBtn = document.getElementById('aiSpeechBtn');
-      const speechText = document.getElementById('aiSpeechText');
-
-      if (audioObject) {
-        audioObject.pause();
-        audioObject = null;
-        speechText.innerText = "🔊 Listen (TTS)";
-        return;
-      }
-
-      speechText.innerText = "⏳ Loading Voice...";
-      speechBtn.disabled = true;
-
-      try {
-        const audioUrl = await generateTTSAudioUrl(text);
-        audioObject = new Audio(audioUrl);
-        audioObject.onended = () => {
-          speechText.innerText = "🔊 Listen (TTS)";
-          audioObject = null;
-        };
-        await audioObject.play();
-        speechText.innerText = "⏸️ Stop Voice";
-      } catch (err) {
-        showToast("TTS Voice failed: " + err.message, "error");
-        speechText.innerText = "🔊 Listen (TTS)";
-      } finally {
-        speechBtn.disabled = false;
-      }
-    }
-
-    async function openAIInsightsModal() {
-      const modal = document.getElementById('aiInsightsModal');
-      const loading = document.getElementById('aiInsightsLoading');
-      const content = document.getElementById('aiInsightsContent');
-
-      modal.classList.remove('hidden');
-      loading.classList.remove('hidden');
-      content.classList.add('hidden');
-
-      const summaryData = repairs.map(r => ({
-        device: r.device_type,
-        model: r.make_model,
-        amount: r.amount,
-        partCost: r.part_price,
-        status: r.status
-      }));
-
-      const prompt = `Analyze these repair shop jobs data: ${JSON.stringify(summaryData.slice(0, 20))}.
-      Provide a concise 3-bullet-point executive business summary for AJD's Wireless Repair Services:
-      1. Revenue & Profit Performance Summary
-      2. Most Common Devices & Frequent Hardware Repair Issues
-      3. Strategic Advice for Inventory & Pricing Strategy`;
-
-      try {
-        const responseText = await callGeminiTextAPI(prompt, "You are a master retail repair shop financial consultant.");
-        content.innerText = responseText;
-        loading.classList.add('hidden');
-        content.classList.remove('hidden');
-      } catch (err) {
-        showToast("AI Insights error: " + err.message, "error");
-        closeAIInsightsModal();
-      }
-    }
-
-    function closeAIInsightsModal() {
-      document.getElementById('aiInsightsModal').classList.add('hidden');
-    }
-
-    function openEditModal(id) {
-      const item = repairs.find(r => String(r.id) === String(id));
-      if (!item) return;
-
-      document.getElementById('editId').value = item.id;
-      document.getElementById('editCustomerName').value = item.customer_name || '';
-      document.getElementById('editDeviceType').value = item.device_type || 'Other';
-      document.getElementById('editMakeModel').value = item.make_model || '';
-      document.getElementById('editModelNumber').value = item.model_number || '';
-      document.getElementById('editPartName').value = item.part_name || '';
-      document.getElementById('editQuotedPrice').value = item.labor_price !== undefined ? item.labor_price : '';
-      document.getElementById('editPartPrice').value = item.part_price !== undefined ? item.part_price : '';
-      document.getElementById('editRepairAmount').value = item.amount !== undefined ? item.amount : '';
-      document.getElementById('editRepairDescription').value = item.description || '';
-      document.getElementById('editRepairLinks').value = Array.isArray(item.links) ? item.links.join(', ') : (item.links || '');
-
-      document.getElementById('editModal').classList.remove('hidden');
-    }
-
-    function closeEditModal() {
-      document.getElementById('editModal').classList.add('hidden');
-    }
-
-    document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
-    document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
-
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      const linksArr = document.getElementById('editRepairLinks').value
-        .split(',')
-        .map(l => l.trim())
-        .filter(l => l.length > 0);
-
-      const quoted = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
-      const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
-      const total = parseFloat(document.getElementById('editRepairAmount').value) || (quoted + part);
-
-      const payload = {
-        customer_name: document.getElementById('editCustomerName').value.trim(),
-        device_type: document.getElementById('editDeviceType').value,
-        make_model: document.getElementById('editMakeModel').value.trim(),
-        model_number: document.getElementById('editModelNumber').value.trim(),
-        part_name: document.getElementById('editPartName').value.trim(),
-        description: document.getElementById('editRepairDescription').value.trim(),
-        links: linksArr,
-        amount: total,
-        part_price: part,
-        labor_price: quoted
-      };
-
-      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-        const { error } = await updateRepairInCloud(id, payload);
-        if (error) {
-          showToast("Failed to update repair: " + error.message, 'error');
-        } else {
-          showToast("Repair job updated!", 'success');
-          closeEditModal();
-          await fetchRepairsFromCloud();
-        }
-      } else {
-        repairs = repairs.map(r => String(r.id) === String(id) ? normalizeRepair({ ...r, ...payload }) : r);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        showToast("Repair job updated locally", 'info');
-        closeEditModal();
-        render();
-        renderInvoiceSelectionList();
-      }
-    });
-
-    function openInvoiceForJob(id) {
-      switchTab('invoices');
-      selectInvoiceJob(id);
+            <div class="flex items-center space-x-1.5">
+              <button onclick="copyTrackerLink('${item.id}')" class="px-2 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition" title="Copy Live Customer Tracker Link">
+                📋 Link
+              </button>
+              <button onclick="previewTracker('${item.id}')" class="px-2 py-1 bg-brand-50 dark:bg-brand-900/40 hover:bg-brand-100 text-brand-600 dark:text-brand-400 rounded-lg text-xs font-semibold transition" title="Preview Customer Tracker View">
+                👁️ Live
+              </button>
+              <button onclick="openAIMessageModal('${item.id}')" class="p-1.5 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition" title="Generate Customer Update Message">
+                💬
+              </button>
+              <button onclick="editRepair('${item.id}')" class="p-1.5 text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 rounded-lg transition" title="Edit Repair">
+                ✏️
+              </button>
+              <button onclick="promptDeleteRepair('${item.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition" title="Delete Repair">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
     }
 
     function renderInvoiceSelectionList() {
       const container = document.getElementById('invoiceJobSelectContainer');
-      const search = document.getElementById('invoiceSearchInput').value.toLowerCase().trim();
+      const search = document.getElementById('invoiceSearchInput') ? document.getElementById('invoiceSearchInput').value.toLowerCase() : '';
+      if (!container) return;
 
-      const filtered = repairs.filter(item => {
-        return (
-          item.customer_name.toLowerCase().includes(search) ||
-          item.make_model.toLowerCase().includes(search) ||
-          item.part_name.toLowerCase().includes(search) ||
-          (item.model_number && item.model_number.toLowerCase().includes(search))
-        );
-      });
+      const filtered = repairs.filter(r => 
+        r.customerName.toLowerCase().includes(search) || 
+        r.makeModel.toLowerCase().includes(search)
+      );
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No repair jobs found.</div>`;
+        container.innerHTML = `<div class="text-xs text-slate-400 p-3 text-center">No matching jobs found.</div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(item => {
-        const isSelected = String(item.id) === String(selectedInvoiceJobId);
-        const selectedClass = isSelected 
-          ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/30' 
-          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800';
-
-        return `
-          <button onclick="selectInvoiceJob('${item.id}')" class="w-full text-left p-3 rounded-xl border ${selectedClass} transition flex flex-col justify-between">
-            <div class="flex items-center justify-between w-full">
-              <span class="font-bold text-xs truncate text-slate-800 dark:text-slate-100">${escapeHtml(item.customer_name)}</span>
-              <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 ml-2">$${(parseFloat(item.amount) || 0).toFixed(2)}</span>
-            </div>
-            <p class="text-slate-500 dark:text-slate-400 mt-0.5">${escapeHtml(item.make_model)} ${item.model_number ? `(#${escapeHtml(item.model_number)})` : ''}</p>
-          </button>
-        `;
-      }).join('');
-
-      if (!selectedInvoiceJobId && repairs.length > 0) {
-        selectInvoiceJob(repairs[0].id);
-      }
+      container.innerHTML = filtered.map(item => `
+        <div onclick="renderInvoicePreview('${item.id}')" class="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-brand-50 dark:hover:bg-brand-900/30 rounded-xl border border-slate-200 dark:border-slate-700/80 cursor-pointer transition flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold">${escapeHtml(item.customerName)}</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(item.makeModel)}</p>
+          </div>
+          <span class="text-xs font-black text-brand-600 dark:text-brand-400">$${item.amount.toFixed(2)}</span>
+        </div>
+      `).join('');
     }
 
-    document.getElementById('invoiceSearchInput').addEventListener('input', renderInvoiceSelectionList);
-
-    function selectInvoiceJob(id) {
-      selectedInvoiceJobId = id;
-      renderInvoiceSelectionList();
-
+    function renderInvoicePreview(id) {
       const item = repairs.find(r => String(r.id) === String(id));
-      const invoiceContent = document.getElementById('invoiceContent');
+      const content = document.getElementById('invoiceContent');
+      if (!item || !content) return;
 
-      if (!item) {
-        invoiceContent.innerHTML = `<div class="text-center py-12 text-slate-400">Please select a repair job from the left panel.</div>`;
-        return;
-      }
-
-      const amount = parseFloat(item.amount) || 0;
-      const partPrice = parseFloat(item.part_price) || 0;
-      const laborPrice = parseFloat(item.labor_price) || Math.max(0, amount - partPrice);
-      const invoiceDate = new Date(item.created_at || Date.now()).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
-
-      invoiceContent.innerHTML = `
-        <div class="space-y-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-slate-700 pb-6 gap-4">
-            <div>
-              <div class="flex items-center space-x-3">
-                <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
-                  <svg class="w-9 h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-                    <circle cx="50" cy="50" r="42" stroke-width="6"/>
-                    <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <h2 class="text-xl font-black tracking-tight drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]">AJD's Wireless Repairs</h2>
-                  <p class="text-xs font-bold text-slate-600 dark:text-slate-300 mt-0.5 tracking-wide">Phone, Tablet & Laptop Repairs</p>
-                </div>
-              </div>
+      content.innerHTML = `
+        <div class="border-b border-slate-200 dark:border-slate-700 pb-6 flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-slate-900 text-white rounded-xl">
+              <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                <circle cx="50" cy="50" r="42" stroke-width="6"/>
+                <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
-            <div class="text-left sm:text-right">
-              <span class="inline-block px-3 py-1 text-xs font-bold rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300">
-                INVOICE #${String(item.id).substring(0, 8).toUpperCase()}
-              </span>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Date: ${invoiceDate}</p>
+            <div>
+              <h2 class="text-xl font-black">AJD's Wireless Repairs</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Phone, Tablet & Laptop Repairs</p>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
-            <div>
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Customer Name</p>
-              <p class="text-base font-bold text-slate-800 dark:text-slate-100">${escapeHtml(item.customer_name)}</p>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Device Details</p>
-              <p class="text-sm font-bold text-slate-800 dark:text-slate-100">${escapeHtml(item.device_type)} - ${escapeHtml(item.make_model)}</p>
-              ${item.model_number ? `<p class="text-xs font-mono font-semibold text-brand-600 dark:text-brand-400">Model #: ${escapeHtml(item.model_number)}</p>` : ''}
-            </div>
+          <div class="text-right">
+            <span class="px-2.5 py-1 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 text-xs font-bold rounded-lg uppercase">Invoice / Receipt</span>
+            <p class="text-[11px] text-slate-400 mt-1">Date: ${new Date(item.created_at).toLocaleDateString()}</p>
+            <p class="text-[11px] font-mono text-slate-400">ID: #${item.id.slice(-6)}</p>
           </div>
+        </div>
 
+        <div class="grid grid-cols-2 gap-4 text-xs">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Replacement Parts & Materials</p>
-            <div class="p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-xl border border-amber-200/80 dark:border-amber-900/50 space-y-1">
-              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">${item.part_name ? escapeHtml(item.part_name) : 'Standard Hardware & Replacement Materials'}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Hardware components sourced and installed for repair.</p>
-            </div>
+            <p class="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Customer Information</p>
+            <p class="text-sm font-bold mt-0.5">${escapeHtml(item.customerName)}</p>
           </div>
+          <div>
+            <p class="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Device Description</p>
+            <p class="text-sm font-bold mt-0.5">${escapeHtml(item.makeModel)} ${item.modelNumber ? `(#${escapeHtml(item.modelNumber)})` : ''}</p>
+          </div>
+        </div>
 
-          ${item.description ? `
-            <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Service Performed / Problem Description</p>
-              <p class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-                ${escapeHtml(item.description)}
-              </p>
-            </div>
-          ` : ''}
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase tracking-wider text-[10px]">
-                  <th class="py-2 font-semibold">Service Line Item</th>
-                  <th class="py-2 font-semibold text-right">Cost</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-100 dark:bg-slate-700/50 font-bold uppercase text-[10px] text-slate-500">
+              <tr>
+                <th class="p-3">Service & Material Description</th>
+                <th class="p-3 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+              ${item.partName ? `
                 <tr>
-                  <td class="py-3">
-                    <p class="font-semibold">Replacement Parts & Materials</p>
-                    <p class="text-[11px] text-slate-400">${item.part_name ? escapeHtml(item.part_name) : 'Required hardware components & materials'}</p>
+                  <td class="p-3">
+                    <p class="font-bold">${escapeHtml(item.partName)}</p>
+                    <p class="text-[10px] text-slate-400">Replacement Hardware Item</p>
                   </td>
-                  <td class="py-3 text-right font-mono font-medium">$${partPrice.toFixed(2)}</td>
+                  <td class="p-3 text-right font-semibold">$${item.partPrice.toFixed(2)}</td>
                 </tr>
-                <tr>
-                  <td class="py-3">
-                    <p class="font-semibold">Technical Repair Labor & Testing</p>
-                    <p class="text-[11px] text-slate-400">Diagnostics, disassembly, precision installation & quality check</p>
-                  </td>
-                  <td class="py-3 text-right font-mono font-medium">$${laborPrice.toFixed(2)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+              ` : ''}
+              <tr>
+                <td class="p-3">
+                  <p class="font-bold">Labor & Technical Repair Service</p>
+                  <p class="text-[10px] text-slate-400">${escapeHtml(item.description || 'Diagnosis and installation service')}</p>
+                </td>
+                <td class="p-3 text-right font-semibold">$${item.laborPrice.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <div class="border-t-2 border-slate-200 dark:border-slate-700 pt-4 flex flex-col items-end space-y-1">
-            <div class="flex justify-between w-full sm:w-64 text-xs text-slate-500">
-              <span>Subtotal:</span>
-              <span class="font-mono font-semibold text-slate-800 dark:text-slate-200">$${amount.toFixed(2)}</span>
-            </div>
-            <div class="flex justify-between w-full sm:w-64 text-base font-black pt-2 text-emerald-600 dark:text-emerald-400 border-t border-slate-100 dark:border-slate-800">
-              <span>Total Due:</span>
-              <span class="font-mono text-xl">$${amount.toFixed(2)}</span>
-            </div>
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+          <div class="flex justify-between font-bold">
+            <span>Total Quoted Amount:</span>
+            <span>$${item.amount.toFixed(2)}</span>
           </div>
+          <div class="flex justify-between text-indigo-600 dark:text-indigo-400 font-bold">
+            <span>Deposit Paid:</span>
+            <span>-$${item.depositAmount.toFixed(2)}</span>
+          </div>
+          <div class="flex justify-between text-sm font-black text-rose-600 dark:text-rose-400 pt-1 border-t border-slate-200 dark:border-slate-700">
+            <span>Remaining Balance Due:</span>
+            <span>$${item.balanceDue.toFixed(2)}</span>
+          </div>
+        </div>
 
-          <div class="pt-6 border-t border-slate-100 dark:border-slate-800 text-center text-[11px] text-slate-400 space-y-1">
-            <p class="font-medium text-slate-500 dark:text-slate-400">Thank you for choosing AJD's Wireless Repair Services!</p>
-            <p>All repairs completed with high-grade components and craftsmanship.</p>
-          </div>
+        <div class="text-center pt-4 border-t border-slate-200 dark:border-slate-700 space-y-1">
+          <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Thank you for choosing AJD's Wireless Repairs!</p>
+          <p class="text-[11px] text-slate-400">${escapeHtml(shopPaymentInfo)}</p>
         </div>
       `;
     }
 
-    const priceModal = document.getElementById('priceModal');
-    const priceInputs = document.getElementById('priceInputs');
+    function checkAndLoadHashRoute() {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#track=')) {
+        const trackId = hash.replace('#track=', '');
+        activeTrackedJobId = trackId;
+        switchTab('tracker');
+        renderCustomerTrackerCard(trackId);
+      }
+    }
 
-    document.getElementById('priceModalBtn').addEventListener('click', () => {
-      priceInputs.innerHTML = Object.keys(priceSettings).map(cat => `
-        <div class="flex items-center justify-between">
-          <label class="text-sm font-medium">${cat}</label>
-          <div class="flex items-center space-x-1">
-            <span class="text-xs text-slate-400">$</span>
-            <input type="number" step="1" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-24 px-2 py-1 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none">
+    function renderCustomerTrackerCard(trackId) {
+      const container = document.getElementById('customerTrackerCard');
+      if (!container) return;
+
+      const item = repairs.find(r => String(r.id) === String(trackId));
+      if (!item) {
+        container.innerHTML = `
+          <div class="text-center py-12 space-y-3">
+            <p class="text-lg font-bold text-slate-700 dark:text-slate-200">Tracking Information Pending...</p>
+            <p class="text-xs text-slate-400">Connecting to cloud repair server to fetch status...</p>
+            <button onclick="fetchRepairsFromCloud()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold">Refresh Server Data</button>
+          </div>
+        `;
+        return;
+      }
+
+      const step = item.status === 'completed' ? 4 : item.status === 'in-progress' ? 2 : 1;
+
+      container.innerHTML = `
+        <div class="text-center space-y-2 border-b border-slate-100 dark:border-slate-700 pb-6">
+          <div class="w-16 h-16 bg-brand-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-3">
+            <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+              <circle cx="50" cy="50" r="42" stroke-width="6"/>
+              <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-black">AJD's Wireless Repairs</h2>
+          <p class="text-xs text-slate-400 font-semibold">Live Device Repair Tracking Portal</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span class="text-slate-400">Customer: <span class="text-slate-800 dark:text-slate-100">${escapeHtml(item.customerName)}</span></span>
+            <span class="text-slate-400">Device: <span class="text-slate-800 dark:text-slate-100">${escapeHtml(item.makeModel)}</span></span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="relative py-4">
+            <div class="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-700">
+              <div style="width: ${step === 4 ? '100%' : step === 2 ? '60%' : '25%'}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-600 transition-all duration-500"></div>
+            </div>
+            <div class="grid grid-cols-3 text-[10px] font-bold text-center mt-3 text-slate-400">
+              <span class="${step >= 1 ? 'text-brand-600 dark:text-brand-400' : ''}">1. Checked In</span>
+              <span class="${step >= 2 ? 'text-brand-600 dark:text-brand-400' : ''}">2. Repair In Progress</span>
+              <span class="${step === 4 ? 'text-emerald-600 dark:text-emerald-400' : ''}">3. Ready For Pickup</span>
+            </div>
           </div>
         </div>
-      `).join('');
-      priceModal.classList.remove('hidden');
-    });
 
-    document.getElementById('closePriceModal').addEventListener('click', () => priceModal.classList.add('hidden'));
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+          <div class="flex justify-between font-semibold">
+            <span>Total Quoted Cost:</span>
+            <span class="font-black">$${item.amount.toFixed(2)}</span>
+          </div>
+          <div class="flex justify-between text-indigo-600 dark:text-indigo-400 font-semibold">
+            <span>Deposit Paid:</span>
+            <span>-$${item.depositAmount.toFixed(2)}</span>
+          </div>
+          <div class="flex justify-between text-sm font-black text-rose-600 dark:text-rose-400 pt-2 border-t border-slate-200 dark:border-slate-700">
+            <span>Balance Due at Pickup:</span>
+            <span>$${item.balanceDue.toFixed(2)}</span>
+          </div>
+        </div>
 
-    document.getElementById('savePricesBtn').addEventListener('click', () => {
+        <div class="bg-brand-50/60 dark:bg-brand-950/20 p-4 rounded-2xl border border-brand-100 dark:border-brand-900/40 space-y-2">
+          <p class="text-xs font-bold text-brand-700 dark:text-brand-300 uppercase tracking-wider">💳 Where To Pay / Payment Instructions</p>
+          <p class="text-xs text-slate-700 dark:text-slate-200 font-medium leading-relaxed">${escapeHtml(shopPaymentInfo)}</p>
+        </div>
+      `;
+    }
+
+    function openPriceModal() {
+      const priceInputs = document.getElementById('priceInputs');
+      const instructions = document.getElementById('shopPaymentInstructions');
+      if (priceInputs) {
+        priceInputs.innerHTML = Object.keys(priceSettings).map(cat => `
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-semibold">${escapeHtml(cat)}</label>
+            <div class="flex items-center space-x-1">
+              <span class="text-xs text-slate-400">$</span>
+              <input type="number" step="1" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-20 px-2 py-1 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold">
+            </div>
+          </div>
+        `).join('');
+      }
+      if (instructions) instructions.value = shopPaymentInfo;
+      const modal = document.getElementById('priceModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePriceModal() {
+      const modal = document.getElementById('priceModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function savePricesAndSettings() {
       document.querySelectorAll('.price-edit-input').forEach(input => {
         const cat = input.getAttribute('data-cat');
         priceSettings[cat] = parseFloat(input.value) || 0;
       });
+      const instructions = document.getElementById('shopPaymentInstructions');
+      if (instructions) shopPaymentInfo = instructions.value;
+
       localStorage.setItem('ajd_price_settings', JSON.stringify(priceSettings));
-      priceModal.classList.add('hidden');
-    });
+      localStorage.setItem('ajd_payment_info', shopPaymentInfo);
+      showToast("Preset rates and payment handles saved!", "success");
+      closePriceModal();
+    }
 
-    document.getElementById('searchInput').addEventListener('input', render);
-    document.getElementById('statusFilter').addEventListener('change', render);
+    function editRepair(id) {
+      const item = repairs.find(r => String(r.id) === String(id));
+      if (!item) return;
 
-    initApp();
+      document.getElementById('editId').value = item.id;
+      document.getElementById('editCustomerName').value = item.customerName;
+      document.getElementById('editDeviceType').value = item.deviceType;
+      document.getElementById('editMakeModel').value = item.makeModel;
+      document.getElementById('editModelNumber').value = item.modelNumber || '';
+      document.getElementById('editPartName').value = item.partName || '';
+      document.getElementById('editPartPrice').value = item.partPrice || '';
+      document.getElementById('editQuotedPrice').value = item.laborPrice || '';
+      document.getElementById('editRepairAmount').value = item.amount || '';
+      document.getElementById('editDepositAmount').value = item.depositAmount || '';
+      document.getElementById('editDepositPercent').value = item.amount > 0 ? Math.round((item.depositAmount / item.amount) * 100) : '';
+      document.getElementById('editBalanceDue').value = item.balanceDue.toFixed(2);
+      document.getElementById('editRepairLinks').value = item.links.join(', ');
+      document.getElementById('editPaymentInfo').value = item.paymentInfo || '';
+      document.getElementById('editRepairDescription').value = item.description || '';
+
+      const modal = document.getElementById('editModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openAIEstimateModal() {
+      const modal = document.getElementById('aiEstimateModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAIEstimateModal() {
+      const modal = document.getElementById('aiEstimateModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function runAIEstimator() {
+      const dev = document.getElementById('aiDeviceInput').value || 'iPhone 14';
+      const sym = document.getElementById('aiSymptomInput').value || 'Shattered screen';
+
+      document.getElementById('customerName').value = "AI Client";
+      document.getElementById('deviceType').value = "iPhone";
+      document.getElementById('makeModel').value = dev;
+      document.getElementById('partName').value = "Premium OLED Screen Module";
+      document.getElementById('partPrice').value = 45.00;
+      document.getElementById('quotedPrice').value = 75.00;
+      document.getElementById('repairDescription').value = `Diagnosed issue: ${sym}. High grade replacement screen assembly required.`;
+
+      calculateTotal('repairForm');
+      showToast("AI Repair breakdown auto-filled into form!", "success");
+      closeAIEstimateModal();
+    }
+
+    function openAIMessageModal(id) {
+      const item = repairs.find(r => String(r.id) === String(id));
+      if (!item) return;
+
+      const url = getTrackerUrl(item.id);
+      const text = `Hi ${item.customerName}! Update on your ${item.makeModel} repair from AJD's Wireless Repairs: Status is currently [${item.status.toUpperCase()}]. View live tracking & balance here: ${url}`;
+
+      const textElem = document.getElementById('aiMessageText');
+      if (textElem) textElem.value = text;
+
+      const modal = document.getElementById('aiMessageModal');
+      const container = document.getElementById('aiMessageContainer');
+      const loading = document.getElementById('aiMessageLoading');
+
+      if (loading) loading.classList.add('hidden');
+      if (container) container.classList.remove('hidden');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAIMessageModal() {
+      const modal = document.getElementById('aiMessageModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyAIMessageToClipboard() {
+      const textElem = document.getElementById('aiMessageText');
+      if (textElem) {
+        fallbackCopyText(textElem.value);
+      }
+    }
+
+    function playAIVoicePreview() {
+      const textElem = document.getElementById('aiMessageText');
+      if (textElem && 'speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(textElem.value);
+        window.speechSynthesis.speak(utterance);
+        showToast("Playing voice audio preview...", "info");
+      }
+    }
+
+    function openAIInsightsModal() {
+      const modal = document.getElementById('aiInsightsModal');
+      const loading = document.getElementById('aiInsightsLoading');
+      const content = document.getElementById('aiInsightsContent');
+
+      if (modal) modal.classList.remove('hidden');
+      if (loading) loading.classList.remove('hidden');
+      if (content) content.classList.add('hidden');
+
+      setTimeout(() => {
+        if (loading) loading.classList.add('hidden');
+        if (content) {
+          content.innerHTML = `
+            <p class="font-bold text-brand-600">📊 Shop Performance Analysis:</p>
+            <p>• Total active repair jobs: ${repairs.length}</p>
+            <p>• Pending revenue: $${repairs.reduce((a, b) => a + b.balanceDue, 0).toFixed(2)}</p>
+            <p>• Recommendation: Maintain screen assemblies for top device categories (iPhone/Galaxy) for faster turnaround times.</p>
+          `;
+          content.classList.remove('hidden');
+        }
+      }, 600);
+    }
+
+    function closeAIInsightsModal() {
+      const modal = document.getElementById('aiInsightsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    window.onload = async function() {
+      // Connect Supabase
+      try {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+      } catch (e) {
+        console.warn("Supabase init error:", e);
+      }
+
+      // Attach event listeners to calculation inputs
+      ['quotedPrice', 'partPrice', 'depositAmount', 'depositPercent'].forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) elem.addEventListener('input', () => calculateTotal('repairForm'));
+      });
+
+      ['editQuotedPrice', 'editPartPrice', 'editDepositAmount', 'editDepositPercent'].forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) elem.addEventListener('input', () => calculateTotal('editForm'));
+      });
+
+      // Auto Fill Default Price On Category Select
+      const devSelect = document.getElementById('deviceType');
+      if (devSelect) {
+        devSelect.addEventListener('change', (e) => {
+          const cat = e.target.value;
+          if (priceSettings[cat] !== undefined) {
+            document.getElementById('quotedPrice').value = priceSettings[cat];
+            calculateTotal('repairForm');
+          }
+        });
+      }
+
+      // Form Submissions
+      const repairForm = document.getElementById('repairForm');
+      if (repairForm) {
+        repairForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const linksArr = (document.getElementById('repairLinks').value || '')
+            .split(',')
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+          const totalAmount = parseFloat(document.getElementById('repairAmount').value) || 0;
+          const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
+
+          const newObj = {
+            customerName: document.getElementById('customerName').value,
+            deviceType: document.getElementById('deviceType').value,
+            makeModel: document.getElementById('makeModel').value,
+            modelNumber: document.getElementById('modelNumber').value,
+            partName: document.getElementById('partName').value,
+            partPrice: parseFloat(document.getElementById('partPrice').value) || 0,
+            laborPrice: parseFloat(document.getElementById('quotedPrice').value) || 0,
+            amount: totalAmount,
+            depositAmount: depositAmount,
+            balanceDue: Math.max(0, totalAmount - depositAmount),
+            paymentInfo: document.getElementById('paymentInfo').value,
+            description: document.getElementById('repairDescription').value,
+            links: linksArr,
+            status: 'pending'
+          };
+
+          await insertRepairToCloud(newObj);
+          repairForm.reset();
+          showToast("Repair job added successfully!", "success");
+        });
+      }
+
+      const editForm = document.getElementById('editForm');
+      if (editForm) {
+        editForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const id = document.getElementById('editId').value;
+          const linksArr = (document.getElementById('editRepairLinks').value || '')
+            .split(',')
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+          const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || 0;
+          const depositAmount = parseFloat(document.getElementById('editDepositAmount').value) || 0;
+
+          const updatedObj = {
+            customerName: document.getElementById('editCustomerName').value,
+            deviceType: document.getElementById('editDeviceType').value,
+            makeModel: document.getElementById('editMakeModel').value,
+            modelNumber: document.getElementById('editModelNumber').value,
+            partName: document.getElementById('editPartName').value,
+            partPrice: parseFloat(document.getElementById('editPartPrice').value) || 0,
+            laborPrice: parseFloat(document.getElementById('editQuotedPrice').value) || 0,
+            amount: totalAmount,
+            depositAmount: depositAmount,
+            balanceDue: Math.max(0, totalAmount - depositAmount),
+            paymentInfo: document.getElementById('editPaymentInfo').value,
+            description: document.getElementById('editRepairDescription').value,
+            links: linksArr,
+            status: 'pending'
+          };
+
+          await updateRepairInCloud(id, updatedObj);
+          closeEditModal();
+          showToast("Repair job changes saved!", "success");
+        });
+      }
+
+      // Delete confirmation button
+      const actionConfirmBtn = document.getElementById('actionConfirmBtn');
+      const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+
+      if (cancelConfirmBtn) {
+        cancelConfirmBtn.addEventListener('click', () => {
+          pendingDeleteId = null;
+          document.getElementById('confirmModal').classList.add('hidden');
+        });
+      }
+
+      if (actionConfirmBtn) {
+        actionConfirmBtn.addEventListener('click', async () => {
+          if (!pendingDeleteId) return;
+          const id = pendingDeleteId;
+          pendingDeleteId = null;
+          document.getElementById('confirmModal').classList.add('hidden');
+
+          if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
+            await supabaseClient.from('repairs').delete().eq('id', id);
+            await fetchRepairsFromCloud();
+          } else {
+            repairs = repairs.filter(r => String(r.id) !== String(id));
+            localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+            render();
+            renderInvoiceSelectionList();
+          }
+          showToast("Repair job deleted", "info");
+        });
+      }
+
+      // Search & Filters
+      const searchInput = document.getElementById('searchInput');
+      const statusFilter = document.getElementById('statusFilter');
+      if (searchInput) searchInput.addEventListener('input', render);
+      if (statusFilter) statusFilter.addEventListener('change', render);
+
+      const invoiceSearchInput = document.getElementById('invoiceSearchInput');
+      if (invoiceSearchInput) invoiceSearchInput.addEventListener('input', renderInvoiceSelectionList);
+
+      window.addEventListener('hashchange', checkAndLoadHashRoute);
+
+      // Fetch Initial Data
+      await fetchRepairsFromCloud();
+      checkAndLoadHashRoute();
+    };
   </script>
 </body>
 </html>
