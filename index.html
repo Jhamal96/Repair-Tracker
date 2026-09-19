@@ -44,14 +44,43 @@
     .status-pulse {
       animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      header, nav, #toastContainer, #confirmModal, #editModal, #priceModal, .no-print {
+        display: none !important;
+      }
+      main {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #viewInvoices {
+        display: block !important;
+      }
+      .printable-invoice-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3 sm:px-6">
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3 sm:px-6 no-print">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
+        <button id="hamburgerBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition md:hidden focus:outline-none" aria-label="Toggle navigation menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
         </div>
         <div>
@@ -63,139 +92,229 @@
         </div>
       </div>
       
+      <nav class="hidden md:flex items-center space-x-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <button id="navRepairsDesktop" onclick="switchTab('repairs')" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm">
+          📋 Repairs Tracker
+        </button>
+        <button id="navInvoicesDesktop" onclick="switchTab('invoices')" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+          📄 Invoices & Receipts
+        </button>
+      </nav>
+
       <div class="flex items-center space-x-2">
-        <!-- Price Config Trigger -->
-        <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Prices">
+        <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Preset Prices">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </button>
         
-        <!-- System Device Theme Switcher Dropdown -->
         <div class="relative inline-block text-left">
           <select id="themeSelect" class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 outline-none cursor-pointer">
-            <option value="system">📱 System Theme</option>
-            <option value="dark">🌙 Dark Mode</option>
-            <option value="light">☀️ Light Mode</option>
+            <option value="system">📱 System</option>
+            <option value="dark">🌙 Dark</option>
+            <option value="light">☀️ Light</option>
           </select>
         </div>
       </div>
+    </div>
+
+    <div id="mobileDrawer" class="hidden md:hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+      <button onclick="switchTab('repairs'); closeDrawer();" id="navRepairsMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+        📋 Repairs Tracker
+      </button>
+      <button onclick="switchTab('invoices'); closeDrawer();" id="navInvoicesMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+        📄 Invoices & Receipts
+      </button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+  <main class="max-w-6xl mx-auto px-4 py-6">
 
-    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
-        <p id="statTotal" class="text-2xl font-black mt-1">0</p>
-      </div>
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-amber-500">Pending</p>
-        <p id="statPending" class="text-2xl font-black mt-1">0</p>
-      </div>
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-emerald-500">Completed</p>
-        <p id="statCompleted" class="text-2xl font-black mt-1">0</p>
-      </div>
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
-        <p id="statRevenue" class="text-2xl font-black mt-1">$0.00</p>
-      </div>
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <p class="text-xs font-semibold uppercase tracking-wider text-purple-500">Net Profit</p>
-        <p id="statProfit" class="text-2xl font-black mt-1 text-purple-600 dark:text-purple-400">$0.00</p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- Repair Entry Form -->
-      <div class="lg:col-span-1">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20">
-          <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
-            <span>New Repair Entry</span>
-            <span id="syncBadge" class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">Sync Enabled</span>
-          </h2>
-          
-          <form id="repairForm" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Customer Name *</label>
-              <input type="text" id="customerName" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="John Doe">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Category *</label>
-              <select id="deviceType" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
-                <option value="" disabled selected>Select category...</option>
-                <option value="iPhone">iPhone</option>
-                <option value="iPad">iPad</option>
-                <option value="Apple watch">Apple watch</option>
-                <option value="Tablets">Tablets</option>
-                <option value="Galaxy">Galaxy</option>
-                <option value="Galaxy Tablet">Galaxy Tablet</option>
-                <option value="Laptop">Laptop</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Make & Model *</label>
-              <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 14 Pro Max">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Quoted Price ($)</label>
-                <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-emerald-600 dark:text-emerald-400" placeholder="0.00">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Cost ($)</label>
-                <input type="number" id="partPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-600 dark:text-amber-400" placeholder="0.00">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Description / Problem</label>
-              <textarea id="repairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Shattered front glass, unresponsive touch screen..."></textarea>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Links (Comma Separated)</label>
-              <input type="text" id="repairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="https://amazon.com/part, https://ifixit.com/...">
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-              <span>Add Repair Job</span>
-            </button>
-          </form>
+    <div id="viewRepairs" class="space-y-6">
+      
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
+          <p id="statTotal" class="text-2xl font-black mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold uppercase tracking-wider text-amber-500">Pending</p>
+          <p id="statPending" class="text-2xl font-black mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-500">Completed</p>
+          <p id="statCompleted" class="text-2xl font-black mt-1">0</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
+          <p id="statRevenue" class="text-2xl font-black mt-1">$0.00</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold uppercase tracking-wider text-purple-500">Net Profit</p>
+          <p id="statProfit" class="text-2xl font-black mt-1 text-purple-600 dark:text-purple-400">$0.00</p>
         </div>
       </div>
 
-      <!-- Repairs Output Column -->
-      <div class="lg:col-span-2 space-y-4">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <div class="relative flex-1">
-            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer name, make, model or details...">
-            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-1">
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20">
+            <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
+              <span>New Repair Entry</span>
+              <span id="syncBadge" class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">Sync Enabled</span>
+            </h2>
+            
+            <form id="repairForm" class="space-y-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-700/60 pb-1">
+                Customer & Device Info
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Customer Name *</label>
+                <input type="text" id="customerName" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="John Doe">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Category *</label>
+                <select id="deviceType" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                  <option value="" disabled selected>Select category...</option>
+                  <option value="iPhone">iPhone</option>
+                  <option value="iPad">iPad</option>
+                  <option value="Apple watch">Apple watch</option>
+                  <option value="Tablets">Tablets</option>
+                  <option value="Galaxy">Galaxy</option>
+                  <option value="Galaxy Tablet">Galaxy Tablet</option>
+                  <option value="Laptop">Laptop</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Make & Model *</label>
+                  <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 14 Pro Max">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Model Number</label>
+                  <input type="text" id="modelNumber" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. A2651, SM-S918U">
+                </div>
+              </div>
+
+              <!-- Replacement Parts & Materials Section -->
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2 flex items-center justify-between">
+                <span>Replacement Parts & Materials</span>
+                <span class="text-[10px] font-normal text-slate-400">Inventory & Hardware</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Name / Items Used</label>
+                <input type="text" id="partName" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g. OLED Display Assembly, Battery, Port">
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Parts Cost ($)</label>
+                  <input type="number" id="partPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-bold text-amber-600 dark:text-amber-400" placeholder="0.00">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Supplier Links</label>
+                  <input type="text" id="repairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="https://supplier.com/part...">
+                </div>
+              </div>
+
+              <!-- Service Pricing Section -->
+              <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
+                Service Pricing Breakdown
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Labor/Quoted ($)</label>
+                  <input type="number" id="quotedPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400" placeholder="0.00">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Charged ($)</label>
+                  <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-black text-emerald-600 dark:text-emerald-400" placeholder="0.00">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Problem & Notes</label>
+                <textarea id="repairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Shattered front glass, unresponsive touch screen..."></textarea>
+              </div>
+
+              <button type="submit" id="submitBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                <span>Add Repair Job</span>
+              </button>
+            </form>
           </div>
-          <select id="statusFilter" class="px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
         </div>
 
-        <div id="repairsList" class="space-y-3">
-          <div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">Connecting to repair database...</div>
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+              <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer, make, model, parts, or notes...">
+              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <select id="statusFilter" class="px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <div id="repairsList" class="space-y-3">
+            <div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">Connecting to repair database...</div>
+          </div>
         </div>
+
       </div>
-
     </div>
+
+    <div id="viewInvoices" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-1 no-print space-y-4">
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+            <h2 class="text-base font-bold flex items-center justify-between">
+              <span>Select Repair Job</span>
+              <span class="text-xs text-slate-400 font-normal">For Invoice</span>
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Choose a job from the list below to build, preview, and print a formal receipt with Replacement Parts & Materials breakdown for your customer.</p>
+            
+            <input type="text" id="invoiceSearchInput" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Filter customer name or model...">
+
+            <div id="invoiceJobSelectContainer" class="space-y-2 max-h-[450px] overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2">
+          <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 printable-invoice-card space-y-6">
+            
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4 no-print">
+              <div>
+                <h3 class="text-lg font-bold">Invoice Preview</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Ready to print or save as PDF</p>
+              </div>
+              <button onclick="window.print()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                <span>Print / Share Invoice</span>
+              </button>
+            </div>
+
+            <div id="invoiceContent" class="space-y-6 text-slate-800 dark:text-slate-100">
+              <div class="text-center py-12 text-slate-400">Select a repair job on the left to preview its printable invoice.</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
-  <!-- Price Config Modal -->
-  <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
         <h3 class="text-lg font-bold">Customize Preset Prices</h3>
@@ -212,8 +331,7 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-center">
       <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mx-auto flex items-center justify-center">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -229,8 +347,7 @@
     </div>
   </div>
 
-  <!-- Edit Repair Modal -->
-  <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+  <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 my-8">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
         <h3 class="text-lg font-bold">Edit Repair Job</h3>
@@ -241,6 +358,11 @@
 
       <form id="editForm" class="space-y-4">
         <input type="hidden" id="editId">
+        
+        <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-700/60 pb-1">
+          Customer & Device Info
+        </div>
+
         <div>
           <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Customer Name *</label>
           <input type="text" id="editCustomerName" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
@@ -266,25 +388,49 @@
           </div>
         </div>
 
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Model Number</label>
+          <input type="text" id="editModelNumber" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. A2651, SM-S918U">
+        </div>
+
+        <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
+          Replacement Parts & Materials
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Name / Items Used</label>
+          <input type="text" id="editPartName" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g. OLED Display Assembly, Battery, Port">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Parts Cost ($)</label>
+            <input type="number" id="editPartPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-bold text-amber-600 dark:text-amber-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Supplier Links</label>
+            <input type="text" id="editRepairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none">
+          </div>
+        </div>
+
+        <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
+          Service Pricing Breakdown
+        </div>
+
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Quoted Price ($)</label>
-            <input type="number" id="editRepairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-emerald-600 dark:text-emerald-400">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Labor/Quoted ($)</label>
+            <input type="number" id="editQuotedPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Cost ($)</label>
-            <input type="number" id="editPartPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-600 dark:text-amber-400">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Charged ($)</label>
+            <input type="number" id="editRepairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-black text-emerald-600 dark:text-emerald-400">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Description / Problem</label>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Problem & Notes</label>
           <textarea id="editRepairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Links (Comma Separated)</label>
-          <input type="text" id="editRepairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
         </div>
 
         <div class="flex justify-end space-x-3 pt-2 border-t border-slate-200 dark:border-slate-700">
@@ -295,11 +441,9 @@
     </div>
   </div>
 
-  <!-- Toast Notification Banner Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
 
   <script>
-    // Supabase Credentials
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
@@ -312,7 +456,6 @@
       console.warn('Supabase initialization failed:', e);
     }
 
-    // Default pricing rules
     const defaultPrices = {
       'iPhone': 90,
       'iPad': 120,
@@ -327,12 +470,82 @@
     let priceSettings = JSON.parse(localStorage.getItem('ajd_price_settings')) || defaultPrices;
     let repairs = [];
     let isCloudConnected = false;
+    let selectedInvoiceJobId = null;
 
-    // --- SYSTEM THEME SYNCHRONIZATION LOGIC ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+
+    hamburgerBtn.addEventListener('click', () => {
+      mobileDrawer.classList.toggle('hidden');
+    });
+
+    function closeDrawer() {
+      mobileDrawer.classList.add('hidden');
+    }
+
+    function switchTab(tab) {
+      const repairsView = document.getElementById('viewRepairs');
+      const invoicesView = document.getElementById('viewInvoices');
+
+      const navRepairsD = document.getElementById('navRepairsDesktop');
+      const navInvoicesD = document.getElementById('navInvoicesDesktop');
+      const navRepairsM = document.getElementById('navRepairsMobile');
+      const navInvoicesM = document.getElementById('navInvoicesMobile');
+
+      if (tab === 'invoices') {
+        repairsView.classList.add('hidden');
+        invoicesView.classList.remove('hidden');
+
+        navInvoicesD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
+        navRepairsD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+
+        navInvoicesM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
+        navRepairsM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700";
+
+        renderInvoiceSelectionList();
+      } else {
+        invoicesView.classList.add('hidden');
+        repairsView.classList.remove('hidden');
+
+        navRepairsD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
+        navInvoicesD.className = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+
+        navRepairsM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
+        navInvoicesM.className = "w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700";
+      }
+    }
+
     const themeSelect = document.getElementById('themeSelect');
     const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    // Toast Notification helper (replaces browser alerts)
+    function applyThemeMode(mode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (mode === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        if (systemThemeQuery.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+
+    const savedThemePref = localStorage.getItem('ajd_theme_pref') || 'system';
+    themeSelect.value = savedThemePref;
+    applyThemeMode(savedThemePref);
+
+    systemThemeQuery.addEventListener('change', () => {
+      if (themeSelect.value === 'system') applyThemeMode('system');
+    });
+
+    themeSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      localStorage.setItem('ajd_theme_pref', selected);
+      applyThemeMode(selected);
+    });
+
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -344,91 +557,133 @@
       toast.innerText = message;
       
       container.appendChild(toast);
-      
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
-
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 300);
       }, 3500);
     }
 
-    // Confirmation Modal state management
     let pendingDeleteId = null;
     const confirmModal = document.getElementById('confirmModal');
-    const actionConfirmBtn = document.getElementById('actionConfirmBtn');
-    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
-
-    cancelConfirmBtn.addEventListener('click', () => {
+    document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
       pendingDeleteId = null;
       confirmModal.classList.add('hidden');
     });
 
-    actionConfirmBtn.addEventListener('click', async () => {
+    document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
       if (!pendingDeleteId) return;
       const id = pendingDeleteId;
       pendingDeleteId = null;
       confirmModal.classList.add('hidden');
 
-      if (isCloudConnected && supabaseClient) {
+      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
         const { error } = await supabaseClient.from('repairs').delete().eq('id', id);
         if (error) {
-          console.error("Delete failed:", error);
           showToast("Failed to delete record: " + error.message, 'error');
         } else {
           showToast("Repair record deleted", 'success');
           await fetchRepairsFromCloud();
         }
       } else {
-        repairs = repairs.filter(r => r.id !== id);
+        repairs = repairs.filter(r => String(r.id) !== String(id));
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
+        renderInvoiceSelectionList();
         showToast("Repair record removed locally", 'info');
       }
     });
 
-    function applyThemeMode(mode) {
-      if (mode === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else if (mode === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        // Mode is 'system' -> Sync directly with system preference
-        if (systemThemeQuery.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+    const deviceTypeSelect = document.getElementById('deviceType');
+    const quotedPriceInput = document.getElementById('quotedPrice');
+    const partPriceInput = document.getElementById('partPrice');
+    const repairAmountInput = document.getElementById('repairAmount');
+
+    deviceTypeSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      if (priceSettings[selected] !== undefined) {
+        quotedPriceInput.value = priceSettings[selected];
+        calculateTotal('repairForm');
+      }
+    });
+
+    function calculateTotal(formType) {
+      if (formType === 'repairForm') {
+        const quoted = parseFloat(quotedPriceInput.value) || 0;
+        const part = parseFloat(partPriceInput.value) || 0;
+        repairAmountInput.value = (quoted + part).toFixed(2);
+      } else if (formType === 'editForm') {
+        const quoted = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+        const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
+        document.getElementById('editRepairAmount').value = (quoted + part).toFixed(2);
       }
     }
 
-    // Saved preference or default to 'system'
-    const savedThemePref = localStorage.getItem('ajd_theme_pref') || 'system';
-    themeSelect.value = savedThemePref;
-    applyThemeMode(savedThemePref);
-
-    // Dynamic Device Listener: reacts in real-time when system theme changes
-    systemThemeQuery.addEventListener('change', (e) => {
-      if (themeSelect.value === 'system') {
-        applyThemeMode('system');
+    function calculateQuotedFromTotal(formType) {
+      if (formType === 'repairForm') {
+        const total = parseFloat(repairAmountInput.value) || 0;
+        const part = parseFloat(partPriceInput.value) || 0;
+        quotedPriceInput.value = Math.max(0, total - part).toFixed(2);
+      } else if (formType === 'editForm') {
+        const total = parseFloat(document.getElementById('editRepairAmount').value) || 0;
+        const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
+        document.getElementById('editQuotedPrice').value = Math.max(0, total - part).toFixed(2);
       }
-    });
+    }
 
-    themeSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      localStorage.setItem('ajd_theme_pref', selected);
-      applyThemeMode(selected);
-    });
+    quotedPriceInput.addEventListener('input', () => calculateTotal('repairForm'));
+    partPriceInput.addEventListener('input', () => calculateTotal('repairForm'));
+    repairAmountInput.addEventListener('input', () => calculateQuotedFromTotal('repairForm'));
 
-    // --- UI Elements ---
-    const form = document.getElementById('repairForm');
-    const deviceTypeSelect = document.getElementById('deviceType');
-    const repairAmountInput = document.getElementById('repairAmount');
-    const repairsList = document.getElementById('repairsList');
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
+    document.getElementById('editQuotedPrice').addEventListener('input', () => calculateTotal('editForm'));
+    document.getElementById('editPartPrice').addEventListener('input', () => calculateTotal('editForm'));
+    document.getElementById('editRepairAmount').addEventListener('input', () => calculateQuotedFromTotal('editForm'));
+
+    function normalizeRepair(item) {
+      let description = item.description || item.notes || '';
+      let part_name = item.part_name || item.partName || '';
+      let model_number = item.model_number || item.modelNumber || '';
+      let part_price = item.part_price !== undefined ? parseFloat(item.part_price) : (item.partPrice !== undefined ? parseFloat(item.partPrice) : null);
+      let labor_price = item.labor_price !== undefined ? parseFloat(item.labor_price) : (item.laborPrice !== undefined ? parseFloat(item.laborPrice) : null);
+
+      // Unpack embedded metadata if schema columns were missing in Supabase
+      if (description.includes('[META:')) {
+        try {
+          const metaMatch = description.match(/\[META:({.*?})\]/s);
+          if (metaMatch && metaMatch[1]) {
+            const meta = JSON.parse(metaMatch[1]);
+            if (!part_name && meta.part_name) part_name = meta.part_name;
+            if (!model_number && meta.model_number) model_number = meta.model_number;
+            if (part_price === null && meta.part_price !== undefined) part_price = parseFloat(meta.part_price);
+            if (labor_price === null && meta.labor_price !== undefined) labor_price = parseFloat(meta.labor_price);
+            
+            description = description.replace(/\[META:{.*?}\]/s, '').trim();
+          }
+        } catch (e) {
+          console.warn("Error parsing metadata:", e);
+        }
+      }
+
+      const amount = parseFloat(item.amount) || 0;
+      const finalPartPrice = (part_price !== null && !isNaN(part_price)) ? part_price : 0;
+      const finalLaborPrice = (labor_price !== null && !isNaN(labor_price)) ? labor_price : Math.max(0, amount - finalPartPrice);
+
+      return {
+        id: item.id || 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        customer_name: item.customer_name || item.customerName || 'Unknown Customer',
+        device_type: item.device_type || item.deviceType || 'Other',
+        make_model: item.make_model || item.makeModel || 'N/A',
+        model_number: model_number,
+        part_name: part_name,
+        description: description,
+        links: Array.isArray(item.links) ? item.links : (typeof item.links === 'string' ? item.links.split(',') : []),
+        amount: amount > 0 ? amount : (finalLaborPrice + finalPartPrice),
+        part_price: finalPartPrice,
+        labor_price: finalLaborPrice,
+        status: (item.status || 'pending').toLowerCase(),
+        created_at: item.created_at || new Date().toISOString()
+      };
+    }
 
     function updateCloudStatus(connected, message) {
       isCloudConnected = connected;
@@ -449,27 +704,69 @@
       }
     }
 
-    // Auto price filler
-    deviceTypeSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      if (priceSettings[selected] !== undefined) {
-        repairAmountInput.value = priceSettings[selected];
-      }
-    });
+    async function insertRepairToCloud(payload) {
+      if (!supabaseClient) return { error: { message: 'No Supabase client' } };
+      
+      let { error } = await supabaseClient.from('repairs').insert([payload]);
+      
+      if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
+        console.warn("Columns missing in Supabase schema. Encoding extra fields into description fallback...", error.message);
+        
+        const metaObj = {
+          part_name: payload.part_name,
+          part_price: payload.part_price,
+          labor_price: payload.labor_price,
+          model_number: payload.model_number
+        };
+        const encodedDescription = (payload.description || '') + '\n[META:' + JSON.stringify(metaObj) + ']';
 
-    // Helper: Map data safely between DB columns & JSON local fallbacks
-    function normalizeRepair(item) {
-      return {
-        id: item.id || 'local_' + Date.now(),
-        customer_name: item.customer_name || item.customerName || 'Unknown Customer',
-        device_type: item.device_type || item.deviceType || 'Other',
-        make_model: item.make_model || item.makeModel || 'N/A',
-        description: item.description || item.notes || '',
-        links: Array.isArray(item.links) ? item.links : (typeof item.links === 'string' ? item.links.split(',') : []),
-        amount: parseFloat(item.amount) || 0,
-        part_price: parseFloat(item.part_price ?? item.partPrice) || 0,
-        status: (item.status || 'pending').toLowerCase()
-      };
+        const fallbackPayload = {
+          customer_name: payload.customer_name,
+          device_type: payload.device_type,
+          make_model: payload.make_model,
+          description: encodedDescription,
+          links: payload.links,
+          amount: payload.amount,
+          status: payload.status
+        };
+        const retry = await supabaseClient.from('repairs').insert([fallbackPayload]);
+        error = retry.error;
+      }
+      return { error };
+    }
+
+    async function updateRepairInCloud(id, payload) {
+      if (!supabaseClient) return { error: { message: 'No Supabase client' } };
+      
+      if (String(id).startsWith('local_')) {
+        return await insertRepairToCloud(payload);
+      }
+
+      let { error } = await supabaseClient.from('repairs').update(payload).eq('id', id);
+      
+      if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
+        console.warn("Columns missing in Supabase schema. Encoding extra fields into description fallback...", error.message);
+        
+        const metaObj = {
+          part_name: payload.part_name,
+          part_price: payload.part_price,
+          labor_price: payload.labor_price,
+          model_number: payload.model_number
+        };
+        const encodedDescription = (payload.description || '') + '\n[META:' + JSON.stringify(metaObj) + ']';
+
+        const fallbackPayload = {
+          customer_name: payload.customer_name,
+          device_type: payload.device_type,
+          make_model: payload.make_model,
+          description: encodedDescription,
+          links: payload.links,
+          amount: payload.amount
+        };
+        const retry = await supabaseClient.from('repairs').update(fallbackPayload).eq('id', id);
+        error = retry.error;
+      }
+      return { error };
     }
 
     async function fetchRepairsFromCloud() {
@@ -482,13 +779,13 @@
         if (!error && data) {
           repairs = data.map(normalizeRepair);
           render();
+          renderInvoiceSelectionList();
         }
       } catch (e) {
-        console.warn("Failed to fetch repairs from cloud:", e);
+        console.warn("Cloud fetch error:", e);
       }
     }
 
-    // Initial Data Fetching
     async function initApp() {
       if (!supabaseClient) {
         useLocalFallback();
@@ -506,30 +803,36 @@
         repairs = (data || []).map(normalizeRepair);
         updateCloudStatus(true, "Cloud Sync Connected");
 
-        // Sync local unsaved records to cloud if present
         const localData = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
         if (localData.length > 0) {
-          const formattedLocal = localData.map(item => ({
-            customer_name: item.customer_name,
-            device_type: item.device_type,
-            make_model: item.make_model,
-            description: item.description,
-            links: item.links,
-            amount: item.amount,
-            status: item.status
-          }));
-          await supabaseClient.from('repairs').insert(formattedLocal);
+          for (const item of localData) {
+            const formatted = {
+              customer_name: item.customer_name,
+              device_type: item.device_type,
+              make_model: item.make_model,
+              model_number: item.model_number,
+              part_name: item.part_name,
+              description: item.description,
+              links: item.links,
+              amount: item.amount,
+              part_price: item.part_price,
+              labor_price: item.labor_price,
+              status: item.status
+            };
+            await insertRepairToCloud(formatted);
+          }
           localStorage.removeItem('ajd_repairs_backup');
           return initApp();
         }
 
         setupRealtimeSubscriptions();
       } catch (err) {
-        console.warn("Cloud connection error, reverting to local backup:", err);
+        console.warn("Reverting to local fallback:", err);
         useLocalFallback();
       }
 
       render();
+      renderInvoiceSelectionList();
     }
 
     function useLocalFallback() {
@@ -537,23 +840,22 @@
       const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
       repairs = local.map(normalizeRepair);
       render();
+      renderInvoiceSelectionList();
     }
 
     function setupRealtimeSubscriptions() {
       if (!supabaseClient) return;
 
-      // Detect if WebSocket connections are allowed in this runtime environment
       let wsSupported = false;
       try {
         const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket?apikey=' + SUPABASE_KEY + '&vsn=2.0.0');
         testWs.close();
         wsSupported = true;
       } catch (e) {
-        console.warn("WebSocket connections are restricted in this preview environment. Using HTTP REST polling for sync.");
+        console.warn("WebSockets restricted. Using polling mode.");
       }
 
       if (!wsSupported) {
-        // Fall back to HTTP polling every 15 seconds
         setInterval(fetchRepairsFromCloud, 15000);
         return;
       }
@@ -564,19 +866,13 @@
           .on('postgres_changes', { event: '*', schema: 'public', table: 'repairs' }, async () => {
             await fetchRepairsFromCloud();
           })
-          .subscribe((status, err) => {
-            if (status === 'CHANNEL_ERROR' || err) {
-              console.warn('Realtime subscription notice:', err || status);
-            }
-          });
+          .subscribe();
       } catch (err) {
-        console.warn("Could not initiate realtime subscription, falling back to HTTP polling:", err);
         setInterval(fetchRepairsFromCloud, 15000);
       }
     }
 
-    // Form submission handler
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('repairForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const linksArr = document.getElementById('repairLinks').value
@@ -584,24 +880,31 @@
         .map(l => l.trim())
         .filter(l => l.length > 0);
 
+      const quoted = parseFloat(quotedPriceInput.value) || 0;
+      const part = parseFloat(partPriceInput.value) || 0;
+      const total = parseFloat(repairAmountInput.value) || (quoted + part);
+
       const payload = {
         customer_name: document.getElementById('customerName').value.trim(),
         device_type: deviceTypeSelect.value,
         make_model: document.getElementById('makeModel').value.trim(),
+        model_number: document.getElementById('modelNumber').value.trim(),
+        part_name: document.getElementById('partName').value.trim(),
         description: document.getElementById('repairDescription').value.trim(),
         links: linksArr,
-        amount: parseFloat(repairAmountInput.value) || 0,
-        part_price: parseFloat(document.getElementById('partPrice').value) || 0,
+        amount: total,
+        part_price: part,
+        labor_price: quoted,
         status: 'pending'
       };
 
       if (isCloudConnected && supabaseClient) {
-        const { error } = await supabaseClient.from('repairs').insert([payload]);
+        const { error } = await insertRepairToCloud(payload);
         if (error) {
-          showToast("Cloud sync error: " + error.message, 'error');
+          showToast("Database error: " + error.message, 'error');
           saveLocally(payload);
         } else {
-          showToast("Repair job created & synced!", 'success');
+          showToast("Repair job saved & synced!", 'success');
           await fetchRepairsFromCloud();
         }
       } else {
@@ -609,55 +912,55 @@
         showToast("Repair job saved locally", 'info');
       }
 
-      form.reset();
+      document.getElementById('repairForm').reset();
     });
 
     function saveLocally(payload) {
-      payload.id = 'local_' + Date.now();
-      repairs.unshift(normalizeRepair(payload));
+      const normalized = normalizeRepair(payload);
+      repairs.unshift(normalized);
       localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
       render();
+      renderInvoiceSelectionList();
     }
 
-    // Status Updater
     async function updateStatus(id, newStatus) {
-      if (isCloudConnected && supabaseClient) {
+      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
         const { error } = await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
-        if (error) console.error("Update failed:", error);
-        else {
+        if (error) {
+          showToast("Failed to update status: " + error.message, 'error');
+        } else {
           showToast("Status updated", 'success');
           await fetchRepairsFromCloud();
         }
       } else {
-        repairs = repairs.map(r => r.id === id ? { ...r, status: newStatus } : r);
+        repairs = repairs.map(r => String(r.id) === String(id) ? { ...r, status: newStatus } : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
         showToast("Status updated locally", 'info');
       }
     }
 
-    // Delete Repair Trigger
     function deleteRepair(id) {
       pendingDeleteId = id;
       confirmModal.classList.remove('hidden');
     }
 
-    // Main Renderer
     function render() {
-      const search = searchInput.value.toLowerCase().trim();
-      const status = statusFilter.value;
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const status = document.getElementById('statusFilter').value;
 
       const filtered = repairs.filter(item => {
         const matchesSearch = 
           item.customer_name.toLowerCase().includes(search) ||
           item.make_model.toLowerCase().includes(search) ||
+          item.model_number.toLowerCase().includes(search) ||
+          item.part_name.toLowerCase().includes(search) ||
           item.description.toLowerCase().includes(search);
         
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
       });
 
-      // Update Dashboard Metrics
       document.getElementById('statTotal').innerText = repairs.length;
       document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
       document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
@@ -667,10 +970,9 @@
       const netProfit = totalRev - totalParts;
 
       document.getElementById('statRevenue').innerText = `$${totalRev.toFixed(2)}`;
-      if (document.getElementById('statProfit')) {
-        document.getElementById('statProfit').innerText = `$${netProfit.toFixed(2)}`;
-      }
+      document.getElementById('statProfit').innerText = `$${netProfit.toFixed(2)}`;
 
+      const repairsList = document.getElementById('repairsList');
       if (filtered.length === 0) {
         repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs matching your search criteria.</div>`;
         return;
@@ -679,7 +981,7 @@
       repairsList.innerHTML = filtered.map(item => {
         const amount = parseFloat(item.amount) || 0;
         const partPrice = parseFloat(item.part_price) || 0;
-        const profit = amount - partPrice;
+        const laborPrice = parseFloat(item.labor_price) || Math.max(0, amount - partPrice);
 
         return `
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3 transition">
@@ -689,35 +991,49 @@
                   ${item.device_type}
                 </span>
                 <h3 class="text-base font-bold">${escapeHtml(item.customer_name)}</h3>
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">${escapeHtml(item.make_model)}</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  ${escapeHtml(item.make_model)}
+                  ${item.model_number ? `<span class="text-xs font-mono font-semibold text-brand-600 dark:text-brand-400 ml-1.5 px-1.5 py-0.5 bg-brand-50 dark:bg-brand-900/40 rounded-md">#${escapeHtml(item.model_number)}</span>` : ''}
+                </p>
               </div>
               <div class="text-right">
                 <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${amount.toFixed(2)}</span>
-                ${partPrice > 0 ? `
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    Part: <span class="text-amber-600 dark:text-amber-400 font-medium">$${partPrice.toFixed(2)}</span>
-                    <span class="mx-0.5 opacity-40">|</span>
-                    Profit: <span class="text-emerald-600 dark:text-emerald-400 font-semibold">$${profit.toFixed(2)}</span>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 space-x-1">
+                  <span>Part: <strong class="text-amber-600 dark:text-amber-400">$${partPrice.toFixed(2)}</strong></span>
+                  <span class="opacity-40">|</span>
+                  <span>Labor: <strong class="text-brand-600 dark:text-brand-400">$${laborPrice.toFixed(2)}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            ${item.part_name || partPrice > 0 || (item.links && item.links.length > 0) ? `
+              <div class="p-3 bg-amber-50/60 dark:bg-amber-950/20 rounded-xl border border-amber-200/60 dark:border-amber-900/40 space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] font-bold text-amber-800 dark:text-amber-300">
+                  <span class="flex items-center space-x-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                    <span>Replacement Parts & Materials</span>
+                  </span>
+                  <span class="font-mono font-bold">$${partPrice.toFixed(2)}</span>
+                </div>
+                ${item.part_name ? `<p class="text-xs font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(item.part_name)}</p>` : ''}
+                
+                ${item.links && item.links.length > 0 ? `
+                  <div class="flex flex-wrap gap-2 text-xs pt-1">
+                    ${item.links.map((link, idx) => `
+                      <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        <span>Supplier Part ${idx + 1}</span>
+                      </a>
+                    `).join('')}
                   </div>
                 ` : ''}
               </div>
-            </div>
+            ` : ''}
 
             ${item.description ? `
               <p class="text-sm text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                 ${escapeHtml(item.description)}
               </p>
-            ` : ''}
-
-            ${item.links && item.links.length > 0 ? `
-              <div class="flex flex-wrap gap-2 text-xs">
-                ${item.links.map((link, idx) => `
-                  <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    <span>Part Link ${idx + 1}</span>
-                  </a>
-                `).join('')}
-              </div>
             ` : ''}
 
             <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60">
@@ -728,6 +1044,9 @@
               </select>
 
               <div class="flex items-center space-x-1">
+                <button onclick="openInvoiceForJob('${item.id}')" class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 p-1.5 rounded-lg transition" title="Generate Invoice">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
                 <button onclick="openEditModal('${item.id}')" class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 p-1.5 rounded-lg transition" title="Edit Record">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 </button>
@@ -743,14 +1062,9 @@
 
     function escapeHtml(str) {
       if (!str) return '';
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Modal Rates Configuration
-    const priceModal = document.getElementById('priceModal');
-    const priceInputs = document.getElementById('priceInputs');
-
-    // Edit Repair Modal Handlers
     function openEditModal(id) {
       const item = repairs.find(r => String(r.id) === String(id));
       if (!item) return;
@@ -759,8 +1073,11 @@
       document.getElementById('editCustomerName').value = item.customer_name || '';
       document.getElementById('editDeviceType').value = item.device_type || 'Other';
       document.getElementById('editMakeModel').value = item.make_model || '';
-      document.getElementById('editRepairAmount').value = item.amount || '';
-      document.getElementById('editPartPrice').value = item.part_price || '';
+      document.getElementById('editModelNumber').value = item.model_number || '';
+      document.getElementById('editPartName').value = item.part_name || '';
+      document.getElementById('editQuotedPrice').value = item.labor_price !== undefined ? item.labor_price : '';
+      document.getElementById('editPartPrice').value = item.part_price !== undefined ? item.part_price : '';
+      document.getElementById('editRepairAmount').value = item.amount !== undefined ? item.amount : '';
       document.getElementById('editRepairDescription').value = item.description || '';
       document.getElementById('editRepairLinks').value = Array.isArray(item.links) ? item.links.join(', ') : (item.links || '');
 
@@ -786,29 +1103,197 @@
         customer_name: document.getElementById('editCustomerName').value.trim(),
         device_type: document.getElementById('editDeviceType').value,
         make_model: document.getElementById('editMakeModel').value.trim(),
+        model_number: document.getElementById('editModelNumber').value.trim(),
+        part_name: document.getElementById('editPartName').value.trim(),
         description: document.getElementById('editRepairDescription').value.trim(),
         links: linksArr,
         amount: parseFloat(document.getElementById('editRepairAmount').value) || 0,
-        part_price: parseFloat(document.getElementById('editPartPrice').value) || 0
+        part_price: parseFloat(document.getElementById('editPartPrice').value) || 0,
+        labor_price: parseFloat(document.getElementById('editQuotedPrice').value) || 0
       };
 
-      if (isCloudConnected && supabaseClient) {
-        const { error } = await supabaseClient.from('repairs').update(payload).eq('id', id);
+      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
+        const { error } = await updateRepairInCloud(id, payload);
         if (error) {
           showToast("Failed to update repair: " + error.message, 'error');
         } else {
-          showToast("Repair job updated & synced!", 'success');
+          showToast("Repair job updated!", 'success');
           closeEditModal();
           await fetchRepairsFromCloud();
         }
       } else {
         repairs = repairs.map(r => String(r.id) === String(id) ? { ...r, ...payload } : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        showToast("Repair job updated locally", 'info');
         closeEditModal();
         render();
-        showToast("Repair job updated locally", 'info');
+        renderInvoiceSelectionList();
       }
     });
+
+    function openInvoiceForJob(id) {
+      switchTab('invoices');
+      selectInvoiceJob(id);
+    }
+
+    function renderInvoiceSelectionList() {
+      const container = document.getElementById('invoiceJobSelectContainer');
+      const search = document.getElementById('invoiceSearchInput').value.toLowerCase().trim();
+
+      const filtered = repairs.filter(item => {
+        return (
+          item.customer_name.toLowerCase().includes(search) ||
+          item.make_model.toLowerCase().includes(search) ||
+          item.part_name.toLowerCase().includes(search) ||
+          (item.model_number && item.model_number.toLowerCase().includes(search))
+        );
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No repair jobs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const isSelected = String(item.id) === String(selectedInvoiceJobId);
+        const selectedClass = isSelected 
+          ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/30' 
+          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800';
+
+        return `
+          <button onclick="selectInvoiceJob('${item.id}')" class="w-full text-left p-3 rounded-xl border ${selectedClass} transition flex flex-col justify-between">
+            <div class="flex items-center justify-between w-full">
+              <span class="font-bold text-xs truncate text-slate-800 dark:text-slate-100">${escapeHtml(item.customer_name)}</span>
+              <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 ml-2">$${(parseFloat(item.amount) || 0).toFixed(2)}</span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 mt-0.5">${escapeHtml(item.make_model)} ${item.model_number ? `(#${escapeHtml(item.model_number)})` : ''}</p>
+          </button>
+        `;
+      }).join('');
+
+      if (!selectedInvoiceJobId && repairs.length > 0) {
+        selectInvoiceJob(repairs[0].id);
+      }
+    }
+
+    document.getElementById('invoiceSearchInput').addEventListener('input', renderInvoiceSelectionList);
+
+    function selectInvoiceJob(id) {
+      selectedInvoiceJobId = id;
+      renderInvoiceSelectionList();
+
+      const item = repairs.find(r => String(r.id) === String(id));
+      const invoiceContent = document.getElementById('invoiceContent');
+
+      if (!item) {
+        invoiceContent.innerHTML = `<div class="text-center py-12 text-slate-400">Please select a repair job from the left panel.</div>`;
+        return;
+      }
+
+      const amount = parseFloat(item.amount) || 0;
+      const partPrice = parseFloat(item.part_price) || 0;
+      const laborPrice = parseFloat(item.labor_price) || Math.max(0, amount - partPrice);
+      const invoiceDate = new Date(item.created_at || Date.now()).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      invoiceContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-slate-700 pb-6 gap-4">
+            <div>
+              <div class="flex items-center space-x-2">
+                <div class="bg-brand-600 text-white p-2 rounded-xl">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h2 class="text-xl font-black tracking-tight">AJD's Wireless Repair Services</h2>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Professional Device Repair & Diagnostics</p>
+            </div>
+            <div class="text-left sm:text-right">
+              <span class="inline-block px-3 py-1 text-xs font-bold rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300">
+                INVOICE #${String(item.id).substring(0, 8).toUpperCase()}
+              </span>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Date: ${invoiceDate}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Customer Name</p>
+              <p class="text-base font-bold text-slate-800 dark:text-slate-100">${escapeHtml(item.customer_name)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Device Details</p>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-100">${escapeHtml(item.device_type)} - ${escapeHtml(item.make_model)}</p>
+              ${item.model_number ? `<p class="text-xs font-mono font-semibold text-brand-600 dark:text-brand-400">Model #: ${escapeHtml(item.model_number)}</p>` : ''}
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Replacement Parts & Materials</p>
+            <div class="p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-xl border border-amber-200/80 dark:border-amber-900/50 space-y-1">
+              <p class="text-xs font-bold text-slate-800 dark:text-slate-200">${item.part_name ? escapeHtml(item.part_name) : 'Standard Hardware & Replacement Materials'}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Hardware components sourced and installed for repair.</p>
+            </div>
+          </div>
+
+          ${item.description ? `
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Service Performed / Problem Description</p>
+              <p class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                ${escapeHtml(item.description)}
+              </p>
+            </div>
+          ` : ''}
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase tracking-wider text-[10px]">
+                  <th class="py-2 font-semibold">Service Line Item</th>
+                  <th class="py-2 font-semibold text-right">Cost</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200">
+                <tr>
+                  <td class="py-3">
+                    <p class="font-semibold">Replacement Parts & Materials</p>
+                    <p class="text-[11px] text-slate-400">${item.part_name ? escapeHtml(item.part_name) : 'Required hardware components & materials'}</p>
+                  </td>
+                  <td class="py-3 text-right font-mono font-medium">$${partPrice.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td class="py-3">
+                    <p class="font-semibold">Technical Repair Labor & Testing</p>
+                    <p class="text-[11px] text-slate-400">Diagnostics, disassembly, precision installation & quality check</p>
+                  </td>
+                  <td class="py-3 text-right font-mono font-medium">$${laborPrice.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="border-t-2 border-slate-200 dark:border-slate-700 pt-4 flex flex-col items-end space-y-1">
+            <div class="flex justify-between w-full sm:w-64 text-xs text-slate-500">
+              <span>Subtotal:</span>
+              <span class="font-mono font-semibold text-slate-800 dark:text-slate-200">$${amount.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between w-full sm:w-64 text-base font-black pt-2 text-emerald-600 dark:text-emerald-400 border-t border-slate-100 dark:border-slate-800">
+              <span>Total Due:</span>
+              <span class="font-mono text-xl">$${amount.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-slate-100 dark:border-slate-800 text-center text-[11px] text-slate-400 space-y-1">
+            <p class="font-medium text-slate-500 dark:text-slate-400">Thank you for choosing AJD's Wireless Repair Services!</p>
+            <p>All repairs completed with high-grade components and craftsmanship.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    const priceModal = document.getElementById('priceModal');
+    const priceInputs = document.getElementById('priceInputs');
 
     document.getElementById('priceModalBtn').addEventListener('click', () => {
       priceInputs.innerHTML = Object.keys(priceSettings).map(cat => `
@@ -834,11 +1319,9 @@
       priceModal.classList.add('hidden');
     });
 
-    // Event Listeners
-    searchInput.addEventListener('input', render);
-    statusFilter.addEventListener('change', render);
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('statusFilter').addEventListener('change', render);
 
-    // Boot App
     initApp();
   </script>
 </body>
