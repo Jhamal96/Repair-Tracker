@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FixTrack Pro - Repair Tracker & To-Do</title>
+    <title>AJD's Wireless Repair Tracker</title>
     <!-- PWA Primary Meta Tags -->
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FixTrack Pro">
-    <meta name="description" content="Track device repairs, customer details, parts, links, and earnings effortlessly.">
+    <meta name="apple-mobile-web-app-title" content="AJD Repair">
+    <meta name="description" content="AJD's Wireless Repair Tracker - Manage device repairs, customers, parts, and revenue easily.">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -71,18 +71,24 @@
                 <!-- Logo & Title -->
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20 text-white">
-                        <i data-lucide="wrench" class="w-6 h-6"></i>
+                        <i data-lucide="smartphone" class="w-6 h-6"></i>
                     </div>
                     <div>
                         <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                            FixTrack<span class="text-cyan-400">Pro</span>
+                            AJD's <span class="text-cyan-400">Wireless Repair Tracker</span>
                         </h1>
-                        <p class="text-xs text-slate-400 hidden sm:block">Device Repair Management System</p>
+                        <p class="text-xs text-slate-400 hidden sm:block">Professional Device Repair Management</p>
                     </div>
                 </div>
 
                 <!-- Header Actions -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- Price Settings Trigger Button -->
+                    <button onclick="openSettingsModal()" title="Customize Default Device Prices" class="flex items-center space-x-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium px-2.5 py-2 rounded-lg border border-slate-700 transition-colors">
+                        <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
+                        <span class="hidden md:inline">Price Rates</span>
+                    </button>
+
                     <!-- Install PWA Button -->
                     <button id="pwa-install-btn" class="hidden items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg shadow-md transition-all duration-200 transform active:scale-95">
                         <i data-lucide="download" class="w-4 h-4"></i>
@@ -250,16 +256,14 @@
                     <!-- Device Type Dropdown -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Device Type *</label>
-                        <select id="device-type" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
-                            <option value="iPhone">iPhone</option>
-                            <option value="iPad">iPad</option>
-                            <option value="Apple Watch">Apple Watch</option>
-                            <option value="Samsung">Samsung Phone</option>
-                            <option value="Samsung Tablet">Samsung Tablet</option>
-                            <option value="Android Phone">Android Phone</option>
-                            <option value="Android Tablet">Android Tablet</option>
-                            <option value="MacBook/Laptop">Laptop / PC</option>
-                            <option value="Game Console">Game Console</option>
+                        <select id="device-type" required onchange="handleDeviceTypeChange()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                            <option value="iPhone">iPhone ($90)</option>
+                            <option value="iPad">iPad ($120)</option>
+                            <option value="Apple Watch">Apple Watch ($110)</option>
+                            <option value="Samsung">Galaxy Phone ($100)</option>
+                            <option value="Samsung Tablet">Galaxy Tablet ($120)</option>
+                            <option value="Android Tablet">Other Tablet ($100)</option>
+                            <option value="MacBook/Laptop">Laptop ($100)</option>
                             <option value="Other">Other Device</option>
                         </select>
                     </div>
@@ -289,11 +293,14 @@
 
                 <!-- Quoted Amount / Price -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Estimated / Quoted Cost ($)</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Estimated / Quoted Cost ($)</label>
+                        <span class="text-[10px] text-cyan-400">Auto-filled by default rate (Editable)</span>
+                    </div>
                     <div class="relative">
                         <i data-lucide="dollar-sign" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
                         <input type="number" step="0.01" id="repair-amount" min="0" placeholder="0.00" 
-                            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-semibold">
                     </div>
                 </div>
 
@@ -304,14 +311,14 @@
                         <span class="text-[10px] text-slate-400">Separate multiple URLs with commas or lines</span>
                     </div>
                     <textarea id="repair-links" rows="2" placeholder="https://amazon.com/screen-part, https://ifixit.com/guide..."
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-mono"></textarea>
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-mono text-left"></textarea>
                 </div>
 
                 <!-- Repair Details / Notes -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Issue Description & Repair Notes</label>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1 text-left">Issue Description & Repair Notes</label>
                     <textarea id="repair-notes" rows="3" placeholder="Cracked OLED display, battery health 74%, passcode is 1234..."
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"></textarea>
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100 text-left focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"></textarea>
                 </div>
 
                 <!-- Modal Actions -->
@@ -321,6 +328,70 @@
                     </button>
                     <button type="submit" class="px-5 py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-semibold rounded-lg text-sm shadow-md shadow-cyan-500/20 transition-all">
                         Save Repair Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Default Price Customization Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 glass-panel overflow-y-auto">
+        <div class="relative w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden my-8">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-800/40">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="settings" class="w-5 h-5 text-cyan-400"></i>
+                    <h2 class="text-lg font-bold text-slate-100">Default Device Rates</h2>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Price Customization Form -->
+            <form id="settings-form" onsubmit="saveCustomPrices(event)" class="p-6 space-y-3">
+                <p class="text-xs text-slate-400 mb-2">Adjust standard base prices for device categories. These auto-fill when adding a new repair job.</p>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">iPhone ($)</label>
+                        <input type="number" step="1" id="rate-iphone" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">iPad ($)</label>
+                        <input type="number" step="1" id="rate-ipad" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Apple Watch ($)</label>
+                        <input type="number" step="1" id="rate-watch" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Galaxy Phone ($)</label>
+                        <input type="number" step="1" id="rate-samsung" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Galaxy Tablet ($)</label>
+                        <input type="number" step="1" id="rate-samsung-tab" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Other Tablets ($)</label>
+                        <input type="number" step="1" id="rate-android-tab" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Laptop ($)</label>
+                        <input type="number" step="1" id="rate-laptop" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Other ($)</label>
+                        <input type="number" step="1" id="rate-other" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800 mt-4">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-semibold rounded-lg text-sm shadow-md transition-all">
+                        Save Pricing Rates
                     </button>
                 </div>
             </form>
@@ -338,8 +409,8 @@
                     <i data-lucide="smartphone" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-lg">Install FixTrack Pro</h3>
-                    <p class="text-xs text-slate-400">Add to your Home Screen for quick offline access</p>
+                    <h3 class="font-bold text-lg">Install AJD's Repair Tracker</h3>
+                    <p class="text-xs text-slate-400">Add to your Home Screen for fast mobile access</p>
                 </div>
             </div>
 
@@ -364,11 +435,24 @@
     </div>
 
     <script>
-        // --- State Management ---
-        const STORAGE_KEY = 'fixtrack_pro_repairs_v1';
+        const STORAGE_KEY = 'ajd_wireless_repairs_v1';
+        const SETTINGS_KEY = 'ajd_wireless_prices_v1';
+
         let repairs = [];
         let currentFilter = 'All';
         let deferredPrompt = null;
+
+        // Default device price rules requested by user
+        let devicePrices = {
+            'iPhone': 90,
+            'iPad': 120,
+            'Apple Watch': 110,
+            'Samsung': 100,          // Galaxy Phone
+            'Samsung Tablet': 120,   // Galaxy Tablet
+            'Android Tablet': 100,   // General Tablet
+            'MacBook/Laptop': 100,   // Laptop
+            'Other': 100
+        };
 
         // Demo Initial Data
         const DEMO_REPAIRS = [
@@ -377,9 +461,9 @@
                 customerName: 'Marcus Vance',
                 deviceType: 'iPhone',
                 makeModel: 'Apple iPhone 13 Pro',
-                notes: 'Front glass shattered, touch screen unresponsive. Needs full OLED assembly replacement. Test true-tone after repair.',
-                amount: 179.99,
-                links: ['https://www.ifixit.com/Guide/iPhone+13+Pro+Screen+Replacement', 'https://www.amazon.com/s?k=iphone+13+pro+oled+screen'],
+                notes: 'Front glass shattered, touch screen unresponsive. Needs full OLED assembly replacement.',
+                amount: 90.00,
+                links: ['https://www.ifixit.com/Guide/iPhone+13+Pro+Screen+Replacement'],
                 status: 'In Progress',
                 createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
             },
@@ -388,8 +472,8 @@
                 customerName: 'Elena Rostova',
                 deviceType: 'Samsung',
                 makeModel: 'Samsung Galaxy S23 Ultra',
-                notes: 'Battery discharging rapidly within 3 hours. Needs OEM battery swap & new adhesive seal.',
-                amount: 95.00,
+                notes: 'Battery discharging rapidly within 3 hours. OEM battery swap.',
+                amount: 100.00,
                 links: ['https://www.samsung.com/support/parts/'],
                 status: 'Waiting for Parts',
                 createdAt: new Date(Date.now() - 3600000 * 48).toISOString()
@@ -399,7 +483,7 @@
                 customerName: 'David Miller',
                 deviceType: 'iPad',
                 makeModel: 'iPad Air (5th Gen)',
-                notes: 'USB-C charging port broken pin. Cleaned port, requires soldering new charge port board.',
+                notes: 'USB-C charging port broken pin. Cleaned port & replaced charging port flex.',
                 amount: 120.00,
                 links: [],
                 status: 'Ready for Pickup',
@@ -411,7 +495,7 @@
                 deviceType: 'Apple Watch',
                 makeModel: 'Apple Watch Series 7 45mm',
                 notes: 'Swollen battery popped screen off housing. Replace battery and digitizer gasket.',
-                amount: 85.00,
+                amount: 110.00,
                 links: ['https://www.ifixit.com/Device/Apple_Watch_Series_7'],
                 status: 'Completed',
                 createdAt: new Date(Date.now() - 3600000 * 96).toISOString()
@@ -421,8 +505,8 @@
         // --- PWA Web Manifest Injector ---
         function setupManifest() {
             const manifest = {
-                name: "FixTrack Pro Repair Manager",
-                short_name: "FixTrack",
+                name: "AJD's Wireless Repair Tracker",
+                short_name: "AJD Repairs",
                 start_url: "./",
                 display: "standalone",
                 background_color: "#0f172a",
@@ -445,14 +529,52 @@
             document.head.appendChild(linkEl);
         }
 
-        // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
             setupManifest();
+            loadPriceSettings();
             loadRepairs();
             setupEventListeners();
             setupPWA();
             lucide.createIcons();
         });
+
+        function loadPriceSettings() {
+            const savedPrices = localStorage.getItem(SETTINGS_KEY);
+            if (savedPrices) {
+                try {
+                    devicePrices = { ...devicePrices, ...JSON.parse(savedPrices) };
+                } catch (e) {}
+            }
+            updateSelectDropdownOptions();
+        }
+
+        function savePriceSettings() {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(devicePrices));
+            updateSelectDropdownOptions();
+        }
+
+        function updateSelectDropdownOptions() {
+            const select = document.getElementById('device-type');
+            if (!select) return;
+            select.innerHTML = `
+                <option value="iPhone">iPhone ($${devicePrices['iPhone'] || 90})</option>
+                <option value="iPad">iPad ($${devicePrices['iPad'] || 120})</option>
+                <option value="Apple Watch">Apple Watch ($${devicePrices['Apple Watch'] || 110})</option>
+                <option value="Samsung">Galaxy Phone ($${devicePrices['Samsung'] || 100})</option>
+                <option value="Samsung Tablet">Galaxy Tablet ($${devicePrices['Samsung Tablet'] || 120})</option>
+                <option value="Android Tablet">Other Tablet ($${devicePrices['Android Tablet'] || 100})</option>
+                <option value="MacBook/Laptop">Laptop ($${devicePrices['MacBook/Laptop'] || 100})</option>
+                <option value="Other">Other Device ($${devicePrices['Other'] || 100})</option>
+            `;
+        }
+
+        function handleDeviceTypeChange() {
+            const selectedType = document.getElementById('device-type').value;
+            const amountInput = document.getElementById('repair-amount');
+            if (devicePrices[selectedType] !== undefined) {
+                amountInput.value = devicePrices[selectedType];
+            }
+        }
 
         // Load data from LocalStorage
         function loadRepairs() {
@@ -482,12 +604,44 @@
             }
         }
 
+        // --- Modal & Price Customization Controls ---
+        function openSettingsModal() {
+            document.getElementById('rate-iphone').value = devicePrices['iPhone'] || 90;
+            document.getElementById('rate-ipad').value = devicePrices['iPad'] || 120;
+            document.getElementById('rate-watch').value = devicePrices['Apple Watch'] || 110;
+            document.getElementById('rate-samsung').value = devicePrices['Samsung'] || 100;
+            document.getElementById('rate-samsung-tab').value = devicePrices['Samsung Tablet'] || 120;
+            document.getElementById('rate-android-tab').value = devicePrices['Android Tablet'] || 100;
+            document.getElementById('rate-laptop').value = devicePrices['MacBook/Laptop'] || 100;
+            document.getElementById('rate-other').value = devicePrices['Other'] || 100;
+
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveCustomPrices(e) {
+            e.preventDefault();
+            devicePrices['iPhone'] = parseFloat(document.getElementById('rate-iphone').value) || 90;
+            devicePrices['iPad'] = parseFloat(document.getElementById('rate-ipad').value) || 120;
+            devicePrices['Apple Watch'] = parseFloat(document.getElementById('rate-watch').value) || 110;
+            devicePrices['Samsung'] = parseFloat(document.getElementById('rate-samsung').value) || 100;
+            devicePrices['Samsung Tablet'] = parseFloat(document.getElementById('rate-samsung-tab').value) || 120;
+            devicePrices['Android Tablet'] = parseFloat(document.getElementById('rate-android-tab').value) || 100;
+            devicePrices['MacBook/Laptop'] = parseFloat(document.getElementById('rate-laptop').value) || 100;
+            devicePrices['Other'] = parseFloat(document.getElementById('rate-other').value) || 100;
+
+            savePriceSettings();
+            closeSettingsModal();
+        }
+
         // --- PWA Installation Events ---
         function setupPWA() {
             const installBtn = document.getElementById('pwa-install-btn');
             const iosBtn = document.getElementById('ios-install-btn');
 
-            // Detect iOS Safari
             const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
@@ -557,7 +711,7 @@
                     document.getElementById('device-type').value = job.deviceType;
                     document.getElementById('make-model').value = job.makeModel;
                     document.getElementById('repair-status').value = job.status;
-                    document.getElementById('repair-amount').value = job.amount || '';
+                    document.getElementById('repair-amount').value = job.amount !== undefined ? job.amount : '';
                     document.getElementById('repair-links').value = (job.links || []).join('\n');
                     document.getElementById('repair-notes').value = job.notes || '';
                 }
@@ -565,6 +719,8 @@
                 title.textContent = 'Add Repair Job';
                 document.getElementById('repair-id').value = '';
                 document.getElementById('repair-status').value = 'Pending';
+                document.getElementById('device-type').value = 'iPhone';
+                handleDeviceTypeChange(); // Pre-fill default price for new entry
             }
 
             modal.classList.remove('hidden');
@@ -692,7 +848,7 @@
             const grid = document.getElementById('repairs-grid');
             const emptyState = document.getElementById('empty-state');
 
-            // 1. Calculate Analytics Metrics
+            // 1. Calculate Analytics Metrics Automatically
             const activeJobs = repairs.filter(r => r.status !== 'Completed');
             const readyJobs = repairs.filter(r => r.status === 'Ready for Pickup');
             const pendingRevenue = activeJobs.reduce((sum, r) => sum + (r.amount || 0), 0);
@@ -736,17 +892,17 @@
                 const hasLinks = job.links && job.links.length > 0;
 
                 return `
-                    <div class="bg-slate-800/80 border border-slate-700/70 hover:border-slate-600 rounded-2xl p-5 shadow-lg flex flex-col justify-between transition-all duration-200 group">
+                    <div class="bg-slate-800/80 border border-slate-700/70 hover:border-slate-600 rounded-2xl p-5 shadow-lg flex flex-col justify-between transition-all duration-200 group text-left">
                         <!-- Top Header: Customer & Device Icon -->
                         <div>
                             <div class="flex items-start justify-between gap-2 mb-3">
-                                <div>
+                                <div class="text-left">
                                     <div class="flex items-center space-x-2">
-                                        <h3 class="text-base font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">
+                                        <h3 class="text-base font-bold text-slate-100 group-hover:text-cyan-400 transition-colors text-left">
                                             ${escapeHtml(job.customerName)}
                                         </h3>
                                     </div>
-                                    <p class="text-xs text-slate-400 font-medium mt-0.5">${escapeHtml(job.makeModel)}</p>
+                                    <p class="text-xs text-slate-400 font-medium mt-0.5 text-left">${escapeHtml(job.makeModel)}</p>
                                 </div>
                                 
                                 <div class="p-2.5 bg-slate-700/50 text-cyan-400 rounded-xl shrink-0 border border-slate-600/40">
@@ -760,10 +916,10 @@
                                 <span class="text-emerald-400 font-bold text-sm">$${(job.amount || 0).toFixed(2)}</span>
                             </div>
 
-                            <!-- Notes Section -->
+                            <!-- Notes Section (Explicitly Left Aligned) -->
                             ${job.notes ? `
-                                <div class="mb-3">
-                                    <p class="text-xs text-slate-300 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80 line-clamp-3 whitespace-pre-wrap">
+                                <div class="mb-3 text-left">
+                                    <p class="text-xs text-slate-300 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/80 line-clamp-3 whitespace-pre-wrap text-left">
                                         ${escapeHtml(job.notes)}
                                     </p>
                                 </div>
@@ -771,8 +927,8 @@
 
                             <!-- Multi-Links Chips -->
                             ${hasLinks ? `
-                                <div class="mb-3 space-y-1">
-                                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Parts & Links (${job.links.length})</p>
+                                <div class="mb-3 space-y-1 text-left">
+                                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider text-left">Parts & Links (${job.links.length})</p>
                                     <div class="flex flex-wrap gap-1.5">
                                         ${job.links.map((link, idx) => `
                                             <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" 
