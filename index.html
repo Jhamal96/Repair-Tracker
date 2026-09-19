@@ -50,7 +50,7 @@
         background-color: #ffffff !important;
         color: #000000 !important;
       }
-      header, nav, #toastContainer, #confirmModal, #editModal, #priceModal, .no-print {
+      header, nav, #toastContainer, #confirmModal, #editModal, #priceModal, #aiEstimateModal, #aiMessageModal, #aiInsightsModal, .no-print {
         display: none !important;
       }
       main {
@@ -102,6 +102,11 @@
       </nav>
 
       <div class="flex items-center space-x-2">
+        <button onclick="openAIInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5" title="AI Business Analytics & Insights">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <span class="hidden sm:inline">AI Insights</span>
+        </button>
+
         <button id="priceModalBtn" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Preset Prices">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </button>
@@ -130,6 +135,7 @@
 
     <div id="viewRepairs" class="space-y-6">
       
+      <!-- Summary Metric Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
@@ -155,12 +161,16 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+        <!-- Form Column -->
         <div class="lg:col-span-1">
           <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20">
-            <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
-              <span>New Repair Entry</span>
-              <span id="syncBadge" class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">Sync Enabled</span>
-            </h2>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold">New Repair Entry</h2>
+              <button type="button" onclick="openAIEstimateModal()" class="px-2.5 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span>✨ AI Estimate</span>
+              </button>
+            </div>
             
             <form id="repairForm" class="space-y-4">
               <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-700/60 pb-1">
@@ -249,6 +259,7 @@
           </div>
         </div>
 
+        <!-- Repairs Feed Column -->
         <div class="lg:col-span-2 space-y-4">
           <div class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
@@ -271,6 +282,7 @@
       </div>
     </div>
 
+    <!-- Invoices View -->
     <div id="viewInvoices" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -314,6 +326,8 @@
 
   </main>
 
+  <!-- Modals -->
+  <!-- Price Modal -->
   <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
@@ -331,6 +345,7 @@
     </div>
   </div>
 
+  <!-- Delete Confirm Modal -->
   <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-center">
       <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mx-auto flex items-center justify-center">
@@ -347,6 +362,7 @@
     </div>
   </div>
 
+  <!-- Edit Job Modal -->
   <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto no-print">
     <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 my-8">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
@@ -441,6 +457,121 @@
     </div>
   </div>
 
+  <!-- AI Smart Estimator Modal -->
+  <div id="aiEstimateModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold">✨ AI Repair Assistant</h3>
+            <p class="text-[11px] text-slate-400">Powered by Gemini 3 Flash & Google Search</p>
+          </div>
+        </div>
+        <button onclick="closeAIEstimateModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 dark:text-slate-400">Describe the device issue below. Gemini will search online repair specs to estimate part costs, labor rates, and detailed fix notes!</p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Model or Keywords</label>
+          <input type="text" id="aiDeviceInput" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Surface Pro 11, iPhone 14 Pro, Galaxy S23">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Problem / Symptoms</label>
+          <textarea id="aiSymptomInput" rows="2" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Broken OLED display, battery won't hold charge, charging port loose"></textarea>
+        </div>
+      </div>
+
+      <div id="aiEstimateStatus" class="hidden text-xs p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 flex items-center space-x-2">
+        <svg class="animate-spin w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <span>Researching market parts and generating repair breakdown...</span>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+        <button onclick="closeAIEstimateModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl">Cancel</button>
+        <button id="runAIEstimateBtn" onclick="runAIEstimator()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition">Generate & Auto-Fill Form</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Customer Message Modal -->
+  <div id="aiMessageModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold">💬 AI Customer Update</h3>
+            <p class="text-[11px] text-slate-400">Personalized SMS / Email Generator</p>
+          </div>
+        </div>
+        <button onclick="closeAIMessageModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div id="aiMessageLoading" class="p-4 text-center text-xs text-brand-600 dark:text-brand-400 space-y-2">
+        <svg class="animate-spin w-6 h-6 mx-auto text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p>Crafting customer message with Gemini LLM...</p>
+      </div>
+
+      <div id="aiMessageContainer" class="hidden space-y-3">
+        <textarea id="aiMessageText" rows="5" class="w-full px-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none"></textarea>
+        
+        <div class="flex items-center justify-between pt-1">
+          <button id="aiSpeechBtn" onclick="playAIVoicePreview()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+            <span id="aiSpeechText">🔊 Listen (TTS)</span>
+          </button>
+
+          <button onclick="copyAIMessageToClipboard()" class="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            <span>Copy Text</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Insights Modal -->
+  <div id="aiInsightsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold">📊 AI Repair Shop Executive Summary</h3>
+            <p class="text-[11px] text-slate-400">Gemini Business Intelligence Analysis</p>
+          </div>
+        </div>
+        <button onclick="closeAIInsightsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div id="aiInsightsLoading" class="p-6 text-center text-xs text-purple-600 dark:text-purple-400 space-y-2">
+        <svg class="animate-spin w-6 h-6 mx-auto text-purple-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p>Analyzing job revenue, parts margins, and common device trends...</p>
+      </div>
+
+      <div id="aiInsightsContent" class="hidden text-xs text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed max-h-96 overflow-y-auto space-y-2"></div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-700">
+        <button onclick="closeAIInsightsModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
 
   <script>
@@ -481,6 +612,146 @@
 
     function closeDrawer() {
       mobileDrawer.classList.add('hidden');
+    }
+
+    // --- GEMINI LLM API UTILITIES ---
+    async function callGeminiTextAPI(prompt, systemInstruction = '', enableGrounding = false, jsonSchema = null) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }]
+      };
+
+      if (systemInstruction) {
+        payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+      }
+
+      if (enableGrounding) {
+        payload.tools = [{ "google_search": {} }];
+      }
+
+      if (jsonSchema) {
+        payload.generationConfig = {
+          responseMimeType: "application/json",
+          responseSchema: jsonSchema
+        };
+      }
+
+      let attempt = 0;
+      let delay = 1000;
+      while (attempt < 3) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) throw new Error(`API HTTP Error ${response.status}`);
+          const result = await response.json();
+          const candidate = result.candidates?.[0];
+          if (candidate && candidate.content?.parts?.[0]?.text) {
+            return candidate.content.parts[0].text;
+          }
+          throw new Error("Invalid API response format");
+        } catch (err) {
+          attempt++;
+          if (attempt >= 3) throw err;
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    // Convert Base64 Array Buffer
+    function base64ToArrayBuffer(base64) {
+      const binaryString = window.atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    // Convert PCM16 to WAV format
+    function pcmToWav(pcm16Data, sampleRate) {
+      const numChannels = 1;
+      const bitsPerSample = 16;
+      const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+      const blockAlign = (numChannels * bitsPerSample) / 8;
+      const dataSize = pcm16Data.length * 2;
+      const buffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(buffer);
+
+      function writeString(offset, string) {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      }
+
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, bitsPerSample, true);
+      writeString(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < pcm16Data.length; i++, offset += 2) {
+        view.setInt16(offset, pcm16Data[i], true);
+      }
+
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    async function generateTTSAudioUrl(textToSay) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{
+          parts: [{ text: `Say clearly and cheerfully: ${textToSay}` }]
+        }],
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: "Puck" }
+            }
+          }
+        }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error("TTS generation failed");
+      const result = await response.json();
+      const inlineData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+
+      if (inlineData && inlineData.data) {
+        const mimeType = inlineData.mimeType || "audio/L16;rate=24000";
+        const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+        const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+        
+        const arrayBuffer = base64ToArrayBuffer(inlineData.data);
+        const pcm16 = new Int16Array(arrayBuffer);
+        const wavBlob = pcmToWav(pcm16, sampleRate);
+        return URL.createObjectURL(wavBlob);
+      }
+      throw new Error("No audio payload returned");
     }
 
     function switchTab(tab) {
@@ -643,10 +914,13 @@
       let description = item.description || item.notes || '';
       let part_name = item.part_name || item.partName || '';
       let model_number = item.model_number || item.modelNumber || '';
-      let part_price = item.part_price !== undefined ? parseFloat(item.part_price) : (item.partPrice !== undefined ? parseFloat(item.partPrice) : null);
-      let labor_price = item.labor_price !== undefined ? parseFloat(item.labor_price) : (item.laborPrice !== undefined ? parseFloat(item.laborPrice) : null);
 
-      // Unpack embedded metadata if schema columns were missing in Supabase
+      let rawPartPrice = item.part_price !== undefined ? item.part_price : item.partPrice;
+      let rawLaborPrice = item.labor_price !== undefined ? item.labor_price : item.laborPrice;
+
+      let part_price = (rawPartPrice !== null && rawPartPrice !== undefined && rawPartPrice !== '' && !isNaN(rawPartPrice)) ? parseFloat(rawPartPrice) : null;
+      let labor_price = (rawLaborPrice !== null && rawLaborPrice !== undefined && rawLaborPrice !== '' && !isNaN(rawLaborPrice)) ? parseFloat(rawLaborPrice) : null;
+
       if (description.includes('[META:')) {
         try {
           const metaMatch = description.match(/\[META:({.*?})\]/s);
@@ -654,8 +928,13 @@
             const meta = JSON.parse(metaMatch[1]);
             if (!part_name && meta.part_name) part_name = meta.part_name;
             if (!model_number && meta.model_number) model_number = meta.model_number;
-            if (part_price === null && meta.part_price !== undefined) part_price = parseFloat(meta.part_price);
-            if (labor_price === null && meta.labor_price !== undefined) labor_price = parseFloat(meta.labor_price);
+            
+            if ((part_price === null || part_price === 0) && meta.part_price !== undefined && meta.part_price !== null) {
+              part_price = parseFloat(meta.part_price);
+            }
+            if ((labor_price === null || labor_price === 0) && meta.labor_price !== undefined && meta.labor_price !== null) {
+              labor_price = parseFloat(meta.labor_price);
+            }
             
             description = description.replace(/\[META:{.*?}\]/s, '').trim();
           }
@@ -665,6 +944,13 @@
       }
 
       const amount = parseFloat(item.amount) || 0;
+
+      if ((part_price === null || part_price === 0) && labor_price !== null && labor_price > 0 && amount > labor_price) {
+        part_price = amount - labor_price;
+      } else if ((labor_price === null || labor_price === 0) && part_price !== null && part_price > 0 && amount > part_price) {
+        labor_price = amount - part_price;
+      }
+
       const finalPartPrice = (part_price !== null && !isNaN(part_price)) ? part_price : 0;
       const finalLaborPrice = (labor_price !== null && !isNaN(labor_price)) ? labor_price : Math.max(0, amount - finalPartPrice);
 
@@ -689,42 +975,40 @@
       isCloudConnected = connected;
       const dot = document.getElementById('cloudStatusDot');
       const text = document.getElementById('cloudStatusText');
-      const badge = document.getElementById('syncBadge');
 
       if (connected) {
         dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
         text.innerText = message || "Cloud Sync Live";
-        badge.innerText = "Cloud Online";
-        badge.className = "text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400";
       } else {
         dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse";
         text.innerText = message || "Offline Storage Mode";
-        badge.innerText = "Local Mode";
-        badge.className = "text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400";
       }
     }
 
     async function insertRepairToCloud(payload) {
       if (!supabaseClient) return { error: { message: 'No Supabase client' } };
       
-      let { error } = await supabaseClient.from('repairs').insert([payload]);
+      const metaObj = {
+        part_name: payload.part_name,
+        part_price: payload.part_price,
+        labor_price: payload.labor_price,
+        model_number: payload.model_number
+      };
+      
+      let cleanDesc = (payload.description || '').replace(/\[META:{.*?}\]/s, '').trim();
+      const payloadWithMeta = {
+        ...payload,
+        description: cleanDesc + (cleanDesc ? '\n' : '') + '[META:' + JSON.stringify(metaObj) + ']'
+      };
+
+      let { error } = await supabaseClient.from('repairs').insert([payloadWithMeta]);
       
       if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
-        console.warn("Columns missing in Supabase schema. Encoding extra fields into description fallback...", error.message);
-        
-        const metaObj = {
-          part_name: payload.part_name,
-          part_price: payload.part_price,
-          labor_price: payload.labor_price,
-          model_number: payload.model_number
-        };
-        const encodedDescription = (payload.description || '') + '\n[META:' + JSON.stringify(metaObj) + ']';
-
         const fallbackPayload = {
           customer_name: payload.customer_name,
           device_type: payload.device_type,
           make_model: payload.make_model,
-          description: encodedDescription,
+          description: payloadWithMeta.description,
           links: payload.links,
           amount: payload.amount,
           status: payload.status
@@ -742,24 +1026,27 @@
         return await insertRepairToCloud(payload);
       }
 
-      let { error } = await supabaseClient.from('repairs').update(payload).eq('id', id);
+      const metaObj = {
+        part_name: payload.part_name,
+        part_price: payload.part_price,
+        labor_price: payload.labor_price,
+        model_number: payload.model_number
+      };
+      
+      let cleanDesc = (payload.description || '').replace(/\[META:{.*?}\]/s, '').trim();
+      const payloadWithMeta = {
+        ...payload,
+        description: cleanDesc + (cleanDesc ? '\n' : '') + '[META:' + JSON.stringify(metaObj) + ']'
+      };
+
+      let { error } = await supabaseClient.from('repairs').update(payloadWithMeta).eq('id', id);
       
       if (error && (error.message.includes('column') || error.message.includes('schema cache') || error.code === 'PGRST204' || error.code === '42703')) {
-        console.warn("Columns missing in Supabase schema. Encoding extra fields into description fallback...", error.message);
-        
-        const metaObj = {
-          part_name: payload.part_name,
-          part_price: payload.part_price,
-          labor_price: payload.labor_price,
-          model_number: payload.model_number
-        };
-        const encodedDescription = (payload.description || '') + '\n[META:' + JSON.stringify(metaObj) + ']';
-
         const fallbackPayload = {
           customer_name: payload.customer_name,
           device_type: payload.device_type,
           make_model: payload.make_model,
-          description: encodedDescription,
+          description: payloadWithMeta.description,
           links: payload.links,
           amount: payload.amount
         };
@@ -1044,6 +1331,10 @@
               </select>
 
               <div class="flex items-center space-x-1">
+                <button onclick="openAIMessageModal('${item.id}')" class="text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 p-1.5 rounded-lg transition flex items-center space-x-1 text-xs font-semibold" title="Generate AI Customer Update">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                  <span class="hidden sm:inline">AI Update</span>
+                </button>
                 <button onclick="openInvoiceForJob('${item.id}')" class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 p-1.5 rounded-lg transition" title="Generate Invoice">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </button>
@@ -1063,6 +1354,196 @@
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // --- GEMINI AI FEATURES LOGIC ---
+    function openAIEstimateModal() {
+      const makeModel = document.getElementById('makeModel').value;
+      const desc = document.getElementById('repairDescription').value;
+      if (makeModel) document.getElementById('aiDeviceInput').value = makeModel;
+      if (desc) document.getElementById('aiSymptomInput').value = desc;
+
+      document.getElementById('aiEstimateStatus').classList.add('hidden');
+      document.getElementById('aiEstimateModal').classList.remove('hidden');
+    }
+
+    function closeAIEstimateModal() {
+      document.getElementById('aiEstimateModal').classList.add('hidden');
+    }
+
+    async function runAIEstimator() {
+      const device = document.getElementById('aiDeviceInput').value.trim();
+      const symptoms = document.getElementById('aiSymptomInput').value.trim();
+
+      if (!device) {
+        showToast("Please enter a device model", "error");
+        return;
+      }
+
+      const statusEl = document.getElementById('aiEstimateStatus');
+      const btnEl = document.getElementById('runAIEstimateBtn');
+      statusEl.classList.remove('hidden');
+      btnEl.disabled = true;
+
+      const prompt = `Research market repair specifications and parts for device: "${device}" with issue/symptoms: "${symptoms || 'General screen or battery diagnostic'}".
+      Provide an accurate repair estimate with recommended replacement part name, estimated parts cost, suggested technician labor cost, and technical repair notes.`;
+
+      const systemPrompt = `You are an expert wireless and electronics repair technician. Perform grounded market lookup and respond with JSON matching the required schema.`;
+
+      const jsonSchema = {
+        type: "OBJECT",
+        properties: {
+          part_name: { type: "STRING" },
+          part_price: { type: "NUMBER" },
+          labor_price: { type: "NUMBER" },
+          description: { type: "STRING" }
+        },
+        required: ["part_name", "part_price", "labor_price", "description"]
+      };
+
+      try {
+        const jsonText = await callGeminiTextAPI(prompt, systemPrompt, true, jsonSchema);
+        const parsed = JSON.parse(jsonText);
+
+        if (parsed.part_name) document.getElementById('partName').value = parsed.part_name;
+        if (parsed.part_price) document.getElementById('partPrice').value = parsed.part_price.toFixed(2);
+        if (parsed.labor_price) document.getElementById('quotedPrice').value = parsed.labor_price.toFixed(2);
+        if (parsed.description) document.getElementById('repairDescription').value = parsed.description;
+        if (device && !document.getElementById('makeModel').value) document.getElementById('makeModel').value = device;
+
+        calculateTotal('repairForm');
+        closeAIEstimateModal();
+        showToast("✨ AI Repair estimate applied to form!", "success");
+      } catch (err) {
+        console.error("AI Estimator Error:", err);
+        showToast("AI Estimation failed: " + err.message, "error");
+      } finally {
+        statusEl.classList.add('hidden');
+        btnEl.disabled = false;
+      }
+    }
+
+    let currentAIMessageText = "";
+    let audioObject = null;
+
+    async function openAIMessageModal(id) {
+      const item = repairs.find(r => String(r.id) === String(id));
+      if (!item) return;
+
+      const modal = document.getElementById('aiMessageModal');
+      const loading = document.getElementById('aiMessageLoading');
+      const container = document.getElementById('aiMessageContainer');
+      const textInput = document.getElementById('aiMessageText');
+      
+      modal.classList.remove('hidden');
+      loading.classList.remove('hidden');
+      container.classList.add('hidden');
+
+      const prompt = `Write a brief, friendly, professional SMS/Text message for customer "${item.customer_name}" regarding their repair for "${item.device_type} - ${item.make_model}".
+      Current repair status: "${item.status}".
+      Part used: "${item.part_name || 'Standard replacement hardware'}".
+      Total amount: "$${(parseFloat(item.amount) || 0).toFixed(2)}".
+      Keep it short, clear, and include AJD's Wireless Repair Services sign-off.`;
+
+      try {
+        const message = await callGeminiTextAPI(prompt, "Act as a helpful repair shop owner sending an update text message.");
+        currentAIMessageText = message.trim();
+        textInput.value = currentAIMessageText;
+        loading.classList.add('hidden');
+        container.classList.remove('hidden');
+      } catch (err) {
+        showToast("Failed to generate AI message: " + err.message, "error");
+        closeAIMessageModal();
+      }
+    }
+
+    function closeAIMessageModal() {
+      if (audioObject) {
+        audioObject.pause();
+        audioObject = null;
+      }
+      document.getElementById('aiMessageModal').classList.add('hidden');
+    }
+
+    function copyAIMessageToClipboard() {
+      const text = document.getElementById('aiMessageText').value;
+      const tempArea = document.createElement('textarea');
+      tempArea.value = text;
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempArea);
+      showToast("Message copied to clipboard!", "success");
+    }
+
+    async function playAIVoicePreview() {
+      const text = document.getElementById('aiMessageText').value;
+      const speechBtn = document.getElementById('aiSpeechBtn');
+      const speechText = document.getElementById('aiSpeechText');
+
+      if (audioObject) {
+        audioObject.pause();
+        audioObject = null;
+        speechText.innerText = "🔊 Listen (TTS)";
+        return;
+      }
+
+      speechText.innerText = "⏳ Loading Voice...";
+      speechBtn.disabled = true;
+
+      try {
+        const audioUrl = await generateTTSAudioUrl(text);
+        audioObject = new Audio(audioUrl);
+        audioObject.onended = () => {
+          speechText.innerText = "🔊 Listen (TTS)";
+          audioObject = null;
+        };
+        await audioObject.play();
+        speechText.innerText = "⏸️ Stop Voice";
+      } catch (err) {
+        showToast("TTS Voice failed: " + err.message, "error");
+        speechText.innerText = "🔊 Listen (TTS)";
+      } finally {
+        speechBtn.disabled = false;
+      }
+    }
+
+    async function openAIInsightsModal() {
+      const modal = document.getElementById('aiInsightsModal');
+      const loading = document.getElementById('aiInsightsLoading');
+      const content = document.getElementById('aiInsightsContent');
+
+      modal.classList.remove('hidden');
+      loading.classList.remove('hidden');
+      content.classList.add('hidden');
+
+      const summaryData = repairs.map(r => ({
+        device: r.device_type,
+        model: r.make_model,
+        amount: r.amount,
+        partCost: r.part_price,
+        status: r.status
+      }));
+
+      const prompt = `Analyze these repair shop jobs data: ${JSON.stringify(summaryData.slice(0, 20))}.
+      Provide a concise 3-bullet-point executive business summary for AJD's Wireless Repair Services:
+      1. Revenue & Profit Performance Summary
+      2. Most Common Devices & Frequent Hardware Repair Issues
+      3. Strategic Advice for Inventory & Pricing Strategy`;
+
+      try {
+        const responseText = await callGeminiTextAPI(prompt, "You are a master retail repair shop financial consultant.");
+        content.innerText = responseText;
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+      } catch (err) {
+        showToast("AI Insights error: " + err.message, "error");
+        closeAIInsightsModal();
+      }
+    }
+
+    function closeAIInsightsModal() {
+      document.getElementById('aiInsightsModal').classList.add('hidden');
     }
 
     function openEditModal(id) {
@@ -1099,6 +1580,10 @@
         .map(l => l.trim())
         .filter(l => l.length > 0);
 
+      const quoted = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+      const part = parseFloat(document.getElementById('editPartPrice').value) || 0;
+      const total = parseFloat(document.getElementById('editRepairAmount').value) || (quoted + part);
+
       const payload = {
         customer_name: document.getElementById('editCustomerName').value.trim(),
         device_type: document.getElementById('editDeviceType').value,
@@ -1107,9 +1592,9 @@
         part_name: document.getElementById('editPartName').value.trim(),
         description: document.getElementById('editRepairDescription').value.trim(),
         links: linksArr,
-        amount: parseFloat(document.getElementById('editRepairAmount').value) || 0,
-        part_price: parseFloat(document.getElementById('editPartPrice').value) || 0,
-        labor_price: parseFloat(document.getElementById('editQuotedPrice').value) || 0
+        amount: total,
+        part_price: part,
+        labor_price: quoted
       };
 
       if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
@@ -1122,7 +1607,7 @@
           await fetchRepairsFromCloud();
         }
       } else {
-        repairs = repairs.map(r => String(r.id) === String(id) ? { ...r, ...payload } : r);
+        repairs = repairs.map(r => String(r.id) === String(id) ? normalizeRepair({ ...r, ...payload }) : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         showToast("Repair job updated locally", 'info');
         closeEditModal();
