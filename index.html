@@ -34,7 +34,7 @@
   </script>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%232563eb'%2F%3E%3Cpath%20d%3D'M30%2070%20L50%2030%20L70%2070%20M40%2055%20L60%2055'%20stroke%3D'white'%20stroke-width%3D'8'%20stroke-linecap%3D'round'%20fill%3D'none'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'42'%20fill%3D'white'%20stroke%3D'black'%20stroke-width%3D'6'%2F%3E%3Cpath%20d%3D'M30%2068h12M36%2068L50%2028M42%2053h18M38%2028c4-3%209-2%2012%200M50%2028c8%2020%2016%2033%2026%2042'%20stroke%3D'black'%20stroke-width%3D'5.5'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20fill%3D'none'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
   <style>
     @keyframes pulse-light {
@@ -80,12 +80,17 @@
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
 
-        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        <!-- Official AJD Brand Banner Header -->
+        <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center shrink-0">
+          <svg class="w-8 h-8 sm:w-9 sm:h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+            <circle cx="50" cy="50" r="42" stroke-width="6"/>
+            <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">AJD's Wireless Repair Tracker</h1>
-          <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+          <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)] leading-tight">AJD's Wireless Repairs</h1>
+          <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tracking-wide hidden sm:block">Phone, Tablet & Laptop Repairs</p>
+          <div class="flex items-center space-x-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
             <span id="cloudStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse"></span>
             <span id="cloudStatusText">Initializing...</span>
           </div>
@@ -1686,13 +1691,18 @@
         <div class="space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-slate-700 pb-6 gap-4">
             <div>
-              <div class="flex items-center space-x-2">
-                <div class="bg-brand-600 text-white p-2 rounded-xl">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <div class="flex items-center space-x-3">
+                <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
+                  <svg class="w-9 h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                    <circle cx="50" cy="50" r="42" stroke-width="6"/>
+                    <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
-                <h2 class="text-xl font-black tracking-tight">AJD's Wireless Repair Services</h2>
+                <div>
+                  <h2 class="text-xl font-black tracking-tight drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]">AJD's Wireless Repairs</h2>
+                  <p class="text-xs font-bold text-slate-600 dark:text-slate-300 mt-0.5 tracking-wide">Phone, Tablet & Laptop Repairs</p>
+                </div>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Professional Device Repair & Diagnostics</p>
             </div>
             <div class="text-left sm:text-right">
               <span class="inline-block px-3 py-1 text-xs font-bold rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300">
