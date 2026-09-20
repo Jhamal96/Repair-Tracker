@@ -88,6 +88,7 @@
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
     let realtimeChannel = null;
+    let trackPollingTimer = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -123,7 +124,6 @@
       } catch (e) {}
 
       let job = null;
-      
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
 
       if (supabaseClient && isUuid) {
@@ -143,7 +143,7 @@
         return;
       }
 
-      setupRealtimeLiveTracker(job.id);
+      setupRealtimeLiveTrackerSafely(job.id);
 
       const amount = parseFloat(job.amount) || 0;
       const deposit = parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0));
@@ -182,25 +182,60 @@
 
         <div class="bg-brand-950/30 p-4 rounded-2xl border border-brand-900/50 space-y-1.5">
           <p class="text-[10px] font-black text-brand-400 uppercase tracking-wider">💳 Payment Handles & Pickup Info</p>
-          <p class="text-xs text-slate-200 font-medium leading-relaxed">${escapeHtml(job.payment_info || job.paymentInfo || 'Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup')}</p>
+          <p class="text-xs text-slate-200 font-medium leading-relaxed">${escapeHtml(job.payment_info || job.paymentInfo || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup')}</p>
         </div>
       `;
     }
 
-    function setupRealtimeLiveTracker(jobId) {
+    function isWebSocketAllowed() {
+      try {
+        if (!('WebSocket' in window)) return false;
+        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket');
+        testWs.close();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setupRealtimeLiveTrackerSafely(jobId) {
       if (!supabaseClient) return;
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
       if (!isUuid) return;
 
+      if (!isWebSocketAllowed()) {
+        console.warn("WebSocket connections restricted in Canvas environment. Using HTTP polling fallback.");
+        startTrackPollingFallback();
+        return;
+      }
+
       try {
-        if (realtimeChannel) realtimeChannel.unsubscribe();
+        if (realtimeChannel) {
+          try { realtimeChannel.unsubscribe(); } catch(e){}
+        }
+
         realtimeChannel = supabaseClient
           .channel('public:repairs_track_' + jobId)
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'repairs', filter: `id=eq.${jobId}` }, () => {
             loadTrackedJob();
-          })
-          .subscribe();
-      } catch (e) {}
+          });
+
+        realtimeChannel.subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
+            startTrackPollingFallback();
+          }
+        });
+      } catch (e) {
+        console.warn("Realtime WebSockets disallowed in this environment. Using polling:", e);
+        startTrackPollingFallback();
+      }
+    }
+
+    function startTrackPollingFallback() {
+      if (trackPollingTimer) return;
+      trackPollingTimer = setInterval(() => {
+        loadTrackedJob();
+      }, 10000);
     }
 
     window.onload = loadTrackedJob;
