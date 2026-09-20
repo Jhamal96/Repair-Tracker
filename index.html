@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AJD's Wireless Repair Tracker</title>
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#0B0F19">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="AJD Tracker">
+  <meta name="apple-mobile-web-app-title" content="AJD Repairs">
   
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS & Supabase JS SDK -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -20,12 +19,16 @@
       theme: {
         extend: {
           colors: {
+            darkbg: '#0B0F19',
+            cardbg: '#131B2E',
+            cardborder: '#1E293B',
             brand: {
               50: '#eff6ff',
               100: '#dbeafe',
               500: '#3b82f6',
               600: '#2563eb',
-              700: '#1d4ed8'
+              700: '#1d4ed8',
+              900: '#1e3a8a'
             }
           }
         }
@@ -34,25 +37,26 @@
   </script>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%232563eb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'42'%20fill%3D'white'%20stroke%3D'black'%20stroke-width%3D'6'%2F%3E%3Cpath%20d%3D'M30%2068h12M36%2068L50%2028M42%2053h18M38%2028c4-3%209-2%2012%200M50%2028c8%2020%2016%2033%2026%2042'%20stroke%3D'black'%20stroke-width%3D'5.5'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20fill%3D'none'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230B0F19%22%2C%22theme_color%22%3A%22%230B0F19%22%7D">
 
   <style>
-    @keyframes pulse-light {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.98); }
+    body {
+      background-color: #0B0F19;
+      color: #F8FAFC;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
-    .status-pulse {
-      animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    
+    .dark-card {
+      background-color: #131B2E;
+      border: 1px solid #1E293B;
     }
 
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.95); }
     }
-    .animated-gradient {
-      background: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
-      background-size: 200% 100%;
-      animation: shimmer 3s infinite linear;
+    .status-dot-pulse {
+      animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     @media print {
@@ -60,20 +64,12 @@
         background-color: #ffffff !important;
         color: #000000 !important;
       }
-      header, nav, #toastContainer, #confirmModal, #editModal, #priceModal, #aiEstimateModal, #aiMessageModal, #aiInsightsModal, .no-print {
+      .no-print {
         display: none !important;
       }
-      main {
-        max-width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      .hidden {
-        display: none !important;
-      }
-      .printable-invoice-card {
-        border: none !important;
+      .printable-area {
         box-shadow: none !important;
+        border: none !important;
         padding: 0 !important;
         margin: 0 !important;
         width: 100% !important;
@@ -81,391 +77,327 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+<body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
-  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3 sm:px-6 no-print">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <button id="hamburgerBtn" onclick="toggleMobileDrawer()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition md:hidden focus:outline-none" aria-label="Toggle navigation menu">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-
-        <!-- Brand Banner Header -->
-        <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center shrink-0 cursor-pointer" onclick="switchTab('repairs')">
-          <svg class="w-8 h-8 sm:w-9 sm:h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Title -->
+      <div class="flex items-center space-x-3 w-full md:w-auto">
+        <!-- Monogram Logo -->
+        <div class="bg-slate-900 text-white p-2 rounded-2xl border border-slate-700 shadow-md shrink-0 flex items-center justify-center w-11 h-11">
+          <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" stroke="currentColor">
             <circle cx="50" cy="50" r="42" stroke-width="6"/>
             <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
+        
         <div>
-          <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)] leading-tight cursor-pointer" onclick="switchTab('repairs')">AJD's Wireless Repairs</h1>
-          <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tracking-wide hidden sm:block">Phone, Tablet & Laptop Repairs</p>
-          <div class="flex items-center space-x-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
-            <span id="cloudStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse"></span>
-            <span id="cloudStatusText">Initializing...</span>
+          <h1 class="text-lg font-black tracking-tight text-white leading-tight">
+            AJD's Wireless Repairs
+          </h1>
+          <div class="flex items-center space-x-2">
+            <p class="text-xs font-semibold text-slate-400">Phone, Tablet & Laptop Repairs</p>
+            <span class="text-slate-600">•</span>
+            <div class="flex items-center space-x-1.5 text-[11px] font-bold text-emerald-400">
+              <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-emerald-500 status-dot-pulse"></span>
+              <span id="cloudStatusText">Cloud Sync Active</span>
+            </div>
           </div>
         </div>
       </div>
-      
-      <nav id="topNavControls" class="hidden md:flex items-center space-x-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <button id="navRepairsDesktop" onclick="switchTab('repairs')" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm">
-          📋 Repairs Tracker
-        </button>
-        <button id="navInvoicesDesktop" onclick="switchTab('invoices')" class="px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
-          📄 Invoices & Receipts
-        </button>
-      </nav>
 
-      <div class="flex items-center space-x-2">
-        <button id="aiInsightsBtn" onclick="openAIInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5" title="AI Business Analytics & Insights">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          <span class="hidden sm:inline">AI Insights</span>
+      <!-- Center Tabs -->
+      <div class="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800 space-x-1">
+        <button id="tabBtnRepairs" onclick="switchTab('repairs')" class="px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2">
+          <span>💻 Repairs Tracker</span>
         </button>
-
-        <button id="priceModalBtn" onclick="openPriceModal()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition" title="Customize Preset Prices & Payment Methods">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <button id="tabBtnInvoices" onclick="switchTab('invoices')" class="px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2">
+          <span>📄 Invoices & Receipts</span>
         </button>
-        
-        <div class="relative inline-block text-left">
-          <select id="themeSelect" class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-600 outline-none cursor-pointer">
-            <option value="system">📱 System</option>
-            <option value="dark">🌙 Dark</option>
-            <option value="light">☀️ Light</option>
-          </select>
-        </div>
       </div>
-    </div>
 
-    <div id="mobileDrawer" class="hidden md:hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
-      <button onclick="switchTab('repairs'); toggleMobileDrawer();" id="navRepairsMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
-        📋 Repairs Tracker
-      </button>
-      <button onclick="switchTab('invoices'); toggleMobileDrawer();" id="navInvoicesMobile" class="w-full text-left px-3 py-2 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
-        📄 Invoices & Receipts
-      </button>
+      <!-- Right Utility Controls -->
+      <div class="flex items-center space-x-2.5">
+        <button onclick="openAiInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black rounded-xl shadow transition flex items-center space-x-1.5 border border-purple-400/30">
+          <span>✨ AI Insights</span>
+        </button>
+
+        <button id="priceModalBtn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 transition" title="Preset Device Rates">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+
+        <select id="themeSelect" class="text-xs p-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl font-bold outline-none cursor-pointer">
+          <option value="dark">📱 System</option>
+          <option value="dark">🌙 Dark Mode</option>
+          <option value="light">☀️ Light Mode</option>
+        </select>
+      </div>
+
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6">
+  <!-- Main Application Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-    <div id="viewRepairs" class="space-y-6">
-      
-      <!-- Metrics Dashboard -->
-      <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 sm:gap-4">
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Jobs</p>
-          <p id="statTotal" class="text-xl sm:text-2xl font-black mt-1">0</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-500">Pending</p>
-          <p id="statPending" class="text-xl sm:text-2xl font-black mt-1">0</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-emerald-500">Completed</p>
-          <p id="statCompleted" class="text-xl sm:text-2xl font-black mt-1">0</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-brand-500">Total Revenue</p>
-          <p id="statRevenue" class="text-xl sm:text-2xl font-black mt-1">$0.00</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-500">Deposits Paid</p>
-          <p id="statDeposits" class="text-xl sm:text-2xl font-black mt-1 text-indigo-600 dark:text-indigo-400">$0.00</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-rose-500">Unpaid Balance</p>
-          <p id="statBalance" class="text-xl sm:text-2xl font-black mt-1 text-rose-600 dark:text-rose-400">$0.00</p>
-        </div>
+    <!-- 6-Metric Bar (Matching Reference Screen) -->
+    <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 no-print">
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">TOTAL JOBS</p>
+        <p id="statTotal" class="text-2xl font-black text-white mt-1">0</p>
       </div>
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-amber-500">PENDING</p>
+        <p id="statPending" class="text-2xl font-black text-white mt-1">0</p>
+      </div>
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400">COMPLETED</p>
+        <p id="statCompleted" class="text-2xl font-black text-white mt-1">0</p>
+      </div>
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-400">TOTAL REVENUE</p>
+        <p id="statRevenue" class="text-2xl font-black text-white mt-1">$0.00</p>
+      </div>
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-400">DEPOSITS PAID</p>
+        <p id="statDeposit" class="text-2xl font-black text-white mt-1">$0.00</p>
+      </div>
+      <div class="dark-card p-4 rounded-2xl shadow-sm">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-rose-500">UNPAID BALANCE</p>
+        <p id="statUnpaid" class="text-2xl font-black text-white mt-1">$0.00</p>
+      </div>
+    </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- VIEW 1: REPAIRS TRACKER -->
+    <div id="viewRepairs" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Form Column -->
-        <div class="lg:col-span-1">
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 sticky top-20 space-y-4">
-            <div class="flex items-center justify-between">
-              <h2 class="text-lg font-bold">New Repair Entry</h2>
-              <button type="button" onclick="openAIEstimateModal()" class="px-2.5 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span>✨ AI Estimate</span>
-              </button>
-            </div>
+      <!-- Left Column: Add Repair Entry Form -->
+      <div class="lg:col-span-5 no-print">
+        <div class="dark-card p-5 sm:p-6 rounded-3xl shadow-lg space-y-4 sticky top-20">
+          
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-lg font-black text-white">New Repair Entry</h2>
+            <button type="button" onclick="openAiEstimateModal()" class="px-3 py-1 bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 text-xs font-bold rounded-xl transition flex items-center space-x-1.5">
+              <span>✨ AI Estimate</span>
+            </button>
+          </div>
+
+          <form id="repairForm" class="space-y-4">
             
-            <form id="repairForm" class="space-y-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-700/60 pb-1">
-                Customer & Device Info
+            <!-- SECTION 1: Customer & Device Info -->
+            <div class="space-y-3 bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
+              <span class="text-[10px] font-black uppercase tracking-wider text-brand-400 block">CUSTOMER & DEVICE INFO</span>
+              
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Customer Name *</label>
+                <input type="text" id="customerName" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="John Doe">
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Customer Name *</label>
-                <input type="text" id="customerName" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="John Doe">
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Category *</label>
-                <select id="deviceType" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Device Category *</label>
+                <select id="deviceType" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold text-white">
                   <option value="" disabled selected>Select category...</option>
-                  <option value="iPhone">iPhone</option>
-                  <option value="iPad">iPad</option>
-                  <option value="Apple watch">Apple watch</option>
-                  <option value="Tablets">Tablets</option>
-                  <option value="Galaxy">Galaxy</option>
-                  <option value="Galaxy Tablet">Galaxy Tablet</option>
-                  <option value="Laptop">Laptop</option>
-                  <option value="Other">Other</option>
+                  <option value="iPhone">iPhone ($90 preset)</option>
+                  <option value="iPad">iPad ($120 preset)</option>
+                  <option value="Apple watch">Apple watch ($110 preset)</option>
+                  <option value="Tablets">Tablets ($100 preset)</option>
+                  <option value="Galaxy">Galaxy ($100 preset)</option>
+                  <option value="Galaxy Tablet">Galaxy Tablet ($120 preset)</option>
+                  <option value="Laptop">Laptop ($100 preset)</option>
+                  <option value="Other">Other / Custom</option>
                 </select>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Make & Model *</label>
-                  <input type="text" id="makeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. iPhone 14 Pro Max">
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Model Number</label>
-                  <input type="text" id="modelNumber" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. A2651, SM-S918U">
-                </div>
-              </div>
-
-              <!-- Replacement Parts Section -->
-              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2 flex items-center justify-between">
-                <span>Replacement Parts & Materials</span>
-                <span class="text-[10px] font-normal text-slate-400">Inventory & Hardware</span>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Name / Items Used</label>
-                <input type="text" id="partName" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g. OLED Display Assembly, Battery, Port">
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Parts Cost ($)</label>
-                  <input type="number" id="partPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-bold text-amber-600 dark:text-amber-400" placeholder="0.00">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Make & Model *</label>
+                  <input type="text" id="makeModel" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. iPhone 14 Pro Max">
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Supplier Links</label>
-                  <input type="text" id="repairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="https://supplier.com/part...">
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Model Number</label>
+                  <input type="text" id="modelNumber" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. A2651, SM-S918U">
                 </div>
               </div>
-
-              <!-- Service Pricing Section -->
-              <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
-                Service Pricing & Deposits
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Labor/Quoted ($)</label>
-                  <input type="number" id="quotedPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400" placeholder="0.00">
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Charged ($)</label>
-                  <input type="number" id="repairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-black text-emerald-600 dark:text-emerald-400" placeholder="0.00">
-                </div>
-              </div>
-
-              <div class="space-y-2 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                <div class="flex items-center justify-between">
-                  <label class="block text-xs font-semibold text-indigo-700 dark:text-indigo-300">Deposit Paid</label>
-                  <div class="flex items-center space-x-1">
-                    <button type="button" onclick="applyDepositPreset('repairForm', 25)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">25%</button>
-                    <button type="button" onclick="applyDepositPreset('repairForm', 50)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">50%</button>
-                    <button type="button" onclick="applyDepositPreset('repairForm', 75)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">75%</button>
-                    <button type="button" onclick="applyDepositPreset('repairForm', 100)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">100%</button>
-                  </div>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                  <div>
-                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit ($)</label>
-                    <input type="number" id="depositAmount" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0.00">
-                  </div>
-                  <div>
-                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit (%)</label>
-                    <input type="number" id="depositPercent" step="1" min="0" max="100" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0%">
-                  </div>
-                  <div>
-                    <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Balance Due ($)</label>
-                    <input type="number" id="balanceDue" readonly class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-rose-600 dark:text-rose-400 outline-none cursor-not-allowed" placeholder="0.00">
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method / Notes</label>
-                <input type="text" id="paymentInfo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. Zelle, CashApp, Cash, Card, Apple Pay...">
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Problem & Notes</label>
-                <textarea id="repairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Shattered front glass, unresponsive touch screen..."></textarea>
-              </div>
-
-              <button type="submit" id="submitBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                <span>Add Repair Job</span>
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Repairs Feed Column -->
-        <div class="lg:col-span-2 space-y-4">
-          <div class="flex flex-col sm:flex-row gap-3">
-            <div class="relative flex-1">
-              <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Search customer, make, model, parts, notes, or payment method...">
-              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            <select id="statusFilter" class="px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
 
-          <div id="repairsList" class="space-y-3">
-            <div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">Connecting to repair database...</div>
-          </div>
+            <!-- SECTION 2: Replacement Parts & Materials -->
+            <div class="space-y-3 bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 block">REPLACEMENT PARTS & MATERIALS</span>
+                <span class="text-[10px] font-bold text-slate-500">INVENTORY & HARDWARE</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Part Name / Items Used</label>
+                <input type="text" id="partName" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. OLED Display Assembly, Battery, Port">
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Parts Cost ($)</label>
+                  <input type="number" id="partPrice" step="0.01" min="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-400 placeholder-slate-600" placeholder="0.00">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Supplier Links</label>
+                  <input type="text" id="repairLinks" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://supplier.com">
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: Service Pricing & Deposits -->
+            <div class="space-y-3 bg-brand-950/20 p-3.5 rounded-2xl border border-brand-900/40">
+              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING & DEPOSITS</span>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Labor/Quoted ($)</label>
+                  <input type="number" id="laborPrice" step="0.01" min="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-white placeholder-slate-600" placeholder="0.00">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Total Charged ($)</label>
+                  <input type="number" id="repairAmount" step="0.01" min="0" oninput="adjustQuotedFromTotal()" class="w-full px-3.5 py-2 text-sm font-black bg-slate-950 border border-brand-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-brand-400 placeholder-slate-600" placeholder="0.00">
+                </div>
+              </div>
+
+              <!-- Quick Deposit Presets -->
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Quick Preset</label>
+                <div class="grid grid-cols-4 gap-1.5 mb-2">
+                  <button type="button" onclick="applyDepositPreset(25)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300">25%</button>
+                  <button type="button" onclick="applyDepositPreset(50)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300">50%</button>
+                  <button type="button" onclick="applyDepositPreset(75)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300">75%</button>
+                  <button type="button" onclick="applyDepositPreset(100)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300">100%</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Paid ($)</label>
+                  <input type="number" id="depositAmount" step="0.01" min="0" oninput="calculateBalance()" class="w-full px-3.5 py-2 text-sm font-bold bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-indigo-400 placeholder-slate-600" placeholder="0.00">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Balance Due ($)</label>
+                  <input type="text" id="balanceDue" readonly class="w-full px-3.5 py-2 text-sm font-black bg-slate-900 border border-slate-800 rounded-xl outline-none text-rose-400" value="$0.00">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Payment Instructions / Handles</label>
+                <input type="text" id="paymentInfo" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-slate-300 font-medium" value="Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup">
+              </div>
+            </div>
+
+            <!-- Notes field -->
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1 text-left">Repair Issue & Notes (Left Aligned)</label>
+              <textarea id="repairDescription" rows="2" class="w-full px-3.5 py-2 text-sm text-left bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white leading-relaxed placeholder-slate-600" placeholder="Detailed symptoms, physical condition, passcodes..."></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-2xl shadow-lg transition flex items-center justify-center space-x-2 text-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              <span>Save Repair Job</span>
+            </button>
+
+          </form>
         </div>
-
       </div>
-    </div>
 
-    <!-- Invoices View -->
-    <div id="viewInvoices" class="hidden space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Right Column: Repair Cards Listing -->
+      <div class="lg:col-span-7 space-y-4">
         
-        <div class="lg:col-span-1 no-print space-y-4">
-          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
-            <h2 class="text-base font-bold flex items-center justify-between">
-              <span>Select Repair Job</span>
-              <span class="text-xs text-slate-400 font-normal">For Invoice</span>
-            </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Choose a job from the list below to build, preview, and print a formal receipt with Replacement Parts, Deposit, and Balance Due breakdown.</p>
-            
-            <input type="text" id="invoiceSearchInput" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand-500" placeholder="Filter customer name or model...">
-
-            <div id="invoiceJobSelectContainer" class="space-y-2 max-h-[450px] overflow-y-auto pr-1"></div>
+        <!-- Search & Filter Bar -->
+        <div class="flex flex-col sm:flex-row gap-3 no-print">
+          <div class="relative flex-1">
+            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" placeholder="Search customer, make, model, parts, notes, or payment method...">
+            <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
+
+          <select id="statusFilter" class="px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 font-bold text-slate-300">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
         </div>
 
-        <div class="lg:col-span-2">
-          <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 printable-invoice-card space-y-6">
-            
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4 no-print">
-              <div>
-                <h3 class="text-lg font-bold">Invoice Preview</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Ready to print or save as PDF</p>
-              </div>
-              <button onclick="handlePrintOrShareInvoice()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                <span>Print / Share Invoice</span>
-              </button>
-            </div>
-
-            <div id="invoiceContent" class="space-y-6 text-slate-800 dark:text-slate-100">
-              <div class="text-center py-12 text-slate-400">Select a repair job on the left to preview its printable invoice.</div>
-            </div>
-
+        <!-- Cards Container -->
+        <div id="repairsList" class="space-y-4">
+          <div class="p-12 text-center text-slate-500 dark-card rounded-3xl space-y-3">
+            <svg class="animate-spin w-6 h-6 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <p class="text-xs font-bold">Loading repairs database...</p>
           </div>
         </div>
 
       </div>
+
     </div>
 
-    <!-- Customer Live Tracker View -->
-    <div id="viewCustomerTracker" class="hidden max-w-3xl mx-auto space-y-6">
-      <div class="no-print flex items-center justify-between">
-        <button onclick="switchTab('repairs')" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-xl transition flex items-center space-x-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          <span>← Back to Shop Dashboard</span>
-        </button>
-        <button onclick="handlePrintOrShareTracker()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          <span>Print Receipt</span>
-        </button>
+    <!-- VIEW 2: INVOICES & PRINTABLE RECEIPTS -->
+    <div id="viewInvoices" class="hidden space-y-6">
+      <div class="dark-card p-6 rounded-3xl no-print flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-black text-white">Printable Invoices & Customer Receipts</h2>
+          <p class="text-xs font-semibold text-slate-400">Generate, copy, or print itemized receipts with payment handles</p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="copyInvoiceTextSummary()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition flex items-center space-x-1.5">
+            <span>📋 Copy Text Summary</span>
+          </button>
+          <button onclick="handlePrintOrShareInvoice()" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-extrabold rounded-xl shadow transition flex items-center space-x-1.5">
+            <span>🖨️ Print / Export PDF</span>
+          </button>
+        </div>
       </div>
 
-      <div id="customerTrackerCard" class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 space-y-8">
-        <div class="text-center py-12 text-slate-400">Loading live repair tracking status...</div>
+      <!-- Printable Invoice Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Sidebar Selection -->
+        <div class="lg:col-span-4 space-y-3 no-print">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-1">Select Job to Preview</h3>
+          <div id="invoiceSelectionList" class="space-y-2.5 max-h-[600px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Sheet Preview -->
+        <div class="lg:col-span-8">
+          <div id="invoicePrintCanvas" class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl text-slate-900 printable-area space-y-6 min-h-[650px]">
+            <p class="text-center text-slate-400 py-16 text-sm font-semibold">Select a repair job on the left to generate its printable invoice.</p>
+          </div>
+        </div>
       </div>
     </div>
 
   </main>
 
-  <!-- Price & Payment Settings Modal -->
-  <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <h3 class="text-lg font-bold">Preset Rates & Payment Methods</h3>
-        <button onclick="closePriceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <div class="space-y-4 max-h-[400px] overflow-y-auto pr-1">
-        <div>
-          <h4 class="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 mb-2">Default Category Preset Rates ($)</h4>
-          <div id="priceInputs" class="space-y-2"></div>
-        </div>
-
-        <div class="pt-3 border-t border-slate-200 dark:border-slate-700">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Where to Pay / Payment Handles</h4>
-          <p class="text-[11px] text-slate-400 mb-2">This payment info will appear on your customer live tracking portals & invoices so customers know where to send payments.</p>
-          <textarea id="shopPaymentInstructions" rows="3" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Zelle: repairs@ajd.com | CashApp: $AJDRepairs | Venmo: @AJDRepairs | Cash accepted at pickup"></textarea>
-        </div>
-      </div>
-
-      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-        <button id="savePricesBtn" onclick="savePricesAndSettings()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition">Save Settings</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Confirm Modal -->
-  <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-center">
-      <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mx-auto flex items-center justify-center">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-      </div>
-      <div>
-        <h3 class="text-lg font-bold">Delete Repair Job?</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">This action cannot be undone. Are you sure you want to remove this repair job?</p>
-      </div>
-      <div class="flex space-x-3 pt-2">
-        <button id="cancelConfirmBtn" class="flex-1 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl transition">Cancel</button>
-        <button id="actionConfirmBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl shadow-md transition">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit Job Modal -->
-  <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 my-8">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <h3 class="text-lg font-bold">Edit Repair Job & Payments</h3>
-        <button onclick="closeEditModal()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+  <!-- MODAL 1: EDIT REPAIR MODAL -->
+  <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base sm:text-lg font-black text-white">✏️ Edit Repair Job</h3>
+        <button id="closeEditModal" class="text-slate-400 hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <form id="editForm" class="space-y-4">
-        <input type="hidden" id="editId">
-        
-        <div class="text-[11px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-700/60 pb-1">
-          Customer & Device Info
-        </div>
+        <input type="hidden" id="editJobId">
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Customer Name *</label>
-          <input type="text" id="editCustomerName" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Category *</label>
-            <select id="editDeviceType" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+            <label class="block text-xs font-bold text-slate-300 mb-1">Customer Name *</label>
+            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Model Number</label>
+            <input type="text" id="editModelNumber" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Device Category *</label>
+            <select id="editDeviceType" required class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
               <option value="iPhone">iPhone</option>
               <option value="iPad">iPad</option>
               <option value="Apple watch">Apple watch</option>
@@ -477,210 +409,115 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Make & Model *</label>
-            <input type="text" id="editMakeModel" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+            <label class="block text-xs font-bold text-slate-300 mb-1">Make & Model *</label>
+            <input type="text" id="editMakeModel" required class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Model Number</label>
-          <input type="text" id="editModelNumber" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. A2651, SM-S918U">
-        </div>
-
-        <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
-          Replacement Parts & Materials
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Part Name / Items Used</label>
-          <input type="text" id="editPartName" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g. OLED Display Assembly, Battery, Port">
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Parts Cost ($)</label>
-            <input type="number" id="editPartPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-bold text-amber-600 dark:text-amber-400">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Supplier Links</label>
-            <input type="text" id="editRepairLinks" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none">
-          </div>
-        </div>
-
-        <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border-b border-slate-100 dark:border-slate-700/60 pb-1 pt-2">
-          Service Pricing, Deposit & Payment
+          <label class="block text-xs font-bold text-slate-300 mb-1">Part Name / Items</label>
+          <input type="text" id="editPartName" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Labor/Quoted ($)</label>
-            <input type="number" id="editQuotedPrice" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400">
+            <label class="block text-xs font-bold text-slate-300 mb-1">Parts Cost ($)</label>
+            <input type="number" id="editPartPrice" step="0.01" min="0" oninput="calculateEditTotal()" class="w-full px-3 py-2 text-sm font-bold text-amber-400 bg-slate-950 border border-slate-800 rounded-xl outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Charged ($)</label>
-            <input type="number" id="editRepairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-black text-emerald-600 dark:text-emerald-400">
+            <label class="block text-xs font-bold text-slate-300 mb-1">Labor/Quoted ($)</label>
+            <input type="number" id="editQuotedPrice" step="0.01" min="0" oninput="calculateEditTotal()" class="w-full px-3 py-2 text-sm font-bold bg-slate-950 border border-slate-800 rounded-xl outline-none text-white">
           </div>
         </div>
 
-        <div class="space-y-2 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-          <div class="flex items-center justify-between">
-            <label class="block text-xs font-semibold text-indigo-700 dark:text-indigo-300">Deposit Paid</label>
-            <div class="flex items-center space-x-1">
-              <button type="button" onclick="applyDepositPreset('editForm', 25)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">25%</button>
-              <button type="button" onclick="applyDepositPreset('editForm', 50)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">50%</button>
-              <button type="button" onclick="applyDepositPreset('editForm', 75)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">75%</button>
-              <button type="button" onclick="applyDepositPreset('editForm', 100)" class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800 transition">100%</button>
-            </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Total Amount ($)</label>
+            <input type="number" id="editRepairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm font-black text-brand-400 bg-slate-950 border border-brand-800 rounded-xl outline-none">
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit ($)</label>
-              <input type="number" id="editDepositAmount" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400">
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Deposit (%)</label>
-              <input type="number" id="editDepositPercent" step="1" min="0" max="100" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-600 dark:text-indigo-400" placeholder="0%">
-            </div>
-            <div>
-              <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Balance Due ($)</label>
-              <input type="number" id="editBalanceDue" readonly class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-rose-600 dark:text-rose-400 outline-none cursor-not-allowed">
-            </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Paid ($)</label>
+            <input type="number" id="editDepositAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm font-bold text-indigo-400 bg-slate-950 border border-slate-800 rounded-xl outline-none">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method / Notes</label>
-          <input type="text" id="editPaymentInfo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" placeholder="e.g. Zelle, CashApp, Cash, Card...">
+          <label class="block text-xs font-bold text-slate-300 mb-1 text-left">Description / Issue (Left Aligned)</label>
+          <textarea id="editRepairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-950 border border-slate-800 rounded-xl outline-none text-white"></textarea>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 text-left">Repair Problem & Notes</label>
-          <textarea id="editRepairDescription" rows="2" class="w-full px-3 py-2 text-sm text-left bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Reference Links</label>
+          <input type="text" id="editRepairLinks" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl outline-none text-white">
         </div>
 
-        <div class="flex justify-end space-x-3 pt-2 border-t border-slate-200 dark:border-slate-700">
-          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-xl transition">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition shadow-md">Save Changes</button>
-        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-md transition">Save Changes</button>
       </form>
     </div>
   </div>
 
-  <!-- AI Smart Estimator Modal -->
-  <div id="aiEstimateModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <div class="flex items-center space-x-2">
-          <div class="p-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          </div>
-          <div>
-            <h3 class="text-base font-bold">✨ AI Repair Assistant</h3>
-            <p class="text-[11px] text-slate-400">Powered by Gemini 3 Flash</p>
-          </div>
-        </div>
-        <button onclick="closeAIEstimateModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+  <!-- MODAL 2: PRICE PRESETS -->
+  <div id="priceModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">Customize Preset Device Rates</h3>
+        <button id="closePriceModal" class="text-slate-400 hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
+      <div id="priceInputs" class="space-y-2.5 max-h-72 overflow-y-auto pr-1"></div>
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button id="savePricesBtn" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-extrabold rounded-xl shadow">Save Presets</button>
+      </div>
+    </div>
+  </div>
 
-      <p class="text-xs text-slate-500 dark:text-slate-400">Describe the device issue below. Gemini will estimate part costs, labor rates, and detailed fix notes!</p>
+  <!-- MODAL 3: DELETE CONFIRMATION -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
+      <div class="w-12 h-12 bg-rose-900/40 text-rose-400 rounded-2xl mx-auto flex items-center justify-center text-xl">⚠️</div>
+      <h3 class="text-base font-extrabold text-white">Delete Repair Job?</h3>
+      <p class="text-xs text-slate-400">This action cannot be undone.</p>
+      <div class="flex justify-center space-x-3 pt-2">
+        <button id="cancelConfirmBtn" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">Cancel</button>
+        <button id="actionConfirmBtn" class="px-5 py-2 bg-rose-600 text-white text-xs font-extrabold rounded-xl shadow">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: AI CUSTOMER SMS GENERATOR -->
+  <div id="smsAiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>✨ AI Customer SMS Update</span>
+        </h3>
+        <button onclick="closeSmsModal()" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
 
       <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Device Model or Keywords</label>
-          <input type="text" id="aiDeviceInput" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Surface Pro 11, iPhone 14 Pro, Galaxy S23">
+        <label class="block text-xs font-bold text-slate-300">Select Tone:</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="generateSmsText('professional')" class="py-1.5 bg-slate-900 border border-slate-800 hover:border-purple-500 text-xs font-bold rounded-xl text-slate-300">Friendly</button>
+          <button onclick="generateSmsText('urgent')" class="py-1.5 bg-slate-900 border border-slate-800 hover:border-purple-500 text-xs font-bold rounded-xl text-slate-300">Urgent</button>
+          <button onclick="generateSmsText('ready')" class="py-1.5 bg-slate-900 border border-slate-800 hover:border-purple-500 text-xs font-bold rounded-xl text-slate-300">Ready Pickup</button>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Problem / Symptoms</label>
-          <textarea id="aiSymptomInput" rows="2" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none" placeholder="e.g. Broken OLED display, battery won't hold charge, charging port loose"></textarea>
-        </div>
+
+        <textarea id="smsOutputText" rows="4" class="w-full px-3.5 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-2xl outline-none text-slate-200 leading-relaxed" placeholder="Generated message will appear here..."></textarea>
       </div>
 
-      <div id="aiEstimateStatus" class="hidden text-xs p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 flex items-center space-x-2">
-        <svg class="animate-spin w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <span>Researching market parts and generating repair breakdown...</span>
-      </div>
-
-      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-        <button onclick="closeAIEstimateModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl">Cancel</button>
-        <button id="runAIEstimateBtn" onclick="runAIEstimator()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition">Generate & Auto-Fill Form</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI Customer Message Modal -->
-  <div id="aiMessageModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <div class="flex items-center space-x-2">
-          <div class="p-2 bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-          </div>
-          <div>
-            <h3 class="text-base font-bold">💬 AI Customer Update</h3>
-            <p class="text-[11px] text-slate-400">Personalized SMS / Email Generator</p>
-          </div>
-        </div>
-        <button onclick="closeAIMessageModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+        <button onclick="playSmsTts()" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-xl flex items-center space-x-1">
+          <span>🔊 Listen TTS</span>
         </button>
-      </div>
-
-      <div id="aiMessageLoading" class="p-4 text-center text-xs text-brand-600 dark:text-brand-400 space-y-2">
-        <svg class="animate-spin w-6 h-6 mx-auto text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <p>Crafting customer message with Gemini LLM...</p>
-      </div>
-
-      <div id="aiMessageContainer" class="hidden space-y-3">
-        <textarea id="aiMessageText" rows="5" class="w-full px-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none"></textarea>
-        
-        <div class="flex items-center justify-between pt-1">
-          <button id="aiSpeechBtn" onclick="playAIVoicePreview()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition flex items-center space-x-1.5">
-            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
-            <span id="aiSpeechText">🔊 Listen (TTS)</span>
-          </button>
-
-          <button onclick="copyAIMessageToClipboard()" class="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-            <span>Copy Text</span>
-          </button>
-        </div>
+        <button onclick="copySmsText()" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold rounded-xl shadow">Copy SMS</button>
       </div>
     </div>
   </div>
 
-  <!-- AI Insights Modal -->
-  <div id="aiInsightsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
-        <div class="flex items-center space-x-2">
-          <div class="p-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          </div>
-          <div>
-            <h3 class="text-base font-bold">📊 AI Repair Shop Executive Summary</h3>
-            <p class="text-[11px] text-slate-400">Gemini Business Intelligence Analysis</p>
-          </div>
-        </div>
-        <button onclick="closeAIInsightsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <div id="aiInsightsLoading" class="p-6 text-center text-xs text-purple-600 dark:text-purple-400 space-y-2">
-        <svg class="animate-spin w-6 h-6 mx-auto text-purple-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <p>Analyzing job revenue, parts margins, and common device trends...</p>
-      </div>
-
-      <div id="aiInsightsContent" class="hidden text-xs text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed max-h-96 overflow-y-auto space-y-2"></div>
-
-      <div class="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-700">
-        <button onclick="closeAIInsightsModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl">Close</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
 
   <script>
@@ -700,12 +537,11 @@
     };
 
     let priceSettings = JSON.parse(localStorage.getItem('ajd_price_settings')) || defaultPrices;
-    let shopPaymentInfo = localStorage.getItem('ajd_payment_info') || 'Zelle: repairs@ajd.com | CashApp: $AJDRepairs | Cash accepted at pickup';
     let repairs = [];
     let isCloudConnected = false;
-    let activeTrackedJobId = null;
+    let selectedInvoiceJobId = null;
     let pendingDeleteId = null;
-    let currentInvoiceJob = null;
+    let activeSmsJob = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -717,135 +553,87 @@
         .replace(/'/g, '&#039;');
     }
 
-    function showToast(message, type = 'info') {
+    function showToast(message) {
       const container = document.getElementById('toastContainer');
       if (!container) return;
-
       const toast = document.createElement('div');
-      toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold text-white transition-all duration-300 transform translate-y-2 opacity-0 flex items-center space-x-2 max-w-xs sm:max-w-md ${
-        type === 'success' ? 'bg-emerald-600' :
-        type === 'error' ? 'bg-rose-600' :
-        type === 'warning' ? 'bg-amber-600' : 'bg-slate-800'
-      }`;
-
-      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
-      toast.innerHTML = `<span>${icon}</span><span>${escapeHtml(message)}</span>`;
-
+      toast.className = 'px-4 py-3 rounded-2xl shadow-xl text-xs font-extrabold text-white bg-slate-900 border border-slate-700 transition-all duration-300 transform translate-y-3 opacity-0 flex items-center space-x-2 pointer-events-auto';
+      toast.innerHTML = `<span>ℹ️</span><span>${escapeHtml(message)}</span>`;
       container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
-
+      requestAnimationFrame(() => toast.classList.remove('translate-y-3', 'opacity-0'));
       setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => {
-          if (toast.parentNode) toast.parentNode.removeChild(toast);
-        }, 300);
+        toast.classList.add('opacity-0', 'translate-y-3');
+        setTimeout(() => toast.parentNode && toast.parentNode.removeChild(toast), 300);
       }, 3500);
-    }
-
-    function toggleMobileDrawer() {
-      const drawer = document.getElementById('mobileDrawer');
-      if (drawer) drawer.classList.toggle('hidden');
     }
 
     function switchTab(tabName) {
       const viewRepairs = document.getElementById('viewRepairs');
       const viewInvoices = document.getElementById('viewInvoices');
-      const viewCustomerTracker = document.getElementById('viewCustomerTracker');
+      const tabBtnRepairs = document.getElementById('tabBtnRepairs');
+      const tabBtnInvoices = document.getElementById('tabBtnInvoices');
 
-      if (viewRepairs) viewRepairs.classList.add('hidden');
-      if (viewInvoices) viewInvoices.classList.add('hidden');
-      if (viewCustomerTracker) viewCustomerTracker.classList.add('hidden');
-
-      const navRepairsDesktop = document.getElementById('navRepairsDesktop');
-      const navInvoicesDesktop = document.getElementById('navInvoicesDesktop');
-      const activeClassDesktop = "px-4 py-1.5 text-xs font-semibold rounded-xl transition bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm";
-      const inactiveClassDesktop = "px-4 py-1.5 text-xs font-semibold rounded-xl transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
-
-      if (navRepairsDesktop && navInvoicesDesktop) {
-        navRepairsDesktop.className = tabName === 'repairs' ? activeClassDesktop : inactiveClassDesktop;
-        navInvoicesDesktop.className = tabName === 'invoices' ? activeClassDesktop : inactiveClassDesktop;
-      }
-
-      if (tabName === 'repairs' && viewRepairs) {
-        viewRepairs.classList.remove('hidden');
-      } else if (tabName === 'invoices' && viewInvoices) {
+      if (tabName === 'invoices') {
+        viewRepairs.classList.add('hidden');
         viewInvoices.classList.remove('hidden');
+        tabBtnInvoices.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2';
+        tabBtnRepairs.className = 'px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2';
         renderInvoiceSelectionList();
-      } else if (tabName === 'tracker' && viewCustomerTracker) {
-        viewCustomerTracker.classList.remove('hidden');
-      }
-    }
-
-    function applyTheme(theme) {
-      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
       } else {
-        document.documentElement.classList.remove('dark');
+        viewInvoices.classList.add('hidden');
+        viewRepairs.classList.remove('hidden');
+        tabBtnRepairs.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2';
+        tabBtnInvoices.className = 'px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2';
       }
     }
 
-    const themeSelect = document.getElementById('themeSelect');
-    if (themeSelect) {
-      const savedTheme = localStorage.getItem('ajd_theme') || 'system';
-      themeSelect.value = savedTheme;
-      applyTheme(savedTheme);
-
-      themeSelect.addEventListener('change', (e) => {
-        const val = e.target.value;
-        localStorage.setItem('ajd_theme', val);
-        applyTheme(val);
-      });
+    function calculateTotal() {
+      const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
+      const total = partPrice + laborPrice;
+      document.getElementById('repairAmount').value = total > 0 ? total.toFixed(2) : '';
+      calculateBalance();
     }
 
-    function calculateTotal(formPrefix) {
-      const isEdit = formPrefix === 'editForm';
-      const quotedElem = document.getElementById(isEdit ? 'editQuotedPrice' : 'quotedPrice');
-      const partsElem = document.getElementById(isEdit ? 'editPartPrice' : 'partPrice');
-      const totalElem = document.getElementById(isEdit ? 'editRepairAmount' : 'repairAmount');
-      const depositElem = document.getElementById(isEdit ? 'editDepositAmount' : 'depositAmount');
-      const percentElem = document.getElementById(isEdit ? 'editDepositPercent' : 'depositPercent');
-      const balanceElem = document.getElementById(isEdit ? 'editBalanceDue' : 'balanceDue');
+    function adjustQuotedFromTotal() {
+      const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
+      const total = parseFloat(document.getElementById('repairAmount').value) || 0;
+      const labor = Math.max(0, total - partPrice);
+      document.getElementById('laborPrice').value = labor.toFixed(2);
+      calculateBalance();
+    }
 
-      if (!quotedElem || !partsElem || !totalElem) return;
+    function applyDepositPreset(percent) {
+      const total = parseFloat(document.getElementById('repairAmount').value) || 0;
+      const deposit = (total * (percent / 100)).toFixed(2);
+      document.getElementById('depositAmount').value = deposit;
+      calculateBalance();
+    }
 
-      const quoted = parseFloat(quotedElem.value) || 0;
-      const parts = parseFloat(partsElem.value) || 0;
-      const total = quoted + parts;
-      totalElem.value = total > 0 ? total.toFixed(2) : '';
+    function calculateBalance() {
+      const total = parseFloat(document.getElementById('repairAmount').value) || 0;
+      const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+      const balance = Math.max(0, total - deposit);
+      document.getElementById('balanceDue').value = `$${balance.toFixed(2)}`;
+    }
 
-      const deposit = parseFloat(depositElem ? depositElem.value : 0) || 0;
-      if (total > 0 && deposit > 0 && percentElem && document.activeElement !== percentElem) {
-        percentElem.value = Math.min(100, Math.round((deposit / total) * 100));
+    function calculateEditTotal() {
+      const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+      document.getElementById('editRepairAmount').value = (partPrice + laborPrice).toFixed(2);
+    }
+
+    document.getElementById('deviceType').addEventListener('change', (e) => {
+      const preset = priceSettings[e.target.value];
+      if (preset !== undefined) {
+        document.getElementById('laborPrice').value = preset.toFixed(2);
+        calculateTotal();
       }
-
-      if (balanceElem) {
-        const balance = Math.max(0, total - deposit);
-        balanceElem.value = balance.toFixed(2);
-      }
-    }
-
-    function applyDepositPreset(formPrefix, percent) {
-      const isEdit = formPrefix === 'editForm';
-      const totalElem = document.getElementById(isEdit ? 'editRepairAmount' : 'repairAmount');
-      const depositElem = document.getElementById(isEdit ? 'editDepositAmount' : 'depositAmount');
-      const percentElem = document.getElementById(isEdit ? 'editDepositPercent' : 'depositPercent');
-      const balanceElem = document.getElementById(isEdit ? 'editBalanceDue' : 'balanceDue');
-
-      const total = parseFloat(totalElem ? totalElem.value : 0) || 0;
-      const deposit = (total * (percent / 100));
-
-      if (depositElem) depositElem.value = deposit.toFixed(2);
-      if (percentElem) percentElem.value = percent;
-      if (balanceElem) balanceElem.value = Math.max(0, total - deposit).toFixed(2);
-    }
+    });
 
     function normalizeRepair(item) {
       let desc = item.description || '';
       let meta = {};
-
       const metaMatch = desc.match(/\[META:({.*?})\]/);
       if (metaMatch) {
         try {
@@ -861,9 +649,9 @@
 
       return {
         id: String(item.id),
-        customerName: item.customer_name || item.customerName || 'Customer',
-        deviceType: item.device_type || item.deviceType || 'Other',
-        makeModel: item.make_model || item.makeModel || 'Device',
+        customerName: item.customer_name || item.customerName || 'Valued Customer',
+        deviceType: item.device_type || item.deviceType || 'Device',
+        makeModel: item.make_model || item.makeModel || 'Hardware Unit',
         modelNumber: item.model_number || item.modelNumber || meta.model_number || '',
         partName: item.part_name || item.partName || meta.part_name || '',
         partPrice: partPrice,
@@ -871,52 +659,45 @@
         amount: amount,
         depositAmount: depositAmount,
         balanceDue: Math.max(0, amount - depositAmount),
-        paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || '',
+        paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || 'Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup',
         description: desc,
-        links: Array.isArray(item.links) ? item.links : [],
+        links: item.links || meta.links || [],
         status: item.status || 'pending',
         created_at: item.created_at || new Date().toISOString()
       };
     }
 
-    function getTrackerUrl(id) {
-      const origin = window.location.origin;
-      const pathname = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-      return `${origin}${pathname}track.html?id=${id}`;
-    }
-
-    function copyTrackerLink(id) {
-      const url = getTrackerUrl(id);
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast("Live Tracker Link copied to clipboard!", "success");
-        }).catch(() => {
-          fallbackCopyText(url);
-        });
-      } else {
-        fallbackCopyText(url);
-      }
-    }
-
-    function fallbackCopyText(text) {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
+    async function initApp() {
       try {
-        document.execCommand('copy');
-        showToast("Live Tracker Link copied!", "success");
-      } catch (err) {
-        showToast("Could not copy link automatically", "warning");
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+      } catch (e) {
+        console.warn("Supabase initialization bypassed:", e);
       }
-      document.body.removeChild(textArea);
+
+      await fetchRepairsFromCloud();
     }
 
-    function previewTracker(id) {
-      const url = getTrackerUrl(id);
-      window.open(url, '_blank');
+    async function fetchRepairsFromCloud() {
+      if (!supabaseClient) {
+        updateCloudStatus(false, "Offline / Local Mode");
+        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
+        render();
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        repairs = (data || []).map(normalizeRepair);
+        updateCloudStatus(true, "Cloud Sync Active");
+      } catch (err) {
+        console.warn("Cloud error fallback:", err);
+        updateCloudStatus(false, "Offline / Local Mode");
+        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
+      }
+      render();
     }
 
     function updateCloudStatus(connected, message) {
@@ -925,151 +706,80 @@
       const text = document.getElementById('cloudStatusText');
       if (dot && text) {
         if (connected) {
-          dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+          dot.className = "w-2 h-2 rounded-full bg-emerald-500 status-dot-pulse";
           text.innerText = message || "Cloud Sync Active";
         } else {
-          dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 status-pulse";
-          text.innerText = message || "Offline / Local Backup Mode";
+          dot.className = "w-2 h-2 rounded-full bg-amber-500 status-dot-pulse";
+          text.innerText = message || "Local Mode";
         }
       }
     }
 
-    async function fetchRepairsFromCloud() {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
-        repairs = (data || []).map(normalizeRepair);
-        updateCloudStatus(true, "Cloud Sync Active");
-        render();
-        renderInvoiceSelectionList();
-      } catch (err) {
-        console.warn("Cloud fetch error, using local cache:", err);
-        updateCloudStatus(false, "Offline Backup Mode");
-        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
-        render();
-        renderInvoiceSelectionList();
-      }
-    }
+    document.getElementById('repairForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    async function insertRepairToCloud(repairObj) {
-      const meta = {
-        model_number: repairObj.modelNumber,
-        part_name: repairObj.partName,
-        part_price: repairObj.partPrice,
-        labor_price: repairObj.laborPrice,
-        deposit_amount: repairObj.depositAmount,
-        payment_info: repairObj.paymentInfo
-      };
-      
-      const payload = {
-        customer_name: repairObj.customerName,
-        device_type: repairObj.deviceType,
-        make_model: repairObj.makeModel,
-        model_number: repairObj.modelNumber,
-        part_name: repairObj.partName,
-        part_price: repairObj.partPrice,
-        labor_price: repairObj.laborPrice,
-        deposit_amount: repairObj.depositAmount,
-        payment_info: repairObj.paymentInfo,
-        amount: repairObj.amount,
-        status: repairObj.status,
-        links: repairObj.links,
-        description: repairObj.description ? `${repairObj.description} [META:${JSON.stringify(meta)}]` : `[META:${JSON.stringify(meta)}]`
+      const linksArr = document.getElementById('repairLinks').value
+        .split(',')
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+      const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
+      const totalAmount = parseFloat(document.getElementById('repairAmount').value) || (partPrice + laborPrice);
+      const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
+
+      const rawItem = {
+        customer_name: document.getElementById('customerName').value,
+        device_type: document.getElementById('deviceType').value,
+        make_model: document.getElementById('makeModel').value,
+        model_number: document.getElementById('modelNumber').value,
+        part_name: document.getElementById('partName').value,
+        part_price: partPrice,
+        labor_price: laborPrice,
+        amount: totalAmount,
+        deposit_amount: depositAmount,
+        payment_info: document.getElementById('paymentInfo').value,
+        description: document.getElementById('repairDescription').value,
+        links: linksArr,
+        status: 'pending'
       };
 
       if (isCloudConnected && supabaseClient) {
-        const { error } = await supabaseClient.from('repairs').insert([payload]);
+        const { error } = await supabaseClient.from('repairs').insert([rawItem]);
         if (error) {
-          delete payload.model_number;
-          delete payload.part_name;
-          delete payload.part_price;
-          delete payload.labor_price;
-          delete payload.deposit_amount;
-          delete payload.payment_info;
-          await supabaseClient.from('repairs').insert([payload]);
+          const metaTag = ` [META:${JSON.stringify({
+            model_number: rawItem.model_number,
+            part_name: rawItem.part_name,
+            part_price: rawItem.part_price,
+            labor_price: rawItem.labor_price,
+            deposit_amount: rawItem.deposit_amount,
+            payment_info: rawItem.payment_info
+          })}]`;
+          
+          await supabaseClient.from('repairs').insert([{
+            customer_name: rawItem.customer_name,
+            device_type: rawItem.device_type,
+            make_model: rawItem.make_model,
+            amount: rawItem.amount,
+            description: rawItem.description + metaTag,
+            status: 'pending'
+          }]);
         }
         await fetchRepairsFromCloud();
       } else {
-        repairObj.id = 'local_' + Date.now();
-        repairs.unshift(repairObj);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-        renderInvoiceSelectionList();
-      }
-    }
-
-    async function updateRepairInCloud(id, repairObj) {
-      const meta = {
-        model_number: repairObj.modelNumber,
-        part_name: repairObj.partName,
-        part_price: repairObj.partPrice,
-        labor_price: repairObj.laborPrice,
-        deposit_amount: repairObj.depositAmount,
-        payment_info: repairObj.paymentInfo
-      };
-
-      const payload = {
-        customer_name: repairObj.customerName,
-        device_type: repairObj.deviceType,
-        make_model: repairObj.makeModel,
-        model_number: repairObj.modelNumber,
-        part_name: repairObj.partName,
-        part_price: repairObj.partPrice,
-        labor_price: repairObj.laborPrice,
-        deposit_amount: repairObj.depositAmount,
-        payment_info: repairObj.paymentInfo,
-        amount: repairObj.amount,
-        status: repairObj.status,
-        links: repairObj.links,
-        description: repairObj.description ? `${repairObj.description} [META:${JSON.stringify(meta)}]` : `[META:${JSON.stringify(meta)}]`
-      };
-
-      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-        const { error } = await supabaseClient.from('repairs').update(payload).eq('id', id);
-        if (error) {
-          delete payload.model_number;
-          delete payload.part_name;
-          delete payload.part_price;
-          delete payload.labor_price;
-          delete payload.deposit_amount;
-          delete payload.payment_info;
-          await supabaseClient.from('repairs').update(payload).eq('id', id);
-        }
-        await fetchRepairsFromCloud();
-      } else {
-        repairs = repairs.map(r => String(r.id) === String(id) ? { ...repairObj, id: id } : r);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-        renderInvoiceSelectionList();
-      }
-    }
-
-    async function updateStatus(id, newStatus) {
-      if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-        await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
-        await fetchRepairsFromCloud();
-      } else {
-        repairs = repairs.map(r => String(r.id) === String(id) ? { ...r, status: newStatus } : r);
+        rawItem.id = 'local_' + Date.now();
+        repairs.unshift(normalizeRepair(rawItem));
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
       }
-    }
 
-    function promptDeleteRepair(id) {
-      pendingDeleteId = id;
-      const modal = document.getElementById('confirmModal');
-      if (modal) modal.classList.remove('hidden');
-    }
+      document.getElementById('repairForm').reset();
+      showToast("Repair job saved successfully!");
+    });
 
     function render() {
-      const searchInput = document.getElementById('searchInput');
-      const statusFilter = document.getElementById('statusFilter');
-      const repairsList = document.getElementById('repairsList');
-      if (!repairsList) return;
-
-      const search = searchInput ? searchInput.value.toLowerCase() : '';
-      const status = statusFilter ? statusFilter.value : 'all';
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+      const status = document.getElementById('statusFilter').value;
 
       const filtered = repairs.filter(item => {
         const matchesSearch = 
@@ -1077,678 +787,425 @@
           item.makeModel.toLowerCase().includes(search) ||
           item.modelNumber.toLowerCase().includes(search) ||
           item.partName.toLowerCase().includes(search) ||
-          item.paymentInfo.toLowerCase().includes(search) ||
           item.description.toLowerCase().includes(search);
-        
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
       });
 
-      // Update Dashboard Metrics
-      const statTotal = document.getElementById('statTotal');
-      const statPending = document.getElementById('statPending');
-      const statCompleted = document.getElementById('statCompleted');
-      const statRevenue = document.getElementById('statRevenue');
-      const statDeposits = document.getElementById('statDeposits');
-      const statBalance = document.getElementById('statBalance');
+      // Metrics Update
+      document.getElementById('statTotal').innerText = repairs.length;
+      document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
+      document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
 
-      if (statTotal) statTotal.innerText = repairs.length;
-      if (statPending) statPending.innerText = repairs.filter(r => r.status === 'pending' || r.status === 'in-progress').length;
-      if (statCompleted) statCompleted.innerText = repairs.filter(r => r.status === 'completed').length;
-      
-      const totalRev = repairs.reduce((acc, r) => acc + r.amount, 0);
-      const totalDep = repairs.reduce((acc, r) => acc + r.depositAmount, 0);
-      const totalBal = repairs.reduce((acc, r) => acc + r.balanceDue, 0);
+      const rev = repairs.reduce((acc, r) => acc + r.amount, 0);
+      const dep = repairs.reduce((acc, r) => acc + r.depositAmount, 0);
+      const unpaid = repairs.reduce((acc, r) => acc + r.balanceDue, 0);
 
-      if (statRevenue) statRevenue.innerText = `$${totalRev.toFixed(2)}`;
-      if (statDeposits) statDeposits.innerText = `$${totalDep.toFixed(2)}`;
-      if (statBalance) statBalance.innerText = `$${totalBal.toFixed(2)}`;
+      document.getElementById('statRevenue').innerText = `$${rev.toFixed(2)}`;
+      document.getElementById('statDeposit').innerText = `$${dep.toFixed(2)}`;
+      document.getElementById('statUnpaid').innerText = `$${unpaid.toFixed(2)}`;
 
+      const listContainer = document.getElementById('repairsList');
       if (filtered.length === 0) {
-        repairsList.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No repair jobs found matching criteria.</div>`;
+        listContainer.innerHTML = `<div class="p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">No repair jobs matching your filter.</div>`;
         return;
       }
 
-      repairsList.innerHTML = filtered.map(item => `
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="flex items-center space-x-2 mb-1">
-                <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                  ${escapeHtml(item.deviceType)}
-                </span>
-                ${item.modelNumber ? `
-                  <span class="inline-block px-2 py-0.5 text-[10px] font-mono rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:amber-400 border border-amber-200/50 dark:border-amber-900/50">
-                    #${escapeHtml(item.modelNumber)}
+      listContainer.innerHTML = filtered.map(item => {
+        const trackingUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}track.html?id=${item.id}`;
+
+        return `
+          <div class="dark-card p-5 rounded-3xl shadow-md space-y-3">
+            
+            <!-- Top Header Row -->
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="flex items-center space-x-2 mb-1.5">
+                  <span class="px-2.5 py-0.5 text-[11px] font-black rounded-full bg-slate-800 text-slate-300">
+                    ${escapeHtml(item.deviceType)}
                   </span>
-                ` : ''}
+                  ${item.modelNumber ? `<span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">#${escapeHtml(item.modelNumber)}</span>` : ''}
+                </div>
+                <h3 class="text-lg font-black text-white leading-tight">${escapeHtml(item.customerName)}</h3>
+                <p class="text-xs font-bold text-slate-400 mt-0.5">${escapeHtml(item.makeModel)}</p>
               </div>
-              <h3 class="text-base font-bold">${escapeHtml(item.customerName)}</h3>
-              <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">${escapeHtml(item.makeModel)}</p>
-            </div>
-            <div class="text-right">
-              <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">$${item.amount.toFixed(2)}</span>
-              ${item.depositAmount > 0 ? `
-                <p class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">Dep: $${item.depositAmount.toFixed(2)}</p>
-                <p class="text-[10px] font-bold text-rose-500">Bal: $${item.balanceDue.toFixed(2)}</p>
-              ` : ''}
-            </div>
-          </div>
 
-          ${(item.partName || item.partPrice > 0) ? `
-            <div class="bg-amber-50/60 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-100 dark:border-amber-900/30 text-xs space-y-1">
-              <div class="flex items-center justify-between text-amber-800 dark:text-amber-300 font-semibold">
-                <span>🔩 Parts: ${escapeHtml(item.partName || 'Hardware Module')}</span>
-                <span>$${item.partPrice.toFixed(2)}</span>
-              </div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
-                <span>Labor/Service Charge:</span>
-                <span class="font-bold text-slate-700 dark:text-slate-300">$${item.laborPrice.toFixed(2)}</span>
+              <!-- Price & Balance Column -->
+              <div class="text-right shrink-0">
+                <span class="text-xl font-black text-emerald-400 block">$${item.amount.toFixed(2)}</span>
+                <div class="text-[10px] font-bold space-x-1.5 mt-0.5">
+                  <span class="text-indigo-400">Dep: $${item.depositAmount.toFixed(2)}</span>
+                  <span class="text-rose-400">Bal: $${item.balanceDue.toFixed(2)}</span>
+                </div>
               </div>
             </div>
-          ` : ''}
 
-          ${item.description ? `
-            <p class="text-xs text-slate-600 dark:text-slate-300 text-left bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-              ${escapeHtml(item.description)}
-            </p>
-          ` : ''}
+            <!-- Replacement Parts Details -->
+            ${item.partName ? `
+              <div class="bg-amber-950/20 p-3 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
+                <div>
+                  <span class="font-extrabold text-amber-400 block">🔌 Parts: ${escapeHtml(item.partName)}</span>
+                  <span class="text-[10px] font-semibold text-slate-400">Labor/Service Charge: $${item.laborPrice.toFixed(2)}</span>
+                </div>
+                <span class="font-black text-amber-400">$${item.partPrice.toFixed(2)}</span>
+              </div>
+            ` : ''}
 
-          ${item.paymentInfo ? `
-            <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              💳 Payment: <span class="text-slate-700 dark:text-slate-200 font-semibold">${escapeHtml(item.paymentInfo)}</span>
-            </p>
-          ` : ''}
+            <!-- Payment Handle Line -->
+            <div class="bg-slate-900/60 px-3 py-2 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 font-medium">
+              <span class="font-bold text-slate-400">💳 Payment:</span> ${escapeHtml(item.paymentInfo)}
+            </div>
 
-          ${item.links.length > 0 ? `
-            <div class="flex flex-wrap gap-2 text-xs pt-1">
-              ${item.links.map((link, idx) => `
-                <a href="${link.startsWith('http') ? escapeHtml(link) : 'https://' + escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                  <span>Link ${idx + 1}</span>
+            <!-- Notes -->
+            ${item.description ? `
+              <p class="text-xs text-slate-300 text-left bg-slate-950 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
+                ${escapeHtml(item.description)}
+              </p>
+            ` : ''}
+
+            <!-- Card Actions Bar -->
+            <div class="flex flex-wrap items-center justify-between pt-2.5 border-t border-slate-800/80 gap-2">
+              <select onchange="updateJobStatus('${item.id}', this.value)" class="text-xs px-3 py-1.5 font-bold rounded-xl bg-slate-900 text-slate-200 border border-slate-800 outline-none cursor-pointer">
+                <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                <option value="in-progress" ${item.status === 'in-progress' ? 'selected' : ''}>⚙️ In Progress</option>
+                <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>✅ Completed</option>
+              </select>
+
+              <div class="flex items-center space-x-1.5">
+                <button onclick="copyTrackerLink('${item.id}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition flex items-center space-x-1">
+                  <span>📋 Link</span>
+                </button>
+                <a href="${trackingUrl}" target="_blank" class="px-2.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1">
+                  <span>👁️ Live</span>
                 </a>
-              `).join('')}
+                <button onclick="openSmsModal('${item.id}')" class="p-2 text-purple-400 hover:bg-purple-900/30 rounded-xl transition" title="AI SMS">
+                  💬
+                </button>
+                <button onclick="openEditModal('${item.id}')" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition" title="Edit Job">
+                  ✏️
+                </button>
+                <button onclick="confirmDeleteJob('${item.id}')" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-900/30 rounded-xl transition" title="Delete Job">
+                  🗑️
+                </button>
+              </div>
             </div>
-          ` : ''}
 
-          <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/60">
-            <select onchange="updateStatus('${item.id}', this.value)" class="text-xs px-2.5 py-1.5 font-bold rounded-xl bg-slate-100 dark:bg-slate-700 border-none outline-none cursor-pointer">
-              <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
-              <option value="in-progress" ${item.status === 'in-progress' ? 'selected' : ''}>🔧 In Progress</option>
-              <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>✅ Completed</option>
-            </select>
-
-            <div class="flex items-center space-x-1.5">
-              <button onclick="copyTrackerLink('${item.id}')" class="px-2 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition" title="Copy Live Customer Tracker Link">
-                📋 Link
-              </button>
-              <button onclick="previewTracker('${item.id}')" class="px-2 py-1 bg-brand-50 dark:bg-brand-900/40 hover:bg-brand-100 text-brand-600 dark:text-brand-400 rounded-lg text-xs font-semibold transition" title="Preview Customer Tracker View">
-                👁️ Live
-              </button>
-              <button onclick="openAIMessageModal('${item.id}')" class="p-1.5 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition" title="Generate Customer Update Message">
-                💬
-              </button>
-              <button onclick="editRepair('${item.id}')" class="p-1.5 text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 rounded-lg transition" title="Edit Repair">
-                ✏️
-              </button>
-              <button onclick="promptDeleteRepair('${item.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition" title="Delete Repair">
-                🗑️
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderInvoiceSelectionList() {
-      const container = document.getElementById('invoiceJobSelectContainer');
-      const search = document.getElementById('invoiceSearchInput') ? document.getElementById('invoiceSearchInput').value.toLowerCase() : '';
-      if (!container) return;
-
-      const filtered = repairs.filter(r => 
-        r.customerName.toLowerCase().includes(search) || 
-        r.makeModel.toLowerCase().includes(search)
-      );
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="text-xs text-slate-400 p-3 text-center">No matching jobs found.</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(item => `
-        <div onclick="renderInvoicePreview('${item.id}')" class="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-brand-50 dark:hover:bg-brand-900/30 rounded-xl border border-slate-200 dark:border-slate-700/80 cursor-pointer transition flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold">${escapeHtml(item.customerName)}</p>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(item.makeModel)}</p>
-          </div>
-          <span class="text-xs font-black text-brand-600 dark:text-brand-400">$${item.amount.toFixed(2)}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderInvoicePreview(id) {
-      const item = repairs.find(r => String(r.id) === String(id));
-      const content = document.getElementById('invoiceContent');
-      if (!item || !content) return;
-      currentInvoiceJob = item;
-
-      content.innerHTML = `
-        <div class="border-b border-slate-200 dark:border-slate-700 pb-6 flex items-start justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="p-2 bg-slate-900 text-white rounded-xl">
-              <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-                <circle cx="50" cy="50" r="42" stroke-width="6"/>
-                <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <h2 class="text-xl font-black">AJD's Wireless Repairs</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Phone, Tablet & Laptop Repairs</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="px-2.5 py-1 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 text-xs font-bold rounded-lg uppercase">Invoice / Receipt</span>
-            <p class="text-[11px] text-slate-400 mt-1">Date: ${new Date(item.created_at).toLocaleDateString()}</p>
-            <p class="text-[11px] font-mono text-slate-400">ID: #${item.id.slice(-6)}</p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <p class="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Customer Information</p>
-            <p class="text-sm font-bold mt-0.5">${escapeHtml(item.customerName)}</p>
-          </div>
-          <div>
-            <p class="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Device Description</p>
-            <p class="text-sm font-bold mt-0.5">${escapeHtml(item.makeModel)} ${item.modelNumber ? `(#${escapeHtml(item.modelNumber)})` : ''}</p>
-          </div>
-        </div>
-
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-          <table class="w-full text-xs text-left">
-            <thead class="bg-slate-100 dark:bg-slate-700/50 font-bold uppercase text-[10px] text-slate-500">
-              <tr>
-                <th class="p-3">Service & Material Description</th>
-                <th class="p-3 text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-              ${item.partName ? `
-                <tr>
-                  <td class="p-3">
-                    <p class="font-bold">${escapeHtml(item.partName)}</p>
-                    <p class="text-[10px] text-slate-400">Replacement Hardware Item</p>
-                  </td>
-                  <td class="p-3 text-right font-semibold">$${item.partPrice.toFixed(2)}</td>
-                </tr>
-              ` : ''}
-              <tr>
-                <td class="p-3">
-                  <p class="font-bold">Labor & Technical Repair Service</p>
-                  <p class="text-[10px] text-slate-400">${escapeHtml(item.description || 'Diagnosis and installation service')}</p>
-                </td>
-                <td class="p-3 text-right font-semibold">$${item.laborPrice.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
-          <div class="flex justify-between font-bold">
-            <span>Total Quoted Amount:</span>
-            <span>$${item.amount.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between text-indigo-600 dark:text-indigo-400 font-bold">
-            <span>Deposit Paid:</span>
-            <span>-$${item.depositAmount.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between text-sm font-black text-rose-600 dark:text-rose-400 pt-1 border-t border-slate-200 dark:border-slate-700">
-            <span>Remaining Balance Due:</span>
-            <span>$${item.balanceDue.toFixed(2)}</span>
-          </div>
-        </div>
-
-        <div class="text-center pt-4 border-t border-slate-200 dark:border-slate-700 space-y-1">
-          <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Thank you for choosing AJD's Wireless Repairs!</p>
-          <p class="text-[11px] text-slate-400">${escapeHtml(shopPaymentInfo)}</p>
-        </div>
-      `;
-    }
-
-    function checkAndLoadHashRoute() {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#track=')) {
-        const trackId = hash.replace('#track=', '');
-        activeTrackedJobId = trackId;
-        switchTab('tracker');
-        renderCustomerTrackerCard(trackId);
-      }
-    }
-
-    function renderCustomerTrackerCard(trackId) {
-      const container = document.getElementById('customerTrackerCard');
-      if (!container) return;
-
-      const item = repairs.find(r => String(r.id) === String(trackId));
-      if (!item) {
-        container.innerHTML = `
-          <div class="text-center py-12 space-y-3">
-            <p class="text-lg font-bold text-slate-700 dark:text-slate-200">Tracking Information Pending...</p>
-            <p class="text-xs text-slate-400">Connecting to cloud repair server to fetch status...</p>
-            <button onclick="fetchRepairsFromCloud()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold">Refresh Server Data</button>
           </div>
         `;
-        return;
+      }).join('');
+    }
+
+    function copyTrackerLink(id) {
+      const trackingUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}track.html?id=${id}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(trackingUrl);
+        showToast("Live tracking link copied to clipboard!");
       }
-
-      const step = item.status === 'completed' ? 4 : item.status === 'in-progress' ? 2 : 1;
-
-      container.innerHTML = `
-        <div class="text-center space-y-2 border-b border-slate-100 dark:border-slate-700 pb-6">
-          <div class="w-16 h-16 bg-brand-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-3">
-            <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-              <circle cx="50" cy="50" r="42" stroke-width="6"/>
-              <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-black">AJD's Wireless Repairs</h2>
-          <p class="text-xs text-slate-400 font-semibold">Live Device Repair Tracking Portal</p>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex items-center justify-between text-xs font-bold">
-            <span class="text-slate-400">Customer: <span class="text-slate-800 dark:text-slate-100">${escapeHtml(item.customerName)}</span></span>
-            <span class="text-slate-400">Device: <span class="text-slate-800 dark:text-slate-100">${escapeHtml(item.makeModel)}</span></span>
-          </div>
-
-          <!-- Progress Bar -->
-          <div class="relative py-4">
-            <div class="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-700">
-              <div style="width: ${step === 4 ? '100%' : step === 2 ? '60%' : '25%'}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-600 transition-all duration-500"></div>
-            </div>
-            <div class="grid grid-cols-3 text-[10px] font-bold text-center mt-3 text-slate-400">
-              <span class="${step >= 1 ? 'text-brand-600 dark:text-brand-400' : ''}">1. Checked In</span>
-              <span class="${step >= 2 ? 'text-brand-600 dark:text-brand-400' : ''}">2. Repair In Progress</span>
-              <span class="${step === 4 ? 'text-emerald-600 dark:text-emerald-400' : ''}">3. Ready For Pickup</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
-          <div class="flex justify-between font-semibold">
-            <span>Total Quoted Cost:</span>
-            <span class="font-black">$${item.amount.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between text-indigo-600 dark:text-indigo-400 font-semibold">
-            <span>Deposit Paid:</span>
-            <span>-$${item.depositAmount.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between text-sm font-black text-rose-600 dark:text-rose-400 pt-2 border-t border-slate-200 dark:border-slate-700">
-            <span>Balance Due at Pickup:</span>
-            <span>$${item.balanceDue.toFixed(2)}</span>
-          </div>
-        </div>
-
-        <div class="bg-brand-50/60 dark:bg-brand-950/20 p-4 rounded-2xl border border-brand-100 dark:border-brand-900/40 space-y-2">
-          <p class="text-xs font-bold text-brand-700 dark:text-brand-300 uppercase tracking-wider">💳 Where To Pay / Payment Instructions</p>
-          <p class="text-xs text-slate-700 dark:text-slate-200 font-medium leading-relaxed">${escapeHtml(shopPaymentInfo)}</p>
-        </div>
-      `;
     }
 
-    function openPriceModal() {
-      const priceInputs = document.getElementById('priceInputs');
-      const instructions = document.getElementById('shopPaymentInstructions');
-      if (priceInputs) {
-        priceInputs.innerHTML = Object.keys(priceSettings).map(cat => `
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-semibold">${escapeHtml(cat)}</label>
-            <div class="flex items-center space-x-1">
-              <span class="text-xs text-slate-400">$</span>
-              <input type="number" step="1" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-20 px-2 py-1 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold">
-            </div>
-          </div>
-        `).join('');
+    async function updateJobStatus(id, newStatus) {
+      if (isCloudConnected && supabaseClient) {
+        await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id);
+        await fetchRepairsFromCloud();
+      } else {
+        repairs = repairs.map(r => r.id === id ? { ...r, status: newStatus } : r);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
       }
-      if (instructions) instructions.value = shopPaymentInfo;
-      const modal = document.getElementById('priceModal');
-      if (modal) modal.classList.remove('hidden');
+      showToast("Job status updated!");
     }
 
-    function closePriceModal() {
-      const modal = document.getElementById('priceModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function savePricesAndSettings() {
-      document.querySelectorAll('.price-edit-input').forEach(input => {
-        const cat = input.getAttribute('data-cat');
-        priceSettings[cat] = parseFloat(input.value) || 0;
-      });
-      const instructions = document.getElementById('shopPaymentInstructions');
-      if (instructions) shopPaymentInfo = instructions.value;
-
-      localStorage.setItem('ajd_price_settings', JSON.stringify(priceSettings));
-      localStorage.setItem('ajd_payment_info', shopPaymentInfo);
-      showToast("Preset rates and payment handles saved!", "success");
-      closePriceModal();
-    }
-
-    function editRepair(id) {
-      const item = repairs.find(r => String(r.id) === String(id));
+    function openEditModal(id) {
+      const item = repairs.find(r => r.id === id);
       if (!item) return;
 
-      document.getElementById('editId').value = item.id;
+      document.getElementById('editJobId').value = item.id;
       document.getElementById('editCustomerName').value = item.customerName;
       document.getElementById('editDeviceType').value = item.deviceType;
       document.getElementById('editMakeModel').value = item.makeModel;
-      document.getElementById('editModelNumber').value = item.modelNumber || '';
-      document.getElementById('editPartName').value = item.partName || '';
+      document.getElementById('editModelNumber').value = item.modelNumber;
+      document.getElementById('editPartName').value = item.partName;
       document.getElementById('editPartPrice').value = item.partPrice || '';
       document.getElementById('editQuotedPrice').value = item.laborPrice || '';
       document.getElementById('editRepairAmount').value = item.amount || '';
       document.getElementById('editDepositAmount').value = item.depositAmount || '';
-      document.getElementById('editDepositPercent').value = item.amount > 0 ? Math.round((item.depositAmount / item.amount) * 100) : '';
-      document.getElementById('editBalanceDue').value = item.balanceDue.toFixed(2);
-      document.getElementById('editRepairLinks').value = item.links.join(', ');
-      document.getElementById('editPaymentInfo').value = item.paymentInfo || '';
-      document.getElementById('editRepairDescription').value = item.description || '';
+      document.getElementById('editRepairDescription').value = item.description;
+      document.getElementById('editRepairLinks').value = (item.links || []).join(', ');
 
-      const modal = document.getElementById('editModal');
-      if (modal) modal.classList.remove('hidden');
+      document.getElementById('editModal').classList.remove('hidden');
     }
 
-    function closeEditModal() {
-      const modal = document.getElementById('editModal');
-      if (modal) modal.classList.add('hidden');
+    document.getElementById('closeEditModal').addEventListener('click', () => {
+      document.getElementById('editModal').classList.add('hidden');
+    });
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editJobId').value;
+      const linksArr = document.getElementById('editRepairLinks').value.split(',').map(l => l.trim()).filter(l => l.length > 0);
+
+      const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+      const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || (partPrice + laborPrice);
+
+      const updatedData = {
+        customer_name: document.getElementById('editCustomerName').value,
+        device_type: document.getElementById('editDeviceType').value,
+        make_model: document.getElementById('editMakeModel').value,
+        model_number: document.getElementById('editModelNumber').value,
+        part_name: document.getElementById('editPartName').value,
+        part_price: partPrice,
+        labor_price: laborPrice,
+        amount: totalAmount,
+        deposit_amount: parseFloat(document.getElementById('editDepositAmount').value) || 0,
+        description: document.getElementById('editRepairDescription').value,
+        links: linksArr
+      };
+
+      if (isCloudConnected && supabaseClient) {
+        await supabaseClient.from('repairs').update(updatedData).eq('id', id);
+        await fetchRepairsFromCloud();
+      } else {
+        repairs = repairs.map(r => r.id === id ? normalizeRepair({ ...r, ...updatedData }) : r);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+      }
+
+      document.getElementById('editModal').classList.add('hidden');
+      showToast("Job changes saved!");
+    });
+
+    function confirmDeleteJob(id) {
+      pendingDeleteId = id;
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
+      pendingDeleteId = null;
+      document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
+      if (!pendingDeleteId) return;
+      if (isCloudConnected && supabaseClient) {
+        await supabaseClient.from('repairs').delete().eq('id', pendingDeleteId);
+        await fetchRepairsFromCloud();
+      } else {
+        repairs = repairs.filter(r => r.id !== pendingDeleteId);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+      }
+      pendingDeleteId = null;
+      document.getElementById('confirmModal').classList.add('hidden');
+      showToast("Job record deleted.");
+    });
+
+    function renderInvoiceSelectionList() {
+      const container = document.getElementById('invoiceSelectionList');
+      if (!container) return;
+
+      if (repairs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 p-3">No repair jobs available.</p>`;
+        return;
+      }
+
+      container.innerHTML = repairs.map(r => `
+        <button onclick="selectInvoiceJob('${r.id}')" class="w-full text-left p-3.5 rounded-2xl border transition ${selectedInvoiceJobId === r.id ? 'bg-brand-900/40 border-brand-500 text-white font-bold' : 'dark-card text-slate-300 hover:bg-slate-800'}">
+          <div class="flex justify-between text-xs">
+            <span class="font-black">${escapeHtml(r.customerName)}</span>
+            <span class="font-extrabold text-emerald-400">$${r.amount.toFixed(2)}</span>
+          </div>
+          <p class="text-[11px] text-slate-400">${escapeHtml(r.makeModel)}</p>
+        </button>
+      `).join('');
+
+      if (!selectedInvoiceJobId && repairs.length > 0) {
+        selectInvoiceJob(repairs[0].id);
+      }
+    }
+
+    function selectInvoiceJob(id) {
+      selectedInvoiceJobId = id;
+      renderInvoiceSelectionList();
+
+      const item = repairs.find(r => r.id === id);
+      const canvas = document.getElementById('invoicePrintCanvas');
+      if (!item || !canvas) return;
+
+      canvas.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex justify-between items-start border-b border-slate-200 pb-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-xl">A</div>
+              <div>
+                <h2 class="text-xl font-black text-slate-900">AJD’s Wireless Repairs</h2>
+                <p class="text-xs font-bold text-slate-500">Phone, Tablet & Laptop Repairs</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-2xl font-black uppercase tracking-wider text-slate-900">INVOICE</span>
+              <p class="text-xs font-bold text-slate-500 mt-0.5">Job ID: #${item.id.substring(0, 8)}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 text-xs font-semibold">
+            <div>
+              <span class="text-slate-400 uppercase font-black text-[10px]">Customer</span>
+              <p class="text-sm font-black text-slate-900">${escapeHtml(item.customerName)}</p>
+              <p class="text-slate-600">${escapeHtml(item.makeModel)} ${item.modelNumber ? `(#${escapeHtml(item.modelNumber)})` : ''}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-400 uppercase font-black text-[10px]">Date & Status</span>
+              <p class="text-slate-900 font-bold">${new Date(item.created_at).toLocaleDateString()}</p>
+              <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-brand-100 text-brand-800">${item.status}</span>
+            </div>
+          </div>
+
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b-2 border-slate-200 text-slate-400 uppercase font-black text-[10px]">
+                <th class="py-2">Service / Part Description</th>
+                <th class="py-2 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${item.partName ? `
+                <tr>
+                  <td class="py-3 font-semibold">Replacement Part: ${escapeHtml(item.partName)}</td>
+                  <td class="py-3 text-right font-bold">$${item.partPrice.toFixed(2)}</td>
+                </tr>
+              ` : ''}
+              <tr>
+                <td class="py-3 font-semibold">Technical Labor & Service Charge</td>
+                <td class="py-3 text-right font-bold">$${item.laborPrice.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs border border-slate-200">
+            <div class="flex justify-between font-semibold"><span>Subtotal Total:</span><span>$${item.amount.toFixed(2)}</span></div>
+            <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Paid:</span><span>-$${item.depositAmount.toFixed(2)}</span></div>
+            <div class="flex justify-between font-black text-sm text-rose-600 pt-2 border-t border-slate-200"><span>Remaining Balance Due:</span><span>$${item.balanceDue.toFixed(2)}</span></div>
+          </div>
+
+          <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 space-y-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-brand-800">💳 Payment Handles & Info</span>
+            <p class="text-xs font-bold text-slate-800 leading-relaxed">${escapeHtml(item.paymentInfo)}</p>
+          </div>
+        </div>
+      `;
     }
 
     function handlePrintOrShareInvoice() {
-      try {
-        window.print();
-      } catch (e) {
-        console.warn("window.print restriction:", e);
-        if (currentInvoiceJob && navigator.share) {
-          navigator.share({
-            title: `Invoice - ${currentInvoiceJob.customerName}`,
-            text: `Invoice for ${currentInvoiceJob.customerName} (${currentInvoiceJob.makeModel}) - Total: $${currentInvoiceJob.amount.toFixed(2)}, Balance Due: $${currentInvoiceJob.balanceDue.toFixed(2)}`,
-            url: getTrackerUrl(currentInvoiceJob.id)
-          }).catch(() => {});
-        } else if (currentInvoiceJob) {
-          copyTrackerLink(currentInvoiceJob.id);
-          showToast("Print window blocked by browser preview. Invoice tracker link copied instead!", "warning");
-        } else {
-          showToast("Print window blocked by browser frame.", "warning");
-        }
-      }
-    }
-
-    function handlePrintOrShareTracker() {
-      try {
-        window.print();
-      } catch (e) {
-        console.warn("window.print restriction:", e);
-        if (activeTrackedJobId && navigator.share) {
-          navigator.share({
-            title: "AJD's Wireless Repairs - Live Status",
-            text: "Live Device Repair Tracking Status",
-            url: getTrackerUrl(activeTrackedJobId)
-          }).catch(() => {});
-        } else if (activeTrackedJobId) {
-          copyTrackerLink(activeTrackedJobId);
-          showToast("Print window blocked by browser preview. Live tracking link copied instead!", "warning");
-        } else {
-          showToast("Print window blocked by browser frame.", "warning");
-        }
-      }
-    }
-
-    function openAIEstimateModal() {
-      const modal = document.getElementById('aiEstimateModal');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeAIEstimateModal() {
-      const modal = document.getElementById('aiEstimateModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function runAIEstimator() {
-      const dev = document.getElementById('aiDeviceInput').value || 'iPhone 14';
-      const sym = document.getElementById('aiSymptomInput').value || 'Shattered screen';
-
-      document.getElementById('customerName').value = "AI Client";
-      document.getElementById('deviceType').value = "iPhone";
-      document.getElementById('makeModel').value = dev;
-      document.getElementById('partName').value = "Premium OLED Screen Module";
-      document.getElementById('partPrice').value = 45.00;
-      document.getElementById('quotedPrice').value = 75.00;
-      document.getElementById('repairDescription').value = `Diagnosed issue: ${sym}. High grade replacement screen assembly required.`;
-
-      calculateTotal('repairForm');
-      showToast("AI Repair breakdown auto-filled into form!", "success");
-      closeAIEstimateModal();
-    }
-
-    function openAIMessageModal(id) {
-      const item = repairs.find(r => String(r.id) === String(id));
+      if (!selectedInvoiceJobId) return;
+      const item = repairs.find(r => r.id === selectedInvoiceJobId);
       if (!item) return;
 
-      const url = getTrackerUrl(item.id);
-      const text = `Hi ${item.customerName}! Update on your ${item.makeModel} repair from AJD's Wireless Repairs: Status is currently [${item.status.toUpperCase()}]. View live tracking & balance here: ${url}`;
-
-      const textElem = document.getElementById('aiMessageText');
-      if (textElem) textElem.value = text;
-
-      const modal = document.getElementById('aiMessageModal');
-      const container = document.getElementById('aiMessageContainer');
-      const loading = document.getElementById('aiMessageLoading');
-
-      if (loading) loading.classList.add('hidden');
-      if (container) container.classList.remove('hidden');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeAIMessageModal() {
-      const modal = document.getElementById('aiMessageModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function copyAIMessageToClipboard() {
-      const textElem = document.getElementById('aiMessageText');
-      if (textElem) {
-        fallbackCopyText(textElem.value);
-      }
-    }
-
-    function playAIVoicePreview() {
-      const textElem = document.getElementById('aiMessageText');
-      if (textElem && 'speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(textElem.value);
-        window.speechSynthesis.speak(utterance);
-        showToast("Playing voice audio preview...", "info");
-      }
-    }
-
-    function openAIInsightsModal() {
-      const modal = document.getElementById('aiInsightsModal');
-      const loading = document.getElementById('aiInsightsLoading');
-      const content = document.getElementById('aiInsightsContent');
-
-      if (modal) modal.classList.remove('hidden');
-      if (loading) loading.classList.remove('hidden');
-      if (content) content.classList.add('hidden');
-
-      setTimeout(() => {
-        if (loading) loading.classList.add('hidden');
-        if (content) {
-          content.innerHTML = `
-            <p class="font-bold text-brand-600">📊 Shop Performance Analysis:</p>
-            <p>• Total active repair jobs: ${repairs.length}</p>
-            <p>• Pending revenue: $${repairs.reduce((a, b) => a + b.balanceDue, 0).toFixed(2)}</p>
-            <p>• Recommendation: Maintain screen assemblies for top device categories (iPhone/Galaxy) for faster turnaround times.</p>
-          `;
-          content.classList.remove('hidden');
-        }
-      }, 600);
-    }
-
-    function closeAIInsightsModal() {
-      const modal = document.getElementById('aiInsightsModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    window.onload = async function() {
-      // Connect Supabase
       try {
-        if (window.supabase && typeof window.supabase.createClient === 'function') {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        }
+        const printWin = window.open('', '_blank', 'width=800,height=900');
+        printWin.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Invoice - ${escapeHtml(item.customerName)}</title>
+            <script src="https://cdn.tailwindcss.com"><\/script>
+          </head>
+          <body class="p-8 bg-white text-slate-900" onload="window.print(); window.close();">
+            ${document.getElementById('invoicePrintCanvas').innerHTML}
+          </body>
+          </html>
+        `);
+        printWin.document.close();
       } catch (e) {
-        console.warn("Supabase init error:", e);
+        window.print();
+      }
+    }
+
+    function copyInvoiceTextSummary() {
+      if (!selectedInvoiceJobId) return;
+      const item = repairs.find(r => r.id === selectedInvoiceJobId);
+      if (!item) return;
+
+      const summary = `AJD's Wireless Repairs Invoice
+Customer: ${item.customerName}
+Device: ${item.makeModel}
+Total Amount: $${item.amount.toFixed(2)}
+Deposit Paid: $${item.depositAmount.toFixed(2)}
+Balance Due: $${item.balanceDue.toFixed(2)}
+Payment Handles: ${item.paymentInfo}`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(summary);
+        showToast("Invoice summary text copied!");
+      }
+    }
+
+    function openSmsModal(id) {
+      activeSmsJob = repairs.find(r => r.id === id);
+      if (!activeSmsJob) return;
+      generateSmsText('ready');
+      document.getElementById('smsAiModal').classList.remove('hidden');
+    }
+
+    function closeSmsModal() {
+      document.getElementById('smsAiModal').classList.add('hidden');
+    }
+
+    function generateSmsText(type) {
+      if (!activeSmsJob) return;
+      const trackingUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}track.html?id=${activeSmsJob.id}`;
+      let text = '';
+
+      if (type === 'ready') {
+        text = `Hi ${activeSmsJob.customerName}, your ${activeSmsJob.makeModel} is repaired and ready for pickup at AJD's Wireless Repairs! Balance due: $${activeSmsJob.balanceDue.toFixed(2)}. Track status live: ${trackingUrl}`;
+      } else if (type === 'urgent') {
+        text = `Hi ${activeSmsJob.customerName}, update regarding your ${activeSmsJob.makeModel} repair at AJD's Wireless Repairs. Please check live tracking or call us: ${trackingUrl}`;
+      } else {
+        text = `Hi ${activeSmsJob.customerName}, your ${activeSmsJob.makeModel} repair is in progress at AJD's Wireless Repairs. View live updates here: ${trackingUrl}`;
       }
 
-      // Attach event listeners to calculation inputs
-      ['quotedPrice', 'partPrice', 'depositAmount', 'depositPercent'].forEach(id => {
-        const elem = document.getElementById(id);
-        if (elem) elem.addEventListener('input', () => calculateTotal('repairForm'));
+      document.getElementById('smsOutputText').value = text;
+    }
+
+    function copySmsText() {
+      const text = document.getElementById('smsOutputText').value;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        showToast("SMS text copied to clipboard!");
+      }
+    }
+
+    document.getElementById('priceModalBtn').addEventListener('click', () => {
+      const container = document.getElementById('priceInputs');
+      container.innerHTML = Object.keys(priceSettings).map(cat => `
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-300">${cat}</span>
+          <div class="flex items-center space-x-1">
+            <span class="text-slate-500">$</span>
+            <input type="number" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-20 px-2 py-1 bg-slate-950 border border-slate-800 text-white rounded-lg font-bold">
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('priceModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closePriceModal').addEventListener('click', () => {
+      document.getElementById('priceModal').classList.add('hidden');
+    });
+
+    document.getElementById('savePricesBtn').addEventListener('click', () => {
+      document.querySelectorAll('.price-edit-input').forEach(input => {
+        priceSettings[input.getAttribute('data-cat')] = parseFloat(input.value) || 0;
       });
+      localStorage.setItem('ajd_price_settings', JSON.stringify(priceSettings));
+      document.getElementById('priceModal').classList.add('hidden');
+      showToast("Price presets updated!");
+    });
 
-      ['editQuotedPrice', 'editPartPrice', 'editDepositAmount', 'editDepositPercent'].forEach(id => {
-        const elem = document.getElementById(id);
-        if (elem) elem.addEventListener('input', () => calculateTotal('editForm'));
-      });
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('statusFilter').addEventListener('change', render);
 
-      // Auto Fill Default Price On Category Select
-      const devSelect = document.getElementById('deviceType');
-      if (devSelect) {
-        devSelect.addEventListener('change', (e) => {
-          const cat = e.target.value;
-          if (priceSettings[cat] !== undefined) {
-            document.getElementById('quotedPrice').value = priceSettings[cat];
-            calculateTotal('repairForm');
-          }
-        });
-      }
-
-      // Form Submissions
-      const repairForm = document.getElementById('repairForm');
-      if (repairForm) {
-        repairForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const linksArr = (document.getElementById('repairLinks').value || '')
-            .split(',')
-            .map(l => l.trim())
-            .filter(l => l.length > 0);
-
-          const totalAmount = parseFloat(document.getElementById('repairAmount').value) || 0;
-          const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
-
-          const newObj = {
-            customerName: document.getElementById('customerName').value,
-            deviceType: document.getElementById('deviceType').value,
-            makeModel: document.getElementById('makeModel').value,
-            modelNumber: document.getElementById('modelNumber').value,
-            partName: document.getElementById('partName').value,
-            partPrice: parseFloat(document.getElementById('partPrice').value) || 0,
-            laborPrice: parseFloat(document.getElementById('quotedPrice').value) || 0,
-            amount: totalAmount,
-            depositAmount: depositAmount,
-            balanceDue: Math.max(0, totalAmount - depositAmount),
-            paymentInfo: document.getElementById('paymentInfo').value,
-            description: document.getElementById('repairDescription').value,
-            links: linksArr,
-            status: 'pending'
-          };
-
-          await insertRepairToCloud(newObj);
-          repairForm.reset();
-          showToast("Repair job added successfully!", "success");
-        });
-      }
-
-      const editForm = document.getElementById('editForm');
-      if (editForm) {
-        editForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const id = document.getElementById('editId').value;
-          const linksArr = (document.getElementById('editRepairLinks').value || '')
-            .split(',')
-            .map(l => l.trim())
-            .filter(l => l.length > 0);
-
-          const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || 0;
-          const depositAmount = parseFloat(document.getElementById('editDepositAmount').value) || 0;
-
-          const updatedObj = {
-            customerName: document.getElementById('editCustomerName').value,
-            deviceType: document.getElementById('editDeviceType').value,
-            makeModel: document.getElementById('editMakeModel').value,
-            modelNumber: document.getElementById('editModelNumber').value,
-            partName: document.getElementById('editPartName').value,
-            partPrice: parseFloat(document.getElementById('editPartPrice').value) || 0,
-            laborPrice: parseFloat(document.getElementById('editQuotedPrice').value) || 0,
-            amount: totalAmount,
-            depositAmount: depositAmount,
-            balanceDue: Math.max(0, totalAmount - depositAmount),
-            paymentInfo: document.getElementById('editPaymentInfo').value,
-            description: document.getElementById('editRepairDescription').value,
-            links: linksArr,
-            status: 'pending'
-          };
-
-          await updateRepairInCloud(id, updatedObj);
-          closeEditModal();
-          showToast("Repair job changes saved!", "success");
-        });
-      }
-
-      // Delete confirmation button
-      const actionConfirmBtn = document.getElementById('actionConfirmBtn');
-      const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
-
-      if (cancelConfirmBtn) {
-        cancelConfirmBtn.addEventListener('click', () => {
-          pendingDeleteId = null;
-          document.getElementById('confirmModal').classList.add('hidden');
-        });
-      }
-
-      if (actionConfirmBtn) {
-        actionConfirmBtn.addEventListener('click', async () => {
-          if (!pendingDeleteId) return;
-          const id = pendingDeleteId;
-          pendingDeleteId = null;
-          document.getElementById('confirmModal').classList.add('hidden');
-
-          if (isCloudConnected && supabaseClient && !String(id).startsWith('local_')) {
-            await supabaseClient.from('repairs').delete().eq('id', id);
-            await fetchRepairsFromCloud();
-          } else {
-            repairs = repairs.filter(r => String(r.id) !== String(id));
-            localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-            render();
-            renderInvoiceSelectionList();
-          }
-          showToast("Repair job deleted", "info");
-        });
-      }
-
-      // Search & Filters
-      const searchInput = document.getElementById('searchInput');
-      const statusFilter = document.getElementById('statusFilter');
-      if (searchInput) searchInput.addEventListener('input', render);
-      if (statusFilter) statusFilter.addEventListener('change', render);
-
-      const invoiceSearchInput = document.getElementById('invoiceSearchInput');
-      if (invoiceSearchInput) invoiceSearchInput.addEventListener('input', renderInvoiceSelectionList);
-
-      window.addEventListener('hashchange', checkAndLoadHashRoute);
-
-      // Fetch Initial Data
-      await fetchRepairsFromCloud();
-      checkAndLoadHashRoute();
-    };
+    window.onload = initApp;
   </script>
 </body>
 </html>
