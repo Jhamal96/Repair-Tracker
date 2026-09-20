@@ -80,13 +80,12 @@
 </head>
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- Top Navigation Header -->
+  <!-- Header -->
   <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6 no-print">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       
       <!-- Brand Logo & Title -->
       <div class="flex items-center space-x-3 w-full md:w-auto">
-        <!-- Monogram Logo -->
         <div class="bg-slate-900 text-white p-2 rounded-2xl border border-slate-700 shadow-md shrink-0 flex items-center justify-center w-11 h-11">
           <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" stroke="currentColor">
             <circle cx="50" cy="50" r="42" stroke-width="6"/>
@@ -109,7 +108,7 @@
         </div>
       </div>
 
-      <!-- Center Tabs -->
+      <!-- Center Navigation Tabs -->
       <div class="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800 space-x-1">
         <button id="tabBtnRepairs" onclick="switchTab('repairs')" class="px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2 active:scale-95 cursor-pointer">
           <span>💻 Repairs Tracker</span>
@@ -119,7 +118,7 @@
         </button>
       </div>
 
-      <!-- Right Utility Controls -->
+      <!-- Utility Toolbar -->
       <div class="flex items-center space-x-2.5">
         <button onclick="openAiInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black rounded-xl shadow transition flex items-center space-x-1.5 border border-purple-400/30 active:scale-95 cursor-pointer">
           <span>✨ AI Insights</span>
@@ -129,7 +128,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </button>
 
-        <select id="themeSelect" class="text-xs p-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl font-bold outline-none cursor-pointer">
+        <select id="themeSelect" onchange="applyTheme(this.value)" class="text-xs p-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl font-bold outline-none cursor-pointer">
           <option value="dark">📱 System</option>
           <option value="dark">🌙 Dark Mode</option>
           <option value="light">☀️ Light Mode</option>
@@ -139,7 +138,7 @@
     </div>
   </header>
 
-  <!-- Main Application Container -->
+  <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
     <!-- 6-Metric Bar -->
@@ -261,7 +260,7 @@
                 </div>
               </div>
 
-              <!-- Quick Deposit Presets -->
+              <!-- Quick Deposit Presets (0%, 25%, 50%, 75%, 100%) -->
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Quick Preset</label>
                 <div class="grid grid-cols-5 gap-1.5 mb-2">
@@ -355,13 +354,11 @@
 
       <!-- Printable Invoice Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Sidebar Selection -->
         <div class="lg:col-span-4 space-y-3 no-print">
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-1">Select Job to Preview</h3>
           <div id="invoiceSelectionList" class="space-y-2.5 max-h-[600px] overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- Sheet Preview -->
         <div class="lg:col-span-8">
           <div id="invoicePrintCanvas" class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl text-slate-900 printable-area space-y-6 min-h-[650px]">
             <p class="text-center text-slate-400 py-16 text-sm font-semibold">Select a repair job on the left to generate its printable invoice.</p>
@@ -373,7 +370,7 @@
   </main>
 
   <!-- MODAL 1: EDIT REPAIR MODAL -->
-  <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="editModal" onclick="handleBackdropClick(event, 'editModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base sm:text-lg font-black text-white">✏️ Edit Repair Job</h3>
@@ -432,7 +429,6 @@
           </div>
         </div>
 
-        <!-- Deposit Quick Preset in Edit Modal -->
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Quick Preset</label>
           <div class="grid grid-cols-5 gap-1.5 mb-2">
@@ -471,7 +467,7 @@
   </div>
 
   <!-- MODAL 2: PRICE PRESETS -->
-  <div id="priceModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="priceModal" onclick="handleBackdropClick(event, 'priceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white">Customize Preset Device Rates</h3>
@@ -487,7 +483,7 @@
   </div>
 
   <!-- MODAL 3: DELETE CONFIRMATION -->
-  <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="confirmModal" onclick="handleBackdropClick(event, 'confirmModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
       <div class="w-12 h-12 bg-rose-900/40 text-rose-400 rounded-2xl mx-auto flex items-center justify-center text-xl">⚠️</div>
       <h3 class="text-base font-extrabold text-white">Delete Repair Job?</h3>
@@ -500,7 +496,7 @@
   </div>
 
   <!-- MODAL 4: AI CUSTOMER SMS GENERATOR -->
-  <div id="smsAiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="smsAiModal" onclick="handleBackdropClick(event, 'smsAiModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white flex items-center gap-2">
@@ -532,7 +528,7 @@
   </div>
 
   <!-- MODAL 5: AI ESTIMATE MODAL -->
-  <div id="aiEstimateModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="aiEstimateModal" onclick="handleBackdropClick(event, 'aiEstimateModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white flex items-center gap-2">
@@ -558,7 +554,7 @@
   </div>
 
   <!-- MODAL 6: AI INSIGHTS MODAL -->
-  <div id="aiInsightsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+  <div id="aiInsightsModal" onclick="handleBackdropClick(event, 'aiInsightsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white flex items-center gap-2">
@@ -586,6 +582,8 @@
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
+    let realtimeChannel = null;
+    let fallbackPollingTimer = null;
 
     const defaultPrices = {
       'iPhone': 90,
@@ -642,11 +640,21 @@
       }, 3500);
     }
 
+    function applyTheme(mode) {
+      if (mode === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+    }
+
     function switchTab(tabName) {
       const viewRepairs = document.getElementById('viewRepairs');
       const viewInvoices = document.getElementById('viewInvoices');
       const tabBtnRepairs = document.getElementById('tabBtnRepairs');
       const tabBtnInvoices = document.getElementById('tabBtnInvoices');
+
+      if (!viewRepairs || !viewInvoices || !tabBtnRepairs || !tabBtnInvoices) return;
 
       if (tabName === 'invoices') {
         viewRepairs.classList.add('hidden');
@@ -704,15 +712,8 @@
       document.getElementById('editRepairAmount').value = (partPrice + laborPrice).toFixed(2);
     }
 
-    document.getElementById('deviceType').addEventListener('change', (e) => {
-      const preset = priceSettings[e.target.value];
-      if (preset !== undefined) {
-        document.getElementById('laborPrice').value = preset.toFixed(2);
-        calculateTotal();
-      }
-    });
-
     function normalizeRepair(item) {
+      if (!item) return null;
       let desc = item.description || '';
       let meta = {};
       const metaMatch = desc.match(/\[META:({.*?})\]/);
@@ -757,13 +758,56 @@
         console.warn("Supabase initialization bypassed:", e);
       }
 
+      const deviceTypeEl = document.getElementById('deviceType');
+      if (deviceTypeEl) {
+        deviceTypeEl.addEventListener('change', (e) => {
+          const preset = priceSettings[e.target.value];
+          if (preset !== undefined) {
+            document.getElementById('laborPrice').value = preset.toFixed(2);
+            calculateTotal();
+          }
+        });
+      }
+
       await fetchRepairsFromCloud();
+      setupRealtimeSubscriptionSafely();
+    }
+
+    function setupRealtimeSubscriptionSafely() {
+      if (!supabaseClient) return;
+      try {
+        if (realtimeChannel) {
+          try { realtimeChannel.unsubscribe(); } catch(e){}
+        }
+        
+        realtimeChannel = supabaseClient
+          .channel('public:repairs_dashboard')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'repairs' }, () => {
+            fetchRepairsFromCloud();
+          });
+
+        realtimeChannel.subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
+            startPollingFallback();
+          }
+        });
+      } catch (e) {
+        console.warn("WebSocket connections restricted in this environment. Falling back to polling:", e);
+        startPollingFallback();
+      }
+    }
+
+    function startPollingFallback() {
+      if (fallbackPollingTimer) return;
+      fallbackPollingTimer = setInterval(() => {
+        fetchRepairsFromCloud();
+      }, 15000);
     }
 
     async function fetchRepairsFromCloud() {
       if (!supabaseClient) {
         updateCloudStatus(false, "Offline / Local Mode");
-        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
+        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair).filter(Boolean);
         render();
         return;
       }
@@ -771,12 +815,12 @@
       try {
         const { data, error } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        repairs = (data || []).map(normalizeRepair);
+        repairs = (data || []).map(normalizeRepair).filter(Boolean);
         updateCloudStatus(true, "Cloud Sync Active");
       } catch (err) {
         console.warn("Cloud error fallback:", err);
         updateCloudStatus(false, "Offline / Local Mode");
-        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair);
+        repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair).filter(Boolean);
       }
       render();
     }
@@ -796,71 +840,76 @@
       }
     }
 
-    document.getElementById('repairForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const repairFormEl = document.getElementById('repairForm');
+    if (repairFormEl) {
+      repairFormEl.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      const linksArr = document.getElementById('repairLinks').value
-        .split(',')
-        .map(l => l.trim())
-        .filter(l => l.length > 0);
+        const linksArr = document.getElementById('repairLinks').value
+          .split(',')
+          .map(l => l.trim())
+          .filter(l => l.length > 0);
 
-      const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
-      const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
-      const totalAmount = parseFloat(document.getElementById('repairAmount').value) || (partPrice + laborPrice);
-      const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
+        const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
+        const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
+        const totalAmount = parseFloat(document.getElementById('repairAmount').value) || (partPrice + laborPrice);
+        const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
 
-      const rawItem = {
-        customer_name: document.getElementById('customerName').value,
-        device_type: document.getElementById('deviceType').value,
-        make_model: document.getElementById('makeModel').value,
-        model_number: document.getElementById('modelNumber').value,
-        part_name: document.getElementById('partName').value,
-        part_price: partPrice,
-        labor_price: laborPrice,
-        amount: totalAmount,
-        deposit_amount: depositAmount,
-        payment_info: document.getElementById('paymentInfo').value,
-        description: document.getElementById('repairDescription').value,
-        links: linksArr,
-        status: 'pending'
-      };
+        const rawItem = {
+          customer_name: document.getElementById('customerName').value,
+          device_type: document.getElementById('deviceType').value,
+          make_model: document.getElementById('makeModel').value,
+          model_number: document.getElementById('modelNumber').value,
+          part_name: document.getElementById('partName').value,
+          part_price: partPrice,
+          labor_price: laborPrice,
+          amount: totalAmount,
+          deposit_amount: depositAmount,
+          payment_info: document.getElementById('paymentInfo').value,
+          description: document.getElementById('repairDescription').value,
+          links: linksArr,
+          status: 'pending'
+        };
 
-      if (isCloudConnected && supabaseClient) {
-        const { error } = await supabaseClient.from('repairs').insert([rawItem]);
-        if (error) {
-          const metaTag = ` [META:${JSON.stringify({
-            model_number: rawItem.model_number,
-            part_name: rawItem.part_name,
-            part_price: rawItem.part_price,
-            labor_price: rawItem.labor_price,
-            deposit_amount: rawItem.deposit_amount,
-            payment_info: rawItem.payment_info
-          })}]`;
-          
-          await supabaseClient.from('repairs').insert([{
-            customer_name: rawItem.customer_name,
-            device_type: rawItem.device_type,
-            make_model: rawItem.make_model,
-            amount: rawItem.amount,
-            description: rawItem.description + metaTag,
-            status: 'pending'
-          }]);
+        if (isCloudConnected && supabaseClient) {
+          const { error } = await supabaseClient.from('repairs').insert([rawItem]);
+          if (error) {
+            const metaTag = ` [META:${JSON.stringify({
+              model_number: rawItem.model_number,
+              part_name: rawItem.part_name,
+              part_price: rawItem.part_price,
+              labor_price: rawItem.labor_price,
+              deposit_amount: rawItem.deposit_amount,
+              payment_info: rawItem.payment_info
+            })}]`;
+            
+            await supabaseClient.from('repairs').insert([{
+              customer_name: rawItem.customer_name,
+              device_type: rawItem.device_type,
+              make_model: rawItem.make_model,
+              amount: rawItem.amount,
+              description: rawItem.description + metaTag,
+              status: 'pending'
+            }]);
+          }
+          await fetchRepairsFromCloud();
+        } else {
+          rawItem.id = 'local_' + Date.now();
+          repairs.unshift(normalizeRepair(rawItem));
+          localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+          render();
         }
-        await fetchRepairsFromCloud();
-      } else {
-        rawItem.id = 'local_' + Date.now();
-        repairs.unshift(normalizeRepair(rawItem));
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-      }
 
-      document.getElementById('repairForm').reset();
-      showToast("Repair job saved successfully!");
-    });
+        document.getElementById('repairForm').reset();
+        showToast("Repair job saved successfully!");
+      });
+    }
 
     function render() {
-      const search = (document.getElementById('searchInput').value || '').toLowerCase();
-      const status = document.getElementById('statusFilter').value;
+      const searchInputEl = document.getElementById('searchInput');
+      const statusFilterEl = document.getElementById('statusFilter');
+      const search = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+      const status = statusFilterEl ? statusFilterEl.value : 'all';
 
       const filtered = repairs.filter(item => {
         const matchesSearch = 
@@ -873,7 +922,6 @@
         return matchesSearch && matchesStatus;
       });
 
-      // Metrics Update
       document.getElementById('statTotal').innerText = repairs.length;
       document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
       document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
@@ -887,19 +935,19 @@
       document.getElementById('statUnpaid').innerText = `$${unpaid.toFixed(2)}`;
 
       const listContainer = document.getElementById('repairsList');
+      if (!listContainer) return;
+
       if (filtered.length === 0) {
         listContainer.innerHTML = `<div class="p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">No repair jobs matching your filter.</div>`;
         return;
       }
 
       listContainer.innerHTML = filtered.map(item => {
-        // Explicitly set specified Cloudflare Workers URL endpoints
+        const trackingUrl = `https://repair-tracker.jhamal16.workers.dev/track.html?id=${item.id}`;
         const liveUrl = `https://repair-tracker.jhamal16.workers.dev/track?id=${item.id}`;
 
         return `
           <div class="dark-card p-5 rounded-3xl shadow-md space-y-3">
-            
-            <!-- Top Header Row -->
             <div class="flex items-start justify-between gap-3">
               <div>
                 <div class="flex items-center space-x-2 mb-1.5">
@@ -912,7 +960,6 @@
                 <p class="text-xs font-bold text-slate-400 mt-0.5">${escapeHtml(item.makeModel)}</p>
               </div>
 
-              <!-- Price & Balance Column -->
               <div class="text-right shrink-0">
                 <span class="text-xl font-black text-emerald-400 block">$${item.amount.toFixed(2)}</span>
                 <div class="text-[10px] font-bold space-x-1.5 mt-0.5">
@@ -922,7 +969,6 @@
               </div>
             </div>
 
-            <!-- Replacement Parts Details -->
             ${item.partName ? `
               <div class="bg-amber-950/20 p-3 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
                 <div>
@@ -933,19 +979,16 @@
               </div>
             ` : ''}
 
-            <!-- Payment Handle Line -->
             <div class="bg-slate-900/60 px-3 py-2 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 font-medium">
               <span class="font-bold text-slate-400">💳 Payment:</span> ${escapeHtml(item.paymentInfo)}
             </div>
 
-            <!-- Notes -->
             ${item.description ? `
               <p class="text-xs text-slate-300 text-left bg-slate-950 p-3 rounded-2xl border border-slate-800/60 leading-relaxed">
                 ${escapeHtml(item.description)}
               </p>
             ` : ''}
 
-            <!-- Card Actions Bar -->
             <div class="flex flex-wrap items-center justify-between pt-2.5 border-t border-slate-800/80 gap-2">
               <select onchange="updateJobStatus('${item.id}', this.value)" class="text-xs px-3 py-1.5 font-bold rounded-xl bg-slate-900 text-slate-200 border border-slate-800 outline-none cursor-pointer">
                 <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
@@ -978,6 +1021,9 @@
     }
 
     function copyTrackerLink(id) {
+      if (String(id).startsWith('local_')) {
+        showToast("Local job: Connect to cloud to enable remote tracking.");
+      }
       const trackingUrl = `https://repair-tracker.jhamal16.workers.dev/track.html?id=${id}`;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(trackingUrl).then(() => {
@@ -1024,70 +1070,82 @@
       document.getElementById('editModal').classList.remove('hidden');
     }
 
-    document.getElementById('closeEditModal').addEventListener('click', () => {
-      document.getElementById('editModal').classList.add('hidden');
-    });
+    const closeEditModalBtn = document.getElementById('closeEditModal');
+    if (closeEditModalBtn) {
+      closeEditModalBtn.addEventListener('click', () => {
+        document.getElementById('editModal').classList.add('hidden');
+      });
+    }
 
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editJobId').value;
-      const linksArr = document.getElementById('editRepairLinks').value.split(',').map(l => l.trim()).filter(l => l.length > 0);
+    const editFormEl = document.getElementById('editForm');
+    if (editFormEl) {
+      editFormEl.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editJobId').value;
+        const linksArr = document.getElementById('editRepairLinks').value.split(',').map(l => l.trim()).filter(l => l.length > 0);
 
-      const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
-      const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
-      const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || (partPrice + laborPrice);
+        const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
+        const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+        const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || (partPrice + laborPrice);
 
-      const updatedData = {
-        customer_name: document.getElementById('editCustomerName').value,
-        device_type: document.getElementById('editDeviceType').value,
-        make_model: document.getElementById('editMakeModel').value,
-        model_number: document.getElementById('editModelNumber').value,
-        part_name: document.getElementById('editPartName').value,
-        part_price: partPrice,
-        labor_price: laborPrice,
-        amount: totalAmount,
-        deposit_amount: parseFloat(document.getElementById('editDepositAmount').value) || 0,
-        description: document.getElementById('editRepairDescription').value,
-        links: linksArr
-      };
+        const updatedData = {
+          customer_name: document.getElementById('editCustomerName').value,
+          device_type: document.getElementById('editDeviceType').value,
+          make_model: document.getElementById('editMakeModel').value,
+          model_number: document.getElementById('editModelNumber').value,
+          part_name: document.getElementById('editPartName').value,
+          part_price: partPrice,
+          labor_price: laborPrice,
+          amount: totalAmount,
+          deposit_amount: parseFloat(document.getElementById('editDepositAmount').value) || 0,
+          description: document.getElementById('editRepairDescription').value,
+          links: linksArr
+        };
 
-      if (isCloudConnected && supabaseClient) {
-        await supabaseClient.from('repairs').update(updatedData).eq('id', id);
-        await fetchRepairsFromCloud();
-      } else {
-        repairs = repairs.map(r => r.id === id ? normalizeRepair({ ...r, ...updatedData }) : r);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-      }
+        if (isCloudConnected && supabaseClient) {
+          await supabaseClient.from('repairs').update(updatedData).eq('id', id);
+          await fetchRepairsFromCloud();
+        } else {
+          repairs = repairs.map(r => r.id === id ? normalizeRepair({ ...r, ...updatedData }) : r);
+          localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+          render();
+        }
 
-      document.getElementById('editModal').classList.add('hidden');
-      showToast("Job changes saved!");
-    });
+        document.getElementById('editModal').classList.add('hidden');
+        showToast("Job changes saved!");
+      });
+    }
 
     function confirmDeleteJob(id) {
       pendingDeleteId = id;
       document.getElementById('confirmModal').classList.remove('hidden');
     }
 
-    document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
-      pendingDeleteId = null;
-      document.getElementById('confirmModal').classList.add('hidden');
-    });
+    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+    if (cancelConfirmBtn) {
+      cancelConfirmBtn.addEventListener('click', () => {
+        pendingDeleteId = null;
+        document.getElementById('confirmModal').classList.add('hidden');
+      });
+    }
 
-    document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
-      if (!pendingDeleteId) return;
-      if (isCloudConnected && supabaseClient) {
-        await supabaseClient.from('repairs').delete().eq('id', pendingDeleteId);
-        await fetchRepairsFromCloud();
-      } else {
-        repairs = repairs.filter(r => r.id !== pendingDeleteId);
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        render();
-      }
-      pendingDeleteId = null;
-      document.getElementById('confirmModal').classList.add('hidden');
-      showToast("Job record deleted.");
-    });
+    const actionConfirmBtn = document.getElementById('actionConfirmBtn');
+    if (actionConfirmBtn) {
+      actionConfirmBtn.addEventListener('click', async () => {
+        if (!pendingDeleteId) return;
+        if (isCloudConnected && supabaseClient) {
+          await supabaseClient.from('repairs').delete().eq('id', pendingDeleteId);
+          await fetchRepairsFromCloud();
+        } else {
+          repairs = repairs.filter(r => r.id !== pendingDeleteId);
+          localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+          render();
+        }
+        pendingDeleteId = null;
+        document.getElementById('confirmModal').classList.add('hidden');
+        showToast("Job record deleted.");
+      });
+    }
 
     function renderInvoiceSelectionList() {
       const container = document.getElementById('invoiceSelectionList');
@@ -1133,7 +1191,7 @@
             </div>
             <div class="text-right">
               <span class="text-2xl font-black uppercase tracking-wider text-slate-900">INVOICE</span>
-              <p class="text-xs font-bold text-slate-500 mt-0.5">Job ID: #${item.id.substring(0, 8)}</p>
+              <p class="text-xs font-bold text-slate-500 mt-0.5">Job ID: #${String(item.id).substring(0, 8)}</p>
             </div>
           </div>
 
@@ -1203,8 +1261,16 @@
               <title>${escapeHtml(pdfTitle)}</title>
               <script src="https://cdn.tailwindcss.com"><\/script>
             </head>
-            <body class="p-8 bg-white text-slate-900" onload="window.print(); window.close();">
+            <body class="p-8 bg-white text-slate-900">
               ${document.getElementById('invoicePrintCanvas').innerHTML}
+              <script>
+                window.onload = function() {
+                  setTimeout(function() {
+                    window.print();
+                    window.close();
+                  }, 250);
+                };
+              <\/script>
             </body>
             </html>
           `);
@@ -1352,6 +1418,7 @@ Payment Handles: ${item.paymentInfo}`;
 
     function runAiInsights() {
       const container = document.getElementById('aiInsightsContent');
+      if (!container) return;
       const totalRev = repairs.reduce((acc, r) => acc + r.amount, 0);
       const pendingCount = repairs.filter(r => r.status === 'pending').length;
       const completedCount = repairs.filter(r => r.status === 'completed').length;
@@ -1372,35 +1439,63 @@ Payment Handles: ${item.paymentInfo}`;
       `;
     }
 
-    document.getElementById('priceModalBtn').addEventListener('click', () => {
-      const container = document.getElementById('priceInputs');
-      container.innerHTML = Object.keys(priceSettings).map(cat => `
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-slate-300">${cat}</span>
-          <div class="flex items-center space-x-1">
-            <span class="text-slate-500">$</span>
-            <input type="number" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-20 px-2 py-1 bg-slate-950 border border-slate-800 text-white rounded-lg font-bold">
+    function handleBackdropClick(event, modalId) {
+      if (event.target.id === modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        ['editModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        });
+      }
+    });
+
+    const priceModalBtn = document.getElementById('priceModalBtn');
+    if (priceModalBtn) {
+      priceModalBtn.addEventListener('click', () => {
+        const container = document.getElementById('priceInputs');
+        if (!container) return;
+        container.innerHTML = Object.keys(priceSettings).map(cat => `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-300">${cat}</span>
+            <div class="flex items-center space-x-1">
+              <span class="text-slate-500">$</span>
+              <input type="number" value="${priceSettings[cat]}" data-cat="${cat}" class="price-edit-input w-20 px-2 py-1 bg-slate-950 border border-slate-800 text-white rounded-lg font-bold">
+            </div>
           </div>
-        </div>
-      `).join('');
-      document.getElementById('priceModal').classList.remove('hidden');
-    });
-
-    document.getElementById('closePriceModal').addEventListener('click', () => {
-      document.getElementById('priceModal').classList.add('hidden');
-    });
-
-    document.getElementById('savePricesBtn').addEventListener('click', () => {
-      document.querySelectorAll('.price-edit-input').forEach(input => {
-        priceSettings[input.getAttribute('data-cat')] = parseFloat(input.value) || 0;
+        `).join('');
+        document.getElementById('priceModal').classList.remove('hidden');
       });
-      localStorage.setItem('ajd_price_settings', JSON.stringify(priceSettings));
-      document.getElementById('priceModal').classList.add('hidden');
-      showToast("Price presets updated!");
-    });
+    }
 
-    document.getElementById('searchInput').addEventListener('input', render);
-    document.getElementById('statusFilter').addEventListener('change', render);
+    const closePriceModalBtn = document.getElementById('closePriceModal');
+    if (closePriceModalBtn) {
+      closePriceModalBtn.addEventListener('click', () => {
+        document.getElementById('priceModal').classList.add('hidden');
+      });
+    }
+
+    const savePricesBtn = document.getElementById('savePricesBtn');
+    if (savePricesBtn) {
+      savePricesBtn.addEventListener('click', () => {
+        document.querySelectorAll('.price-edit-input').forEach(input => {
+          priceSettings[input.getAttribute('data-cat')] = parseFloat(input.value) || 0;
+        });
+        localStorage.setItem('ajd_price_settings', JSON.stringify(priceSettings));
+        document.getElementById('priceModal').classList.add('hidden');
+        showToast("Price presets updated!");
+      });
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', render);
+
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) statusFilter.addEventListener('change', render);
 
     window.onload = initApp;
   </script>
