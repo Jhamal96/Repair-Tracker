@@ -316,7 +316,7 @@
 
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">Payment Instructions / Handles</label>
-                <input type="text" id="paymentInfo" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-slate-300 font-medium" value="Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup">
+                <input type="text" id="paymentInfo" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-slate-300 font-medium" value="Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup">
               </div>
             </div>
 
@@ -827,7 +827,7 @@
         amount: amount,
         depositAmount: depositAmount,
         balanceDue: Math.max(0, amount - depositAmount),
-        paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || 'Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup',
+        paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup',
         description: desc,
         links: linksArr,
         status: item.status || 'pending',
