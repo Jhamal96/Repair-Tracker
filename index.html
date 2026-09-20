@@ -68,8 +68,8 @@
         padding: 0 !important;
         margin: 0 !important;
       }
-      #viewInvoices, #viewCustomerTracker {
-        display: block !important;
+      .hidden {
+        display: none !important;
       }
       .printable-invoice-card {
         border: none !important;
@@ -358,7 +358,7 @@
                 <h3 class="text-lg font-bold">Invoice Preview</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Ready to print or save as PDF</p>
               </div>
-              <button onclick="window.print()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-2">
+              <button onclick="handlePrintOrShareInvoice()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 <span>Print / Share Invoice</span>
               </button>
@@ -381,7 +381,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           <span>← Back to Shop Dashboard</span>
         </button>
-        <button onclick="window.print()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
+        <button onclick="handlePrintOrShareTracker()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
           <span>Print Receipt</span>
         </button>
@@ -705,6 +705,7 @@
     let isCloudConnected = false;
     let activeTrackedJobId = null;
     let pendingDeleteId = null;
+    let currentInvoiceJob = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -879,8 +880,9 @@
     }
 
     function getTrackerUrl(id) {
-      const baseUrl = window.location.href.split('#')[0];
-      return `${baseUrl}#track=${id}`;
+      const origin = window.location.origin;
+      const pathname = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+      return `${origin}${pathname}track.html?id=${id}`;
     }
 
     function copyTrackerLink(id) {
@@ -913,8 +915,8 @@
     }
 
     function previewTracker(id) {
-      window.location.hash = `track=${id}`;
-      checkAndLoadHashRoute();
+      const url = getTrackerUrl(id);
+      window.open(url, '_blank');
     }
 
     function updateCloudStatus(connected, message) {
@@ -1228,6 +1230,7 @@
       const item = repairs.find(r => String(r.id) === String(id));
       const content = document.getElementById('invoiceContent');
       if (!item || !content) return;
+      currentInvoiceJob = item;
 
       content.innerHTML = `
         <div class="border-b border-slate-200 dark:border-slate-700 pb-6 flex items-start justify-between">
@@ -1458,6 +1461,46 @@
     function closeEditModal() {
       const modal = document.getElementById('editModal');
       if (modal) modal.classList.add('hidden');
+    }
+
+    function handlePrintOrShareInvoice() {
+      try {
+        window.print();
+      } catch (e) {
+        console.warn("window.print restriction:", e);
+        if (currentInvoiceJob && navigator.share) {
+          navigator.share({
+            title: `Invoice - ${currentInvoiceJob.customerName}`,
+            text: `Invoice for ${currentInvoiceJob.customerName} (${currentInvoiceJob.makeModel}) - Total: $${currentInvoiceJob.amount.toFixed(2)}, Balance Due: $${currentInvoiceJob.balanceDue.toFixed(2)}`,
+            url: getTrackerUrl(currentInvoiceJob.id)
+          }).catch(() => {});
+        } else if (currentInvoiceJob) {
+          copyTrackerLink(currentInvoiceJob.id);
+          showToast("Print window blocked by browser preview. Invoice tracker link copied instead!", "warning");
+        } else {
+          showToast("Print window blocked by browser frame.", "warning");
+        }
+      }
+    }
+
+    function handlePrintOrShareTracker() {
+      try {
+        window.print();
+      } catch (e) {
+        console.warn("window.print restriction:", e);
+        if (activeTrackedJobId && navigator.share) {
+          navigator.share({
+            title: "AJD's Wireless Repairs - Live Status",
+            text: "Live Device Repair Tracking Status",
+            url: getTrackerUrl(activeTrackedJobId)
+          }).catch(() => {});
+        } else if (activeTrackedJobId) {
+          copyTrackerLink(activeTrackedJobId);
+          showToast("Print window blocked by browser preview. Live tracking link copied instead!", "warning");
+        } else {
+          showToast("Print window blocked by browser frame.", "warning");
+        }
+      }
     }
 
     function openAIEstimateModal() {
