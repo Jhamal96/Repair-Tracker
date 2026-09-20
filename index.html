@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Repairs">
   
-  <!-- Tailwind CSS & Supabase JS SDK -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -80,7 +79,6 @@
 </head>
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- Header -->
   <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6 no-print">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       
@@ -138,7 +136,6 @@
     </div>
   </header>
 
-  <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
     <!-- 6-Metric Bar -->
@@ -233,15 +230,14 @@
                 <input type="text" id="partName" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. OLED Display Assembly, Battery, Port">
               </div>
 
-              <div class="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">Parts Cost ($)</label>
-                  <input type="number" id="partPrice" step="0.01" min="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-400 placeholder-slate-600" placeholder="0.00">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">Supplier Links</label>
-                  <input type="text" id="repairLinks" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://supplier.com">
-                </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Parts Cost ($)</label>
+                <input type="number" id="partPrice" step="0.01" min="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-amber-400 placeholder-slate-600" placeholder="0.00">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Add multiple links separated by commas or lines)</label>
+                <textarea id="repairLinks" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://mobilesentrix.com/lcd, https://amazon.com/battery"></textarea>
               </div>
             </div>
 
@@ -457,8 +453,8 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Reference Links</label>
-          <input type="text" id="editRepairLinks" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl outline-none text-white">
+          <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Separated by commas or lines)</label>
+          <textarea id="editRepairLinks" rows="2" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-white" placeholder="https://supplier.com/item1, https://supplier.com/item2"></textarea>
         </div>
 
         <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 cursor-pointer">Save Changes</button>
@@ -602,6 +598,7 @@
     let selectedInvoiceJobId = null;
     let pendingDeleteId = null;
     let activeSmsJob = null;
+    let openLinkDropdownId = null;
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -624,6 +621,20 @@
         document.execCommand('copy');
         document.body.removeChild(textarea);
       } catch (e) {}
+    }
+
+    function copyToClipboard(text, successMessage) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMessage || "Copied to clipboard!");
+        }).catch(() => {
+          fallbackCopyToClipboard(text);
+          showToast(successMessage || "Copied to clipboard!");
+        });
+      } else {
+        fallbackCopyToClipboard(text);
+        showToast(successMessage || "Copied to clipboard!");
+      }
     }
 
     function showToast(message) {
@@ -725,9 +736,45 @@
       }
 
       const amount = parseFloat(item.amount) || 0;
-      const partPrice = parseFloat(item.part_price !== undefined ? item.part_price : (meta.part_price !== undefined ? meta.part_price : 0)) || 0;
-      const laborPrice = parseFloat(item.labor_price !== undefined ? item.labor_price : (meta.labor_price !== undefined ? meta.labor_price : Math.max(0, amount - partPrice))) || 0;
-      const depositAmount = parseFloat(item.deposit_amount !== undefined ? item.deposit_amount : (meta.deposit_amount !== undefined ? meta.deposit_amount : 0)) || 0;
+
+      // Extract positive numbers from database columns, meta backstops, or camelCase keys
+      const getPositiveNum = (...vals) => {
+        for (const v of vals) {
+          if (v !== undefined && v !== null && v !== '' && !isNaN(v)) {
+            const num = parseFloat(v);
+            if (num > 0) return num;
+          }
+        }
+        return 0;
+      };
+
+      let partPrice = getPositiveNum(item.part_price, meta.part_price, item.partPrice, item.part_cost);
+      let laborPrice = getPositiveNum(item.labor_price, meta.labor_price, item.laborPrice, item.quoted_price);
+
+      // Smart Fallback 1: If partPrice is still 0, but total amount > laborPrice and a part name exists, infer partPrice = amount - laborPrice
+      if (partPrice === 0 && amount > laborPrice && (item.part_name || item.partName || meta.part_name)) {
+        partPrice = Math.max(0, amount - laborPrice);
+      }
+
+      // Smart Fallback 2: If laborPrice is 0 and amount > partPrice, infer laborPrice = amount - partPrice
+      if (laborPrice === 0 && amount > partPrice) {
+        laborPrice = Math.max(0, amount - partPrice);
+      }
+
+      const depositAmount = getPositiveNum(item.deposit_amount, meta.deposit_amount, item.depositAmount);
+
+      let linksArr = [];
+      const parseLinks = (val) => {
+        if (!val) return [];
+        if (Array.isArray(val)) return val;
+        if (typeof val === 'string') {
+          return val.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+        }
+        return [];
+      };
+
+      linksArr = parseLinks(item.links);
+      if (linksArr.length === 0) linksArr = parseLinks(meta.links);
 
       return {
         id: String(item.id),
@@ -743,7 +790,7 @@
         balanceDue: Math.max(0, amount - depositAmount),
         paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || 'Zelle: 786-970-779 | Apple Pay: 786-970-7779 | Cash accepted at pickup',
         description: desc,
-        links: item.links || meta.links || [],
+        links: linksArr,
         status: item.status || 'pending',
         created_at: item.created_at || new Date().toISOString()
       };
@@ -773,8 +820,26 @@
       setupRealtimeSubscriptionSafely();
     }
 
+    function isWebSocketAllowed() {
+      try {
+        if (!('WebSocket' in window)) return false;
+        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket');
+        testWs.close();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
     function setupRealtimeSubscriptionSafely() {
       if (!supabaseClient) return;
+
+      if (!isWebSocketAllowed()) {
+        console.warn("WebSocket connections restricted in Canvas environment. Using HTTP polling fallback.");
+        startPollingFallback();
+        return;
+      }
+
       try {
         if (realtimeChannel) {
           try { realtimeChannel.unsubscribe(); } catch(e){}
@@ -792,7 +857,7 @@
           }
         });
       } catch (e) {
-        console.warn("WebSocket connections restricted in this environment. Falling back to polling:", e);
+        console.warn("WebSocket setup failed. Using HTTP polling fallback:", e);
         startPollingFallback();
       }
     }
@@ -845,8 +910,9 @@
       repairFormEl.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const linksArr = document.getElementById('repairLinks').value
-          .split(',')
+        const rawLinksInput = document.getElementById('repairLinks').value;
+        const linksArr = rawLinksInput
+          .split(/[\n,]+/)
           .map(l => l.trim())
           .filter(l => l.length > 0);
 
@@ -872,17 +938,22 @@
         };
 
         if (isCloudConnected && supabaseClient) {
-          const { error } = await supabaseClient.from('repairs').insert([rawItem]);
+          const metaTag = ` [META:${JSON.stringify({
+            model_number: rawItem.model_number,
+            part_name: rawItem.part_name,
+            part_price: rawItem.part_price,
+            labor_price: rawItem.labor_price,
+            deposit_amount: rawItem.deposit_amount,
+            payment_info: rawItem.payment_info,
+            links: rawItem.links
+          })}]`;
+
+          const { error } = await supabaseClient.from('repairs').insert([{
+            ...rawItem,
+            description: rawItem.description + metaTag
+          }]);
+
           if (error) {
-            const metaTag = ` [META:${JSON.stringify({
-              model_number: rawItem.model_number,
-              part_name: rawItem.part_name,
-              part_price: rawItem.part_price,
-              labor_price: rawItem.labor_price,
-              deposit_amount: rawItem.deposit_amount,
-              payment_info: rawItem.payment_info
-            })}]`;
-            
             await supabaseClient.from('repairs').insert([{
               customer_name: rawItem.customer_name,
               device_type: rawItem.device_type,
@@ -903,6 +974,12 @@
         document.getElementById('repairForm').reset();
         showToast("Repair job saved successfully!");
       });
+    }
+
+    function toggleLinkDropdown(id, event) {
+      if (event) event.stopPropagation();
+      openLinkDropdownId = openLinkDropdownId === id ? null : id;
+      render();
     }
 
     function render() {
@@ -943,8 +1020,9 @@
       }
 
       listContainer.innerHTML = filtered.map(item => {
-        const trackingUrl = `https://repair-tracker.jhamal16.workers.dev/track.html?id=${item.id}`;
         const liveUrl = `https://repair-tracker.jhamal16.workers.dev/track?id=${item.id}`;
+        const linksList = item.links || [];
+        const isDropdownOpen = openLinkDropdownId === item.id;
 
         return `
           <div class="dark-card p-5 rounded-3xl shadow-md space-y-3">
@@ -970,12 +1048,57 @@
             </div>
 
             ${item.partName ? `
-              <div class="bg-amber-950/20 p-3 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
-                <div>
-                  <span class="font-extrabold text-amber-400 block">🔌 Parts: ${escapeHtml(item.partName)}</span>
-                  <span class="text-[10px] font-semibold text-slate-400">Labor/Service Charge: $${item.laborPrice.toFixed(2)}</span>
+              <div class="bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <span class="font-extrabold text-amber-400 block text-sm">🔌 Parts: ${escapeHtml(item.partName)}</span>
+                  <span class="text-[11px] font-semibold text-slate-400">Labor/Service Charge: $${item.laborPrice.toFixed(2)}</span>
                 </div>
-                <span class="font-black text-amber-400">$${item.partPrice.toFixed(2)}</span>
+                <span class="font-black text-amber-400 text-base">$${item.partPrice.toFixed(2)}</span>
+              </div>
+            ` : ''}
+
+            <!-- Supplier Links Dropdown Section -->
+            ${linksList.length > 0 ? `
+              <div class="relative">
+                <button type="button" onclick="toggleLinkDropdown('${item.id}', event)" class="w-full px-3 py-2 bg-slate-900 hover:bg-slate-800 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-xl transition flex items-center justify-between cursor-pointer active:scale-98">
+                  <span class="flex items-center space-x-1.5">
+                    <span>🔗 Supplier / Part Links</span>
+                    <span class="px-1.5 py-0.2 rounded-md bg-purple-900/50 text-purple-200 text-[10px]">${linksList.length}</span>
+                  </span>
+                  <span>${isDropdownOpen ? '▲' : '▼'}</span>
+                </button>
+
+                ${isDropdownOpen ? `
+                  <div class="mt-2 bg-slate-950 p-2.5 rounded-2xl border border-purple-500/30 space-y-2 text-xs z-10 animate-in fade-in duration-150">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-purple-400 px-1">Saved Links (${linksList.length}):</p>
+                    <div class="space-y-1.5 max-h-40 overflow-y-auto">
+                      ${linksList.map((link, idx) => {
+                        let domain = 'Supplier Link ' + (idx + 1);
+                        try {
+                          const url = new URL(link.startsWith('http') ? link : 'https://' + link);
+                          domain = url.hostname.replace('www.', '');
+                        } catch(e) {}
+                        const cleanUrl = link.startsWith('http') ? link : 'https://' + link;
+
+                        return `
+                          <div class="flex items-center justify-between bg-slate-900 p-2 rounded-xl border border-slate-800 text-slate-200 gap-2">
+                            <span class="truncate font-semibold text-slate-300 text-[11px] flex-1" title="${escapeHtml(link)}">
+                              🔗 ${escapeHtml(domain)}
+                            </span>
+                            <div class="flex items-center space-x-1 shrink-0">
+                              <a href="${escapeHtml(cleanUrl)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 bg-purple-600/30 hover:bg-purple-600/60 text-purple-300 border border-purple-500/40 text-[10px] font-bold rounded-lg transition">
+                                Launch ↗
+                              </a>
+                              <button type="button" onclick="copyToClipboard('${escapeHtml(cleanUrl)}', 'Link copied!')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-lg transition">
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
 
@@ -1025,17 +1148,7 @@
         showToast("Local job: Connect to cloud to enable remote tracking.");
       }
       const trackingUrl = `https://repair-tracker.jhamal16.workers.dev/track.html?id=${id}`;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(trackingUrl).then(() => {
-          showToast("Live tracking link copied to clipboard!");
-        }).catch(() => {
-          fallbackCopyToClipboard(trackingUrl);
-          showToast("Live tracking link copied!");
-        });
-      } else {
-        fallbackCopyToClipboard(trackingUrl);
-        showToast("Live tracking link copied!");
-      }
+      copyToClipboard(trackingUrl, "Live tracking link copied to clipboard!");
     }
 
     async function updateJobStatus(id, newStatus) {
@@ -1082,7 +1195,7 @@
       editFormEl.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('editJobId').value;
-        const linksArr = document.getElementById('editRepairLinks').value.split(',').map(l => l.trim()).filter(l => l.length > 0);
+        const linksArr = document.getElementById('editRepairLinks').value.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
 
         const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
         const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
@@ -1103,7 +1216,29 @@
         };
 
         if (isCloudConnected && supabaseClient) {
-          await supabaseClient.from('repairs').update(updatedData).eq('id', id);
+          const metaTag = ` [META:${JSON.stringify({
+            model_number: updatedData.model_number,
+            part_name: updatedData.part_name,
+            part_price: updatedData.part_price,
+            labor_price: updatedData.labor_price,
+            deposit_amount: updatedData.deposit_amount,
+            links: updatedData.links
+          })}]`;
+
+          const { error } = await supabaseClient.from('repairs').update({
+            ...updatedData,
+            description: updatedData.description + metaTag
+          }).eq('id', id);
+
+          if (error) {
+            await supabaseClient.from('repairs').update({
+              customer_name: updatedData.customer_name,
+              device_type: updatedData.device_type,
+              make_model: updatedData.make_model,
+              amount: updatedData.amount,
+              description: updatedData.description + metaTag
+            }).eq('id', id);
+          }
           await fetchRepairsFromCloud();
         } else {
           repairs = repairs.map(r => r.id === id ? normalizeRepair({ ...r, ...updatedData }) : r);
@@ -1300,17 +1435,7 @@ Deposit Paid: $${item.depositAmount.toFixed(2)}
 Balance Due: $${item.balanceDue.toFixed(2)}
 Payment Handles: ${item.paymentInfo}`;
 
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(summary).then(() => {
-          showToast("Invoice summary text copied!");
-        }).catch(() => {
-          fallbackCopyToClipboard(summary);
-          showToast("Invoice summary text copied!");
-        });
-      } else {
-        fallbackCopyToClipboard(summary);
-        showToast("Invoice summary text copied!");
-      }
+      copyToClipboard(summary, "Invoice summary text copied!");
     }
 
     function openSmsModal(id) {
@@ -1356,17 +1481,7 @@ Payment Handles: ${item.paymentInfo}`;
 
     function copySmsText() {
       const text = document.getElementById('smsOutputText').value;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast("SMS text copied to clipboard!");
-        }).catch(() => {
-          fallbackCopyToClipboard(text);
-          showToast("SMS text copied!");
-        });
-      } else {
-        fallbackCopyToClipboard(text);
-        showToast("SMS text copied!");
-      }
+      copyToClipboard(text, "SMS text copied to clipboard!");
     }
 
     function openAiEstimateModal() {
@@ -1447,10 +1562,19 @@ Payment Handles: ${item.paymentInfo}`;
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        openLinkDropdownId = null;
         ['editModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.classList.add('hidden');
         });
+        render();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (openLinkDropdownId && !e.target.closest('.relative')) {
+        openLinkDropdownId = null;
+        render();
       }
     });
 
