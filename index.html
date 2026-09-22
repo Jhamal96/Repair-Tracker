@@ -133,9 +133,7 @@
             </div>
 
             <!-- Link Items Container -->
-            <div id="navLinksListContainer" class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
-              <!-- Dynamically populated via JS -->
-            </div>
+            <div id="navLinksListContainer" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
 
             <!-- Add New Link Form -->
             <div class="pt-2 border-t border-slate-800 space-y-1.5">
@@ -153,6 +151,10 @@
 
       <!-- Utility Toolbar -->
       <div class="flex items-center space-x-2.5">
+        <button onclick="openManageMethodsModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 text-xs font-bold rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer" title="Manage Payment Methods">
+          <span>💳 Payment Methods</span>
+        </button>
+
         <button onclick="openAiInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black rounded-xl shadow transition flex items-center space-x-1.5 border border-purple-400/30 active:scale-95 cursor-pointer">
           <span>✨ AI Insights</span>
         </button>
@@ -271,14 +273,16 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Add multiple links separated by commas or lines)</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Separated by commas or lines)</label>
                 <textarea id="repairLinks" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://mobilesentrix.com/lcd, https://amazon.com/battery"></textarea>
               </div>
             </div>
 
-            <!-- SECTION 3: Service Pricing & Deposits -->
             <div class="space-y-3 bg-brand-950/20 p-3.5 rounded-2xl border border-brand-900/40">
-              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING & DEPOSITS</span>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING & DEPOSIT REQUIRED</span>
+                <button type="button" onclick="openManageMethodsModal()" class="text-[10px] font-bold text-emerald-400 hover:underline cursor-pointer">⚙️ Manage Methods</button>
+              </div>
 
               <div class="grid grid-cols-2 gap-2.5">
                 <div>
@@ -291,27 +295,52 @@
                 </div>
               </div>
 
-              <!-- Quick Deposit Presets (0%, 25%, 50%, 75%, 100%) -->
+              <!-- Required Deposit Presets & Payment Status -->
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Quick Preset</label>
-                <div class="grid grid-cols-5 gap-1.5 mb-2">
-                  <button type="button" onclick="applyDepositPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
-                  <button type="button" onclick="applyDepositPreset(25)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">25%</button>
-                  <button type="button" onclick="applyDepositPreset(50)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">50%</button>
-                  <button type="button" onclick="applyDepositPreset(75)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">75%</button>
-                  <button type="button" onclick="applyDepositPreset(100)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">100%</button>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-bold text-slate-300">Set Required Deposit (% Total)</label>
+                  <span id="paymentStatusBadge" class="text-[10px] font-black px-2 py-0.5 rounded-md bg-rose-950 text-rose-400 border border-rose-800/40">🔴 Deposit Unpaid</span>
+                </div>
+                
+                <!-- Deposit Percentage Presets -->
+                <div class="grid grid-cols-5 gap-1 text-[11px] mb-2">
+                  <button type="button" onclick="applyDepositPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
+                  <button type="button" onclick="applyDepositPreset(25)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">25%</button>
+                  <button type="button" onclick="applyDepositPreset(50)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">50%</button>
+                  <button type="button" onclick="applyDepositPreset(75)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">75%</button>
+                  <button type="button" onclick="applyDepositPreset(100)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">100%</button>
+                </div>
+
+                <!-- Collection Status Toggles -->
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button type="button" onclick="setPaymentStatus('unpaid')" class="py-1.5 bg-slate-900 border border-slate-800 hover:bg-rose-900/30 text-[11px] font-extrabold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">
+                    🔴 Unpaid
+                  </button>
+                  <button type="button" onclick="setPaymentStatus('deposit_paid')" class="py-1.5 bg-slate-900 border border-slate-800 hover:bg-indigo-900/30 text-[11px] font-extrabold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">
+                    🟡 Deposit Collected
+                  </button>
+                  <button type="button" onclick="setPaymentStatus('paid_in_full')" class="py-1.5 bg-slate-900 border border-slate-800 hover:bg-emerald-900/30 text-[11px] font-extrabold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">
+                    🟢 Paid in Full
+                  </button>
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Paid ($)</label>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Required Deposit ($)</label>
                   <input type="number" id="depositAmount" step="0.01" min="0" oninput="calculateBalance()" class="w-full px-3.5 py-2 text-sm font-bold bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-indigo-400 placeholder-slate-600" placeholder="0.00">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">Balance Due ($)</label>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Balance Due at Pickup ($)</label>
                   <input type="text" id="balanceDue" readonly class="w-full px-3.5 py-2 text-sm font-black bg-slate-900 border border-slate-800 rounded-xl outline-none text-rose-400" value="$0.00">
                 </div>
+              </div>
+
+              <!-- Payment Method Selection -->
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Payment Method Used *</label>
+                <select id="paymentMethod" class="w-full px-3.5 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                </select>
               </div>
 
               <div>
@@ -346,7 +375,7 @@
           </div>
 
           <select id="statusFilter" class="px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 font-bold text-slate-300 cursor-pointer">
-            <option value="all">All Statuses</option>
+            <option value="all">All Job Statuses</option>
             <option value="pending">Pending</option>
             <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
@@ -365,7 +394,6 @@
 
     </div>
 
-    <!-- VIEW 2: INVOICES & PRINTABLE RECEIPTS -->
     <div id="viewInvoices" class="hidden space-y-6">
       <div class="dark-card p-6 rounded-3xl no-print flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
@@ -461,13 +489,27 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Quick Preset</label>
-          <div class="grid grid-cols-5 gap-1.5 mb-2">
+          <label class="block text-xs font-bold text-slate-300 mb-1">Payment Method Used *</label>
+          <select id="editPaymentMethod" class="w-full px-3 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
+          </select>
+        </div>
+
+        <!-- Quick Deposit Presets & Payment Status in Edit Modal -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Required Deposit Presets (% Total)</label>
+          <div class="grid grid-cols-5 gap-1 text-[11px] mb-2">
             <button type="button" onclick="applyEditDepositPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
             <button type="button" onclick="applyEditDepositPreset(25)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">25%</button>
             <button type="button" onclick="applyEditDepositPreset(50)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">50%</button>
             <button type="button" onclick="applyEditDepositPreset(75)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">75%</button>
             <button type="button" onclick="applyEditDepositPreset(100)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 text-xs font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">100%</button>
+          </div>
+
+          <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Collection Status</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="setEditPaymentStatus('unpaid')" class="py-1 bg-slate-900 border border-slate-800 hover:bg-rose-900/40 text-xs font-extrabold rounded-lg text-rose-300 active:scale-95 cursor-pointer">🔴 Deposit Unpaid</button>
+            <button type="button" onclick="setEditPaymentStatus('deposit_paid')" class="py-1 bg-slate-900 border border-slate-800 hover:bg-indigo-900/40 text-xs font-extrabold rounded-lg text-indigo-300 active:scale-95 cursor-pointer">🟡 Deposit Collected</button>
+            <button type="button" onclick="setEditPaymentStatus('paid_in_full')" class="py-1 bg-slate-900 border border-slate-800 hover:bg-emerald-900/40 text-xs font-extrabold rounded-lg text-emerald-300 active:scale-95 cursor-pointer">🟢 Paid in Full</button>
           </div>
         </div>
 
@@ -477,7 +519,7 @@
             <input type="number" id="editRepairAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm font-black text-brand-400 bg-slate-950 border border-brand-800 rounded-xl outline-none">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Paid ($)</label>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Required Deposit ($)</label>
             <input type="number" id="editDepositAmount" step="0.01" min="0" class="w-full px-3 py-2 text-sm font-bold text-indigo-400 bg-slate-950 border border-slate-800 rounded-xl outline-none">
           </div>
         </div>
@@ -497,7 +539,39 @@
     </div>
   </div>
 
-  <!-- MODAL 2: PRICE PRESETS -->
+  <!-- MODAL 2: MANAGE PAYMENT METHODS MODAL -->
+  <div id="manageMethodsModal" onclick="handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>💳 Custom Payment Methods</span>
+        </h3>
+        <button onclick="closeManageMethodsModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">Add, edit, or delete custom payment methods accepted at your shop.</p>
+
+      <div id="paymentMethodsListContainer" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
+
+      <div class="pt-3 border-t border-slate-800 space-y-2">
+        <label class="block text-xs font-bold text-slate-300">Add New Payment Method:</label>
+        <div class="flex items-center gap-2">
+          <input type="text" id="newPaymentMethodInput" placeholder="e.g. Cash App, Square, Bank Transfer..." class="flex-1 px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600" onkeydown="if(event.key==='Enter'){addNewPaymentMethod();}">
+          <button type="button" onclick="addNewPaymentMethod()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition active:scale-95 cursor-pointer shrink-0">
+            + Add
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="closeManageMethodsModal()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl active:scale-95 cursor-pointer">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: PRICE PRESETS -->
   <div id="priceModal" onclick="handleBackdropClick(event, 'priceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -513,7 +587,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: DELETE CONFIRMATION -->
+  <!-- MODAL 4: DELETE CONFIRMATION -->
   <div id="confirmModal" onclick="handleBackdropClick(event, 'confirmModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
       <div class="w-12 h-12 bg-rose-900/40 text-rose-400 rounded-2xl mx-auto flex items-center justify-center text-xl">⚠️</div>
@@ -526,7 +600,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: AI CUSTOMER SMS GENERATOR -->
+  <!-- MODAL 5: AI CUSTOMER SMS GENERATOR -->
   <div id="smsAiModal" onclick="handleBackdropClick(event, 'smsAiModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -558,7 +632,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: AI ESTIMATE MODAL -->
+  <!-- MODAL 6: AI ESTIMATE MODAL -->
   <div id="aiEstimateModal" onclick="handleBackdropClick(event, 'aiEstimateModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -584,7 +658,7 @@
     </div>
   </div>
 
-  <!-- MODAL 6: AI INSIGHTS MODAL -->
+  <!-- MODAL 7: AI INSIGHTS MODAL -->
   <div id="aiInsightsModal" onclick="handleBackdropClick(event, 'aiInsightsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -627,17 +701,30 @@
       'Other': 0
     };
 
+    const defaultPaymentMethods = [
+      'Zelle',
+      'Apple Pay',
+      'Cash',
+      'Credit / Debit Card',
+      'Venmo',
+      'Check',
+      'Other'
+    ];
+
     let priceSettings = JSON.parse(localStorage.getItem('ajd_price_settings')) || defaultPrices;
+    let paymentMethods = JSON.parse(localStorage.getItem('ajd_payment_methods')) || defaultPaymentMethods;
     let customNavLinks = JSON.parse(localStorage.getItem('ajd_custom_nav_links')) || [
       { title: 'MobileSentrix', url: 'https://www.mobilesentrix.com' },
       { title: 'Injured Gadgets', url: 'https://www.injuredgadgets.com' }
     ];
+
     let repairs = [];
     let isCloudConnected = false;
     let selectedInvoiceJobId = null;
     let pendingDeleteId = null;
     let activeSmsJob = null;
     let openLinkDropdownId = null;
+    let currentPaymentStatus = 'unpaid';
 
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
@@ -720,6 +807,27 @@
       }
     }
 
+    function renderPaymentMethodSelectors() {
+      const formSelect = document.getElementById('paymentMethod');
+      const editSelect = document.getElementById('editPaymentMethod');
+
+      const optionsHtml = paymentMethods.map(m => `<option value="${escapeHtml(m)}">${getPaymentIcon(m)} ${escapeHtml(m)}</option>`).join('');
+
+      if (formSelect) formSelect.innerHTML = optionsHtml;
+      if (editSelect) editSelect.innerHTML = optionsHtml;
+    }
+
+    function getPaymentIcon(method) {
+      if (!method) return '💳';
+      const m = method.toLowerCase();
+      if (m.includes('cash')) return '💵';
+      if (m.includes('zelle')) return '⚡';
+      if (m.includes('apple')) return '📱';
+      if (m.includes('venmo')) return '💸';
+      if (m.includes('check')) return '📜';
+      return '💳';
+    }
+
     function calculateTotal() {
       const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
       const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
@@ -738,8 +846,13 @@
 
     function applyDepositPreset(percent) {
       const total = parseFloat(document.getElementById('repairAmount').value) || 0;
-      const deposit = (total * (percent / 100)).toFixed(2);
-      document.getElementById('depositAmount').value = deposit;
+      const reqDeposit = (total * (percent / 100)).toFixed(2);
+      document.getElementById('depositAmount').value = reqDeposit;
+      calculateBalance();
+    }
+
+    function setPaymentStatus(status) {
+      currentPaymentStatus = status;
       calculateBalance();
     }
 
@@ -749,11 +862,45 @@
       document.getElementById('editDepositAmount').value = deposit;
     }
 
+    function setEditPaymentStatus(status) {
+      const total = parseFloat(document.getElementById('editRepairAmount').value) || 0;
+      const reqDeposit = parseFloat(document.getElementById('editDepositAmount').value) || 0;
+      if (status === 'paid_in_full') {
+        document.getElementById('editDepositAmount').value = total.toFixed(2);
+      } else if (status === 'unpaid' && reqDeposit === total) {
+        document.getElementById('editDepositAmount').value = '0.00';
+      }
+    }
+
     function calculateBalance() {
       const total = parseFloat(document.getElementById('repairAmount').value) || 0;
-      const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
-      const balance = Math.max(0, total - deposit);
+      const reqDeposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+      
+      let paidSoFar = 0;
+      if (currentPaymentStatus === 'paid_in_full') {
+        paidSoFar = total;
+      } else if (currentPaymentStatus === 'deposit_paid') {
+        paidSoFar = reqDeposit;
+      } else {
+        paidSoFar = 0;
+      }
+
+      const balance = Math.max(0, total - paidSoFar);
       document.getElementById('balanceDue').value = `$${balance.toFixed(2)}`;
+
+      const badge = document.getElementById('paymentStatusBadge');
+      if (badge) {
+        if (currentPaymentStatus === 'paid_in_full') {
+          badge.className = "text-[10px] font-black px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800/40";
+          badge.innerText = "🟢 Paid in Full";
+        } else if (currentPaymentStatus === 'deposit_paid') {
+          badge.className = "text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 border border-indigo-800/40";
+          badge.innerText = `🟡 Deposit Collected ($${reqDeposit.toFixed(2)})`;
+        } else {
+          badge.className = "text-[10px] font-black px-2 py-0.5 rounded-md bg-rose-950 text-rose-400 border border-rose-800/40";
+          badge.innerText = reqDeposit > 0 ? `🔴 Deposit Unpaid ($${reqDeposit.toFixed(2)} Required)` : "🔴 Deposit Unpaid";
+        }
+      }
     }
 
     function calculateEditTotal() {
@@ -776,7 +923,6 @@
 
       const amount = parseFloat(item.amount) || 0;
 
-      // Extract positive numbers from database columns, meta backstops, or camelCase keys
       const getPositiveNum = (...vals) => {
         for (const v of vals) {
           if (v !== undefined && v !== null && v !== '' && !isNaN(v)) {
@@ -790,17 +936,25 @@
       let partPrice = getPositiveNum(item.part_price, meta.part_price, item.partPrice, item.part_cost);
       let laborPrice = getPositiveNum(item.labor_price, meta.labor_price, item.laborPrice, item.quoted_price);
 
-      // Smart Fallback 1: If partPrice is still 0, but total amount > laborPrice and a part name exists, infer partPrice = amount - laborPrice
       if (partPrice === 0 && amount > laborPrice && (item.part_name || item.partName || meta.part_name)) {
         partPrice = Math.max(0, amount - laborPrice);
       }
-
-      // Smart Fallback 2: If laborPrice is 0 and amount > partPrice, infer laborPrice = amount - partPrice
       if (laborPrice === 0 && amount > partPrice) {
         laborPrice = Math.max(0, amount - partPrice);
       }
 
-      const depositAmount = getPositiveNum(item.deposit_amount, meta.deposit_amount, item.depositAmount);
+      const reqDeposit = getPositiveNum(item.deposit_amount, meta.deposit_amount, item.depositAmount, item.required_deposit);
+      const paymentMethod = item.payment_method || item.paymentMethod || meta.payment_method || 'Zelle';
+      const paymentStatus = item.payment_status || meta.payment_status || (item.deposit_paid ? 'deposit_paid' : 'unpaid');
+
+      let paidSoFar = 0;
+      if (paymentStatus === 'paid_in_full') {
+        paidSoFar = amount;
+      } else if (paymentStatus === 'deposit_paid') {
+        paidSoFar = reqDeposit;
+      } else {
+        paidSoFar = 0;
+      }
 
       let linksArr = [];
       const parseLinks = (val) => {
@@ -825,8 +979,11 @@
         partPrice: partPrice,
         laborPrice: laborPrice,
         amount: amount,
-        depositAmount: depositAmount,
-        balanceDue: Math.max(0, amount - depositAmount),
+        requiredDeposit: reqDeposit,
+        depositAmount: paidSoFar,
+        paymentStatus: paymentStatus,
+        balanceDue: Math.max(0, amount - paidSoFar),
+        paymentMethod: paymentMethod,
         paymentInfo: item.payment_info || item.paymentInfo || meta.payment_info || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup',
         description: desc,
         links: linksArr,
@@ -843,6 +1000,8 @@
       } catch (e) {
         console.warn("Supabase initialization bypassed:", e);
       }
+
+      renderPaymentMethodSelectors();
 
       const deviceTypeEl = document.getElementById('deviceType');
       if (deviceTypeEl) {
@@ -874,7 +1033,6 @@
       if (!supabaseClient) return;
 
       if (!isWebSocketAllowed()) {
-        console.warn("WebSocket connections restricted in Canvas environment. Using HTTP polling fallback.");
         startPollingFallback();
         return;
       }
@@ -896,7 +1054,6 @@
           }
         });
       } catch (e) {
-        console.warn("WebSocket setup failed. Using HTTP polling fallback:", e);
         startPollingFallback();
       }
     }
@@ -922,7 +1079,6 @@
         repairs = (data || []).map(normalizeRepair).filter(Boolean);
         updateCloudStatus(true, "Cloud Sync Active");
       } catch (err) {
-        console.warn("Cloud error fallback:", err);
         updateCloudStatus(false, "Offline / Local Mode");
         repairs = (JSON.parse(localStorage.getItem('ajd_repairs_backup')) || []).map(normalizeRepair).filter(Boolean);
       }
@@ -958,7 +1114,8 @@
         const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
         const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
         const totalAmount = parseFloat(document.getElementById('repairAmount').value) || (partPrice + laborPrice);
-        const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
+        const reqDeposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+        const paymentMethod = document.getElementById('paymentMethod').value || 'Zelle';
 
         const rawItem = {
           customer_name: document.getElementById('customerName').value,
@@ -969,7 +1126,9 @@
           part_price: partPrice,
           labor_price: laborPrice,
           amount: totalAmount,
-          deposit_amount: depositAmount,
+          deposit_amount: reqDeposit,
+          payment_status: currentPaymentStatus,
+          payment_method: paymentMethod,
           payment_info: document.getElementById('paymentInfo').value,
           description: document.getElementById('repairDescription').value,
           links: linksArr,
@@ -983,6 +1142,8 @@
             part_price: rawItem.part_price,
             labor_price: rawItem.labor_price,
             deposit_amount: rawItem.deposit_amount,
+            payment_status: rawItem.payment_status,
+            payment_method: rawItem.payment_method,
             payment_info: rawItem.payment_info,
             links: rawItem.links
           })}]`;
@@ -1011,20 +1172,14 @@
         }
 
         document.getElementById('repairForm').reset();
+        setPaymentStatus('unpaid');
         showToast("Repair job saved successfully!");
       });
     }
 
-    function toggleLinkDropdown(id, event) {
-      if (event) event.stopPropagation();
-      openLinkDropdownId = openLinkDropdownId === id ? null : id;
-      render();
-    }
-
-    async function saveJobLinks(id, linksArr) {
+    async function quickSetPaymentStatus(id, newStatus) {
       const item = repairs.find(r => r.id === id);
       if (!item) return;
-      item.links = linksArr;
 
       if (isCloudConnected && supabaseClient) {
         const metaTag = ` [META:${JSON.stringify({
@@ -1032,49 +1187,55 @@
           part_name: item.partName,
           part_price: item.partPrice,
           labor_price: item.laborPrice,
-          deposit_amount: item.depositAmount,
+          deposit_amount: item.requiredDeposit,
+          payment_status: newStatus,
+          payment_method: item.paymentMethod,
           payment_info: item.paymentInfo,
-          links: linksArr
+          links: item.links
         })}]`;
 
-        const { error } = await supabaseClient.from('repairs').update({
-          links: linksArr,
+        await supabaseClient.from('repairs').update({
+          payment_status: newStatus,
           description: item.description + metaTag
         }).eq('id', id);
-
-        if (error) {
-          await supabaseClient.from('repairs').update({
-            description: item.description + metaTag
-          }).eq('id', id);
-        }
         await fetchRepairsFromCloud();
       } else {
-        repairs = repairs.map(r => r.id === id ? { ...r, links: linksArr } : r);
+        repairs = repairs.map(r => r.id === id ? normalizeRepair({ ...r, payment_status: newStatus }) : r);
         localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         render();
       }
-      showToast("Website links updated!");
+
+      showToast(newStatus === 'paid_in_full' ? "Job marked Paid in Full!" : newStatus === 'deposit_paid' ? "Deposit marked Collected!" : "Deposit marked Unpaid.");
     }
 
-    async function quickAddLink(id) {
-      const input = document.getElementById(`quickLinkInput_${id}`);
-      if (!input || !input.value.trim()) return;
-      const newUrl = input.value.trim();
+    async function quickUpdatePaymentMethod(id, method) {
       const item = repairs.find(r => r.id === id);
       if (!item) return;
-      const currentLinks = Array.isArray(item.links) ? [...item.links] : [];
-      currentLinks.push(newUrl);
-      openLinkDropdownId = id;
-      await saveJobLinks(id, currentLinks);
-    }
 
-    async function quickRemoveLink(id, index) {
-      const item = repairs.find(r => r.id === id);
-      if (!item) return;
-      const currentLinks = Array.isArray(item.links) ? [...item.links] : [];
-      currentLinks.splice(index, 1);
-      openLinkDropdownId = id;
-      await saveJobLinks(id, currentLinks);
+      if (isCloudConnected && supabaseClient) {
+        const metaTag = ` [META:${JSON.stringify({
+          model_number: item.modelNumber,
+          part_name: item.partName,
+          part_price: item.partPrice,
+          labor_price: item.laborPrice,
+          deposit_amount: item.requiredDeposit,
+          payment_status: item.paymentStatus,
+          payment_method: method,
+          payment_info: item.paymentInfo,
+          links: item.links
+        })}]`;
+
+        await supabaseClient.from('repairs').update({
+          payment_method: method,
+          description: item.description + metaTag
+        }).eq('id', id);
+        await fetchRepairsFromCloud();
+      } else {
+        repairs = repairs.map(r => r.id === id ? { ...r, paymentMethod: method } : r);
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        render();
+      }
+      showToast(`Payment method updated to ${method}!`);
     }
 
     function render() {
@@ -1089,6 +1250,7 @@
           item.makeModel.toLowerCase().includes(search) ||
           item.modelNumber.toLowerCase().includes(search) ||
           item.partName.toLowerCase().includes(search) ||
+          (item.paymentMethod && item.paymentMethod.toLowerCase().includes(search)) ||
           item.description.toLowerCase().includes(search);
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
@@ -1119,15 +1281,23 @@
         const linksList = item.links || [];
         const isDropdownOpen = openLinkDropdownId === item.id;
 
+        const isPaidInFull = item.paymentStatus === 'paid_in_full';
+        const isDepositPaid = item.paymentStatus === 'deposit_paid';
+
         return `
           <div class="dark-card p-5 rounded-3xl shadow-md space-y-3">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <div class="flex items-center space-x-2 mb-1.5">
+                <div class="flex items-center space-x-2 mb-1.5 flex-wrap gap-y-1">
                   <span class="px-2.5 py-0.5 text-[11px] font-black rounded-full bg-slate-800 text-slate-300">
                     ${escapeHtml(item.deviceType)}
                   </span>
                   ${item.modelNumber ? `<span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">#${escapeHtml(item.modelNumber)}</span>` : ''}
+                  
+                  <!-- Payment Status Badge -->
+                  <span class="px-2 py-0.5 text-[10px] font-black rounded-md ${isPaidInFull ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : isDepositPaid ? 'bg-indigo-950 text-indigo-400 border border-indigo-800/40' : 'bg-rose-950 text-rose-400 border border-rose-800/40'}">
+                    ${isPaidInFull ? '🟢 Paid in Full' : isDepositPaid ? `🟡 Deposit Collected ($${item.requiredDeposit.toFixed(2)})` : `🔴 Deposit Unpaid ($${item.requiredDeposit.toFixed(2)} Required)`}
+                  </span>
                 </div>
                 <h3 class="text-lg font-black text-white leading-tight">${escapeHtml(item.customerName)}</h3>
                 <p class="text-xs font-bold text-slate-400 mt-0.5">${escapeHtml(item.makeModel)}</p>
@@ -1136,7 +1306,7 @@
               <div class="text-right shrink-0">
                 <span class="text-xl font-black text-emerald-400 block">$${item.amount.toFixed(2)}</span>
                 <div class="text-[10px] font-bold space-x-1.5 mt-0.5">
-                  <span class="text-indigo-400">Dep: $${item.depositAmount.toFixed(2)}</span>
+                  <span class="text-indigo-400">Dep Paid: $${item.depositAmount.toFixed(2)}</span>
                   <span class="text-rose-400">Bal: $${item.balanceDue.toFixed(2)}</span>
                 </div>
               </div>
@@ -1152,7 +1322,35 @@
               </div>
             ` : ''}
 
-            <!-- Supplier & Website Links Dropdown Section -->
+            <!-- Inline Payment Control Bar -->
+            <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800 text-xs flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-[11px] font-bold text-slate-400">💳 Method:</span>
+                <select onchange="quickUpdatePaymentMethod('${item.id}', this.value)" class="bg-slate-950 text-white font-bold text-xs px-2.5 py-1 rounded-xl border border-slate-800 outline-none cursor-pointer">
+                  ${paymentMethods.map(m => `<option value="${escapeHtml(m)}" ${item.paymentMethod === m ? 'selected' : ''}>${getPaymentIcon(m)} ${escapeHtml(m)}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="flex items-center space-x-1.5">
+                ${!isDepositPaid && !isPaidInFull && item.requiredDeposit > 0 ? `
+                  <button type="button" onclick="quickSetPaymentStatus('${item.id}', 'deposit_paid')" class="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600/60 text-indigo-300 border border-indigo-500/40 text-[11px] font-extrabold rounded-xl transition active:scale-95 cursor-pointer">
+                    ✓ Mark Deposit Paid ($${item.requiredDeposit.toFixed(2)})
+                  </button>
+                ` : ''}
+
+                ${!isPaidInFull ? `
+                  <button type="button" onclick="quickSetPaymentStatus('${item.id}', 'paid_in_full')" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/60 text-emerald-300 border border-emerald-500/40 text-[11px] font-extrabold rounded-xl transition active:scale-95 cursor-pointer">
+                    ✓ Paid in Full
+                  </button>
+                ` : `
+                  <span class="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1">
+                    <span>✓ Fully Paid</span>
+                  </span>
+                `}
+              </div>
+            </div>
+
+            <!-- Website & Supplier Links Bar -->
             <div class="relative">
               <button type="button" onclick="toggleLinkDropdown('${item.id}', event)" class="w-full px-3 py-2 bg-slate-900 hover:bg-slate-800 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-xl transition flex items-center justify-between cursor-pointer active:scale-98">
                 <span class="flex items-center space-x-1.5">
@@ -1165,7 +1363,7 @@
               </button>
 
               ${isDropdownOpen ? `
-                <div class="mt-2 bg-slate-950 p-3 rounded-2xl border border-purple-500/40 space-y-2 text-xs z-10 shadow-xl animate-in fade-in duration-150">
+                <div class="mt-2 bg-slate-950 p-3 rounded-2xl border border-purple-500/40 space-y-2 text-xs z-10 shadow-xl">
                   <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400">Website Links (${linksList.length}):</span>
                     <span class="text-[10px] text-slate-500">Parts, Diagrams, Supplier Orders</span>
@@ -1205,9 +1403,8 @@
                     <p class="text-[11px] text-slate-500 italic py-1">No website links added yet.</p>
                   `}
 
-                  <!-- Inline Quick Add Link Bar -->
                   <div class="pt-2 border-t border-slate-800 flex items-center gap-2">
-                    <input type="url" id="quickLinkInput_${item.id}" placeholder="Paste website URL (e.g. https://mobilesentrix.com)..." class="flex-1 px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-purple-500 placeholder-slate-600" onkeydown="if(event.key==='Enter'){quickAddLink('${item.id}');}">
+                    <input type="url" id="quickLinkInput_${item.id}" placeholder="Paste website URL..." class="flex-1 px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-purple-500 placeholder-slate-600" onkeydown="if(event.key==='Enter'){quickAddLink('${item.id}');}">
                     <button type="button" onclick="quickAddLink('${item.id}')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs rounded-xl shadow transition active:scale-95 cursor-pointer shrink-0">
                       + Add
                     </button>
@@ -1217,7 +1414,7 @@
             </div>
 
             <div class="bg-slate-900/60 px-3 py-2 rounded-xl border border-slate-800/80 text-[11px] text-slate-300 font-medium">
-              <span class="font-bold text-slate-400">💳 Payment:</span> ${escapeHtml(item.paymentInfo)}
+              <span class="font-bold text-slate-400">💳 Instructions:</span> ${escapeHtml(item.paymentInfo)}
             </div>
 
             ${item.description ? `
@@ -1257,6 +1454,79 @@
       }).join('');
     }
 
+    function openManageMethodsModal() {
+      const modal = document.getElementById('manageMethodsModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderManageMethodsList();
+      }
+    }
+
+    function closeManageMethodsModal() {
+      const modal = document.getElementById('manageMethodsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderManageMethodsList() {
+      const container = document.getElementById('paymentMethodsListContainer');
+      if (!container) return;
+
+      container.innerHTML = paymentMethods.map((method, idx) => `
+        <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-slate-200">
+          <span class="font-bold text-xs flex items-center gap-2">
+            <span>${getPaymentIcon(method)}</span>
+            <span>${escapeHtml(method)}</span>
+          </span>
+          <div class="flex items-center space-x-1">
+            <button type="button" onclick="renamePaymentMethod(${idx})" class="p-1.5 text-slate-400 hover:text-white rounded-lg transition cursor-pointer" title="Rename Method">
+              ✏️
+            </button>
+            <button type="button" onclick="deletePaymentMethod(${idx})" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition cursor-pointer" title="Delete Method">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNewPaymentMethod() {
+      const input = document.getElementById('newPaymentMethodInput');
+      if (!input || !input.value.trim()) return;
+      const newMethod = input.value.trim();
+      if (paymentMethods.includes(newMethod)) return;
+
+      paymentMethods.push(newMethod);
+      localStorage.setItem('ajd_payment_methods', JSON.stringify(paymentMethods));
+      input.value = '';
+      renderManageMethodsList();
+      renderPaymentMethodSelectors();
+      render();
+      showToast(`Added ${newMethod} to payment methods!`);
+    }
+
+    function renamePaymentMethod(index) {
+      const oldName = paymentMethods[index];
+      const newName = prompt(`Rename payment method "${oldName}":`, oldName);
+      if (newName && newName.trim() && newName.trim() !== oldName) {
+        paymentMethods[index] = newName.trim();
+        localStorage.setItem('ajd_payment_methods', JSON.stringify(paymentMethods));
+        renderManageMethodsList();
+        renderPaymentMethodSelectors();
+        render();
+        showToast(`Renamed to ${newName.trim()}!`);
+      }
+    }
+
+    function deletePaymentMethod(index) {
+      const name = paymentMethods[index];
+      paymentMethods.splice(index, 1);
+      localStorage.setItem('ajd_payment_methods', JSON.stringify(paymentMethods));
+      renderManageMethodsList();
+      renderPaymentMethodSelectors();
+      render();
+      showToast(`Removed ${name}.`);
+    }
+
     function copyTrackerLink(id) {
       if (String(id).startsWith('local_')) {
         showToast("Local job: Connect to cloud to enable remote tracking.");
@@ -1290,7 +1560,8 @@
       document.getElementById('editPartPrice').value = item.partPrice || '';
       document.getElementById('editQuotedPrice').value = item.laborPrice || '';
       document.getElementById('editRepairAmount').value = item.amount || '';
-      document.getElementById('editDepositAmount').value = item.depositAmount || '';
+      document.getElementById('editDepositAmount').value = item.requiredDeposit || '';
+      document.getElementById('editPaymentMethod').value = item.paymentMethod || 'Zelle';
       document.getElementById('editRepairDescription').value = item.description;
       document.getElementById('editRepairLinks').value = (item.links || []).join(', ');
 
@@ -1314,6 +1585,7 @@
         const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
         const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
         const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || (partPrice + laborPrice);
+        const reqDeposit = parseFloat(document.getElementById('editDepositAmount').value) || 0;
 
         const updatedData = {
           customer_name: document.getElementById('editCustomerName').value,
@@ -1324,7 +1596,8 @@
           part_price: partPrice,
           labor_price: laborPrice,
           amount: totalAmount,
-          deposit_amount: parseFloat(document.getElementById('editDepositAmount').value) || 0,
+          deposit_amount: reqDeposit,
+          payment_method: document.getElementById('editPaymentMethod').value || 'Zelle',
           description: document.getElementById('editRepairDescription').value,
           links: linksArr
         };
@@ -1336,6 +1609,7 @@
             part_price: updatedData.part_price,
             labor_price: updatedData.labor_price,
             deposit_amount: updatedData.deposit_amount,
+            payment_method: updatedData.payment_method,
             links: updatedData.links
           })}]`;
 
@@ -1479,14 +1753,15 @@
           </table>
 
           <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs border border-slate-200">
-            <div class="flex justify-between font-semibold"><span>Subtotal Total:</span><span>$${item.amount.toFixed(2)}</span></div>
-            <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Paid:</span><span>-$${item.depositAmount.toFixed(2)}</span></div>
+            <div class="flex justify-between font-semibold"><span>Total Charged:</span><span>$${item.amount.toFixed(2)}</span></div>
+            <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Required / Quoted:</span><span>$${item.requiredDeposit.toFixed(2)}</span></div>
+            <div class="flex justify-between text-emerald-600 font-semibold"><span>Deposit Paid:</span><span>-$${item.depositAmount.toFixed(2)}</span></div>
             <div class="flex justify-between font-black text-sm text-rose-600 pt-2 border-t border-slate-200"><span>Remaining Balance Due:</span><span>$${item.balanceDue.toFixed(2)}</span></div>
           </div>
 
           <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 space-y-1">
-            <span class="text-[10px] font-black uppercase tracking-wider text-brand-800">💳 Payment Handles & Info</span>
-            <p class="text-xs font-bold text-slate-800 leading-relaxed">${escapeHtml(item.paymentInfo)}</p>
+            <span class="text-[10px] font-black uppercase tracking-wider text-brand-800">💳 Payment Method & Instructions</span>
+            <p class="text-xs font-bold text-slate-800 leading-relaxed">Accepted Via: ${escapeHtml(item.paymentMethod)} | ${escapeHtml(item.paymentInfo)}</p>
           </div>
         </div>
       `;
@@ -1545,6 +1820,7 @@
 Customer: ${item.customerName}
 Device: ${item.makeModel}
 Total Amount: $${item.amount.toFixed(2)}
+Deposit Required: $${item.requiredDeposit.toFixed(2)}
 Deposit Paid: $${item.depositAmount.toFixed(2)}
 Balance Due: $${item.balanceDue.toFixed(2)}
 Payment Handles: ${item.paymentInfo}`;
@@ -1678,8 +1954,8 @@ Payment Handles: ${item.paymentInfo}`;
         </div>
         <div class="space-y-1 text-slate-400 pt-1">
           <p class="font-bold text-slate-200">💡 Optimization Suggestions:</p>
-          <p>• Collect 50% deposits upfront on custom screen or laptop replacement orders to reduce unpaid balances.</p>
-          <p>• Send automated SMS updates to customers when status changes to "Completed" to speed up customer pickups.</p>
+          <p>• Require 50% deposit upfront on custom screen or laptop replacement orders before ordering hardware.</p>
+          <p>• Use "Mark Deposit Paid" as soon as funds are received to accurately track cashflow in your metrics.</p>
         </div>
       `;
     }
@@ -1770,7 +2046,7 @@ Payment Handles: ${item.paymentInfo}`;
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         openLinkDropdownId = null;
-        ['editModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal'].forEach(id => {
+        ['editModal', 'manageMethodsModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.classList.add('hidden');
         });
