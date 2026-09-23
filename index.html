@@ -79,6 +79,7 @@
 </head>
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
+  <!-- Header Navigation -->
   <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6 no-print">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       
@@ -106,7 +107,7 @@
         </div>
       </div>
 
-      <!-- Center Navigation Tabs -->
+      <!-- Center Tabs & Links Dropdown -->
       <div class="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800 space-x-1">
         <button id="tabBtnRepairs" onclick="switchTab('repairs')" class="px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2 active:scale-95 cursor-pointer">
           <span>💻 Repairs Tracker</span>
@@ -115,7 +116,7 @@
           <span>📄 Invoices & Receipts</span>
         </button>
 
-        <!-- Custom Navigation Quick Links Dropdown -->
+        <!-- Custom Quick Links Dropdown -->
         <div class="relative" onclick="event.stopPropagation()">
           <button id="navCustomLinksBtn" onclick="toggleNavLinksDropdown(event)" class="px-3 py-2 text-xs font-bold rounded-xl text-purple-300 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer border border-purple-500/30">
             <span>🔗 Quick Links</span>
@@ -123,7 +124,6 @@
             <span class="text-[10px]">▼</span>
           </button>
 
-          <!-- Dropdown Menu -->
           <div id="navLinksDropdown" class="hidden absolute top-full mt-2 left-0 sm:right-0 sm:left-auto w-72 sm:w-80 bg-slate-950 p-3.5 rounded-2xl border border-purple-500/40 shadow-2xl z-50 text-xs space-y-2.5">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <span class="font-extrabold text-purple-300 text-xs flex items-center gap-1.5">
@@ -132,10 +132,8 @@
               <span class="text-[10px] font-semibold text-slate-400">Bookmarks & Portals</span>
             </div>
 
-            <!-- Link Items Container -->
             <div id="navLinksListContainer" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
 
-            <!-- Add New Link Form -->
             <div class="pt-2 border-t border-slate-800 space-y-1.5">
               <div class="flex items-center gap-1.5">
                 <input type="text" id="newNavLinkTitle" placeholder="Title (e.g. Supplier)" class="w-1/3 px-2 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-purple-500 placeholder-slate-600">
@@ -149,7 +147,7 @@
         </div>
       </div>
 
-      <!-- Utility Toolbar -->
+      <!-- Right Toolbar -->
       <div class="flex items-center space-x-2.5">
         <button onclick="openManageMethodsModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 text-xs font-bold rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer" title="Manage Payment Methods">
           <span>💳 Payment Methods</span>
@@ -173,9 +171,10 @@
     </div>
   </header>
 
+  <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-    <!-- 6-Metric Bar -->
+    <!-- Metrics Bar -->
     <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 no-print">
       <div class="dark-card p-4 rounded-2xl shadow-sm">
         <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">TOTAL JOBS</p>
@@ -206,7 +205,7 @@
     <!-- VIEW 1: REPAIRS TRACKER -->
     <div id="viewRepairs" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- Left Column: Add Repair Entry Form -->
+      <!-- Left Column: New Repair Form -->
       <div class="lg:col-span-5 no-print">
         <div class="dark-card p-5 sm:p-6 rounded-3xl shadow-lg space-y-4 sticky top-20">
           
@@ -219,7 +218,7 @@
 
           <form id="repairForm" class="space-y-4">
             
-            <!-- SECTION 1: Customer & Device Info -->
+            <!-- Customer & Device Info -->
             <div class="space-y-3 bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
               <span class="text-[10px] font-black uppercase tracking-wider text-brand-400 block">CUSTOMER & DEVICE INFO</span>
               
@@ -255,7 +254,7 @@
               </div>
             </div>
 
-            <!-- SECTION 2: Replacement Parts & Materials -->
+            <!-- Parts & Materials -->
             <div class="space-y-3 bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 block">REPLACEMENT PARTS & MATERIALS</span>
@@ -278,9 +277,10 @@
               </div>
             </div>
 
+            <!-- Service Pricing, Discounts & Deposits -->
             <div class="space-y-3 bg-brand-950/20 p-3.5 rounded-2xl border border-brand-900/40">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING & DEPOSIT REQUIRED</span>
+                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING, DISCOUNTS & DEPOSITS</span>
                 <button type="button" onclick="openManageMethodsModal()" class="text-[10px] font-bold text-emerald-400 hover:underline cursor-pointer">⚙️ Manage Methods</button>
               </div>
 
@@ -295,6 +295,34 @@
                 </div>
               </div>
 
+              <!-- Discount Section -->
+              <div class="p-3 bg-slate-950/80 rounded-2xl border border-slate-800/80 space-y-2">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-amber-400">🏷️ Apply Discount (% or $)</label>
+                  <span id="discountPreviewBadge" class="text-[10px] font-extrabold text-amber-400">0% ($0.00)</span>
+                </div>
+
+                <!-- Discount Percentage Presets -->
+                <div class="grid grid-cols-5 gap-1 text-[11px]">
+                  <button type="button" onclick="applyDiscountPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
+                  <button type="button" onclick="applyDiscountPreset(5)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">5%</button>
+                  <button type="button" onclick="applyDiscountPreset(10)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">10%</button>
+                  <button type="button" onclick="applyDiscountPreset(15)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">15%</button>
+                  <button type="button" onclick="applyDiscountPreset(20)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">20%</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Amount ($)</label>
+                    <input type="number" id="discountAmount" step="0.01" min="0" oninput="calculateTotal()" class="w-full px-3 py-1.5 text-xs font-extrabold bg-slate-900 border border-slate-800 rounded-xl text-amber-400 outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="0.00">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Reason / Promo Note</label>
+                    <input type="text" id="discountReason" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="e.g. Repeat Customer, Screen+Battery Combo">
+                  </div>
+                </div>
+              </div>
+
               <!-- Required Deposit Presets & Payment Status -->
               <div>
                 <div class="flex items-center justify-between mb-1">
@@ -302,7 +330,6 @@
                   <span id="paymentStatusBadge" class="text-[10px] font-black px-2 py-0.5 rounded-md bg-rose-950 text-rose-400 border border-rose-800/40">🔴 Deposit Unpaid</span>
                 </div>
                 
-                <!-- Deposit Percentage Presets -->
                 <div class="grid grid-cols-5 gap-1 text-[11px] mb-2">
                   <button type="button" onclick="applyDepositPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
                   <button type="button" onclick="applyDepositPreset(25)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">25%</button>
@@ -311,7 +338,6 @@
                   <button type="button" onclick="applyDepositPreset(100)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-brand-900/50 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">100%</button>
                 </div>
 
-                <!-- Collection Status Toggles -->
                 <div class="grid grid-cols-3 gap-1.5">
                   <button type="button" onclick="setPaymentStatus('unpaid')" class="py-1.5 bg-slate-900 border border-slate-800 hover:bg-rose-900/30 text-[11px] font-extrabold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">
                     🔴 Unpaid
@@ -336,7 +362,6 @@
                 </div>
               </div>
 
-              <!-- Payment Method Selection -->
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1">Payment Method Used *</label>
                 <select id="paymentMethod" class="w-full px-3.5 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
@@ -349,7 +374,6 @@
               </div>
             </div>
 
-            <!-- Notes field -->
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1 text-left">Repair Issue & Notes (Left Aligned)</label>
               <textarea id="repairDescription" rows="2" class="w-full px-3.5 py-2 text-sm text-left bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white leading-relaxed placeholder-slate-600" placeholder="Detailed symptoms, physical condition, passcodes..."></textarea>
@@ -367,10 +391,9 @@
       <!-- Right Column: Repair Cards Listing -->
       <div class="lg:col-span-7 space-y-4">
         
-        <!-- Search & Filter Bar -->
         <div class="flex flex-col sm:flex-row gap-3 no-print">
           <div class="relative flex-1">
-            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" placeholder="Search customer, make, model, parts, notes, or payment method...">
+            <input type="text" id="searchInput" class="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" placeholder="Search customer, make, model, parts, discount, or notes...">
             <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
 
@@ -382,7 +405,6 @@
           </select>
         </div>
 
-        <!-- Cards Container -->
         <div id="repairsList" class="space-y-4">
           <div class="p-12 text-center text-slate-500 dark-card rounded-3xl space-y-3">
             <svg class="animate-spin w-6 h-6 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -394,6 +416,7 @@
 
     </div>
 
+    <!-- VIEW 2: INVOICES -->
     <div id="viewInvoices" class="hidden space-y-6">
       <div class="dark-card p-6 rounded-3xl no-print flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
@@ -411,7 +434,6 @@
         </div>
       </div>
 
-      <!-- Printable Invoice Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-4 space-y-3 no-print">
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-1">Select Job to Preview</h3>
@@ -428,7 +450,7 @@
 
   </main>
 
-  <!-- MODAL 1: EDIT REPAIR MODAL -->
+  <!-- EDIT MODAL -->
   <div id="editModal" onclick="handleBackdropClick(event, 'editModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -488,13 +510,34 @@
           </div>
         </div>
 
+        <!-- Edit Discount Section -->
+        <div class="p-3 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
+          <label class="block text-xs font-bold text-amber-400">🏷️ Edit Discount</label>
+          <div class="grid grid-cols-5 gap-1 text-[11px]">
+            <button type="button" onclick="applyEditDiscountPreset(0)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">0%</button>
+            <button type="button" onclick="applyEditDiscountPreset(5)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">5%</button>
+            <button type="button" onclick="applyEditDiscountPreset(10)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">10%</button>
+            <button type="button" onclick="applyEditDiscountPreset(15)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">15%</button>
+            <button type="button" onclick="applyEditDiscountPreset(20)" class="py-1 bg-slate-900 border border-slate-800 hover:bg-amber-900/40 font-bold rounded-lg transition text-slate-300 active:scale-95 cursor-pointer">20%</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Amount ($)</label>
+              <input type="number" id="editDiscountAmount" step="0.01" min="0" oninput="calculateEditTotal()" class="w-full px-3 py-1.5 text-xs font-extrabold bg-slate-900 border border-slate-800 rounded-xl text-amber-400 outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Reason</label>
+              <input type="text" id="editDiscountReason" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none" placeholder="Reason...">
+            </div>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Payment Method Used *</label>
           <select id="editPaymentMethod" class="w-full px-3 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
           </select>
         </div>
 
-        <!-- Quick Deposit Presets & Payment Status in Edit Modal -->
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Required Deposit Presets (% Total)</label>
           <div class="grid grid-cols-5 gap-1 text-[11px] mb-2">
@@ -539,7 +582,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: MANAGE PAYMENT METHODS MODAL -->
+  <!-- MANAGE METHODS MODAL -->
   <div id="manageMethodsModal" onclick="handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -571,7 +614,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: PRICE PRESETS -->
+  <!-- PRICE PRESETS MODAL -->
   <div id="priceModal" onclick="handleBackdropClick(event, 'priceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -587,7 +630,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: DELETE CONFIRMATION -->
+  <!-- CONFIRM DELETE MODAL -->
   <div id="confirmModal" onclick="handleBackdropClick(event, 'confirmModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
       <div class="w-12 h-12 bg-rose-900/40 text-rose-400 rounded-2xl mx-auto flex items-center justify-center text-xl">⚠️</div>
@@ -600,7 +643,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: AI CUSTOMER SMS GENERATOR -->
+  <!-- AI SMS MODAL -->
   <div id="smsAiModal" onclick="handleBackdropClick(event, 'smsAiModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -632,7 +675,7 @@
     </div>
   </div>
 
-  <!-- MODAL 6: AI ESTIMATE MODAL -->
+  <!-- AI ESTIMATE MODAL -->
   <div id="aiEstimateModal" onclick="handleBackdropClick(event, 'aiEstimateModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -658,7 +701,7 @@
     </div>
   </div>
 
-  <!-- MODAL 7: AI INSIGHTS MODAL -->
+  <!-- AI INSIGHTS MODAL -->
   <div id="aiInsightsModal" onclick="handleBackdropClick(event, 'aiInsightsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -680,7 +723,6 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
 
   <script>
@@ -828,18 +870,49 @@
       return '💳';
     }
 
+    function applyDiscountPreset(percent) {
+      const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
+      const subtotal = partPrice + laborPrice;
+      const discount = subtotal * (percent / 100);
+      document.getElementById('discountAmount').value = discount > 0 ? discount.toFixed(2) : '0.00';
+      calculateTotal();
+    }
+
+    function applyEditDiscountPreset(percent) {
+      const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
+      const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
+      const subtotal = partPrice + laborPrice;
+      const discount = subtotal * (percent / 100);
+      document.getElementById('editDiscountAmount').value = discount > 0 ? discount.toFixed(2) : '0.00';
+      calculateEditTotal();
+    }
+
     function calculateTotal() {
       const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
       const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
-      const total = partPrice + laborPrice;
+      const discountAmount = parseFloat(document.getElementById('discountAmount').value) || 0;
+
+      const subtotal = partPrice + laborPrice;
+      const total = Math.max(0, subtotal - discountAmount);
+
       document.getElementById('repairAmount').value = total > 0 ? total.toFixed(2) : '';
+
+      const discountBadge = document.getElementById('discountPreviewBadge');
+      if (discountBadge) {
+        const pct = subtotal > 0 ? Math.round((discountAmount / subtotal) * 100) : 0;
+        discountBadge.innerText = `${pct}% (-$${discountAmount.toFixed(2)})`;
+      }
+
       calculateBalance();
     }
 
     function adjustQuotedFromTotal() {
       const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
       const total = parseFloat(document.getElementById('repairAmount').value) || 0;
-      const labor = Math.max(0, total - partPrice);
+      const discountAmount = parseFloat(document.getElementById('discountAmount').value) || 0;
+
+      const labor = Math.max(0, total + discountAmount - partPrice);
       document.getElementById('laborPrice').value = labor.toFixed(2);
       calculateBalance();
     }
@@ -906,7 +979,9 @@
     function calculateEditTotal() {
       const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
       const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
-      document.getElementById('editRepairAmount').value = (partPrice + laborPrice).toFixed(2);
+      const discountAmount = parseFloat(document.getElementById('editDiscountAmount').value) || 0;
+      const total = Math.max(0, (partPrice + laborPrice) - discountAmount);
+      document.getElementById('editRepairAmount').value = total.toFixed(2);
     }
 
     function normalizeRepair(item) {
@@ -935,13 +1010,8 @@
 
       let partPrice = getPositiveNum(item.part_price, meta.part_price, item.partPrice, item.part_cost);
       let laborPrice = getPositiveNum(item.labor_price, meta.labor_price, item.laborPrice, item.quoted_price);
-
-      if (partPrice === 0 && amount > laborPrice && (item.part_name || item.partName || meta.part_name)) {
-        partPrice = Math.max(0, amount - laborPrice);
-      }
-      if (laborPrice === 0 && amount > partPrice) {
-        laborPrice = Math.max(0, amount - partPrice);
-      }
+      let discountAmount = getPositiveNum(item.discount_amount, meta.discount_amount, item.discountAmount);
+      let discountReason = item.discount_reason || meta.discount_reason || '';
 
       const reqDeposit = getPositiveNum(item.deposit_amount, meta.deposit_amount, item.depositAmount, item.required_deposit);
       const paymentMethod = item.payment_method || item.paymentMethod || meta.payment_method || 'Zelle';
@@ -978,6 +1048,8 @@
         partName: item.part_name || item.partName || meta.part_name || '',
         partPrice: partPrice,
         laborPrice: laborPrice,
+        discountAmount: discountAmount,
+        discountReason: discountReason,
         amount: amount,
         requiredDeposit: reqDeposit,
         depositAmount: paidSoFar,
@@ -1113,7 +1185,10 @@
 
         const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
         const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
-        const totalAmount = parseFloat(document.getElementById('repairAmount').value) || (partPrice + laborPrice);
+        const discountAmount = parseFloat(document.getElementById('discountAmount').value) || 0;
+        const discountReason = document.getElementById('discountReason').value;
+
+        const totalAmount = parseFloat(document.getElementById('repairAmount').value) || Math.max(0, partPrice + laborPrice - discountAmount);
         const reqDeposit = parseFloat(document.getElementById('depositAmount').value) || 0;
         const paymentMethod = document.getElementById('paymentMethod').value || 'Zelle';
 
@@ -1125,6 +1200,8 @@
           part_name: document.getElementById('partName').value,
           part_price: partPrice,
           labor_price: laborPrice,
+          discount_amount: discountAmount,
+          discount_reason: discountReason,
           amount: totalAmount,
           deposit_amount: reqDeposit,
           payment_status: currentPaymentStatus,
@@ -1141,6 +1218,8 @@
             part_name: rawItem.part_name,
             part_price: rawItem.part_price,
             labor_price: rawItem.labor_price,
+            discount_amount: rawItem.discount_amount,
+            discount_reason: rawItem.discount_reason,
             deposit_amount: rawItem.deposit_amount,
             payment_status: rawItem.payment_status,
             payment_method: rawItem.payment_method,
@@ -1187,6 +1266,8 @@
           part_name: item.partName,
           part_price: item.partPrice,
           labor_price: item.laborPrice,
+          discount_amount: item.discountAmount,
+          discount_reason: item.discountReason,
           deposit_amount: item.requiredDeposit,
           payment_status: newStatus,
           payment_method: item.paymentMethod,
@@ -1218,6 +1299,8 @@
           part_name: item.partName,
           part_price: item.partPrice,
           labor_price: item.laborPrice,
+          discount_amount: item.discountAmount,
+          discount_reason: item.discountReason,
           deposit_amount: item.requiredDeposit,
           payment_status: item.paymentStatus,
           payment_method: method,
@@ -1251,6 +1334,7 @@
           item.modelNumber.toLowerCase().includes(search) ||
           item.partName.toLowerCase().includes(search) ||
           (item.paymentMethod && item.paymentMethod.toLowerCase().includes(search)) ||
+          (item.discountReason && item.discountReason.toLowerCase().includes(search)) ||
           item.description.toLowerCase().includes(search);
         const matchesStatus = status === 'all' || item.status === status;
         return matchesSearch && matchesStatus;
@@ -1294,7 +1378,6 @@
                   </span>
                   ${item.modelNumber ? `<span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">#${escapeHtml(item.modelNumber)}</span>` : ''}
                   
-                  <!-- Payment Status Badge -->
                   <span class="px-2 py-0.5 text-[10px] font-black rounded-md ${isPaidInFull ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : isDepositPaid ? 'bg-indigo-950 text-indigo-400 border border-indigo-800/40' : 'bg-rose-950 text-rose-400 border border-rose-800/40'}">
                     ${isPaidInFull ? '🟢 Paid in Full' : isDepositPaid ? `🟡 Deposit Collected ($${item.requiredDeposit.toFixed(2)})` : `🔴 Deposit Unpaid ($${item.requiredDeposit.toFixed(2)} Required)`}
                   </span>
@@ -1312,6 +1395,16 @@
               </div>
             </div>
 
+            ${item.discountAmount > 0 ? `
+              <div class="bg-amber-950/30 p-2.5 rounded-2xl border border-amber-900/50 text-xs flex items-center justify-between">
+                <span class="font-extrabold text-amber-400 flex items-center gap-1.5">
+                  <span>🏷️ Discount Applied:</span>
+                  <span class="text-slate-300 font-semibold">${escapeHtml(item.discountReason || 'Promo / Courtesy')}</span>
+                </span>
+                <span class="font-black text-amber-400">-$${item.discountAmount.toFixed(2)}</span>
+              </div>
+            ` : ''}
+
             ${item.partName ? `
               <div class="bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
                 <div class="space-y-0.5">
@@ -1322,7 +1415,6 @@
               </div>
             ` : ''}
 
-            <!-- Inline Payment Control Bar -->
             <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800 text-xs flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center space-x-2">
                 <span class="text-[11px] font-bold text-slate-400">💳 Method:</span>
@@ -1350,7 +1442,7 @@
               </div>
             </div>
 
-            <!-- Website & Supplier Links Bar -->
+            <!-- Links Dropdown -->
             <div class="relative">
               <button type="button" onclick="toggleLinkDropdown('${item.id}', event)" class="w-full px-3 py-2 bg-slate-900 hover:bg-slate-800 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-xl transition flex items-center justify-between cursor-pointer active:scale-98">
                 <span class="flex items-center space-x-1.5">
@@ -1559,6 +1651,8 @@
       document.getElementById('editPartName').value = item.partName;
       document.getElementById('editPartPrice').value = item.partPrice || '';
       document.getElementById('editQuotedPrice').value = item.laborPrice || '';
+      document.getElementById('editDiscountAmount').value = item.discountAmount || '';
+      document.getElementById('editDiscountReason').value = item.discountReason || '';
       document.getElementById('editRepairAmount').value = item.amount || '';
       document.getElementById('editDepositAmount').value = item.requiredDeposit || '';
       document.getElementById('editPaymentMethod').value = item.paymentMethod || 'Zelle';
@@ -1584,7 +1678,10 @@
 
         const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
         const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
-        const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || (partPrice + laborPrice);
+        const discountAmount = parseFloat(document.getElementById('editDiscountAmount').value) || 0;
+        const discountReason = document.getElementById('editDiscountReason').value;
+
+        const totalAmount = parseFloat(document.getElementById('editRepairAmount').value) || Math.max(0, partPrice + laborPrice - discountAmount);
         const reqDeposit = parseFloat(document.getElementById('editDepositAmount').value) || 0;
 
         const updatedData = {
@@ -1595,6 +1692,8 @@
           part_name: document.getElementById('editPartName').value,
           part_price: partPrice,
           labor_price: laborPrice,
+          discount_amount: discountAmount,
+          discount_reason: discountReason,
           amount: totalAmount,
           deposit_amount: reqDeposit,
           payment_method: document.getElementById('editPaymentMethod').value || 'Zelle',
@@ -1608,6 +1707,8 @@
             part_name: updatedData.part_name,
             part_price: updatedData.part_price,
             labor_price: updatedData.labor_price,
+            discount_amount: updatedData.discount_amount,
+            discount_reason: updatedData.discount_reason,
             deposit_amount: updatedData.deposit_amount,
             payment_method: updatedData.payment_method,
             links: updatedData.links
@@ -1702,6 +1803,8 @@
       const canvas = document.getElementById('invoicePrintCanvas');
       if (!item || !canvas) return;
 
+      const subtotal = item.partPrice + item.laborPrice;
+
       canvas.innerHTML = `
         <div class="space-y-6">
           <div class="flex justify-between items-start border-b border-slate-200 pb-6">
@@ -1749,11 +1852,19 @@
                 <td class="py-3 font-semibold">Technical Labor & Service Charge</td>
                 <td class="py-3 text-right font-bold">$${item.laborPrice.toFixed(2)}</td>
               </tr>
+              ${item.discountAmount > 0 ? `
+                <tr class="text-amber-700 bg-amber-50/50">
+                  <td class="py-2.5 font-bold">🏷️ Discount Applied (${escapeHtml(item.discountReason || 'Promo')})</td>
+                  <td class="py-2.5 text-right font-bold">-$${item.discountAmount.toFixed(2)}</td>
+                </tr>
+              ` : ''}
             </tbody>
           </table>
 
           <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs border border-slate-200">
-            <div class="flex justify-between font-semibold"><span>Total Charged:</span><span>$${item.amount.toFixed(2)}</span></div>
+            <div class="flex justify-between font-semibold text-slate-600"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
+            ${item.discountAmount > 0 ? `<div class="flex justify-between font-bold text-amber-600"><span>Discount:</span><span>-$${item.discountAmount.toFixed(2)}</span></div>` : ''}
+            <div class="flex justify-between font-extrabold text-slate-900 text-sm pt-1 border-t border-slate-200"><span>Total Charged:</span><span>$${item.amount.toFixed(2)}</span></div>
             <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Required / Quoted:</span><span>$${item.requiredDeposit.toFixed(2)}</span></div>
             <div class="flex justify-between text-emerald-600 font-semibold"><span>Deposit Paid:</span><span>-$${item.depositAmount.toFixed(2)}</span></div>
             <div class="flex justify-between font-black text-sm text-rose-600 pt-2 border-t border-slate-200"><span>Remaining Balance Due:</span><span>$${item.balanceDue.toFixed(2)}</span></div>
@@ -1819,7 +1930,7 @@
       const summary = `AJD's Wireless Repairs Invoice
 Customer: ${item.customerName}
 Device: ${item.makeModel}
-Total Amount: $${item.amount.toFixed(2)}
+Total Amount: $${item.amount.toFixed(2)} ${item.discountAmount > 0 ? `(Discounted -$${item.discountAmount.toFixed(2)})` : ''}
 Deposit Required: $${item.requiredDeposit.toFixed(2)}
 Deposit Paid: $${item.depositAmount.toFixed(2)}
 Balance Due: $${item.balanceDue.toFixed(2)}
@@ -1955,7 +2066,7 @@ Payment Handles: ${item.paymentInfo}`;
         <div class="space-y-1 text-slate-400 pt-1">
           <p class="font-bold text-slate-200">💡 Optimization Suggestions:</p>
           <p>• Require 50% deposit upfront on custom screen or laptop replacement orders before ordering hardware.</p>
-          <p>• Use "Mark Deposit Paid" as soon as funds are received to accurately track cashflow in your metrics.</p>
+          <p>• Apply percentage discount presets (5%-20%) for bundle repairs to encourage repeat customer orders.</p>
         </div>
       `;
     }
