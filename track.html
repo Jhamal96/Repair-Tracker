@@ -6,7 +6,6 @@
   <title>AJD's Wireless Repairs - Live Repair Tracker</title>
   <meta name="theme-color" content="#0B0F19">
   
-  <!-- Tailwind CSS & Supabase SDK -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -146,8 +145,19 @@
       setupRealtimeLiveTrackerSafely(job.id);
 
       const amount = parseFloat(job.amount) || 0;
-      const deposit = parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0));
-      const balance = Math.max(0, amount - deposit);
+      const reqDeposit = parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0));
+      const paymentStatus = job.payment_status || (job.deposit_paid ? 'deposit_paid' : 'unpaid');
+      
+      let paidSoFar = 0;
+      if (paymentStatus === 'paid_in_full') {
+        paidSoFar = amount;
+      } else if (paymentStatus === 'deposit_paid') {
+        paidSoFar = reqDeposit;
+      } else {
+        paidSoFar = 0;
+      }
+
+      const balance = Math.max(0, amount - paidSoFar);
       const step = job.status === 'completed' ? 4 : job.status === 'in-progress' ? 2 : 1;
 
       container.innerHTML = `
@@ -175,8 +185,9 @@
         </div>
 
         <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
-          <div class="flex justify-between font-semibold text-slate-300"><span>Total Cost:</span><span class="font-black text-white">$${amount.toFixed(2)}</span></div>
-          <div class="flex justify-between text-indigo-400 font-semibold"><span>Deposit Paid:</span><span>-$${deposit.toFixed(2)}</span></div>
+          <div class="flex justify-between font-semibold text-slate-300"><span>Total Service Cost:</span><span class="font-black text-white">$${amount.toFixed(2)}</span></div>
+          <div class="flex justify-between text-indigo-400 font-semibold"><span>Deposit Required / Quoted:</span><span>$${reqDeposit.toFixed(2)}</span></div>
+          <div class="flex justify-between text-emerald-400 font-semibold"><span>Deposit Paid:</span><span>-$${paidSoFar.toFixed(2)}</span></div>
           <div class="flex justify-between text-sm font-black text-rose-400 pt-2 border-t border-slate-800"><span>Balance Due at Pickup:</span><span>$${balance.toFixed(2)}</span></div>
         </div>
 
@@ -204,7 +215,6 @@
       if (!isUuid) return;
 
       if (!isWebSocketAllowed()) {
-        console.warn("WebSocket connections restricted in Canvas environment. Using HTTP polling fallback.");
         startTrackPollingFallback();
         return;
       }
@@ -226,7 +236,6 @@
           }
         });
       } catch (e) {
-        console.warn("Realtime WebSockets disallowed in this environment. Using polling:", e);
         startTrackPollingFallback();
       }
     }
