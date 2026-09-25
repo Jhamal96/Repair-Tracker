@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AJD's Wireless Repair Tracker</title>
+  <title>AJD's Wireless Repair Tracker & Store</title>
   <meta name="theme-color" content="#0B0F19">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Repairs">
   
-  <!-- Apple Touch & Favicon SVG Data URIs for Home Screen Download -->
+  <!-- Apple Touch & Favicon SVG Data URIs -->
   <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%233b82f6' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%233b82f6' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
-  <!-- Tailwind CSS & Supabase JS SDK -->
+  <!-- Tailwind CSS, Supabase JS SDK, and HTML5 QR/Barcode Scanner -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <script>
     tailwind.config = {
@@ -42,7 +43,7 @@
   </script>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%22%2C%22short_name%22%3A%22AJD%20Tracker%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230B0F19%22%2C%22theme_color%22%3A%22%230B0F19%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'22'%20fill%3D'%230B0F19'%2F%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'38'%20stroke%3D'%233b82f6'%20stroke-width%3D'6'%20fill%3D'none'%2F%3E%3Cpath%20d%3D'M30%2068h12M36%2068L50%2028M42%2053h18M38%2028c4-3%209-2%2012%200M50%2028c8%2020%2016%2033%2026%2042'%20stroke%3D'%23ffffff'%20stroke-width%3D'5.5'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22AJD's%20Wireless%20Repair%20Tracker%20%26%20Store%22%2C%22short_name%22%3A%22AJD%20Repairs%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230B0F19%22%2C%22theme_color%22%3A%22%230B0F19%22%7D">
 
   <style>
     body {
@@ -62,6 +63,12 @@
     }
     .status-dot-pulse {
       animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    #reader video {
+      border-radius: 1rem;
+      object-fit: cover;
+      width: 100% !important;
     }
 
     @media print {
@@ -99,10 +106,10 @@
         
         <div>
           <h1 class="text-lg font-black tracking-tight text-white leading-tight">
-            AJD's Wireless Repairs
+            AJD's Wireless Repairs & Store
           </h1>
           <div class="flex items-center space-x-2">
-            <p class="text-xs font-semibold text-slate-400">Phone, Tablet & Laptop Repairs</p>
+            <p class="text-xs font-semibold text-slate-400">Phone, Tablet & Online Store</p>
             <span class="text-slate-600">•</span>
             <div class="flex items-center space-x-1.5 text-[11px] font-bold text-emerald-400">
               <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-emerald-500 status-dot-pulse"></span>
@@ -112,19 +119,23 @@
         </div>
       </div>
 
-      <!-- Center Tabs & Quick Links -->
-      <div class="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800 space-x-1">
-        <button id="tabBtnRepairs" onclick="switchTab('repairs')" class="px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2 active:scale-95 cursor-pointer">
-          <span>💻 Repairs Tracker</span>
+      <!-- Navigation Tabs -->
+      <div class="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800 space-x-1 flex-wrap justify-center">
+        <button id="tabBtnRepairs" onclick="switchTab('repairs')" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer">
+          <span>💻 Repairs</span>
         </button>
-        <button id="tabBtnInvoices" onclick="switchTab('invoices')" class="px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2 active:scale-95 cursor-pointer">
-          <span>📄 Invoices & Receipts</span>
+        <button id="tabBtnInvoices" onclick="switchTab('invoices')" class="px-3.5 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer">
+          <span>📄 Invoices</span>
+        </button>
+        <button id="tabBtnStore" onclick="switchTab('store')" class="px-3.5 py-2 text-xs font-bold rounded-xl text-amber-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer relative">
+          <span>🛒 Online Store</span>
+          <span id="pendingRequestsBadge" class="hidden px-1.5 py-0.2 bg-rose-600 text-white text-[10px] font-black rounded-full">0</span>
         </button>
 
-        <!-- Custom Quick Links Dropdown -->
+        <!-- Quick Links Dropdown -->
         <div class="relative" onclick="event.stopPropagation()">
           <button id="navCustomLinksBtn" onclick="toggleNavLinksDropdown(event)" class="px-3 py-2 text-xs font-bold rounded-xl text-purple-300 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer border border-purple-500/30">
-            <span>🔗 Quick Links</span>
+            <span>🔗 Links</span>
             <span id="navLinkCountBadge" class="px-1.5 py-0.2 rounded-md bg-purple-900/60 text-purple-200 text-[10px]">0</span>
             <span class="text-[10px]">▼</span>
           </button>
@@ -132,9 +143,9 @@
           <div id="navLinksDropdown" class="hidden absolute top-full mt-2 left-0 sm:right-0 sm:left-auto w-72 sm:w-80 bg-slate-950 p-3.5 rounded-2xl border border-purple-500/40 shadow-2xl z-50 text-xs space-y-2.5">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
               <span class="font-extrabold text-purple-300 text-xs flex items-center gap-1.5">
-                <span>🔗 My Custom Links</span>
+                <span>🔗 Custom Bookmarks</span>
               </span>
-              <span class="text-[10px] font-semibold text-slate-400">Bookmarks & Portals</span>
+              <span class="text-[10px] font-semibold text-slate-400">Suppliers & Tools</span>
             </div>
 
             <div id="navLinksListContainer" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
@@ -145,7 +156,7 @@
                 <input type="url" id="newNavLinkUrl" placeholder="URL (https://...)" class="flex-1 px-2 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-purple-500 placeholder-slate-600" onkeydown="if(event.key==='Enter'){addCustomNavLink();}">
               </div>
               <button type="button" onclick="addCustomNavLink()" class="w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs rounded-xl shadow transition active:scale-95 cursor-pointer">
-                + Add Link
+                + Add Custom Link
               </button>
             </div>
           </div>
@@ -153,13 +164,13 @@
       </div>
 
       <!-- Right Utility Toolbar -->
-      <div class="flex items-center space-x-2.5">
+      <div class="flex items-center space-x-2">
         <button onclick="openManageMethodsModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 text-xs font-bold rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer" title="Manage Payment Methods">
-          <span>💳 Payment Methods</span>
+          <span>💳 Methods</span>
         </button>
 
         <button onclick="openAiInsightsModal()" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black rounded-xl shadow transition flex items-center space-x-1.5 border border-purple-400/30 active:scale-95 cursor-pointer">
-          <span>✨ AI Insights</span>
+          <span>✨ AI</span>
         </button>
 
         <button id="priceModalBtn" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 transition active:scale-95 cursor-pointer" title="Preset Device Rates">
@@ -168,18 +179,17 @@
 
         <select id="themeSelect" onchange="applyTheme(this.value)" class="text-xs p-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl font-bold outline-none cursor-pointer">
           <option value="dark">📱 System</option>
-          <option value="dark">🌙 Dark Mode</option>
-          <option value="light">☀️ Light Mode</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="light">☀️ Light</option>
         </select>
       </div>
 
     </div>
   </header>
 
-  <!-- Main Application Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-    <!-- 6-Metrics Bar -->
+    <!-- 6-Metrics Summary Bar -->
     <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 no-print">
       <div class="dark-card p-4 rounded-2xl shadow-sm">
         <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">TOTAL JOBS</p>
@@ -194,15 +204,15 @@
         <p id="statCompleted" class="text-2xl font-black text-white mt-1">0</p>
       </div>
       <div class="dark-card p-4 rounded-2xl shadow-sm">
-        <p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-400">TOTAL REVENUE</p>
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-brand-400">REVENUE</p>
         <p id="statRevenue" class="text-2xl font-black text-white mt-1">$0.00</p>
       </div>
       <div class="dark-card p-4 rounded-2xl shadow-sm">
-        <p class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-400">DEPOSITS PAID</p>
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-400">DEPOSITS</p>
         <p id="statDeposit" class="text-2xl font-black text-white mt-1">$0.00</p>
       </div>
       <div class="dark-card p-4 rounded-2xl shadow-sm">
-        <p class="text-[11px] font-extrabold uppercase tracking-wider text-rose-500">UNPAID BALANCE</p>
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-rose-500">UNPAID</p>
         <p id="statUnpaid" class="text-2xl font-black text-white mt-1">$0.00</p>
       </div>
     </div>
@@ -223,7 +233,7 @@
 
           <form id="repairForm" class="space-y-4">
             
-            <!-- SECTION 1: Customer & Device Info -->
+            <!-- Customer & Device Info -->
             <div class="space-y-3 bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
               <span class="text-[10px] font-black uppercase tracking-wider text-brand-400 block">CUSTOMER & DEVICE INFO</span>
               
@@ -259,16 +269,16 @@
               </div>
             </div>
 
-            <!-- SECTION 2: Replacement Parts & Materials -->
+            <!-- Replacement Parts (Internal Tracking Only) -->
             <div class="space-y-3 bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 block">REPLACEMENT PARTS & MATERIALS</span>
-                <span class="text-[10px] font-bold text-slate-500">INVENTORY & HARDWARE</span>
+                <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 block">INTERNAL PARTS & HARDWARE</span>
+                <span class="text-[10px] font-bold text-slate-500">Internal Record</span>
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Part Name / Items Used</label>
-                <input type="text" id="partName" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. OLED Display Assembly, Battery, Port">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Part / Hardware Notes</label>
+                <input type="text" id="partName" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="e.g. OLED Display Assembly, Battery">
               </div>
 
               <div>
@@ -277,16 +287,16 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Separated by commas or lines)</label>
-                <textarea id="repairLinks" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://mobilesentrix.com/lcd, https://amazon.com/battery"></textarea>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links</label>
+                <textarea id="repairLinks" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white placeholder-slate-600" placeholder="https://mobilesentrix.com/lcd"></textarea>
               </div>
             </div>
 
-            <!-- SECTION 3: Service Pricing, Discounts & Deposits -->
+            <!-- Total Pricing, Discounts & Deposits -->
             <div class="space-y-3 bg-brand-950/20 p-3.5 rounded-2xl border border-brand-900/40">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">SERVICE PRICING, DISCOUNTS & DEPOSITS</span>
-                <button type="button" onclick="openManageMethodsModal()" class="text-[10px] font-bold text-emerald-400 hover:underline cursor-pointer">⚙️ Manage Methods</button>
+                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">TOTAL REPAIR CHARGE</span>
+                <button type="button" onclick="openManageMethodsModal()" class="text-[10px] font-bold text-emerald-400 hover:underline cursor-pointer">⚙️ Payment Methods</button>
               </div>
 
               <div class="grid grid-cols-2 gap-2.5">
@@ -295,7 +305,7 @@
                   <input type="number" id="laborPrice" step="1" min="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-white placeholder-slate-600" placeholder="0">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">Total Charged ($)</label>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Full Amount ($) *</label>
                   <input type="number" id="repairAmount" step="1" min="0" oninput="adjustQuotedFromTotal()" class="w-full px-3.5 py-2 text-sm font-black bg-slate-950 border border-brand-700 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-brand-400 placeholder-slate-600" placeholder="0">
                 </div>
               </div>
@@ -317,17 +327,17 @@
 
                 <div class="grid grid-cols-2 gap-2">
                   <div>
-                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Amount ($)</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount ($)</label>
                     <input type="number" id="discountAmount" step="1" min="0" oninput="calculateTotal()" class="w-full px-3 py-1.5 text-xs font-extrabold bg-slate-900 border border-slate-800 rounded-xl text-amber-400 outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="0">
                   </div>
                   <div>
-                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Discount Reason / Promo Note</label>
-                    <input type="text" id="discountReason" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="e.g. Repeat Customer, Screen+Battery Combo">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-0.5">Reason / Note</label>
+                    <input type="text" id="discountReason" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="Repeat customer...">
                   </div>
                 </div>
               </div>
 
-              <!-- Deposit & Payment Status Section -->
+              <!-- Required Deposit Section -->
               <div>
                 <div class="flex items-center justify-between mb-1">
                   <label class="block text-xs font-bold text-slate-300">Set Required Deposit (% Total)</label>
@@ -379,7 +389,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1 text-left">Repair Issue & Notes (Left Aligned)</label>
+              <label class="block text-xs font-bold text-slate-300 mb-1 text-left">Repair Issue & Notes</label>
               <textarea id="repairDescription" rows="2" class="w-full px-3.5 py-2 text-sm text-left bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white leading-relaxed placeholder-slate-600" placeholder="Detailed symptoms, physical condition, passcodes..."></textarea>
             </div>
 
@@ -392,7 +402,7 @@
         </div>
       </div>
 
-      <!-- Right Column: Repair Cards Listing -->
+      <!-- Right Column: Repair Cards Feed -->
       <div class="lg:col-span-7 space-y-4">
         
         <div class="flex flex-col sm:flex-row gap-3 no-print">
@@ -425,12 +435,12 @@
       <div class="dark-card p-6 rounded-3xl no-print flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h2 class="text-lg font-black text-white">Printable Invoices & Customer Receipts</h2>
-          <p class="text-xs font-semibold text-slate-400">Generate, copy, or print itemized receipts with payment handles</p>
+          <p class="text-xs font-semibold text-slate-400">Generates itemized receipts showing total amount & repaired device</p>
         </div>
 
         <div class="flex items-center space-x-2">
           <button onclick="copyInvoiceTextSummary()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition flex items-center space-x-1.5 active:scale-95 cursor-pointer">
-            <span>📋 Copy Text Summary</span>
+            <span>📋 Copy Summary</span>
           </button>
           <button onclick="handlePrintOrShareInvoice()" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-extrabold rounded-xl shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer">
             <span>🖨️ Print / Export PDF</span>
@@ -452,7 +462,160 @@
       </div>
     </div>
 
-    <!-- VIEW 3: EMBEDDED CUSTOMER LIVE TRACKER -->
+    <!-- VIEW 3: ONLINE SHOPPING & INVENTORY STORE -->
+    <div id="viewStore" class="hidden space-y-6">
+      
+      <!-- Store Navigation Toolbar -->
+      <div class="dark-card p-5 rounded-3xl no-print flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-black text-white flex items-center gap-2">
+            <span>🛒 AJD's Wireless Online Store</span>
+          </h2>
+          <p class="text-xs font-semibold text-slate-400">Manage items for sale, scan barcodes, and review purchase requests</p>
+        </div>
+
+        <div class="flex items-center bg-slate-900 p-1 rounded-2xl border border-slate-800 space-x-1">
+          <button id="storeSubTabItems" onclick="switchStoreSubTab('inventory')" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 shadow transition cursor-pointer">
+            📦 Inventory Items
+          </button>
+          <button id="storeSubTabRequests" onclick="switchStoreSubTab('requests')" class="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition cursor-pointer flex items-center space-x-1">
+            <span>📥 Purchase Requests</span>
+            <span id="requestsCountBadge" class="px-1.5 py-0.2 bg-rose-600 text-white text-[10px] font-black rounded-full">0</span>
+          </button>
+          <button id="storeSubTabStorefront" onclick="switchStoreSubTab('storefront')" class="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition cursor-pointer">
+            🌐 Customer Storefront View
+          </button>
+        </div>
+      </div>
+
+      <!-- STORE SUB-VIEW 1: INVENTORY MANAGEMENT & BARCODE SCANNER -->
+      <div id="storeSectionInventory" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Add Item Form with Barcode Scanner -->
+        <div class="lg:col-span-5 no-print">
+          <div class="dark-card p-5 sm:p-6 rounded-3xl shadow-lg space-y-4 sticky top-20">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="text-base font-black text-white">Add Item for Sale</h3>
+              <button type="button" onclick="openBarcodeScannerModal()" class="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold rounded-xl transition flex items-center space-x-1.5 active:scale-95 cursor-pointer">
+                <span>📷 Scan Barcode</span>
+              </button>
+            </div>
+
+            <form id="storeItemForm" class="space-y-3.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Item Title / Name *</label>
+                <input type="text" id="storeItemTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none text-white placeholder-slate-600" placeholder="e.g. iPhone 13 Pro Max 128GB - Unlocked">
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Category *</label>
+                  <select id="storeItemCategory" required class="w-full px-3.5 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
+                    <option value="Phones">Phones</option>
+                    <option value="Tablets">Tablets</option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Parts">Parts & Hardware</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Sale Price ($) *</label>
+                  <input type="number" id="storeItemPrice" required step="1" min="0" class="w-full px-3.5 py-2 text-sm font-black bg-slate-950 border border-amber-500/50 rounded-xl text-amber-400 outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="0">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Condition</label>
+                  <select id="storeItemCondition" class="w-full px-3.5 py-2 text-xs font-bold bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
+                    <option value="Brand New">Brand New / Sealed</option>
+                    <option value="Refurbished">Refurbished</option>
+                    <option value="Pre-Owned Excellent">Pre-Owned Excellent</option>
+                    <option value="Pre-Owned Good">Pre-Owned Good</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Barcode / UPC / SKU</label>
+                  <div class="flex gap-1.5">
+                    <input type="text" id="storeItemSku" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-200 outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="UPC / Barcode">
+                    <button type="button" onclick="openBarcodeScannerModal()" class="px-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl transition cursor-pointer shrink-0" title="Scan Barcode">📷</button>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Photo Image URL (Optional)</label>
+                <input type="url" id="storeItemImageUrl" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-1 focus:ring-amber-500 placeholder-slate-600" placeholder="https://image-link.com/photo.jpg">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Description / Specs</label>
+                <textarea id="storeItemDescription" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none placeholder-slate-600 leading-relaxed" placeholder="Battery health 95%, includes fast charger & case..."></textarea>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer">
+                + Publish Item for Sale
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Inventory List Column -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between no-print">
+            <h3 class="text-sm font-extrabold uppercase tracking-wider text-amber-400">Active Items for Sale</h3>
+            <span id="storeItemCount" class="text-xs font-bold text-slate-400">0 Items Listed</span>
+          </div>
+
+          <div id="storeInventoryList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2 p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">
+              No items listed for sale yet. Add an item or scan a barcode on the left!
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STORE SUB-VIEW 2: PURCHASE REQUESTS INBOX -->
+      <div id="storeSectionRequests" class="hidden space-y-4">
+        <div class="flex items-center justify-between no-print">
+          <h3 class="text-sm font-extrabold uppercase tracking-wider text-rose-400">Incoming Customer Purchase Requests</h3>
+          <span class="text-xs text-slate-400 font-semibold">Customers submit purchase requests from your online store link</span>
+        </div>
+
+        <div id="purchaseRequestsList" class="space-y-3">
+          <div class="p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">
+            No incoming purchase requests yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- STORE SUB-VIEW 3: PUBLIC CUSTOMER STOREFRONT PREVIEW -->
+      <div id="storeSectionStorefront" class="hidden space-y-6">
+        <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 p-6 rounded-3xl border border-amber-500/30 text-center space-y-2">
+          <h2 class="text-xl font-black text-white">🛍️ AJD's Wireless Online Storefront</h2>
+          <p class="text-xs text-slate-300 font-medium">Browse our inventory for sale. Select an item and make a purchase request!</p>
+          <div class="pt-2 flex flex-wrap justify-center gap-2">
+            <button onclick="copyToClipboard(window.location.origin + window.location.pathname.replace('index.html', '') + 'store.html', 'Storefront link copied!')" class="px-4 py-1.5 bg-amber-500 text-slate-950 font-black text-xs rounded-xl shadow hover:bg-amber-400 transition cursor-pointer">
+              📋 Share Storefront Link (store.html)
+            </button>
+            <a href="store.html" target="_blank" class="px-4 py-1.5 bg-slate-800 text-white font-bold text-xs rounded-xl shadow hover:bg-slate-700 transition cursor-pointer">
+              Launch Customer Page ↗
+            </a>
+          </div>
+        </div>
+
+        <div id="customerStorefrontGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="col-span-full p-12 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">
+            No items listed in the storefront right now.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 4: EMBEDDED CUSTOMER LIVE TRACKER -->
     <div id="viewCustomerPortal" class="hidden max-w-2xl mx-auto space-y-6">
       <div class="dark-card p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
         <div class="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -476,8 +639,74 @@
 
   </main>
 
-  <!-- MODALS SECTION -->
-  <!-- EDIT MODAL -->
+  <!-- BARCODE SCANNER MODAL -->
+  <div id="barcodeModal" onclick="handleBackdropClick(event, 'barcodeModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>📷 Camera Barcode & QR Scanner</span>
+        </h3>
+        <button onclick="closeBarcodeScannerModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">Point your camera at a device or box barcode to scan UPC/SKU</p>
+
+      <div id="reader" class="overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-slate-950 min-h-[250px]"></div>
+
+      <div id="barcodeResultText" class="text-xs font-bold text-amber-400 min-h-[1.5rem]">Initializing camera...</div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="closeBarcodeScannerModal()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER PURCHASE REQUEST MODAL -->
+  <div id="purchaseRequestModal" onclick="handleBackdropClick(event, 'purchaseRequestModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
+    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>🛒 Request to Purchase Item</span>
+        </h3>
+        <button onclick="closePurchaseRequestModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form id="purchaseRequestForm" class="space-y-3.5">
+        <input type="hidden" id="reqItemId">
+
+        <div class="bg-amber-950/30 p-3 rounded-2xl border border-amber-900/50 space-y-1">
+          <span class="text-[10px] font-black uppercase text-amber-400 block">Requested Item</span>
+          <p id="reqItemTitle" class="text-sm font-black text-white">Item Title</p>
+          <p id="reqItemPrice" class="text-xs font-extrabold text-amber-400">$0.00</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Your Name *</label>
+          <input type="text" id="reqCustomerName" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="John Doe">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Phone Number *</label>
+          <input type="tel" id="reqCustomerPhone" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="(786) 970-7779">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Message / Pickup Notes (Optional)</label>
+          <textarea id="reqCustomerNotes" rows="2" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none placeholder-slate-600" placeholder="When can I pick this up? Do you accept trade-ins?"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
+          Submit Purchase Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT REPAIR MODAL -->
   <div id="editModal" onclick="handleBackdropClick(event, 'editModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 no-print">
     <div class="dark-card rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -522,7 +751,7 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Part Name / Items</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Part / Hardware Notes</label>
           <input type="text" id="editPartName" class="w-full px-3 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-white">
         </div>
 
@@ -593,8 +822,8 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links (Separated by commas or lines)</label>
-          <textarea id="editRepairLinks" rows="2" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-white" placeholder="https://supplier.com/item1, https://supplier.com/item2"></textarea>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Supplier / Part Links</label>
+          <textarea id="editRepairLinks" rows="2" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl outline-none text-white" placeholder="https://supplier.com/item1"></textarea>
         </div>
 
         <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 cursor-pointer">Save Changes</button>
@@ -751,6 +980,7 @@
     let supabaseClient = null;
     let realtimeChannel = null;
     let fallbackPollingTimer = null;
+    let html5QrCodeScanner = null;
 
     const defaultPrices = {
       'iPhone': 90,
@@ -779,6 +1009,33 @@
       { title: 'MobileSentrix', url: 'https://www.mobilesentrix.com' },
       { title: 'Injured Gadgets', url: 'https://www.injuredgadgets.com' }
     ];
+
+    let storeItems = JSON.parse(localStorage.getItem('ajd_store_items')) || [
+      {
+        id: 'item_1',
+        title: 'iPhone 13 Pro 128GB - Graphite (Unlocked)',
+        category: 'Phones',
+        price: 550,
+        condition: 'Pre-Owned Excellent',
+        sku: 'IP13P-128-GR',
+        imageUrl: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80',
+        description: 'Original screen, battery health 92%, fully tested and sanitized. 30-day warranty.',
+        status: 'available'
+      },
+      {
+        id: 'item_2',
+        title: 'iPad Air 4th Gen 64GB Wi-Fi - Space Gray',
+        category: 'Tablets',
+        price: 380,
+        condition: 'Refurbished',
+        sku: 'IPADAIR4-64',
+        imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80',
+        description: 'New glass display installed, clean serial number. Includes charger.',
+        status: 'available'
+      }
+    ];
+
+    let purchaseRequests = JSON.parse(localStorage.getItem('ajd_purchase_requests')) || [];
 
     let repairs = [];
     let isCloudConnected = false;
@@ -850,25 +1107,72 @@
     function switchTab(tabName) {
       const viewRepairs = document.getElementById('viewRepairs');
       const viewInvoices = document.getElementById('viewInvoices');
+      const viewStore = document.getElementById('viewStore');
       const viewCustomerPortal = document.getElementById('viewCustomerPortal');
+
       const tabBtnRepairs = document.getElementById('tabBtnRepairs');
       const tabBtnInvoices = document.getElementById('tabBtnInvoices');
+      const tabBtnStore = document.getElementById('tabBtnStore');
 
-      if (!viewRepairs || !viewInvoices || !tabBtnRepairs || !tabBtnInvoices) return;
+      if (!viewRepairs || !viewInvoices || !viewStore) return;
 
       if (viewCustomerPortal) viewCustomerPortal.classList.add('hidden');
 
+      viewRepairs.classList.add('hidden');
+      viewInvoices.classList.add('hidden');
+      viewStore.classList.add('hidden');
+
+      tabBtnRepairs.className = 'px-3.5 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer';
+      tabBtnInvoices.className = 'px-3.5 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer';
+      tabBtnStore.className = 'px-3.5 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-1.5 active:scale-95 cursor-pointer relative';
+
       if (tabName === 'invoices') {
-        viewRepairs.classList.add('hidden');
         viewInvoices.classList.remove('hidden');
-        tabBtnInvoices.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2 active:scale-95 cursor-pointer';
-        tabBtnRepairs.className = 'px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2 active:scale-95 cursor-pointer';
+        tabBtnInvoices.className = 'px-3.5 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer';
         renderInvoiceSelectionList();
+      } else if (tabName === 'store') {
+        viewStore.classList.remove('hidden');
+        tabBtnStore.className = 'px-3.5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer relative';
+        renderStoreInventory();
+        renderPurchaseRequests();
+        renderCustomerStorefront();
       } else {
-        viewInvoices.classList.add('hidden');
         viewRepairs.classList.remove('hidden');
-        tabBtnRepairs.className = 'px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-2 active:scale-95 cursor-pointer';
-        tabBtnInvoices.className = 'px-4 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2 active:scale-95 cursor-pointer';
+        tabBtnRepairs.className = 'px-3.5 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow transition flex items-center space-x-1.5 active:scale-95 cursor-pointer';
+      }
+    }
+
+    function switchStoreSubTab(sub) {
+      const secInv = document.getElementById('storeSectionInventory');
+      const secReq = document.getElementById('storeSectionRequests');
+      const secFront = document.getElementById('storeSectionStorefront');
+
+      const btnInv = document.getElementById('storeSubTabItems');
+      const btnReq = document.getElementById('storeSubTabRequests');
+      const btnFront = document.getElementById('storeSubTabStorefront');
+
+      if (!secInv || !secReq || !secFront) return;
+
+      secInv.classList.add('hidden');
+      secReq.classList.add('hidden');
+      secFront.classList.add('hidden');
+
+      btnInv.className = 'px-3 py-1.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition cursor-pointer';
+      btnReq.className = 'px-3 py-1.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition cursor-pointer flex items-center space-x-1';
+      btnFront.className = 'px-3 py-1.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition cursor-pointer';
+
+      if (sub === 'requests') {
+        secReq.classList.remove('hidden');
+        btnReq.className = 'px-3 py-1.5 text-xs font-bold rounded-xl bg-rose-600 text-white shadow transition cursor-pointer flex items-center space-x-1';
+        renderPurchaseRequests();
+      } else if (sub === 'storefront') {
+        secFront.classList.remove('hidden');
+        btnFront.className = 'px-3 py-1.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 shadow transition cursor-pointer';
+        renderCustomerStorefront();
+      } else {
+        secInv.classList.remove('hidden');
+        btnInv.className = 'px-3 py-1.5 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 shadow transition cursor-pointer';
+        renderStoreInventory();
       }
     }
 
@@ -896,7 +1200,6 @@
       const partPrice = parseFloat(document.getElementById('partPrice').value) || 0;
       const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
       const subtotal = partPrice + laborPrice;
-      // Round discount up to whole dollars
       const discount = Math.ceil(subtotal * (percent / 100));
       document.getElementById('discountAmount').value = discount > 0 ? discount.toFixed(2) : '0.00';
       calculateTotal();
@@ -906,7 +1209,6 @@
       const partPrice = parseFloat(document.getElementById('editPartPrice').value) || 0;
       const laborPrice = parseFloat(document.getElementById('editQuotedPrice').value) || 0;
       const subtotal = partPrice + laborPrice;
-      // Round discount up to whole dollars
       const discount = Math.ceil(subtotal * (percent / 100));
       document.getElementById('editDiscountAmount').value = discount > 0 ? discount.toFixed(2) : '0.00';
       calculateEditTotal();
@@ -918,7 +1220,6 @@
       const discountAmount = Math.ceil(parseFloat(document.getElementById('discountAmount').value) || 0);
 
       const subtotal = partPrice + laborPrice;
-      // Round total up to nearest whole dollar
       const total = Math.ceil(Math.max(0, subtotal - discountAmount));
 
       document.getElementById('repairAmount').value = total > 0 ? total.toFixed(2) : '';
@@ -944,7 +1245,6 @@
 
     function applyDepositPreset(percent) {
       const total = Math.ceil(parseFloat(document.getElementById('repairAmount').value) || 0);
-      // Round deposit requirement up to whole dollars
       const reqDeposit = Math.ceil(total * (percent / 100)).toFixed(2);
       document.getElementById('depositAmount').value = reqDeposit;
       calculateBalance();
@@ -957,7 +1257,6 @@
 
     function applyEditDepositPreset(percent) {
       const total = Math.ceil(parseFloat(document.getElementById('editRepairAmount').value) || 0);
-      // Round deposit requirement up to whole dollars
       const deposit = Math.ceil(total * (percent / 100)).toFixed(2);
       document.getElementById('editDepositAmount').value = deposit;
     }
@@ -975,7 +1274,6 @@
         paidSoFar = 0;
       }
 
-      // Round remaining balance up to whole dollars
       const balance = Math.ceil(Math.max(0, total - paidSoFar));
       document.getElementById('balanceDue').value = `$${balance.toFixed(2)}`;
 
@@ -998,7 +1296,6 @@
       const partPrice = Math.ceil(parseFloat(document.getElementById('editPartPrice').value) || 0);
       const laborPrice = Math.ceil(parseFloat(document.getElementById('editQuotedPrice').value) || 0);
       const discountAmount = Math.ceil(parseFloat(document.getElementById('editDiscountAmount').value) || 0);
-      // Round total up to nearest whole dollar
       const total = Math.ceil(Math.max(0, (partPrice + laborPrice) - discountAmount));
       document.getElementById('editRepairAmount').value = total.toFixed(2);
     }
@@ -1015,7 +1312,6 @@
         } catch (e) {}
       }
 
-      // Ensure all numbers are rounded up to whole dollars
       const amount = Math.ceil(parseFloat(item.amount) || 0);
 
       const getPositiveNum = (...vals) => {
@@ -1083,11 +1379,17 @@
       };
     }
 
-    function checkUrlForCustomerTrackMode() {
+    function checkUrlForRouting() {
       const hash = window.location.hash;
       const search = window.location.search;
-      let trackId = null;
 
+      if (hash === '#store' || hash === '#shop') {
+        switchTab('store');
+        switchStoreSubTab('storefront');
+        return;
+      }
+
+      let trackId = null;
       if (hash && hash.includes('track=')) {
         trackId = hash.split('track=')[1].split('&')[0];
       } else if (search && (search.includes('id=') || search.includes('track='))) {
@@ -1103,6 +1405,7 @@
     async function renderEmbeddedCustomerPortal(jobId) {
       const repairsView = document.getElementById('viewRepairs');
       const invoicesView = document.getElementById('viewInvoices');
+      const storeView = document.getElementById('viewStore');
       const metricsBar = document.getElementById('metricsBar');
       const customerPortalView = document.getElementById('viewCustomerPortal');
       const portalContent = document.getElementById('customerPortalContent');
@@ -1111,6 +1414,7 @@
 
       if (repairsView) repairsView.classList.add('hidden');
       if (invoicesView) invoicesView.classList.add('hidden');
+      if (storeView) storeView.classList.add('hidden');
       if (metricsBar) metricsBar.classList.add('hidden');
       customerPortalView.classList.remove('hidden');
 
@@ -1144,8 +1448,8 @@
               <span class="text-sm font-black text-white">${escapeHtml(job.customerName)}</span>
             </div>
             <div class="flex justify-between items-center border-t border-slate-800/80 pt-2">
-              <span class="text-xs font-bold text-slate-400">Device Hardware</span>
-              <span class="text-xs font-bold text-slate-200">${escapeHtml(job.makeModel)} ${job.modelNumber ? `(#${escapeHtml(job.modelNumber)})` : ''}</span>
+              <span class="text-xs font-bold text-slate-400">Item Being Repaired</span>
+              <span class="text-xs font-black text-brand-400">${escapeHtml(job.makeModel)} ${job.modelNumber ? `(#${escapeHtml(job.modelNumber)})` : ''}</span>
             </div>
           </div>
 
@@ -1165,7 +1469,7 @@
           </div>
 
           <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
-            <div class="flex justify-between font-semibold text-slate-300"><span>Total Service Cost:</span><span class="font-black text-white">$${job.amount.toFixed(2)}</span></div>
+            <div class="flex justify-between font-semibold text-slate-300"><span>Full Repair Charge:</span><span class="font-black text-white text-sm">$${job.amount.toFixed(2)}</span></div>
             <div class="flex justify-between text-indigo-400 font-semibold"><span>Deposit Quoted:</span><span>$${job.requiredDeposit.toFixed(2)}</span></div>
             <div class="flex justify-between text-emerald-400 font-semibold"><span>Deposit Paid:</span><span>-$${job.depositAmount.toFixed(2)}</span></div>
             <div class="flex justify-between text-sm font-black text-rose-400 pt-2 border-t border-slate-800"><span>Balance Due at Pickup:</span><span>$${job.balanceDue.toFixed(2)}</span></div>
@@ -1218,7 +1522,10 @@
 
       await fetchRepairsFromCloud();
       setupRealtimeSubscriptionSafely();
-      checkUrlForCustomerTrackMode();
+      checkUrlForRouting();
+      renderStoreInventory();
+      renderPurchaseRequests();
+      renderCustomerStorefront();
     }
 
     function isWebSocketAllowed() {
@@ -1554,7 +1861,6 @@
       document.getElementById('statPending').innerText = repairs.filter(r => r.status === 'pending').length;
       document.getElementById('statCompleted').innerText = repairs.filter(r => r.status === 'completed').length;
 
-      // Ensure rounded totals across metrics
       const rev = Math.ceil(repairs.reduce((acc, r) => acc + r.amount, 0));
       const dep = Math.ceil(repairs.reduce((acc, r) => acc + r.depositAmount, 0));
       const unpaid = Math.ceil(repairs.reduce((acc, r) => acc + r.balanceDue, 0));
@@ -1593,13 +1899,13 @@
                   </span>
                 </div>
                 <h3 class="text-lg font-black text-white leading-tight">${escapeHtml(item.customerName)}</h3>
-                <p class="text-xs font-bold text-slate-400 mt-0.5">${escapeHtml(item.makeModel)}</p>
+                <p class="text-xs font-black text-brand-400 mt-0.5">${escapeHtml(item.makeModel)}</p>
               </div>
 
               <div class="text-right shrink-0">
                 <span class="text-xl font-black text-emerald-400 block">$${item.amount.toFixed(2)}</span>
                 <div class="text-[10px] font-bold space-x-1.5 mt-0.5">
-                  <span class="text-indigo-400">Dep Paid: $${item.depositAmount.toFixed(2)}</span>
+                  <span class="text-indigo-400">Dep: $${item.depositAmount.toFixed(2)}</span>
                   <span class="text-rose-400">Bal: $${item.balanceDue.toFixed(2)}</span>
                 </div>
               </div>
@@ -1612,16 +1918,6 @@
                   <span class="text-slate-300 font-semibold">${escapeHtml(item.discountReason || 'Promo / Courtesy')}</span>
                 </span>
                 <span class="font-black text-amber-400">-$${item.discountAmount.toFixed(2)}</span>
-              </div>
-            ` : ''}
-
-            ${item.partName ? `
-              <div class="bg-amber-950/20 p-3.5 rounded-2xl border border-amber-900/40 text-xs flex items-center justify-between">
-                <div class="space-y-0.5">
-                  <span class="font-extrabold text-amber-400 block text-sm">🔌 Parts: ${escapeHtml(item.partName)}</span>
-                  <span class="text-[11px] font-semibold text-slate-400">Labor/Service Charge: $${item.laborPrice.toFixed(2)}</span>
-                </div>
-                <span class="font-black text-amber-400 text-base">$${item.partPrice.toFixed(2)}</span>
               </div>
             ` : ''}
 
@@ -1754,6 +2050,291 @@
           </div>
         `;
       }).join('');
+    }
+
+    /* ONLINE STORE MANAGEMENT LOGIC */
+    const storeItemFormEl = document.getElementById('storeItemForm');
+    if (storeItemFormEl) {
+      storeItemFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const price = Math.ceil(parseFloat(document.getElementById('storeItemPrice').value) || 0);
+        
+        const newItem = {
+          id: 'item_' + Date.now(),
+          title: document.getElementById('storeItemTitle').value,
+          category: document.getElementById('storeItemCategory').value,
+          price: price,
+          condition: document.getElementById('storeItemCondition').value,
+          sku: document.getElementById('storeItemSku').value,
+          imageUrl: document.getElementById('storeItemImageUrl').value || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
+          description: document.getElementById('storeItemDescription').value,
+          status: 'available'
+        };
+
+        storeItems.unshift(newItem);
+        localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
+        storeItemFormEl.reset();
+        renderStoreInventory();
+        renderCustomerStorefront();
+        showToast("Published item for sale!");
+      });
+    }
+
+    function renderStoreInventory() {
+      const container = document.getElementById('storeInventoryList');
+      const badge = document.getElementById('storeItemCount');
+      if (!container) return;
+
+      if (badge) badge.innerText = `${storeItems.length} Items Listed`;
+
+      if (storeItems.length === 0) {
+        container.innerHTML = `<div class="sm:col-span-2 p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">No items listed for sale yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = storeItems.map((item, idx) => `
+        <div class="dark-card p-4 rounded-3xl space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="h-36 rounded-2xl bg-slate-900 overflow-hidden relative border border-slate-800">
+              <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80'">
+              <span class="absolute top-2 left-2 px-2 py-0.5 bg-slate-950/80 backdrop-blur-md text-amber-400 text-[10px] font-black rounded-lg border border-amber-500/30">${escapeHtml(item.condition)}</span>
+              <span class="absolute top-2 right-2 px-2 py-0.5 bg-emerald-950/80 backdrop-blur-md text-emerald-400 text-[10px] font-black rounded-lg border border-emerald-800/40">$${item.price.toFixed(2)}</span>
+            </div>
+
+            <div>
+              <span class="text-[10px] font-black uppercase text-slate-500">${escapeHtml(item.category)} ${item.sku ? `• SKU: ${escapeHtml(item.sku)}` : ''}</span>
+              <h4 class="text-sm font-black text-white leading-tight mt-0.5">${escapeHtml(item.title)}</h4>
+              <p class="text-xs text-slate-400 line-clamp-2 mt-1">${escapeHtml(item.description)}</p>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+            <button onclick="openPurchaseRequestModal('${item.id}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl transition cursor-pointer">
+              🛒 Request
+            </button>
+            <button onclick="deleteStoreItem(${idx})" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition cursor-pointer" title="Delete Item">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteStoreItem(index) {
+      storeItems.splice(index, 1);
+      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
+      renderStoreInventory();
+      renderCustomerStorefront();
+      showToast("Store item deleted.");
+    }
+
+    function openBarcodeScannerModal() {
+      const modal = document.getElementById('barcodeModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      const resultEl = document.getElementById('barcodeResultText');
+      if (resultEl) resultEl.innerText = "Camera starting... Align barcode";
+
+      try {
+        if (!html5QrCodeScanner) {
+          html5QrCodeScanner = new Html5Qrcode("reader");
+        }
+        
+        Html5Qrcode.getCameras().then(cameras => {
+          if (cameras && cameras.length) {
+            const cameraId = cameras[cameras.length - 1].id;
+            html5QrCodeScanner.start(
+              cameraId,
+              { fps: 10, qrbox: { width: 250, height: 150 } },
+              (decodedText) => {
+                if (resultEl) resultEl.innerText = `Scanned: ${decodedText}`;
+                const skuInput = document.getElementById('storeItemSku');
+                if (skuInput) skuInput.value = decodedText;
+                showToast(`Barcode Scanned: ${decodedText}`);
+                closeBarcodeScannerModal();
+              },
+              (errorMessage) => {}
+            ).catch(err => {
+              if (resultEl) resultEl.innerText = "Camera permission error.";
+            });
+          }
+        }).catch(err => {
+          if (resultEl) resultEl.innerText = "No camera found or permission denied.";
+        });
+      } catch (e) {
+        if (resultEl) resultEl.innerText = "Scanner initialization error.";
+      }
+    }
+
+    function closeBarcodeScannerModal() {
+      if (html5QrCodeScanner) {
+        try { html5QrCodeScanner.stop(); } catch(e){}
+      }
+      const modal = document.getElementById('barcodeModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openPurchaseRequestModal(itemId) {
+      const item = storeItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('reqItemId').value = item.id;
+      document.getElementById('reqItemTitle').innerText = item.title;
+      document.getElementById('reqItemPrice').innerText = `$${item.price.toFixed(2)}`;
+
+      const modal = document.getElementById('purchaseRequestModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePurchaseRequestModal() {
+      const modal = document.getElementById('purchaseRequestModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    const purchaseRequestFormEl = document.getElementById('purchaseRequestForm');
+    if (purchaseRequestFormEl) {
+      purchaseRequestFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const itemId = document.getElementById('reqItemId').value;
+        const item = storeItems.find(i => i.id === itemId);
+
+        const newReq = {
+          id: 'req_' + Date.now(),
+          itemId: itemId,
+          itemTitle: item ? item.title : 'Store Item',
+          itemPrice: item ? item.price : 0,
+          customerName: document.getElementById('reqCustomerName').value,
+          customerPhone: document.getElementById('reqCustomerPhone').value,
+          notes: document.getElementById('reqCustomerNotes').value,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        };
+
+        purchaseRequests.unshift(newReq);
+        localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+
+        purchaseRequestFormEl.reset();
+        closePurchaseRequestModal();
+        renderPurchaseRequests();
+        showToast("Purchase request submitted! The shop will contact you shortly.");
+      });
+    }
+
+    function renderPurchaseRequests() {
+      const container = document.getElementById('purchaseRequestsList');
+      const badgeNav = document.getElementById('pendingRequestsBadge');
+      const badgeSub = document.getElementById('requestsCountBadge');
+      if (!container) return;
+
+      const pendingCount = purchaseRequests.filter(r => r.status === 'pending').length;
+      
+      if (badgeNav) {
+        badgeNav.innerText = pendingCount;
+        if (pendingCount > 0) badgeNav.classList.remove('hidden');
+        else badgeNav.classList.add('hidden');
+      }
+
+      if (badgeSub) badgeSub.innerText = pendingCount;
+
+      if (purchaseRequests.length === 0) {
+        container.innerHTML = `<div class="p-10 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">No customer purchase requests received.</div>`;
+        return;
+      }
+
+      container.innerHTML = purchaseRequests.map((req, idx) => `
+        <div class="dark-card p-4.5 rounded-3xl space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center space-x-2 mb-1">
+                <span class="px-2 py-0.5 text-[10px] font-black rounded-md ${req.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : req.status === 'declined' ? 'bg-rose-950 text-rose-400 border border-rose-800/40' : 'bg-amber-950 text-amber-400 border border-amber-800/40'}">
+                  ${req.status.toUpperCase()}
+                </span>
+                <span class="text-[11px] text-slate-400 font-semibold">${new Date(req.created_at).toLocaleDateString()}</span>
+              </div>
+              <h4 class="text-base font-black text-white">${escapeHtml(req.customerName)}</h4>
+              <p class="text-xs font-bold text-amber-400 mt-0.5">📞 Phone: ${escapeHtml(req.customerPhone)}</p>
+            </div>
+
+            <div class="text-right">
+              <span class="text-base font-black text-white">$${req.itemPrice.toFixed(2)}</span>
+              <p class="text-[11px] font-bold text-slate-400 max-w-[150px] truncate">${escapeHtml(req.itemTitle)}</p>
+            </div>
+          </div>
+
+          ${req.notes ? `
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+              <span class="font-bold text-slate-400">Notes:</span> ${escapeHtml(req.notes)}
+            </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800 gap-2">
+            <div class="flex items-center space-x-1.5">
+              ${req.status === 'pending' ? `
+                <button onclick="updateRequestStatus(${idx}, 'approved')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition cursor-pointer">
+                  ✅ Approve
+                </button>
+                <button onclick="updateRequestStatus(${idx}, 'declined')" class="px-3 py-1.5 bg-rose-600/30 hover:bg-rose-600/60 text-rose-300 border border-rose-500/40 font-extrabold text-xs rounded-xl transition cursor-pointer">
+                  ❌ Decline
+                </button>
+              ` : ''}
+              <a href="tel:${escapeHtml(req.customerPhone)}" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition flex items-center space-x-1">
+                <span>📞 Call</span>
+              </a>
+            </div>
+
+            <button onclick="deletePurchaseRequest(${idx})" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition cursor-pointer" title="Delete Request">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateRequestStatus(index, newStatus) {
+      purchaseRequests[index].status = newStatus;
+      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+      renderPurchaseRequests();
+      showToast(`Purchase request ${newStatus}!`);
+    }
+
+    function deletePurchaseRequest(index) {
+      purchaseRequests.splice(index, 1);
+      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+      renderPurchaseRequests();
+      showToast("Purchase request deleted.");
+    }
+
+    function renderCustomerStorefront() {
+      const container = document.getElementById('customerStorefrontGrid');
+      if (!container) return;
+
+      if (storeItems.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">No items currently listed for sale.</div>`;
+        return;
+      }
+
+      container.innerHTML = storeItems.map(item => `
+        <div class="dark-card p-5 rounded-3xl space-y-4 flex flex-col justify-between hover:border-amber-500/40 transition">
+          <div class="space-y-3">
+            <div class="h-44 rounded-2xl bg-slate-900 overflow-hidden relative border border-slate-800">
+              <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80'">
+              <span class="absolute top-2 left-2 px-2.5 py-1 bg-slate-950/80 backdrop-blur-md text-amber-400 text-xs font-black rounded-xl border border-amber-500/30">${escapeHtml(item.condition)}</span>
+              <span class="absolute top-2 right-2 px-3 py-1 bg-emerald-950/90 backdrop-blur-md text-emerald-400 text-sm font-black rounded-xl border border-emerald-800/40">$${item.price.toFixed(2)}</span>
+            </div>
+
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">${escapeHtml(item.category)}</span>
+              <h3 class="text-base font-black text-white leading-tight mt-0.5">${escapeHtml(item.title)}</h3>
+              <p class="text-xs text-slate-300 leading-relaxed mt-2">${escapeHtml(item.description)}</p>
+            </div>
+          </div>
+
+          <button onclick="openPurchaseRequestModal('${item.id}')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center space-x-1.5">
+            <span>🛒 Request to Purchase</span>
+          </button>
+        </div>
+      `).join('');
     }
 
     function openLiveTracker(id) {
@@ -2018,8 +2599,6 @@
       const canvas = document.getElementById('invoicePrintCanvas');
       if (!item || !canvas) return;
 
-      const subtotal = item.partPrice + item.laborPrice;
-
       canvas.innerHTML = `
         <div class="space-y-6">
           <div class="flex justify-between items-start border-b border-slate-200 pb-6">
@@ -2040,7 +2619,7 @@
             <div>
               <span class="text-slate-400 uppercase font-black text-[10px]">Customer</span>
               <p class="text-sm font-black text-slate-900">${escapeHtml(item.customerName)}</p>
-              <p class="text-slate-600">${escapeHtml(item.makeModel)} ${item.modelNumber ? `(#${escapeHtml(item.modelNumber)})` : ''}</p>
+              <p class="text-slate-600 font-bold">${escapeHtml(item.makeModel)} ${item.modelNumber ? `(#${escapeHtml(item.modelNumber)})` : ''}</p>
             </div>
             <div class="text-right">
               <span class="text-slate-400 uppercase font-black text-[10px]">Date & Status</span>
@@ -2052,20 +2631,17 @@
           <table class="w-full text-left text-xs border-collapse">
             <thead>
               <tr class="border-b-2 border-slate-200 text-slate-400 uppercase font-black text-[10px]">
-                <th class="py-2">Service / Part Description</th>
-                <th class="py-2 text-right">Amount</th>
+                <th class="py-2">Item Repaired / Service Description</th>
+                <th class="py-2 text-right">Full Amount</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              ${item.partName ? `
-                <tr>
-                  <td class="py-3 font-semibold">Replacement Part: ${escapeHtml(item.partName)}</td>
-                  <td class="py-3 text-right font-bold">$${item.partPrice.toFixed(2)}</td>
-                </tr>
-              ` : ''}
               <tr>
-                <td class="py-3 font-semibold">Technical Labor & Service Charge</td>
-                <td class="py-3 text-right font-bold">$${item.laborPrice.toFixed(2)}</td>
+                <td class="py-3 font-extrabold text-slate-900 text-sm">
+                  ${escapeHtml(item.makeModel)} Repair Service
+                  ${item.description ? `<p class="text-xs font-normal text-slate-500 mt-0.5">${escapeHtml(item.description)}</p>` : ''}
+                </td>
+                <td class="py-3 text-right font-black text-sm">$${item.amount.toFixed(2)}</td>
               </tr>
               ${item.discountAmount > 0 ? `
                 <tr class="text-amber-700 bg-amber-50/50">
@@ -2077,10 +2653,9 @@
           </table>
 
           <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs border border-slate-200">
-            <div class="flex justify-between font-semibold text-slate-600"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
-            ${item.discountAmount > 0 ? `<div class="flex justify-between font-bold text-amber-600"><span>Discount:</span><span>-$${item.discountAmount.toFixed(2)}</span></div>` : ''}
-            <div class="flex justify-between font-extrabold text-slate-900 text-sm pt-1 border-t border-slate-200"><span>Total Charged:</span><span>$${item.amount.toFixed(2)}</span></div>
-            <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Required / Quoted:</span><span>$${item.requiredDeposit.toFixed(2)}</span></div>
+            <div class="flex justify-between font-extrabold text-slate-900 text-sm"><span>Full Repair Charge:</span><span>$${item.amount.toFixed(2)}</span></div>
+            ${item.discountAmount > 0 ? `<div class="flex justify-between font-bold text-amber-600"><span>Discount Savings:</span><span>-$${item.discountAmount.toFixed(2)}</span></div>` : ''}
+            <div class="flex justify-between text-indigo-600 font-semibold"><span>Deposit Quoted:</span><span>$${item.requiredDeposit.toFixed(2)}</span></div>
             <div class="flex justify-between text-emerald-600 font-semibold"><span>Deposit Paid:</span><span>-$${item.depositAmount.toFixed(2)}</span></div>
             <div class="flex justify-between font-black text-sm text-rose-600 pt-2 border-t border-slate-200"><span>Remaining Balance Due:</span><span>$${item.balanceDue.toFixed(2)}</span></div>
           </div>
@@ -2144,9 +2719,9 @@
 
       const summary = `AJD's Wireless Repairs Invoice
 Customer: ${item.customerName}
-Device: ${item.makeModel}
-Total Amount: $${item.amount.toFixed(2)} ${item.discountAmount > 0 ? `(Discounted -$${item.discountAmount.toFixed(2)})` : ''}
-Deposit Required: $${item.requiredDeposit.toFixed(2)}
+Item Repaired: ${item.makeModel}
+Full Amount: $${item.amount.toFixed(2)} ${item.discountAmount > 0 ? `(Discount -$${item.discountAmount.toFixed(2)})` : ''}
+Deposit Quoted: $${item.requiredDeposit.toFixed(2)}
 Deposit Paid: $${item.depositAmount.toFixed(2)}
 Balance Due: $${item.balanceDue.toFixed(2)}
 Payment Handles: ${item.paymentInfo}`;
@@ -2281,7 +2856,7 @@ Payment Handles: ${item.paymentInfo}`;
         <div class="space-y-1 text-slate-400 pt-1">
           <p class="font-bold text-slate-200">💡 Optimization Suggestions:</p>
           <p>• Require 50% deposit upfront on custom screen or laptop replacement orders before ordering hardware.</p>
-          <p>• Apply percentage discount presets (5%-20%) for bundle repairs to encourage repeat customer orders.</p>
+          <p>• Share your Online Storefront link with customers to drive device sales alongside repairs.</p>
         </div>
       `;
     }
@@ -2372,7 +2947,8 @@ Payment Handles: ${item.paymentInfo}`;
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         openLinkDropdownId = null;
-        ['editModal', 'manageMethodsModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal'].forEach(id => {
+        closeBarcodeScannerModal();
+        ['editModal', 'manageMethodsModal', 'priceModal', 'confirmModal', 'smsAiModal', 'aiEstimateModal', 'aiInsightsModal', 'purchaseRequestModal', 'barcodeModal'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.classList.add('hidden');
         });
@@ -2428,7 +3004,7 @@ Payment Handles: ${item.paymentInfo}`;
       });
     }
 
-    window.addEventListener('hashchange', checkUrlForCustomerTrackMode);
+    window.addEventListener('hashchange', checkUrlForRouting);
 
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.addEventListener('input', render);
