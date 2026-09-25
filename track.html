@@ -144,8 +144,8 @@
 
       setupRealtimeLiveTrackerSafely(job.id);
 
-      const amount = parseFloat(job.amount) || 0;
-      const reqDeposit = parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0));
+      const amount = Math.ceil(parseFloat(job.amount) || 0);
+      const reqDeposit = Math.ceil(parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0)));
       const paymentStatus = job.payment_status || (job.deposit_paid ? 'deposit_paid' : 'unpaid');
       
       let paidSoFar = 0;
@@ -157,7 +157,7 @@
         paidSoFar = 0;
       }
 
-      const balance = Math.max(0, amount - paidSoFar);
+      const balance = Math.ceil(Math.max(0, amount - paidSoFar));
       const step = job.status === 'completed' ? 4 : job.status === 'in-progress' ? 2 : 1;
 
       container.innerHTML = `
