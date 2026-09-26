@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AJD's Wireless Repair Tracker & Store</title>
-  <meta name="theme-color" content="#0B0F19">
+  <meta name="theme-color" content="#090D16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Repairs">
 
   <!-- Favicon & PWA Icons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23090D16'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23090D16'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
   <!-- Tailwind CSS & External Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -24,9 +24,9 @@
       theme: {
         extend: {
           colors: {
-            darkbg: '#0B0F19',
-            cardbg: '#131B2E',
-            cardborder: '#1E293B',
+            darkbg: '#090D16',
+            cardbg: '#111827',
+            cardborder: '#1F293D',
             brand: {
               50: '#eff6ff',
               100: '#dbeafe',
@@ -45,18 +45,21 @@
       -webkit-tap-highlight-color: transparent;
     }
     body {
-      background-color: #0B0F19;
+      background-color: #090D16;
       color: #F8FAFC;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       -webkit-overflow-scrolling: touch;
       overflow-x: hidden;
     }
     .dark-card {
-      background-color: #131B2E;
-      border: 1px solid #1E293B;
+      background-color: #111827;
+      border: 1px solid #1F293D;
+    }
+    .glow-border {
+      box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.15);
     }
 
-    /* Optimized Mobile & Universal Printing Styles */
+    /* Isolated Customer Receipt Printing CSS */
     @media print {
       body { 
         background-color: #ffffff !important; 
@@ -64,7 +67,7 @@
         padding: 0 !important;
         margin: 0 !important;
       }
-      .no-print { 
+      .no-print, header, main, #toastContainer, #editRepairModal, #editInventoryModal, #addStoreItemModal, #scannerModal, #manageMethodsModal { 
         display: none !important; 
       }
       #invoiceModal {
@@ -73,6 +76,7 @@
         backdrop-filter: none !important;
         padding: 0 !important;
         display: block !important;
+        z-index: auto !important;
       }
       .printable-area { 
         display: block !important; 
@@ -98,29 +102,32 @@
     }
   </style>
 </head>
-<body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950">
+<body class="bg-[#090D16] text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950">
 
-  <!-- Main Header -->
-  <header class="sticky top-0 z-40 bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-6 py-3 no-print">
+  <!-- Main Sticky Header (z-40) -->
+  <header class="sticky top-0 z-40 bg-[#090D16]/95 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-6 py-3 no-print">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
       
-      <!-- Brand Logo & Main Navigation Tabs -->
+      <!-- Brand Logo & Mobile Tabs -->
       <div class="flex items-center justify-between w-full md:w-auto gap-4">
         <div class="flex items-center space-x-3">
-          <div class="bg-amber-500/10 text-amber-400 p-2 rounded-2xl border border-amber-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10">
+          <div class="bg-amber-500/10 text-amber-400 p-2 rounded-2xl border border-amber-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10 glow-border">
             <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
               <circle cx="50" cy="50" r="42" stroke-width="6"/>
               <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div>
-            <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">AJD's Wireless</h1>
+            <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight flex items-center gap-1.5">
+              <span>AJD's Wireless</span>
+              <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1.5 py-0.2 rounded-md font-bold uppercase">Pro</span>
+            </h1>
             <p class="text-[10px] font-semibold text-slate-400">Repairs & Store Dashboard</p>
           </div>
         </div>
 
         <!-- Mobile Navigation Tabs -->
-        <div class="flex md:hidden bg-slate-900 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
+        <div class="flex md:hidden bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
           <button onclick="switchTab('repairs')" id="tab-repairs-mob" class="px-2.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold transition">Repairs</button>
           <button onclick="switchTab('invoices')" id="tab-invoices-mob" class="px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition">Invoices</button>
           <button onclick="switchTab('store')" id="tab-store-mob" class="px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition flex items-center gap-1">
@@ -130,9 +137,9 @@
         </div>
       </div>
 
-      <!-- Desktop Tabs & Toolbar Buttons -->
-      <div class="flex items-center gap-2.5 w-full md:w-auto justify-between md:justify-end overflow-x-auto pb-1 md:pb-0">
-        <div class="hidden md:flex bg-slate-900 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
+      <!-- Desktop Tabs & Toolbar Buttons (Clean Flex Layout without clipping overflow) -->
+      <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-between md:justify-end">
+        <div class="hidden md:flex bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
           <button onclick="switchTab('repairs')" id="tab-repairs-dt" class="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold transition">💻 Repairs</button>
           <button onclick="switchTab('invoices')" id="tab-invoices-dt" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition">📄 Invoices</button>
           <button onclick="switchTab('store')" id="tab-store-dt" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition flex items-center gap-1.5">
@@ -141,42 +148,43 @@
           </button>
         </div>
 
-        <!-- Quick Links Dropdown -->
+        <!-- Quick Links Dropdown (z-60) -->
         <div class="relative">
-          <button onclick="toggleNavLinksDropdown()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer">
+          <button onclick="toggleNavLinksDropdown()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer relative z-10">
             <span>🔗 Quick Links</span>
             <span id="quickLinksCount" class="bg-slate-800 text-amber-400 text-[10px] px-1.5 py-0.2 rounded-full font-black">2</span>
           </button>
 
-          <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-3 z-50 space-y-3">
-            <div class="border-b border-slate-800 pb-2">
-              <h4 class="text-xs font-black text-white">Saved Website Links</h4>
+          <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-3 z-[60] space-y-3">
+            <div class="border-b border-slate-800 pb-2 flex items-center justify-between">
+              <h4 class="text-xs font-black text-white">Saved Supplier Links</h4>
+              <button onclick="toggleNavLinksDropdown()" class="text-slate-500 hover:text-white text-xs p-1">✕</button>
             </div>
             <div id="quickLinksList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
             <div class="pt-2 border-t border-slate-800 space-y-1.5">
-              <input type="text" id="newQuickLinkTitle" placeholder="Link Title (e.g., MobileSentrix)" class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-              <input type="url" id="newQuickLinkUrl" placeholder="https://..." class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-              <button onclick="addQuickLink()" class="w-full py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl transition">
+              <input type="text" id="newQuickLinkTitle" placeholder="Link Title (e.g. MobileSentrix)" class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-amber-500">
+              <input type="url" id="newQuickLinkUrl" placeholder="https://..." class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-amber-500">
+              <button onclick="addQuickLink()" class="w-full py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl transition cursor-pointer">
                 + Add Custom Link
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Settings Dropdown -->
+        <!-- Settings Dropdown (z-60) -->
         <div class="relative">
-          <button onclick="toggleSettingsDropdown()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer">
+          <button onclick="toggleSettingsDropdown()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer relative z-10">
             <span>⚙️ Settings</span>
           </button>
 
-          <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
-            <button onclick="openManageMethodsModal()" class="w-full text-left px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition flex items-center gap-2">
+          <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 z-[60] space-y-1">
+            <button onclick="openManageMethodsModal()" class="w-full text-left px-3 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition flex items-center gap-2 cursor-pointer">
               <span>💳 Manage Payment Methods</span>
             </button>
             <div class="border-t border-slate-800 my-1"></div>
             <div class="px-3 py-1 text-[10px] font-black uppercase text-slate-500">Theme Mode</div>
-            <button onclick="applyTheme('dark')" class="w-full text-left px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition">🌙 Dark Mode</button>
-            <button onclick="applyTheme('light')" class="w-full text-left px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition">☀️ Light Mode</button>
+            <button onclick="applyTheme('dark')" class="w-full text-left px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition cursor-pointer">🌙 Dark Mode</button>
+            <button onclick="applyTheme('light')" class="w-full text-left px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition cursor-pointer">☀️ Light Mode</button>
           </div>
         </div>
       </div>
@@ -186,163 +194,168 @@
   <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-6">
 
     <!-- Top Metrics Summary Bar -->
-    <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print">
-      <div class="dark-card p-4 rounded-2xl border border-slate-800 space-y-1">
+    <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print relative z-10">
+      <div class="dark-card p-4 rounded-2xl border border-slate-800/80 space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Revenue</span>
         <p id="metricRevenue" class="text-lg sm:text-2xl font-black text-amber-400">$0</p>
       </div>
-      <div class="dark-card p-4 rounded-2xl border border-slate-800 space-y-1">
+      <div class="dark-card p-4 rounded-2xl border border-slate-800/80 space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Deposits Paid</span>
         <p id="metricDeposits" class="text-lg sm:text-2xl font-black text-emerald-400">$0</p>
       </div>
-      <div class="dark-card p-4 rounded-2xl border border-slate-800 space-y-1">
+      <div class="dark-card p-4 rounded-2xl border border-slate-800/80 space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Unpaid Balance</span>
         <p id="metricUnpaid" class="text-lg sm:text-2xl font-black text-rose-400">$0</p>
       </div>
-      <div class="dark-card p-4 rounded-2xl border border-slate-800 space-y-1">
+      <div class="dark-card p-4 rounded-2xl border border-slate-800/80 space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Active Repairs</span>
         <p id="metricActive" class="text-lg sm:text-2xl font-black text-blue-400">0</p>
       </div>
     </div>
 
-    <!-- TAB 1: REPAIRS MANAGEMENT -->
-    <div id="tabContentRepairs" class="space-y-6">
-      
-      <!-- New Repair Job Intake Form -->
-      <div class="dark-card p-4 sm:p-6 rounded-3xl space-y-4 no-print border border-slate-800 shadow-xl">
-        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-          <h2 class="text-base font-black text-white flex items-center gap-2">
-            <span>📝 Check-In New Repair Ticket</span>
-          </h2>
-          <span class="text-xs font-bold text-slate-400">Shop ID: AJD-786</span>
-        </div>
+    <!-- TAB 1: REPAIRS MANAGEMENT (Split Grid Layout) -->
+    <div id="tabContentRepairs" class="relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <form id="newRepairForm" onsubmit="handleCreateRepair(event)" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Customer Name *</label>
-              <input type="text" id="custName" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., John Smith">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Phone Number *</label>
-              <input type="tel" id="custPhone" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="(786) 970-7779">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Device Make & Model *</label>
-              <input type="text" id="deviceModel" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., iPhone 13 Pro Max">
-            </div>
+        <!-- LEFT SIDE: New Repair Job Intake Form (Sticky on Desktop - z-10) -->
+        <div class="lg:col-span-5 dark-card p-4 sm:p-6 rounded-3xl space-y-4 no-print border border-slate-800 shadow-xl lg:sticky lg:top-20 z-10">
+          <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+            <h2 class="text-base font-black text-white flex items-center gap-2">
+              <span>📝 Check-In New Repair Ticket</span>
+            </h2>
+            <span class="text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-lg">AJD-786</span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Issue / Service Required *</label>
-              <input type="text" id="issueDesc" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., Screen replacement & battery service">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Internal Part / Hardware Notes</label>
-              <input type="text" id="partNotes" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., Soft OLED Panel + Battery Cell">
-            </div>
-          </div>
-
-          <!-- Pricing & Financials Row -->
-          <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <form id="newRepairForm" onsubmit="handleCreateRepair(event)" class="space-y-4">
+            <div class="space-y-3">
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Labor / Service Charge ($)</label>
-                <input type="number" id="laborPrice" step="1" min="0" value="100" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Customer Name *</label>
+                <input type="text" id="custName" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., John Smith">
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Parts Cost ($)</label>
-                <input type="number" id="partPrice" step="1" min="0" value="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Phone Number *</label>
+                <input type="tel" id="custPhone" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="(786) 970-7779">
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">Discount Amount ($)</label>
-                <input type="number" id="discountAmount" step="1" min="0" value="0" oninput="calculateTotal()" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
+                <label class="block text-xs font-bold text-slate-300 mb-1">Device Make & Model *</label>
+                <input type="text" id="deviceModel" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., iPhone 13 Pro Max">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Issue / Service Required *</label>
+                <input type="text" id="issueDesc" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., Screen replacement & battery service">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1">Internal Part / Hardware Notes</label>
+                <input type="text" id="partNotes" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., Soft OLED Panel + Battery Cell">
               </div>
             </div>
 
-            <!-- Discount Presets & Reason -->
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-              <span class="text-xs font-bold text-slate-400">Discount Presets:</span>
-              <button type="button" onclick="setDiscountPreset(0)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-lg">0%</button>
-              <button type="button" onclick="setDiscountPreset(5)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-lg">5%</button>
-              <button type="button" onclick="setDiscountPreset(10)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-lg">10%</button>
-              <button type="button" onclick="setDiscountPreset(15)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-lg">15%</button>
-              <button type="button" onclick="setDiscountPreset(20)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-lg">20%</button>
-              
-              <input type="text" id="discountReason" placeholder="Discount Reason / Promo Note" class="flex-1 min-w-[200px] px-3 py-1 text-xs bg-slate-950 border border-slate-800 rounded-lg text-white outline-none">
-            </div>
-
-            <!-- Deposit Presets & Payment Method -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
-              <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-300">Required Deposit Preset</label>
-                <div class="flex items-center gap-2">
-                  <button type="button" onclick="setDepositPreset(25)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl">25%</button>
-                  <button type="button" onclick="setDepositPreset(50)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl">50%</button>
-                  <button type="button" onclick="setDepositPreset(75)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl">75%</button>
-                  <button type="button" onclick="setDepositPreset(100)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl">100%</button>
+            <!-- Pricing & Financials Box -->
+            <div class="bg-slate-900/90 p-3.5 sm:p-4 rounded-2xl border border-slate-800 space-y-3.5">
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Labor ($)</label>
+                  <input type="number" id="laborPrice" step="1" min="0" value="100" oninput="calculateTotal()" class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
                 </div>
-                <input type="number" id="depositAmount" step="1" min="0" value="0" placeholder="Required Deposit ($)" class="w-full px-3.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Part ($)</label>
+                  <input type="number" id="partPrice" step="1" min="0" value="0" oninput="calculateTotal()" class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Discount ($)</label>
+                  <input type="number" id="discountAmount" step="1" min="0" value="0" oninput="calculateTotal()" class="w-full px-2.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white font-black outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
               </div>
 
-              <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-300">Payment Method Used</label>
-                <select id="paymentMethod" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-                  <option value="Zelle">⚡ Zelle</option>
-                  <option value="Apple Pay">📱 Apple Pay</option>
-                  <option value="Cash">💵 Cash</option>
-                  <option value="Credit / Debit Card">💳 Credit / Debit Card</option>
-                  <option value="Venmo">💙 Venmo</option>
-                  <option value="Check">📝 Check</option>
-                  <option value="Other">🌐 Other</option>
-                </select>
+              <!-- Discount Presets & Reason -->
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                  <span class="text-[10px] font-bold text-slate-400 shrink-0">Discount %:</span>
+                  <button type="button" onclick="setDiscountPreset(0)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-md cursor-pointer">0%</button>
+                  <button type="button" onclick="setDiscountPreset(5)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-md cursor-pointer">5%</button>
+                  <button type="button" onclick="setDiscountPreset(10)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-md cursor-pointer">10%</button>
+                  <button type="button" onclick="setDiscountPreset(15)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-md cursor-pointer">15%</button>
+                  <button type="button" onclick="setDiscountPreset(20)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-md cursor-pointer">20%</button>
+                </div>
+                <input type="text" id="discountReason" placeholder="Discount Reason / Promo Note" class="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+              </div>
+
+              <!-- Deposit Presets & Payment Method -->
+              <div class="space-y-2 pt-2 border-t border-slate-800">
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-slate-300">Required Deposit Preset</label>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="setDepositPreset(25)" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-300 rounded-xl cursor-pointer">25%</button>
+                    <button type="button" onclick="setDepositPreset(50)" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-300 rounded-xl cursor-pointer">50%</button>
+                    <button type="button" onclick="setDepositPreset(75)" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-300 rounded-xl cursor-pointer">75%</button>
+                    <button type="button" onclick="setDepositPreset(100)" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-300 rounded-xl cursor-pointer">100%</button>
+                  </div>
+                  <input type="number" id="depositAmount" step="1" min="0" value="0" placeholder="Required Deposit ($)" class="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Payment Method Used</label>
+                  <select id="paymentMethod" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
+                    <option value="Zelle">⚡ Zelle</option>
+                    <option value="Apple Pay">📱 Apple Pay</option>
+                    <option value="Cash">💵 Cash</option>
+                    <option value="Credit / Debit Card">💳 Credit / Debit Card</option>
+                    <option value="Venmo">💙 Venmo</option>
+                    <option value="Check">📝 Check</option>
+                    <option value="Other">🌐 Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-300 mb-1">Payment Handles / Instructions</label>
+                <input type="text" id="paymentInfo" value="Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup" class="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-300 outline-none">
+              </div>
+
+              <!-- Computed Total Summary -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                <span class="text-xs font-bold text-slate-400">Computed Job Total:</span>
+                <span id="previewTotal" class="text-lg font-black text-amber-400">$100</span>
               </div>
             </div>
 
-            <!-- Payment Handles String -->
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Payment Handles / Instructions</label>
-              <input type="text" id="paymentInfo" value="Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup" class="w-full px-3.5 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-300 outline-none">
-            </div>
+            <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
+              + Check-In Repair Ticket
+            </button>
+          </form>
+        </div>
 
-            <!-- Total Preview Summary -->
-            <div class="flex items-center justify-between pt-2 border-t border-slate-800">
-              <span class="text-xs font-bold text-slate-400">Computed Job Total:</span>
-              <span id="previewTotal" class="text-lg font-black text-amber-400">$100</span>
+        <!-- RIGHT SIDE: Active Repair Feed -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 no-print bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-black text-white">Active Repair Feed</h3>
+              <span id="repairCountBadge" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black px-2 py-0.5 rounded-md">0 Jobs</span>
+            </div>
+            <div class="relative w-full sm:w-64">
+              <input type="text" id="repairSearchInput" oninput="renderRepairs()" placeholder="Search tickets by name, device, ID..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-amber-500">
+              <svg class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
-            + Check-In Repair Ticket
-          </button>
-        </form>
-      </div>
-
-      <!-- Repairs Feed Filter Bar -->
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
-        <h3 class="text-base font-black text-white">Active Repair Feed</h3>
-        <div class="relative w-full sm:w-64">
-          <input type="text" id="repairSearchInput" oninput="renderRepairs()" placeholder="Search tickets by name, device, ID..." class="w-full pl-9 pr-4 py-2 text-xs bg-slate-900 border border-slate-800 rounded-2xl text-white outline-none">
-          <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <div id="repairsList" class="space-y-4">
+            <div class="p-12 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">
+              Loading repairs database...
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div id="repairsList" class="space-y-4">
-        <div class="p-12 text-center text-slate-500 dark-card rounded-3xl font-semibold text-xs">
-          Loading repairs database...
-        </div>
       </div>
-
     </div>
 
     <!-- TAB 2: INVOICES MANAGEMENT -->
-    <div id="tabContentInvoices" class="space-y-6 hidden">
+    <div id="tabContentInvoices" class="space-y-6 hidden relative z-10">
       <div class="dark-card p-4 sm:p-6 rounded-3xl space-y-4 border border-slate-800">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <h2 class="text-base font-black text-white">📄 Printable Invoices & Customer Receipts</h2>
@@ -353,7 +366,7 @@
     </div>
 
     <!-- TAB 3: ONLINE STORE & INVENTORY MANAGEMENT -->
-    <div id="tabContentStore" class="space-y-6 hidden">
+    <div id="tabContentStore" class="space-y-6 hidden relative z-10">
       
       <!-- Store Header & Controls -->
       <div class="dark-card p-4 sm:p-6 rounded-3xl space-y-4 border border-slate-800">
@@ -393,14 +406,12 @@
 
   </main>
 
-  <!-- EDIT REPAIR MODAL -->
-  <div id="editRepairModal" onclick="handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+  <!-- EDIT REPAIR MODAL (z-[100]) -->
+  <div id="editRepairModal" onclick="handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+    <div class="dark-card rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto relative z-[101]">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white">✏️ Edit Repair Ticket</h3>
-        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <form id="editRepairForm" onsubmit="handleSaveEditRepair(event)" class="space-y-4">
@@ -455,7 +466,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Payment Status</label>
-            <select id="editPaymentStatus" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <select id="editPaymentStatus" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
               <option value="unpaid">🔴 Deposit Unpaid</option>
               <option value="deposit_paid">🟡 Deposit Collected</option>
               <option value="paid_in_full">🟢 Paid in Full</option>
@@ -464,27 +475,19 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl transition">
-            Cancel
-          </button>
-          <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow transition">
-            Save Repair Changes
-          </button>
+          <button type="button" onclick="closeEditModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl transition cursor-pointer">Cancel</button>
+          <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow transition cursor-pointer">Save Repair Changes</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- EDIT INVENTORY ITEM MODAL -->
-  <div id="editInventoryModal" onclick="handleBackdropClick(event, 'editInventoryModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+  <!-- EDIT INVENTORY ITEM MODAL (z-[100]) -->
+  <div id="editInventoryModal" onclick="handleBackdropClick(event, 'editInventoryModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+    <div class="dark-card rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto relative z-[101]">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-base font-black text-white flex items-center gap-2">
-          <span>✏️ Edit Inventory Item</span>
-        </h3>
-        <button onclick="closeEditInventoryModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <h3 class="text-base font-black text-white">✏️ Edit Inventory Item</h3>
+        <button onclick="closeEditInventoryModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <form id="editInventoryForm" onsubmit="handleSaveEditInventory(event)" class="space-y-3.5">
@@ -492,13 +495,13 @@
 
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Item Title *</label>
-          <input type="text" id="editInvTitle" required class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500">
+          <input type="text" id="editInvTitle" required class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Category</label>
-            <select id="editInvCategory" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <select id="editInvCategory" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
               <option value="Phones">Phones</option>
               <option value="Tablets">Tablets</option>
               <option value="Laptops">Laptops</option>
@@ -527,7 +530,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Condition</label>
-            <select id="editInvCondition" class="w-full px-2 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <select id="editInvCondition" class="w-full px-2 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
               <option value="New">New</option>
               <option value="Pre-Owned Excellent">Pre-Owned</option>
               <option value="Refurbished">Refurbished</option>
@@ -538,7 +541,7 @@
 
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Image URL</label>
-          <input type="url" id="editInvImageUrl" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="https://...">
+          <input type="url" id="editInvImageUrl" class="w-full px-3.5 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
         </div>
 
         <div>
@@ -547,25 +550,19 @@
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="closeEditInventoryModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl transition">
-            Cancel
-          </button>
-          <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow transition">
-            Save Item Changes
-          </button>
+          <button type="button" onclick="closeEditInventoryModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl transition cursor-pointer">Cancel</button>
+          <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow transition cursor-pointer">Save Item Changes</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ADD STORE ITEM MODAL -->
-  <div id="addStoreItemModal" onclick="handleBackdropClick(event, 'addStoreItemModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+  <!-- ADD STORE ITEM MODAL (z-[100]) -->
+  <div id="addStoreItemModal" onclick="handleBackdropClick(event, 'addStoreItemModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+    <div class="dark-card rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto relative z-[101]">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white">🛍️ Add Store Item For Sale</h3>
-        <button onclick="closeAddStoreItemModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <button onclick="closeAddStoreItemModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <form id="addStoreItemForm" onsubmit="handleSaveStoreItem(event)" class="space-y-3.5">
@@ -577,7 +574,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Category</label>
-            <select id="addInvCategory" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <select id="addInvCategory" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
               <option value="Phones">Phones</option>
               <option value="Tablets">Tablets</option>
               <option value="Laptops">Laptops</option>
@@ -606,7 +603,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">Condition</label>
-            <select id="addInvCondition" class="w-full px-2 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <select id="addInvCondition" class="w-full px-2 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none cursor-pointer">
               <option value="Pre-Owned Excellent">Pre-Owned</option>
               <option value="Refurbished">Refurbished</option>
               <option value="New">New</option>
@@ -632,16 +629,14 @@
     </div>
   </div>
 
-  <!-- BARCODE CAMERA SCANNER MODAL -->
-  <div id="scannerModal" onclick="handleBackdropClick(event, 'scannerModal')" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
+  <!-- BARCODE CAMERA SCANNER MODAL (z-[100]) -->
+  <div id="scannerModal" onclick="handleBackdropClick(event, 'scannerModal')" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 relative z-[101]">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white flex items-center gap-2">
           <span>📷 Camera Barcode Scanner</span>
         </h3>
-        <button onclick="closeScannerModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <button onclick="closeScannerModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <div class="space-y-3">
@@ -651,17 +646,17 @@
 
         <div class="flex items-center justify-center gap-2">
           <span class="text-xs font-bold text-slate-400">Zoom:</span>
-          <button type="button" onclick="setCameraZoom(0.5)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl">0.5x Wide</button>
-          <button type="button" onclick="setCameraZoom(1.0)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl">1.0x Normal</button>
-          <button type="button" onclick="setCameraZoom(2.0)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl">2.0x Zoom</button>
+          <button type="button" onclick="setCameraZoom(0.5)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl cursor-pointer">0.5x Wide</button>
+          <button type="button" onclick="setCameraZoom(1.0)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl cursor-pointer">1.0x Normal</button>
+          <button type="button" onclick="setCameraZoom(2.0)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-amber-400 rounded-xl cursor-pointer">2.0x Zoom</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MOBILE-OPTIMIZED PRINTABLE INVOICE MODAL -->
-  <div id="invoiceModal" onclick="handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="bg-white text-slate-900 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto printable-area">
+  <!-- MOBILE-OPTIMIZED & ISOLATED PRINTABLE INVOICE MODAL (z-[100]) -->
+  <div id="invoiceModal" onclick="handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+    <div class="bg-white text-slate-900 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto printable-area relative z-[101]">
       
       <!-- Invoice Header -->
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -679,12 +674,10 @@
         </div>
 
         <div class="no-print flex items-center gap-1.5 sm:gap-2">
-          <button onclick="handlePrintInvoice()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow active:scale-95 transition">
+          <button onclick="handlePrintInvoice()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow active:scale-95 transition cursor-pointer">
             🖨️ Print / Save PDF
           </button>
-          <button onclick="closeInvoiceModal()" class="text-slate-400 hover:text-slate-700 p-1.5 text-base font-black">
-            ✕
-          </button>
+          <button onclick="closeInvoiceModal()" class="text-slate-400 hover:text-slate-700 p-1.5 text-base font-black cursor-pointer">✕</button>
         </div>
       </div>
 
@@ -700,24 +693,25 @@
     </div>
   </div>
 
-  <!-- MANAGE PAYMENT METHODS MODAL -->
-  <div id="manageMethodsModal" onclick="handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
+  <!-- MANAGE PAYMENT METHODS MODAL (z-[100]) -->
+  <div id="manageMethodsModal" onclick="handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-4">
+    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 relative z-[101]">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white">💳 Manage Payment Methods</h3>
-        <button onclick="closeManageMethodsModal()" class="text-slate-400 hover:text-white p-1">✕</button>
+        <button onclick="closeManageMethodsModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <div id="customMethodsList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
 
       <div class="pt-2 border-t border-slate-800 flex gap-2">
         <input type="text" id="newMethodInput" placeholder="New Method Name (e.g., Cash App)" class="flex-1 px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-        <button onclick="addCustomPaymentMethod()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl">Add</button>
+        <button onclick="addCustomPaymentMethod()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl cursor-pointer">Add</button>
       </div>
     </div>
   </div>
 
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+  <!-- TOAST CONTAINER (z-[110]) -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-[110] space-y-2 pointer-events-none"></div>
 
   <script>
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
@@ -1042,6 +1036,9 @@
       document.getElementById('metricDeposits').innerText = `$${Math.ceil(deposits)}`;
       document.getElementById('metricUnpaid').innerText = `$${Math.ceil(unpaid)}`;
       document.getElementById('metricActive').innerText = active;
+      
+      const badge = document.getElementById('repairCountBadge');
+      if (badge) badge.innerText = `${repairs.length} Jobs`;
     }
 
     function renderRepairs() {
@@ -1072,16 +1069,19 @@
         const balance = Math.max(0, r.amount - paidSoFar);
 
         return `
-          <div class="dark-card p-4 sm:p-6 rounded-3xl space-y-4 border border-slate-800 hover:border-slate-700 transition">
+          <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3.5 border border-slate-800/90 hover:border-slate-700 transition">
             
             <!-- Header Row -->
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
               <div class="flex items-center space-x-2">
                 <span class="text-xs font-black text-white">${escapeHtml(r.customerName)}</span>
                 <span class="text-[10px] text-slate-400 font-bold">(${escapeHtml(r.customerPhone)})</span>
-                <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${r.paymentStatus === 'paid_in_full' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : r.paymentStatus === 'deposit_paid' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-rose-950 text-rose-400 border border-rose-800'}">
-                  ${r.paymentStatus === 'paid_in_full' ? '🟢 Paid in Full' : r.paymentStatus === 'deposit_paid' ? '🟡 Deposit Paid' : '🔴 Unpaid'}
-                </span>
+                
+                <select onchange="updatePaymentStatus('${r.id}', this.value)" class="px-2 py-0.5 text-[10px] font-black rounded-md outline-none cursor-pointer ${r.paymentStatus === 'paid_in_full' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : r.paymentStatus === 'deposit_paid' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-rose-950 text-rose-400 border border-rose-800'}">
+                  <option value="unpaid" class="bg-slate-900 text-rose-400" ${r.paymentStatus === 'unpaid' ? 'selected' : ''}>🔴 Unpaid</option>
+                  <option value="deposit_paid" class="bg-slate-900 text-amber-400" ${r.paymentStatus === 'deposit_paid' ? 'selected' : ''}>🟡 Deposit Paid</option>
+                  <option value="paid_in_full" class="bg-slate-900 text-emerald-400" ${r.paymentStatus === 'paid_in_full' ? 'selected' : ''}>🟢 Paid in Full</option>
+                </select>
               </div>
 
               <!-- Progress Stage Selector -->
@@ -1101,7 +1101,7 @@
                 <span class="text-[10px] font-extrabold text-slate-500">ID: ${escapeHtml(r.id)}</span>
               </div>
               <p class="text-xs text-slate-300 font-medium">${escapeHtml(r.issueDesc)}</p>
-              ${r.partNotes ? `<p class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-xl border border-slate-800">🔧 Hardware Notes: ${escapeHtml(r.partNotes)}</p>` : ''}
+              ${r.partNotes ? `<p class="text-[11px] text-slate-400 bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">🔧 Hardware Notes: ${escapeHtml(r.partNotes)}</p>` : ''}
             </div>
 
             <!-- Financial Summary Box -->
@@ -1111,11 +1111,11 @@
                 <span class="font-black text-white text-sm">$${r.amount}</span>
               </div>
               <div>
-                <span class="text-[10px] text-slate-500 uppercase font-black block">Required Deposit</span>
+                <span class="text-[10px] text-slate-500 uppercase font-black block">Req Deposit</span>
                 <span class="font-extrabold text-amber-400">$${r.depositAmount}</span>
               </div>
               <div>
-                <span class="text-[10px] text-slate-500 uppercase font-black block">Deposit Collected</span>
+                <span class="text-[10px] text-slate-500 uppercase font-black block">Deposit Paid</span>
                 <span class="font-extrabold text-emerald-400">$${paidSoFar}</span>
               </div>
               <div>
@@ -1124,7 +1124,7 @@
               </div>
             </div>
 
-            <!-- Supplier Links Dropdown -->
+            <!-- Supplier Links Accordion -->
             <div class="space-y-2">
               <details class="bg-slate-900/60 rounded-2xl border border-slate-800 p-2.5">
                 <summary class="text-xs font-bold text-slate-300 cursor-pointer flex items-center justify-between">
@@ -1138,14 +1138,14 @@
                       <span class="truncate font-semibold text-slate-300 max-w-[200px]">${escapeHtml(link)}</span>
                       <div class="flex items-center gap-1.5 shrink-0">
                         <a href="${escapeHtml(link)}" target="_blank" class="px-2 py-0.5 bg-amber-500 text-slate-950 font-bold rounded-lg text-[10px]">Launch ↗</a>
-                        <button onclick="deleteSupplierLinkFromRepair('${r.id}', ${idx})" class="p-1 text-slate-500 hover:text-rose-400">🗑️</button>
+                        <button onclick="deleteSupplierLinkFromRepair('${r.id}', ${idx})" class="p-1 text-slate-500 hover:text-rose-400 cursor-pointer">🗑️</button>
                       </div>
                     </div>
                   `).join('')}
 
                   <div class="flex gap-2">
                     <input type="url" id="linkInput_${r.id}" placeholder="Paste URL (e.g. https://mobilesentrix.com/...)" class="flex-1 px-2.5 py-1 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-                    <button onclick="addSupplierLinkToRepair('${r.id}')" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl">+ Add</button>
+                    <button onclick="addSupplierLinkToRepair('${r.id}')" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl cursor-pointer">+ Add</button>
                   </div>
                 </div>
               </details>
@@ -1154,22 +1154,22 @@
             <!-- Action Toolbar Buttons -->
             <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800">
               <div class="flex items-center gap-1.5">
-                <button onclick="openLiveTrackerView('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition">
+                <button onclick="openLiveTrackerView('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition cursor-pointer">
                   👁️ Live
                 </button>
-                <button onclick="copyTrackerLink('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition">
+                <button onclick="copyTrackerLink('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition cursor-pointer">
                   🔗 Copy Link
                 </button>
-                <button onclick="openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition">
+                <button onclick="openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-extrabold rounded-xl transition cursor-pointer">
                   📄 Receipt
                 </button>
               </div>
 
               <div class="flex items-center gap-1.5">
-                <button onclick="openEditModal('${r.id}')" class="px-3 py-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-extrabold rounded-xl hover:bg-amber-500/20 transition">
+                <button onclick="openEditModal('${r.id}')" class="px-3 py-1.5 bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-extrabold rounded-xl hover:bg-amber-500/20 transition cursor-pointer">
                   ✏️ Edit
                 </button>
-                <button onclick="handleDeleteRepair('${r.id}')" class="px-3 py-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-extrabold rounded-xl hover:bg-rose-500/20 transition">
+                <button onclick="handleDeleteRepair('${r.id}')" class="px-3 py-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-extrabold rounded-xl hover:bg-rose-500/20 transition cursor-pointer">
                   🗑️ Delete
                 </button>
               </div>
@@ -1208,10 +1208,10 @@
           <div class="flex items-center justify-between pt-2 border-t border-slate-800">
             <span class="text-[10px] font-bold text-slate-400">Qty: ${item.quantity || 1}</span>
             <div class="flex items-center gap-1">
-              <button onclick="openEditInventoryModal('${item.id}')" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold rounded-xl hover:bg-amber-500/20 transition">
+              <button onclick="openEditInventoryModal('${item.id}')" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 text-xs font-bold rounded-xl hover:bg-amber-500/20 transition cursor-pointer">
                 ✏️ Edit
               </button>
-              <button onclick="deleteStoreItem('${item.id}')" class="px-2.5 py-1 bg-rose-500/10 text-rose-400 text-xs font-bold rounded-xl hover:bg-rose-500/20 transition">
+              <button onclick="deleteStoreItem('${item.id}')" class="px-2.5 py-1 bg-rose-500/10 text-rose-400 text-xs font-bold rounded-xl hover:bg-rose-500/20 transition cursor-pointer">
                 🗑️
               </button>
             </div>
@@ -1248,99 +1248,13 @@
           </div>
 
           <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
-            <button onclick="approvePurchaseRequest('${req.id}')" class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-500">✅ Approve</button>
-            <button onclick="declinePurchaseRequest('${req.id}')" class="px-3 py-1 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-500">❌ Decline</button>
+            <button onclick="approvePurchaseRequest('${req.id}')" class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-500 cursor-pointer">✅ Approve</button>
+            <button onclick="declinePurchaseRequest('${req.id}')" class="px-3 py-1 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-500 cursor-pointer">❌ Decline</button>
             <a href="tel:${escapeHtml(req.customerPhone)}" class="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">📞 Call</a>
-            <button onclick="emailCustomer('${req.id}')" class="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">✉️ Email</button>
+            <button onclick="emailCustomer('${req.id}')" class="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700 cursor-pointer">✉️ Email</button>
           </div>
         </div>
       `).join('');
-    }
-
-    function openEditInventoryModal(itemId) {
-      const item = storeItems.find(i => i.id === itemId);
-      if (!item) return;
-
-      document.getElementById('editInventoryItemId').value = item.id;
-      document.getElementById('editInvTitle').value = item.title;
-      document.getElementById('editInvCategory').value = item.category;
-      document.getElementById('editInvSku').value = item.sku || '';
-      document.getElementById('editInvPrice').value = item.price;
-      document.getElementById('editInvQty').value = item.quantity || 1;
-      document.getElementById('editInvCondition').value = item.condition;
-      document.getElementById('editInvImageUrl').value = item.imageUrl || '';
-      document.getElementById('editInvDescription').value = item.description || '';
-
-      const modal = document.getElementById('editInventoryModal');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeEditInventoryModal() {
-      const modal = document.getElementById('editInventoryModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function handleSaveEditInventory(e) {
-      e.preventDefault();
-      const itemId = document.getElementById('editInventoryItemId').value;
-      const idx = storeItems.findIndex(i => i.id === itemId);
-      if (idx === -1) return;
-
-      storeItems[idx] = {
-        ...storeItems[idx],
-        title: document.getElementById('editInvTitle').value.trim(),
-        category: document.getElementById('editInvCategory').value,
-        sku: document.getElementById('editInvSku').value.trim(),
-        price: Math.ceil(parseFloat(document.getElementById('editInvPrice').value) || 0),
-        quantity: parseInt(document.getElementById('editInvQty').value) || 1,
-        condition: document.getElementById('editInvCondition').value,
-        imageUrl: document.getElementById('editInvImageUrl').value.trim() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
-        description: document.getElementById('editInvDescription').value.trim()
-      };
-
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      closeEditInventoryModal();
-      renderStore();
-      showToast("Store inventory item updated successfully!");
-    }
-
-    function openAddStoreItemModal() {
-      document.getElementById('addStoreItemModal').classList.remove('hidden');
-    }
-
-    function closeAddStoreItemModal() {
-      document.getElementById('addStoreItemModal').classList.add('hidden');
-    }
-
-    function handleSaveStoreItem(e) {
-      e.preventDefault();
-      const newItem = {
-        id: 'item_' + Date.now(),
-        title: document.getElementById('addInvTitle').value.trim(),
-        category: document.getElementById('addInvCategory').value,
-        sku: document.getElementById('addInvSku').value.trim(),
-        price: Math.ceil(parseFloat(document.getElementById('addInvPrice').value) || 0),
-        quantity: parseInt(document.getElementById('addInvQty').value) || 1,
-        condition: document.getElementById('addInvCondition').value,
-        imageUrl: document.getElementById('addInvImageUrl').value.trim() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
-        description: document.getElementById('addInvDescription').value.trim(),
-        status: 'available'
-      };
-
-      storeItems.unshift(newItem);
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      document.getElementById('addStoreItemForm').reset();
-      closeAddStoreItemModal();
-      renderStore();
-      showToast("New item added to store!");
-    }
-
-    function deleteStoreItem(id) {
-      if (!confirm("Are you sure you want to remove this item from store?")) return;
-      storeItems = storeItems.filter(i => i.id !== id);
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      renderStore();
-      showToast("Item removed from store.");
     }
 
     function renderInvoices() {
@@ -1359,8 +1273,8 @@
             <span class="text-xs font-black text-amber-400">$${r.amount}</span>
           </div>
           <p class="text-xs text-slate-400 font-semibold">${escapeHtml(r.makeModel)}</p>
-          <button onclick="openInvoiceModal('${r.id}')" class="w-full mt-2 py-2 bg-amber-500 text-slate-950 font-black text-xs rounded-xl hover:bg-amber-400 transition active:scale-95">
-            📄 View & Print Mobile Receipt
+          <button onclick="openInvoiceModal('${r.id}')" class="w-full mt-2 py-2 bg-amber-500 text-slate-950 font-black text-xs rounded-xl hover:bg-amber-400 transition active:scale-95 cursor-pointer">
+            📄 View & Print Customer Receipt
           </button>
         </div>
       `).join('');
@@ -1436,6 +1350,30 @@
       if (tab === 'repairs') document.getElementById('tabContentRepairs').classList.remove('hidden');
       if (tab === 'invoices') document.getElementById('tabContentInvoices').classList.remove('hidden');
       if (tab === 'store') document.getElementById('tabContentStore').classList.remove('hidden');
+
+      const tabs = ['repairs', 'invoices', 'store'];
+      tabs.forEach(t => {
+        ['dt', 'mob'].forEach(suffix => {
+          const btn = document.getElementById(`tab-${t}-${suffix}`);
+          if (btn) {
+            if (t === tab) {
+              btn.className = (suffix === 'mob' ? 'px-2.5 py-1.5' : 'px-3.5 py-1.5') + ' rounded-xl bg-amber-500 text-slate-950 font-extrabold transition';
+            } else {
+              btn.className = (suffix === 'mob' ? 'px-2.5 py-1.5' : 'px-3.5 py-1.5') + ' rounded-xl text-slate-400 hover:text-white font-bold transition flex items-center gap-1';
+            }
+          }
+        });
+      });
+    }
+
+    function updatePaymentStatus(jobId, newStatus) {
+      const idx = repairs.findIndex(r => r.id === jobId);
+      if (idx === -1) return;
+      repairs[idx].paymentStatus = newStatus;
+      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+      updateRepairInCloud(repairs[idx]);
+      render();
+      showToast("Payment status updated!");
     }
 
     function handleCreateRepair(e) {
@@ -1611,6 +1549,92 @@
       toggleSettingsDropdown();
     }
 
+    function openEditInventoryModal(itemId) {
+      const item = storeItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('editInventoryItemId').value = item.id;
+      document.getElementById('editInvTitle').value = item.title;
+      document.getElementById('editInvCategory').value = item.category;
+      document.getElementById('editInvSku').value = item.sku || '';
+      document.getElementById('editInvPrice').value = item.price;
+      document.getElementById('editInvQty').value = item.quantity || 1;
+      document.getElementById('editInvCondition').value = item.condition;
+      document.getElementById('editInvImageUrl').value = item.imageUrl || '';
+      document.getElementById('editInvDescription').value = item.description || '';
+
+      const modal = document.getElementById('editInventoryModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeEditInventoryModal() {
+      const modal = document.getElementById('editInventoryModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleSaveEditInventory(e) {
+      e.preventDefault();
+      const itemId = document.getElementById('editInventoryItemId').value;
+      const idx = storeItems.findIndex(i => i.id === itemId);
+      if (idx === -1) return;
+
+      storeItems[idx] = {
+        ...storeItems[idx],
+        title: document.getElementById('editInvTitle').value.trim(),
+        category: document.getElementById('editInvCategory').value,
+        sku: document.getElementById('editInvSku').value.trim(),
+        price: Math.ceil(parseFloat(document.getElementById('editInvPrice').value) || 0),
+        quantity: parseInt(document.getElementById('editInvQty').value) || 1,
+        condition: document.getElementById('editInvCondition').value,
+        imageUrl: document.getElementById('editInvImageUrl').value.trim() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
+        description: document.getElementById('editInvDescription').value.trim()
+      };
+
+      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
+      closeEditInventoryModal();
+      renderStore();
+      showToast("Store inventory item updated successfully!");
+    }
+
+    function openAddStoreItemModal() {
+      document.getElementById('addStoreItemModal').classList.remove('hidden');
+    }
+
+    function closeAddStoreItemModal() {
+      document.getElementById('addStoreItemModal').classList.add('hidden');
+    }
+
+    function handleSaveStoreItem(e) {
+      e.preventDefault();
+      const newItem = {
+        id: 'item_' + Date.now(),
+        title: document.getElementById('addInvTitle').value.trim(),
+        category: document.getElementById('addInvCategory').value,
+        sku: document.getElementById('addInvSku').value.trim(),
+        price: Math.ceil(parseFloat(document.getElementById('addInvPrice').value) || 0),
+        quantity: parseInt(document.getElementById('addInvQty').value) || 1,
+        condition: document.getElementById('addInvCondition').value,
+        imageUrl: document.getElementById('addInvImageUrl').value.trim() || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
+        description: document.getElementById('addInvDescription').value.trim(),
+        status: 'available'
+      };
+
+      storeItems.unshift(newItem);
+      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
+      document.getElementById('addStoreItemForm').reset();
+      closeAddStoreItemModal();
+      renderStore();
+      showToast("New item added to store!");
+    }
+
+    function deleteStoreItem(id) {
+      if (!confirm("Are you sure you want to remove this item from store?")) return;
+      storeItems = storeItems.filter(i => i.id !== id);
+      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
+      renderStore();
+      showToast("Item removed from store.");
+    }
+
     function renderQuickLinks() {
       const container = document.getElementById('quickLinksList');
       if (!container) return;
@@ -1621,7 +1645,7 @@
           <span class="font-bold text-slate-300 truncate max-w-[140px]">${escapeHtml(l.title)}</span>
           <div class="flex items-center gap-1">
             <a href="${escapeHtml(l.url)}" target="_blank" class="px-2 py-0.5 bg-amber-500 text-slate-950 font-bold text-[10px] rounded-md">Launch</a>
-            <button onclick="deleteQuickLink(${i})" class="text-slate-500 hover:text-rose-400 p-0.5">🗑️</button>
+            <button onclick="deleteQuickLink(${i})" class="text-slate-500 hover:text-rose-400 p-0.5 cursor-pointer">🗑️</button>
           </div>
         </div>
       `).join('');
@@ -1661,7 +1685,7 @@
       container.innerHTML = customPaymentMethods.map((m, i) => `
         <div class="flex items-center justify-between text-xs bg-slate-950 p-2 rounded-xl border border-slate-800">
           <span class="font-bold text-white">${escapeHtml(m)}</span>
-          <button onclick="deleteCustomPaymentMethod(${i})" class="text-slate-500 hover:text-rose-400 p-0.5">🗑️</button>
+          <button onclick="deleteCustomPaymentMethod(${i})" class="text-slate-500 hover:text-rose-400 p-0.5 cursor-pointer">🗑️</button>
         </div>
       `).join('');
     }
