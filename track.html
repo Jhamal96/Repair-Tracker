@@ -1,312 +1,401 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AJD's Wireless Repairs - Live Repair Tracker</title>
-<meta name="theme-color" content="#0B0F19">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-tailwind.config = {
-darkMode: 'class',
-theme: {
-extend: {
-colors: {
-darkbg: '#0B0F19',
-cardbg: '#131B2E',
-cardborder: '#1E293B',
-brand: {
-50: '#eff6ff',
-100: '#dbeafe',
-500: '#3b82f6',
-600: '#2563eb',
-700: '#1d4ed8'
-}
-}
-}
-}
-}
-</script>
-<style>
-body {
-background-color: #0B0F19;
-color: #F8FAFC;
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-.dark-card {
-background-color: #131B2E;
-border: 1px solid #1E293B;
-}
-@media print {
-body { background-color: #ffffff !important; color: #000000 !important; }
-.no-print { display: none !important; }
-.printable-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AJD's Wireless Repairs - Live Repair Tracker</title>
+  <meta name="theme-color" content="#0B0F19">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkbg: '#0B0F19',
+            cardbg: '#131B2E',
+            cardborder: '#1E293B',
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: #0B0F19;
+      color: #F8FAFC;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
+    }
+    .dark-card {
+      background-color: #131B2E;
+      border: 1px solid #1E293B;
+    }
+    @media print {
+      body { background-color: #ffffff !important; color: #000000 !important; }
+      .no-print { display: none !important; }
+      .printable-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+    }
+  </style>
 </head>
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
-<!-- Header -->
-<header class="bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-4 sticky top-0 z-30 no-print">
-<div class="max-w-2xl mx-auto flex items-center justify-between">
-<div class="flex items-center space-x-3">
-<div class="bg-slate-900 text-white p-2 rounded-2xl border border-slate-800 shadow-md flex items-center justify-center shrink-0 w-10 h-10">
-<svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-<circle cx="50" cy="50" r="42" stroke-width="6"/>
-<path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</div>
-<div>
-<h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">AJD's Wireless Repairs</h1>
-<p class="text-[11px] font-semibold text-slate-400">Customer Live Status Portal</p>
-</div>
-</div>
-<button type="button" onclick="handlePrint()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition transform active:scale-95 cursor-pointer flex items-center space-x-1.5">
-<span>Print Receipt</span>
-</button>
-</div>
-</header>
-<!-- Main Tracking Container -->
-<main class="max-w-2xl mx-auto px-4 py-6 space-y-5">
-<!-- Search Card Bar -->
-<div class="dark-card p-4 sm:p-5 rounded-3xl shadow-lg no-print space-y-3 border border-slate-800">
-<label class="block text-xs font-extrabold uppercase tracking-wider text-brand-400">🔍 Search Your Repair Status</label>
-<div class="flex gap-2">
-<div class="relative flex-1">
-<input type="text" id="trackerSearchInput" placeholder="Enter Customer Name or Ticket ID..." class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
-<svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-</div>
-<button type="button" onclick="performCustomerSearch()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-extrabold text-xs rounded-2xl shadow transition active:scale-95 cursor-pointer shrink-0">
-Search
-</button>
-</div>
-<p class="text-[11px] text-slate-400 font-medium">Tip: You can search by your name (e.g. John Doe) or your Ticket ID.</p>
-</div>
-<!-- Active Job or Results Container -->
-<div id="trackerContent" class="dark-card p-6 sm:p-8 rounded-3xl shadow-2xl printable-card space-y-6">
-<div class="text-center py-12 space-y-3">
-<svg class="animate-spin w-8 h-8 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-<p class="text-xs font-bold text-slate-400">Loading repair tracker...</p>
-</div>
-</div>
-</main>
-<script>
-const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
-let supabaseClient = null;
-let realtimeChannel = null;
-let trackPollingTimer = null;
-let currentLoadedJobId = null;
-function escapeHtml(str) {
-if (str === null || str === undefined) return '';
-return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
-}
-function handlePrint() {
-try { window.print(); } catch (e) {}
-}
-function getJobIdFromUrl() {
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('id')) return urlParams.get('id');
-if (urlParams.has('track')) return urlParams.get('track');
-const hash = window.location.hash;
-if (hash && hash.includes('track=')) return hash.split('track=')[1].split('&')[0];
-if (hash && hash.startsWith('#')) return hash.substring(1);
-return null;
-}
-function initSupabase() {
-if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-try {
-supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e){}
-}
-}
-async function loadTrackedJob(specifiedId) {
-const jobId = specifiedId || getJobIdFromUrl();
-const container = document.getElementById('trackerContent');
-if (!container) return;
-initSupabase();
-if (!jobId) {
-container.innerHTML = ⁠<div class="text-center py-10 space-y-3"> <div class="w-14 h-14 bg-brand-950/60 text-brand-400 rounded-3xl mx-auto flex items-center justify-center text-2xl border border-brand-800/40">🔍</div> <h2 class="text-lg font-black text-white">Track Your Device Repair</h2> <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">Please enter your Customer Name or Ticket ID in the search bar above to view your repair progress.</p> </div>⁠;
-return;
-}
-currentLoadedJobId = jobId;
-let job = null;
-const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
-if (supabaseClient && isUuid) {
-try {
-const { data } = await supabaseClient.from('repairs').select('*').eq('id', jobId).single();
-if (data) job = data;
-} catch (e) {}
-}
-if (!job) {
-const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-job = local.find(r => String(r.id) === String(jobId));
-}
-if (!job) {
-container.innerHTML = ⁠<div class="text-center py-10 space-y-2"> <p class="text-2xl">❓</p> <h2 class="text-base font-bold text-white">Repair Order Not Found</h2> <p class="text-xs text-slate-400">No ticket matched ID "${escapeHtml(jobId)}". Try searching by your Name above.</p> </div>⁠;
-return;
-}
-setupRealtimeLiveTrackerSafely(job.id);
-renderSingleJobDetails(job, container);
-}
-async function performCustomerSearch() {
-const query = (document.getElementById('trackerSearchInput').value || '').trim();
-const container = document.getElementById('trackerContent');
-if (!container) return;
-if (!query) {
-loadTrackedJob();
-return;
-}
-container.innerHTML = ⁠<div class="text-center py-10 space-y-2"> <svg class="animate-spin w-7 h-7 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <p class="text-xs font-bold text-slate-400">Searching repair database...</p> </div>⁠;
-initSupabase();
-let results = [];
-if (supabaseClient) {
-try {
-const { data } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
-if (data && data.length) {
-results = data.filter(item => {
-const nameMatch = (item.customer_name || item.customerName || '').toLowerCase().includes(query.toLowerCase());
-const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
-const modelMatch = (item.make_model || item.makeModel || '').toLowerCase().includes(query.toLowerCase());
-return nameMatch || idMatch || modelMatch;
-});
-}
-} catch (e) {}
-}
-if (results.length === 0) {
-const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-results = local.filter(item => {
-const nameMatch = (item.customerName || item.customer_name || '').toLowerCase().includes(query.toLowerCase());
-const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
-const modelMatch = (item.makeModel || item.make_model || '').toLowerCase().includes(query.toLowerCase());
-return nameMatch || idMatch || modelMatch;
-});
-}
-if (results.length === 0) {
-container.innerHTML = ⁠<div class="text-center py-10 space-y-2"> <p class="text-2xl">🔍</p> <h2 class="text-base font-bold text-white">No Tickets Found</h2> <p class="text-xs text-slate-400">No repair jobs matched "${escapeHtml(query)}". Please double check your name or contact the shop.</p> </div>⁠;
-return;
-}
-if (results.length === 1) {
-setupRealtimeLiveTrackerSafely(results[0].id);
-renderSingleJobDetails(results[0], container);
-return;
-}
-container.innerHTML = `
-<div class="space-y-4">
-<div class="border-b border-slate-800 pb-3">
-<h3 class="text-sm font-black text-white">Found ￼{escapeHtml(query)}"</h3>
-<p class="text-xs text-slate-400">Select your device repair ticket below to view live status:</p>
-</div>
-<div class="space-y-2.5">
-{results.map(r => `
-￼
-￼
-￼
-￼{escapeHtml(r.customer_name || r.customerName)}</span>
-<span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${r.status === 'completed' ? 'bg-emerald-950 text-emerald-400' : 'bg-brand-950 text-brand-400'} border border-slate-800 uppercase">￼
-￼
-￼{escapeHtml(r.make_model || r.makeModel)}</p>
-<p class="text-[10px] text-slate-500 font-semibold mt-1">Checked In: ${new Date(r.created_at || Date.now()).toLocaleDateString()}</p>
-</div>
-<div class="shrink-0 text-right">
-<span class="text-xs font-black text-white group-hover:text-brand-400 transition">View Progress →</span>
-</div>
-</button>
-⁠).join('')} </div> </div> ⁠;
-}
-function selectSearchResult(id) {
-loadTrackedJob(id);
-}
-function renderSingleJobDetails(job, container) {
-const amount = Math.ceil(parseFloat(job.amount) || 0);
-const reqDeposit = Math.ceil(parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (job.depositAmount || 0)));
-const paymentStatus = job.payment_status || (job.deposit_paid ? 'deposit_paid' : 'unpaid');
-let paidSoFar = 0;
-if (paymentStatus === 'paid_in_full') {
-paidSoFar = amount;
-} else if (paymentStatus === 'deposit_paid') {
-paidSoFar = reqDeposit;
-} else {
-paidSoFar = 0;
-}
-const balance = Math.ceil(Math.max(0, amount - paidSoFar));
-const step = job.status === 'completed' ? 4 : job.status === 'in-progress' ? 2 : 1;
-container.innerHTML = `
-<div class="text-center space-y-2 border-b border-slate-800 pb-6">
-<h2 class="text-2xl font-black text-white">AJD's Wireless Repairs</h2>
-<p class="text-xs text-slate-400 font-semibold">Live Device Repair Tracking Portal</p>
-</div>
-<div class="space-y-4">
-<div class="flex items-center justify-between text-xs font-bold">
-<span class="text-slate-400">Customer: <span class="text-white font-black">￼
-￼{escapeHtml(job.make_model || job.makeModel)}</span></span>
-</div>
-<div class="relative py-4">
-<div class="overflow-hidden h-3 text-xs flex rounded-full bg-slate-800">
-<div style="width: ${step === 4 ? '100%' : step === 2 ? '60%' : '25%'}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-600 transition-all duration-700"></div>
-</div>
-<div class="grid grid-cols-3 text-[11px] font-bold text-center mt-3 text-slate-400">
-<span class="${step >= 1 ? 'text-brand-400 font-black' : ''}">1. Checked In</span>
-<span class="${step >= 2 ? 'text-brand-400 font-black' : ''}">2. Hardware Repair</span>
-<span class="${step === 4 ? 'text-emerald-400 font-black' : ''}">3. Ready For Pickup</span>
-</div>
-</div>
-</div>
-<div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
-<div class="flex justify-between font-semibold text-slate-300"><span>Full Repair Charge:</span><span class="font-black text-white text-sm">
-{reqDeposit.toFixed(2)}</span></div>
-<div class="flex justify-between text-emerald-400 font-semibold"><span>Deposit Collected:</span><span>-
-{balance.toFixed(2)}</span></div>
-</div>
-<div class="bg-brand-950/30 p-4 rounded-2xl border border-brand-900/50 space-y-1.5">
-<p class="text-[10px] font-black text-brand-400 uppercase tracking-wider">💳 Payment Handles & Pickup Info</p>
-<p class="text-xs text-slate-200 font-medium leading-relaxed">${escapeHtml(job.payment_info || job.paymentInfo || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup')}</p>
-</div>
-`;
-}
-function isWebSocketAllowed() {
-try {
-if (!('WebSocket' in window)) return false;
-const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket');
-testWs.close();
-return true;
-} catch (e) {
-return false;
-}
-}
-function setupRealtimeLiveTrackerSafely(jobId) {
-if (!supabaseClient) return;
-const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
-if (!isUuid) return;
-if (!isWebSocketAllowed()) {
-startTrackPollingFallback();
-return;
-}
-try {
-if (realtimeChannel) {
-try { realtimeChannel.unsubscribe(); } catch(e){}
-}
-realtimeChannel = supabaseClient
-.channel('public:repairs_track_' + jobId)
-.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'repairs', filter: ⁠id=eq.${jobId}⁠ }, () => {
-if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
-});
-realtimeChannel.subscribe((status, err) => {
-if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
-startTrackPollingFallback();
-}
-});
-} catch (e) {
-startTrackPollingFallback();
-}
-}
-function startTrackPollingFallback() {
-if (trackPollingTimer) return;
-trackPollingTimer = setInterval(() => {
-if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
-}, 10000);
-}
-window.onload = () => loadTrackedJob();
-</script>
+
+  <!-- Header -->
+  <header class="bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:py-4 sticky top-0 z-30 no-print">
+    <div class="max-w-2xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-slate-900 text-white p-2 rounded-2xl border border-slate-800 shadow-md flex items-center justify-center shrink-0 w-10 h-10">
+          <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+            <circle cx="50" cy="50" r="42" stroke-width="6"/>
+            <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">AJD's Wireless Repairs</h1>
+          <p class="text-[11px] font-semibold text-slate-400">Customer Live Status Portal</p>
+        </div>
+      </div>
+
+      <button type="button" onclick="handlePrint()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition transform active:scale-95 cursor-pointer flex items-center space-x-1.5">
+        <span>Print Receipt</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5">
+
+    <!-- Search Card Bar -->
+    <div class="dark-card p-4 sm:p-5 rounded-3xl shadow-lg no-print space-y-3 border border-slate-800">
+      <label class="block text-xs font-extrabold uppercase tracking-wider text-brand-400">🔍 Search Your Repair Status</label>
+      <div class="flex gap-2">
+        <div class="relative flex-1">
+          <input type="text" id="trackerSearchInput" placeholder="Enter Customer Name or Ticket ID..." class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
+          <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <button type="button" onclick="performCustomerSearch()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-extrabold text-xs rounded-2xl shadow transition active:scale-95 cursor-pointer shrink-0">
+          Search
+        </button>
+      </div>
+      <p class="text-[11px] text-slate-400 font-medium">Tip: Search by your Name (e.g., John Doe) or Ticket ID.</p>
+    </div>
+
+    <!-- Active Job or Results Container -->
+    <div id="trackerContent" class="dark-card p-5 sm:p-8 rounded-3xl shadow-2xl printable-card space-y-6">
+      <div class="text-center py-12 space-y-3">
+        <svg class="animate-spin w-8 h-8 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="text-xs font-bold text-slate-400">Loading repair tracker...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
+    let supabaseClient = null;
+    let realtimeChannel = null;
+    let trackPollingTimer = null;
+    let currentLoadedJobId = null;
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function handlePrint() {
+      try { window.print(); } catch (e) {}
+    }
+
+    function getJobIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('id')) return urlParams.get('id');
+      if (urlParams.has('track')) return urlParams.get('track');
+      const hash = window.location.hash;
+      if (hash && hash.includes('track=')) return hash.split('track=')[1].split('&')[0];
+      if (hash && hash.startsWith('#')) return hash.substring(1);
+      return null;
+    }
+
+    function initSupabase() {
+      if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch(e){}
+      }
+    }
+
+    async function loadTrackedJob(specifiedId) {
+      const jobId = specifiedId || getJobIdFromUrl();
+      const container = document.getElementById('trackerContent');
+      if (!container) return;
+
+      initSupabase();
+
+      if (!jobId) {
+        container.innerHTML = `
+          <div class="text-center py-10 space-y-3">
+            <div class="w-14 h-14 bg-brand-950/60 text-brand-400 rounded-3xl mx-auto flex items-center justify-center text-2xl border border-brand-800/40">🔍</div>
+            <h2 class="text-lg font-black text-white">Track Your Device Repair</h2>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">Please enter your Customer Name or Ticket ID in the search bar above to view your repair progress.</p>
+          </div>
+        `;
+        return;
+      }
+
+      currentLoadedJobId = jobId;
+
+      let job = null;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
+
+      if (supabaseClient && isUuid) {
+        try {
+          const { data } = await supabaseClient.from('repairs').select('*').eq('id', jobId).single();
+          if (data) job = data;
+        } catch (e) {}
+      }
+
+      if (!job) {
+        const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
+        job = local.find(r => String(r.id) === String(jobId));
+      }
+
+      if (!job) {
+        container.innerHTML = `
+          <div class="text-center py-10 space-y-2">
+            <p class="text-2xl">❓</p>
+            <h2 class="text-base font-bold text-white">Repair Order Not Found</h2>
+            <p class="text-xs text-slate-400">No ticket matched ID "${escapeHtml(jobId)}". Try searching by your Name above.</p>
+          </div>
+        `;
+        return;
+      }
+
+      setupRealtimeLiveTrackerSafely(job.id);
+      renderSingleJobDetails(job, container);
+    }
+
+    async function performCustomerSearch() {
+      const query = (document.getElementById('trackerSearchInput').value || '').trim();
+      const container = document.getElementById('trackerContent');
+      if (!container) return;
+
+      if (!query) {
+        loadTrackedJob();
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="text-center py-10 space-y-2">
+          <svg class="animate-spin w-7 h-7 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <p class="text-xs font-bold text-slate-400">Searching repair database...</p>
+        </div>
+      `;
+
+      initSupabase();
+
+      let results = [];
+
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
+          if (data && data.length) {
+            results = data.filter(item => {
+              const nameMatch = (item.customer_name || item.customerName || '').toLowerCase().includes(query.toLowerCase());
+              const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
+              const modelMatch = (item.make_model || item.makeModel || '').toLowerCase().includes(query.toLowerCase());
+              return nameMatch || idMatch || modelMatch;
+            });
+          }
+        } catch (e) {}
+      }
+
+      if (results.length === 0) {
+        const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
+        results = local.filter(item => {
+          const nameMatch = (item.customerName || item.customer_name || '').toLowerCase().includes(query.toLowerCase());
+          const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
+          const modelMatch = (item.makeModel || item.make_model || '').toLowerCase().includes(query.toLowerCase());
+          return nameMatch || idMatch || modelMatch;
+        });
+      }
+
+      if (results.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 space-y-2">
+            <p class="text-2xl">🔍</p>
+            <h2 class="text-base font-bold text-white">No Tickets Found</h2>
+            <p class="text-xs text-slate-400">No repair jobs matched "${escapeHtml(query)}". Please double check your name or contact the shop.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (results.length === 1) {
+        setupRealtimeLiveTrackerSafely(results[0].id);
+        renderSingleJobDetails(results[0], container);
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black text-white">Found ${results.length} Repairs for "${escapeHtml(query)}"</h3>
+            <p class="text-xs text-slate-400">Select your device repair ticket below to view live status:</p>
+          </div>
+
+          <div class="space-y-2.5">
+            ${results.map(r => `
+              <button onclick="selectSearchResult('${r.id}')" class="w-full text-left p-4 rounded-2xl dark-card hover:border-brand-500/60 hover:bg-slate-900 transition flex items-center justify-between gap-3 group active:scale-98 cursor-pointer">
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-black text-white">${escapeHtml(r.customer_name || r.customerName)}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${r.status === 'completed' ? 'bg-emerald-950 text-emerald-400' : 'bg-brand-950 text-brand-400'} border border-slate-800 uppercase">${escapeHtml(r.status || 'pending')}</span>
+                  </div>
+                  <p class="text-xs font-extrabold text-brand-400 mt-0.5">${escapeHtml(r.make_model || r.makeModel)}</p>
+                  <p class="text-[10px] text-slate-500 font-semibold mt-1">Checked In: ${new Date(r.created_at || Date.now()).toLocaleDateString()}</p>
+                </div>
+
+                <div class="shrink-0 text-right">
+                  <span class="text-xs font-black text-white group-hover:text-brand-400 transition">View Progress →</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectSearchResult(id) {
+      loadTrackedJob(id);
+    }
+
+    function renderSingleJobDetails(job, container) {
+      let desc = String(job.description || '');
+      let meta = {};
+      const metaMatch = desc.match(/\[META:({.*?})\]/);
+      if (metaMatch) {
+        try { meta = JSON.parse(metaMatch[1]); } catch(e){}
+      }
+
+      const amount = Math.ceil(parseFloat(job.amount) || 0);
+      const reqDeposit = Math.ceil(parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (meta.deposit_amount || job.depositAmount || 0)));
+      const paymentStatus = job.payment_status || meta.payment_status || (job.deposit_paid ? 'deposit_paid' : 'unpaid');
+      
+      let paidSoFar = 0;
+      if (paymentStatus === 'paid_in_full') {
+        paidSoFar = amount;
+      } else if (paymentStatus === 'deposit_paid') {
+        paidSoFar = reqDeposit;
+      } else {
+        paidSoFar = 0;
+      }
+
+      const balance = Math.ceil(Math.max(0, amount - paidSoFar));
+      const step = job.status === 'completed' ? 4 : job.status === 'in-progress' ? 2 : 1;
+
+      container.innerHTML = `
+        <div class="text-center space-y-2 border-b border-slate-800 pb-6">
+          <h2 class="text-2xl font-black text-white">AJD's Wireless Repairs</h2>
+          <p class="text-xs text-slate-400 font-semibold">Live Device Repair Tracking Portal</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span class="text-slate-400">Customer: <span class="text-white font-black">${escapeHtml(job.customer_name || job.customerName)}</span></span>
+            <span class="text-slate-400">Device: <span class="text-brand-400 font-black">${escapeHtml(job.make_model || job.makeModel)}</span></span>
+          </div>
+
+          <div class="relative py-4">
+            <div class="overflow-hidden h-3 text-xs flex rounded-full bg-slate-800">
+              <div style="width: ${step === 4 ? '100%' : step === 2 ? '60%' : '25%'}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-600 transition-all duration-700"></div>
+            </div>
+            <div class="grid grid-cols-3 text-[11px] font-bold text-center mt-3 text-slate-400">
+              <span class="${step >= 1 ? 'text-brand-400 font-black' : ''}">1. Checked In</span>
+              <span class="${step >= 2 ? 'text-brand-400 font-black' : ''}">2. Hardware Repair</span>
+              <span class="${step === 4 ? 'text-emerald-400 font-black' : ''}">3. Ready For Pickup</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex justify-between font-semibold text-slate-300"><span>Full Repair Charge:</span><span class="font-black text-white text-sm">$${amount}</span></div>
+          <div class="flex justify-between text-indigo-400 font-semibold"><span>Deposit Required / Quoted:</span><span>$${reqDeposit}</span></div>
+          <div class="flex justify-between text-emerald-400 font-semibold"><span>Deposit Collected:</span><span>-$${paidSoFar}</span></div>
+          <div class="flex justify-between text-sm font-black text-rose-400 pt-2 border-t border-slate-800"><span>Balance Due at Pickup:</span><span>$${balance}</span></div>
+        </div>
+
+        <div class="bg-brand-950/30 p-4 rounded-2xl border border-brand-900/50 space-y-1.5">
+          <p class="text-[10px] font-black text-brand-400 uppercase tracking-wider">💳 Payment Handles & Pickup Info</p>
+          <p class="text-xs text-slate-200 font-medium leading-relaxed">${escapeHtml(job.payment_info || meta.payment_info || job.paymentInfo || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup')}</p>
+        </div>
+      `;
+    }
+
+    function isWebSocketAllowed() {
+      try {
+        if (!('WebSocket' in window)) return false;
+        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket');
+        testWs.close();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setupRealtimeLiveTrackerSafely(jobId) {
+      if (!supabaseClient) return;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
+      if (!isUuid) return;
+
+      if (!isWebSocketAllowed()) {
+        startTrackPollingFallback();
+        return;
+      }
+
+      try {
+        if (realtimeChannel) {
+          try { realtimeChannel.unsubscribe(); } catch(e){}
+        }
+
+        realtimeChannel = supabaseClient
+          .channel('public:repairs_track_' + jobId)
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'repairs', filter: `id=eq.${jobId}` }, () => {
+            if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
+          });
+
+        realtimeChannel.subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
+            startTrackPollingFallback();
+          }
+        });
+      } catch (e) {
+        startTrackPollingFallback();
+      }
+    }
+
+    function startTrackPollingFallback() {
+      if (trackPollingTimer) return;
+      trackPollingTimer = setInterval(() => {
+        if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
+      }, 10000);
+    }
+
+    window.onload = () => loadTrackedJob();
+  </script>
 </body>
 </html>
