@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AJD's Wireless Online Store</title>
   <meta name="theme-color" content="#0B0F19">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,10 +39,15 @@
   </script>
 
   <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       background-color: #0B0F19;
       color: #F8FAFC;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
     }
     
     .dark-card {
@@ -54,7 +59,7 @@
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950">
 
   <!-- Header Banner -->
-  <header class="sticky top-0 z-40 bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6">
+  <header class="sticky top-0 z-40 bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 sm:px-6">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       
       <!-- Brand Logo & Title -->
@@ -67,7 +72,7 @@
         </div>
         
         <div>
-          <h1 class="text-lg font-black tracking-tight text-white leading-tight">
+          <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">
             AJD's Wireless Store
           </h1>
           <p class="text-xs font-semibold text-slate-400">Pre-Owned Devices, Hardware & Accessories</p>
@@ -83,14 +88,14 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+  <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 sm:space-y-6">
 
     <!-- Store Welcome Banner -->
-    <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 p-6 sm:p-8 rounded-3xl border border-amber-500/30 text-center space-y-2.5 shadow-xl">
+    <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 p-5 sm:p-8 rounded-3xl border border-amber-500/30 text-center space-y-2.5 shadow-xl">
       <span class="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black uppercase tracking-widest rounded-full inline-block">
         SHOP PRE-OWNED & REFURBISHED DEVICES
       </span>
-      <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">🛍️ Official Storefront</h2>
+      <h2 class="text-xl sm:text-3xl font-black text-white tracking-tight">🛍️ Official Storefront</h2>
       <p class="text-xs sm:text-sm text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
         Browse our selection of quality phones, tablets, laptops, and accessories. Submit a purchase request to lock in an item for pickup!
       </p>
@@ -125,9 +130,9 @@
 
   </main>
 
-  <!-- CUSTOMER PURCHASE REQUEST MODAL -->
+  <!-- CUSTOMER PURCHASE REQUEST MODAL WITH EMAIL INPUT -->
   <div id="purchaseRequestModal" onclick="handleBackdropClick(event, 'purchaseRequestModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+    <div class="dark-card rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-black text-white flex items-center gap-2">
           <span>🛒 Request to Purchase Item</span>
@@ -143,7 +148,7 @@
         <div class="bg-amber-950/30 p-3 rounded-2xl border border-amber-900/50 space-y-1">
           <span class="text-[10px] font-black uppercase text-amber-400 block">Selected Item</span>
           <p id="reqItemTitle" class="text-sm font-black text-white">Item Title</p>
-          <p id="reqItemPrice" class="text-xs font-extrabold text-amber-400">$0.00</p>
+          <p id="reqItemPrice" class="text-xs font-extrabold text-amber-400">$0</p>
         </div>
 
         <div>
@@ -154,6 +159,11 @@
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Phone Number *</label>
           <input type="tel" id="reqCustomerPhone" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="(786) 970-7779">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Email Address *</label>
+          <input type="email" id="reqCustomerEmail" required class="w-full px-3.5 py-2 text-sm bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="customer@example.com">
         </div>
 
         <div>
@@ -251,7 +261,7 @@
             <div class="h-48 rounded-2xl bg-slate-900 overflow-hidden relative border border-slate-800">
               <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80'">
               <span class="absolute top-2.5 left-2.5 px-2.5 py-1 bg-slate-950/80 backdrop-blur-md text-amber-400 text-xs font-black rounded-xl border border-amber-500/30">${escapeHtml(item.condition)}</span>
-              <span class="absolute top-2.5 right-2.5 px-3 py-1 bg-emerald-950/90 backdrop-blur-md text-emerald-400 text-sm font-black rounded-xl border border-emerald-800/40">$${Math.ceil(item.price).toFixed(2)}</span>
+              <span class="absolute top-2.5 right-2.5 px-3 py-1 bg-emerald-950/90 backdrop-blur-md text-emerald-400 text-sm font-black rounded-xl border border-emerald-800/40">$${Math.ceil(item.price)}</span>
             </div>
 
             <div>
@@ -274,7 +284,7 @@
 
       document.getElementById('reqItemId').value = item.id;
       document.getElementById('reqItemTitle').innerText = item.title;
-      document.getElementById('reqItemPrice').innerText = `$${Math.ceil(item.price).toFixed(2)}`;
+      document.getElementById('reqItemPrice').innerText = `$${Math.ceil(item.price)}`;
 
       const modal = document.getElementById('purchaseRequestModal');
       if (modal) modal.classList.remove('hidden');
@@ -299,6 +309,7 @@
           itemPrice: item ? Math.ceil(item.price) : 0,
           customerName: document.getElementById('reqCustomerName').value,
           customerPhone: document.getElementById('reqCustomerPhone').value,
+          customerEmail: document.getElementById('reqCustomerEmail').value,
           notes: document.getElementById('reqCustomerNotes').value,
           status: 'pending',
           created_at: new Date().toISOString()
