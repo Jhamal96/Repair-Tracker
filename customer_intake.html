@@ -1,0 +1,270 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Repair Request Portal - AJD's Wireless Repairs</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AJD Request">
+
+  <!-- Apple Touch & Favicon SVG Data URIs -->
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+  <!-- Tailwind CSS & CDN Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dark-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+    .dark .dark-card {
+      background-color: #0f172a;
+      border: 1px solid #1e293b;
+    }
+    .blue-glow {
+      box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
+
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
+    <div class="max-w-3xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 flex items-center justify-center w-10 h-10 shrink-0">
+          <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+            <circle cx="50" cy="50" r="42" stroke-width="6"/>
+            <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base font-black text-slate-900 dark:text-white leading-tight">AJD's Wireless Repairs</h1>
+          <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Online Service Intake Request</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <a id="shopPhoneLink" href="tel:7869707779" class="px-3 py-1.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-xl text-xs font-black transition flex items-center gap-1">
+          📞 <span id="shopPhoneText">(786) 970-7779</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-6 w-full flex-1 space-y-6">
+    
+    <div class="text-center space-y-2">
+      <span class="inline-block px-3 py-1 rounded-full bg-blue-600/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider">
+        Fast & Easy Repair Booking
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Submit Repair Request</h2>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto font-medium">
+        Fill out your device info below. Our team will review your ticket request and contact you immediately with a quote and drop-off instructions!
+      </p>
+    </div>
+
+    <div id="formCard" class="dark-card p-5 sm:p-7 rounded-3xl blue-glow space-y-5">
+      <form id="customerRequestForm" onsubmit="window.handleCustomerSubmit(event)" class="space-y-4">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
+            <input type="text" id="reqName" required placeholder="e.g. Kayla Smith" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+            <input type="tel" id="reqPhone" required placeholder="(786) 970-7779" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address (Optional)</label>
+          <input type="email" id="reqEmail" placeholder="kayla@example.com" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make & Model *</label>
+          <input type="text" id="reqDevice" required placeholder="e.g. iPhone 14 Pro Max 256GB / MacBook Air M2" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Primary Issue / Problem Description *</label>
+          <textarea id="reqIssue" rows="3" required placeholder="Describe what needs repair (e.g. Cracked screen, battery draining fast, device won't charge, liquid damage)..." class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Preferred Drop-Off Time</label>
+            <select id="reqPreferredTime" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-bold cursor-pointer">
+              <option value="Today - ASAP">⚡ Today - ASAP</option>
+              <option value="Today - Afternoon">☀️ Today Afternoon</option>
+              <option value="Tomorrow Morning">🌅 Tomorrow Morning</option>
+              <option value="Flexible / Weekend">📅 Flexible / Weekend</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Device Passcode (Optional)</label>
+            <input type="text" id="reqPasscode" placeholder="For testing after screen/battery repair" class="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm rounded-2xl shadow-xl transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
+          <span>🚀 Submit Ticket Request</span>
+        </button>
+
+      </form>
+    </div>
+
+    <div id="successCard" class="hidden dark-card p-6 sm:p-8 rounded-3xl text-center space-y-4 border border-emerald-500/30">
+      <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto text-3xl">
+        ✅
+      </div>
+
+      <div class="space-y-1">
+        <h3 class="text-xl font-black text-slate-900 dark:text-white">Request Received!</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Your request reference ID is:</p>
+        <div class="pt-1">
+          <span id="refCodeDisplay" class="inline-block px-4 py-1.5 bg-blue-600/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 font-mono font-black text-lg rounded-xl">REQ-000</span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 dark:text-slate-300 max-w-sm mx-auto font-medium">
+        We have received your ticket request. AJD's Wireless shop management will review your details and contact you shortly.
+      </p>
+
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-center gap-2">
+        <a id="successCallBtn" href="tel:7869707779" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition">
+          📞 Call Shop Directly
+        </a>
+        <button onclick="window.location.reload()" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-xl transition">
+          ➕ Submit Another Request
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Status Lookup Footer Box -->
+    <div class="dark-card p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+      <div>
+        <p class="font-black text-slate-900 dark:text-white">Already have an active repair ticket?</p>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">Check live progress using your AJD-XXX ticket ID.</p>
+      </div>
+      <a href="track.html" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-black rounded-xl shrink-0 transition">
+        🔍 Live Ticket Lookup →
+      </a>
+    </div>
+
+  </main>
+
+  <footer class="py-4 text-center text-[11px] text-slate-500 dark:text-slate-400 font-medium border-t border-slate-200 dark:border-slate-800">
+    <p>© AJD's Wireless Repairs & Store • Miami, FL • Call/Text: (786) 970-7779</p>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
+    let supabaseClient = null;
+
+    window.applyTheme = function() {
+      const mode = localStorage.getItem('ajd_theme_preference') || 'dark';
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (mode === 'dark' || (mode === 'system' && isSystemDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    function initSupabase() {
+      if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+        try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+      }
+    }
+
+    window.generateReqCode = function() {
+      const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let code = 'REQ-';
+      for (let i = 0; i < 3; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    };
+
+    window.handleCustomerSubmit = async function(e) {
+      e.preventDefault();
+      
+      const reqCode = window.generateReqCode();
+      const shopPhone = localStorage.getItem('ajd_shop_phone') || '(786) 970-7779';
+
+      const reqObj = {
+        id: reqCode,
+        customer_name: document.getElementById('reqName').value.trim(),
+        customer_phone: document.getElementById('reqPhone').value.trim(),
+        customer_email: document.getElementById('reqEmail').value.trim(),
+        make_model: document.getElementById('reqDevice').value.trim(),
+        issue: document.getElementById('reqIssue').value.trim(),
+        preferred_time: document.getElementById('reqPreferredTime').value,
+        passcode: document.getElementById('reqPasscode').value.trim(),
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      // Save locally
+      let requests = JSON.parse(localStorage.getItem('ajd_customer_requests')) || [];
+      requests.unshift(reqObj);
+      localStorage.setItem('ajd_customer_requests', JSON.stringify(requests));
+
+      // Sync to cloud if available
+      initSupabase();
+      if (supabaseClient) {
+        try { await supabaseClient.from('customer_requests').insert([reqObj]); } catch(err){}
+      }
+
+      // Display success view
+      document.getElementById('formCard').classList.add('hidden');
+      document.getElementById('refCodeDisplay').innerText = reqCode;
+      document.getElementById('successCard').classList.remove('hidden');
+    };
+
+    window.onload = function() {
+      window.applyTheme();
+      const shopPhone = localStorage.getItem('ajd_shop_phone') || '(786) 970-7779';
+      document.getElementById('shopPhoneText').innerText = shopPhone;
+      document.getElementById('shopPhoneLink').href = `tel:${shopPhone.replace(/\D/g, '')}`;
+      document.getElementById('successCallBtn').href = `tel:${shopPhone.replace(/\D/g, '')}`;
+    };
+  </script>
+</body>
+</html>
+```
