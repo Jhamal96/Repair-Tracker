@@ -1,18 +1,17 @@
-```html
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AJD's Wireless Repair Tracker & Store</title>
-  <meta name="theme-color" content="#0B0F19">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Repairs">
   
   <!-- Apple Touch & Favicon SVG Data URIs -->
-  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B0F19'/><circle cx='50' cy='50' r='38' stroke='%23f59e0b' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
   <!-- Tailwind CSS & CDN Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,15 +24,17 @@
       theme: {
         extend: {
           colors: {
-            darkbg: '#0B0F19',
-            cardbg: '#131B2E',
-            cardborder: '#1F293D',
             brand: {
               50: '#eff6ff',
               100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
               500: '#3b82f6',
               600: '#2563eb',
-              700: '#1d4ed8'
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a'
             }
           }
         }
@@ -42,25 +43,42 @@
   </script>
 
   <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { -webkit-tap-highlight-color: transparent; }
     body {
-      background-color: #0B0F19;
-      color: #F8FAFC;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       -webkit-overflow-scrolling: touch;
       overflow-x: hidden;
     }
     .dark-card {
-      background-color: #131B2E;
-      border: 1px solid #1F293D;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
     }
-    .amber-glow {
-      box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.2);
+    .dark .dark-card {
+      background-color: #0f172a;
+      border: 1px solid #1e293b;
+    }
+    .blue-glow {
+      box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.35);
     }
     
-    /* Mobile & Desktop Print Isolation Rules */
+    /* Thermal Roll Style Preview Styling */
+    .thermal-receipt-roll {
+      width: 100%;
+      max-width: 330px;
+      margin: 0 auto;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 18px 16px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    .thermal-receipt-roll * {
+      color: #000000 !important;
+    }
+
+    /* Isolated Thermal Roll Print Rules (iOS / Android PDF & POS Printer) */
     @media print {
       body * {
         visibility: hidden !important;
@@ -83,83 +101,112 @@
       .no-print {
         display: none !important;
       }
-      .printable-area {
-        background: #ffffff !important;
-        color: #000000 !important;
+      .thermal-receipt-roll {
+        width: 80mm !important;
+        max-width: 100% !important;
         border: none !important;
         box-shadow: none !important;
-      }
-      .printable-area * {
-        color: #000000 !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
       }
     }
   </style>
 </head>
-<body class="bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950">
+<body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
 
-  <header class="sticky top-0 z-40 bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-800 px-3 sm:px-6 py-2.5">
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       
       <!-- Brand Logo & Badge -->
       <div class="flex items-center justify-between w-full sm:w-auto">
         <div class="flex items-center space-x-3">
-          <div class="bg-amber-500/10 text-amber-400 p-2 rounded-2xl border border-amber-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10">
+          <div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10">
             <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
               <circle cx="50" cy="50" r="42" stroke-width="6"/>
               <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div>
-            <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight flex items-center gap-2">
               <span>AJD's Wireless</span>
               <span id="cloudStatusIndicator" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Cloud Sync Active"></span>
             </h1>
-            <p class="text-[11px] font-bold text-slate-400">Repair Tracker & Store Manager</p>
+            <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Repair Tracker & Store Manager</p>
           </div>
         </div>
 
-        <!-- Mobile Quick Contact -->
-        <a href="tel:7869707779" class="sm:hidden text-xs font-black text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20">
-          📞 786-970-7779
-        </a>
+        <!-- Header Quick Contact -->
+        <div class="flex items-center space-x-1.5 bg-blue-600/10 px-2.5 py-1 rounded-xl border border-blue-500/20 text-xs font-black text-blue-600 dark:text-blue-400">
+          <a id="headerPhoneLink" href="tel:7869707779" class="hover:underline flex items-center gap-1">
+            📞 <span id="headerPhoneDisplay">(786) 970-7779</span>
+          </a>
+          <button onclick="window.openEditShopPhoneModal()" title="Edit Shop Contact Number" class="hover:text-slate-900 dark:hover:text-white p-0.5 rounded cursor-pointer text-[11px]">
+            ✏️
+          </button>
+        </div>
       </div>
 
-      <!-- Navigation Tabs & Dropdowns -->
       <div class="flex items-center justify-between w-full sm:w-auto gap-2">
-        <nav class="flex items-center space-x-1 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-xs font-extrabold">
-          <button id="tabBtnRepairs" onclick="window.switchTab('repairs')" class="px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shadow transition cursor-pointer">
+        <nav class="flex items-center space-x-1 bg-slate-200 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300 dark:border-slate-800 text-xs font-extrabold">
+          <button id="tabBtnRepairs" onclick="window.switchTab('repairs')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white font-black shadow transition cursor-pointer">
             💻 Repairs
           </button>
-          <button id="tabBtnInvoices" onclick="window.switchTab('invoices')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition cursor-pointer">
-            📄 Invoices
+          <button id="tabBtnRequests" onclick="window.switchTab('requests')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
+            <span>📩 Customer Inbox</span>
+            <span id="navReqBadge" class="hidden bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
           </button>
-          <button id="tabBtnStore" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1">
-            <span>🛒 Online Store</span>
-            <span id="storeBadge" class="hidden bg-amber-500 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
+          <button id="tabBtnInvoices" onclick="window.switchTab('invoices')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
+            📄 Receipts
+          </button>
+          <button id="tabBtnStore" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
+            <span>🛒 Store</span>
+            <span id="storeBadge" class="hidden bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
           </button>
         </nav>
 
         <div class="flex items-center space-x-1.5 relative">
           <!-- Quick Links Menu -->
           <div class="relative">
-            <button onclick="window.toggleDropdown('navLinksDropdownMenu')" class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 text-xs font-bold transition cursor-pointer">
+            <button onclick="window.toggleDropdown('navLinksDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
               🔗 Links
             </button>
-            <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-[60] p-2 space-y-1 text-xs font-semibold">
-              <a href="store.html" target="_blank" class="block px-3 py-2 rounded-xl text-amber-400 hover:bg-slate-800">🛍️ Customer Storefront</a>
-              <a href="track.html" target="_blank" class="block px-3 py-2 rounded-xl text-brand-400 hover:bg-slate-800">🔍 Customer Live Tracker</a>
-              <a href="tel:7869707779" class="block px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800">📞 Call Shop (786) 970-7779</a>
+            <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-2 space-y-1 text-xs font-semibold">
+              <div id="navLinksListContainer" class="space-y-1">
+                <!-- Dynamically populated links -->
+              </div>
+              <div class="pt-1.5 mt-1.5 border-t border-slate-200 dark:border-slate-800">
+                <button onclick="window.openManageNavLinksModal(); window.toggleDropdown('navLinksDropdownMenu');" class="w-full text-left px-3 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer font-bold flex items-center justify-between text-[11px]">
+                  <span>⚙️ Manage Links</span>
+                  <span class="text-[10px] text-slate-400">+ Add / Edit</span>
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Settings Menu -->
           <div class="relative">
-            <button onclick="window.toggleDropdown('settingsDropdownMenu')" class="p-2 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl border border-slate-800 text-xs font-bold transition cursor-pointer">
-              ⚙️ Settings
+            <button onclick="window.toggleDropdown('settingsDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
+              ⚙ Settings
             </button>
-            <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-[60] p-2 space-y-1 text-xs font-semibold">
-              <button onclick="window.openManageMethodsModal()" class="w-full text-left px-3 py-2 rounded-xl text-slate-200 hover:bg-slate-800 cursor-pointer">💳 Manage Payment Handles</button>
-              <button onclick="window.toggleThemeMode()" class="w-full text-left px-3 py-2 rounded-xl text-slate-200 hover:bg-slate-800 cursor-pointer">🌓 Toggle Theme Mode</button>
+            <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-3 space-y-2 text-xs font-semibold">
+              <button onclick="window.openManageMethodsModal(); window.toggleDropdown('settingsDropdownMenu');" class="w-full text-left px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                <span>💳 Payment Handles</span>
+                <span class="text-[10px] text-slate-400">Setup</span>
+              </button>
+
+              <button onclick="window.openEditShopPhoneModal(); window.toggleDropdown('settingsDropdownMenu');" class="w-full text-left px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                <span>📞 Shop Phone</span>
+                <span id="settingsPhoneDisplay" class="text-[10px] text-slate-400 truncate max-w-[90px]">(786) 970-7779</span>
+              </button>
+              
+              <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+                <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1 px-1">Theme Preference</label>
+                <select id="themeSelectSetting" onchange="window.setThemeMode(this.value)" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-bold outline-none cursor-pointer">
+                  <option value="dark">🌙 Dark Mode</option>
+                  <option value="light">☀️ Light Mode</option>
+                  <option value="system">📱 Follow Device (System)</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -172,118 +219,111 @@
   <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-5">
 
     <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="dark-card p-3.5 rounded-2xl border border-slate-800 space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Revenue</span>
-        <p id="statTotalRev" class="text-lg sm:text-xl font-black text-emerald-400">$0</p>
+      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Revenue</span>
+        <p id="statTotalRev" class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400">$0</p>
       </div>
-      <div class="dark-card p-3.5 rounded-2xl border border-slate-800 space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Deposits Collected</span>
-        <p id="statDeposits" class="text-lg sm:text-xl font-black text-amber-400">$0</p>
+      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Deposits Collected</span>
+        <p id="statDeposits" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">$0</p>
       </div>
-      <div class="dark-card p-3.5 rounded-2xl border border-slate-800 space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Unpaid Balance</span>
-        <p id="statUnpaid" class="text-lg sm:text-xl font-black text-rose-400">$0</p>
+      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Unpaid Balance</span>
+        <p id="statUnpaid" class="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400">$0</p>
       </div>
-      <div class="dark-card p-3.5 rounded-2xl border border-slate-800 space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Active Repairs</span>
-        <p id="statActiveJobs" class="text-lg sm:text-xl font-black text-brand-400">0</p>
+      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Repairs</span>
+        <p id="statActiveJobs" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">0</p>
       </div>
     </div>
 
+    <!-- REPAIRS VIEW -->
     <section id="viewRepairs" class="space-y-5">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
-        <!-- LEFT COLUMN: Sticky Check-In Form -->
-        <div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-amber-500/20 amber-glow lg:sticky lg:top-20 z-10">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 class="text-base font-black text-white flex items-center gap-2">
-              <span class="text-amber-400">📝</span> Check-In New Repair
+        <div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-blue-500/30 blue-glow lg:sticky lg:top-20 z-10">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="text-blue-600 dark:text-blue-400">📝</span> Check-In New Repair
             </h2>
-            <span class="text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">Intake</span>
+            <span class="text-[10px] font-extrabold uppercase bg-blue-600/10 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-xl border border-blue-500/20">Intake</span>
           </div>
 
           <form id="intakeForm" class="space-y-3.5" onsubmit="window.handleCreateRepair(event)">
             
-            <!-- Customer Name & Phone -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Customer Name *</label>
-                <input type="text" id="intakeName" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="Kayla Smith">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
+                <input type="text" id="intakeName" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="Kayla Smith">
               </div>
               <div>
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Phone Number *</label>
-                <input type="tel" id="intakePhone" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="(786) 970-7779">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+                <input type="tel" id="intakePhone" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="(786) 970-7779">
               </div>
             </div>
 
-            <!-- Device Make & Model -->
             <div>
-              <label class="block text-[11px] font-bold text-slate-300 mb-1">Device Make & Model *</label>
-              <input type="text" id="intakeDevice" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="iPhone 13 Pro 128GB">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make & Model *</label>
+              <input type="text" id="intakeDevice" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="iPhone 13 Pro 128GB">
             </div>
 
-            <!-- Issue Description -->
             <div>
-              <label class="block text-[11px] font-bold text-slate-300 mb-1">Issue Description *</label>
-              <input type="text" id="intakeIssue" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500 placeholder-slate-600" placeholder="Cracked OLED display & battery replacement">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
+              <input type="text" id="intakeIssue" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="Cracked OLED display & battery replacement">
             </div>
 
-            <!-- Part Notes & Part Cost -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <div class="sm:col-span-2">
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Internal Hardware / Part Notes</label>
-                <input type="text" id="intakePartNote" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none placeholder-slate-600" placeholder="Premium Soft OLED Assembly">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Internal Hardware / Part Notes</label>
+                <input type="text" id="intakePartNote" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none placeholder-slate-400 dark:placeholder-slate-600" placeholder="Premium Soft OLED Assembly">
               </div>
               <div>
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Part Cost ($)</label>
-                <input type="number" id="intakePartCost" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Part Cost ($)</label>
+                <input type="number" id="intakePartCost" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
               </div>
             </div>
 
-            <!-- Labor Charge & Calculated Total -->
             <div class="grid grid-cols-2 gap-2.5">
               <div>
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Labor Charge ($)</label>
-                <input type="number" id="intakeLaborCharge" min="0" step="1" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Labor Charge ($)</label>
+                <input type="number" id="intakeLaborCharge" min="0" step="1" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
               </div>
               <div>
-                <label class="block text-[11px] font-bold text-amber-400 mb-1">Calculated Total ($)</label>
-                <input type="number" id="intakeTotalAmount" readonly class="w-full px-3 py-2 text-xs bg-slate-900 border border-amber-500/40 rounded-xl text-amber-400 font-black outline-none" value="0">
+                <label class="block text-[11px] font-bold text-blue-600 dark:text-blue-400 mb-1">Calculated Total ($)</label>
+                <input type="number" id="intakeTotalAmount" readonly class="w-full px-3 py-2 text-xs bg-blue-50 dark:bg-slate-900 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-black outline-none" value="0">
               </div>
             </div>
 
-            <!-- Discount Amount & Presets -->
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
-                <label class="text-[11px] font-bold text-slate-300">Discount Amount ($)</label>
+                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Discount Amount ($)</label>
                 <div class="flex gap-1 text-[10px] font-extrabold">
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded hover:bg-slate-700">0%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded hover:bg-slate-700">5%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded hover:bg-slate-700">10%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded hover:bg-slate-700">15%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded hover:bg-slate-700">20%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">0%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">5%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">10%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">15%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">20%</button>
                 </div>
               </div>
-              <input type="number" id="intakeDiscount" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
+              <input type="number" id="intakeDiscount" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
             </div>
 
-            <!-- Required Deposit & Payment Status -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <label class="text-[11px] font-bold text-slate-300">Required Deposit ($)</label>
+                  <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Required Deposit ($)</label>
                   <div class="flex gap-1 text-[9px] font-extrabold">
-                    <button type="button" onclick="window.applyIntakeDepositPreset(0.25)" class="px-1 py-0.2 bg-slate-800 text-amber-400 rounded">25%</button>
-                    <button type="button" onclick="window.applyIntakeDepositPreset(0.50)" class="px-1 py-0.2 bg-slate-800 text-amber-400 rounded">50%</button>
-                    <button type="button" onclick="window.applyIntakeDepositPreset(1.00)" class="px-1 py-0.2 bg-slate-800 text-amber-400 rounded">100%</button>
+                    <button type="button" onclick="window.applyIntakeDepositPreset(0.25)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">25%</button>
+                    <button type="button" onclick="window.applyIntakeDepositPreset(0.50)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">50%</button>
+                    <button type="button" onclick="window.applyIntakeDepositPreset(1.00)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">100%</button>
                   </div>
                 </div>
-                <input type="number" id="intakeDeposit" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="0">
+                <input type="number" id="intakeDeposit" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0">
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-slate-300 mb-1">Payment Status</label>
-                <select id="intakePaymentStatus" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-amber-400 font-bold outline-none cursor-pointer">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Status</label>
+                <select id="intakePaymentStatus" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none cursor-pointer">
                   <option value="unpaid">🔴 Unpaid</option>
                   <option value="deposit_paid">🟡 Deposit Paid</option>
                   <option value="paid_in_full">🟢 Paid in Full</option>
@@ -291,40 +331,36 @@
               </div>
             </div>
 
-            <!-- Payment Handle Selection -->
             <div class="space-y-2">
-              <label class="block text-[11px] font-bold text-slate-300">Payment Handle</label>
-              <select id="intakePaymentMethod" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-200 font-medium outline-none cursor-pointer">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Payment Handle</label>
+              <select id="intakePaymentMethod" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-800 dark:text-slate-200 font-medium outline-none cursor-pointer">
                 <!-- Dynamically populated -->
               </select>
             </div>
 
-            <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
+            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
               <span>➕ Register Repair Ticket</span>
             </button>
 
           </form>
         </div>
 
-        <!-- RIGHT COLUMN: Active Repair Feed -->
         <div class="lg:col-span-7 space-y-3.5">
           
-          <!-- Search & Filter Bar -->
-          <div class="dark-card p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-2.5 justify-between items-center">
+          <div class="dark-card p-3 rounded-2xl flex flex-col sm:flex-row gap-2.5 justify-between items-center">
             <div class="relative w-full sm:w-auto flex-1">
-              <input type="text" id="repairSearchInput" oninput="window.renderRepairs()" placeholder="Search customer, ticket ID (e.g. AJD-7K3), device..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 outline-none">
-              <svg class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <input type="text" id="repairSearchInput" oninput="window.renderRepairs()" placeholder="Search customer, ticket ID (e.g. AJD-7K3), device..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none">
+              <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
 
-            <select id="repairStatusFilter" onchange="window.renderRepairs()" class="w-full sm:w-auto px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-slate-300 font-bold outline-none cursor-pointer">
+            <select id="repairStatusFilter" onchange="window.renderRepairs()" class="w-full sm:w-auto px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 font-bold outline-none cursor-pointer">
               <option value="all">All Repair Tickets</option>
               <option value="pending">⏳ Checked In</option>
-              <option value="in-progress">⚙️️ In Repair</option>
+              <option value="in-progress">⚙ In Repair</option>
               <option value="completed">✅ Ready Pickup</option>
             </select>
           </div>
 
-          <!-- Repair Feed Container -->
           <div id="repairsContainer" class="space-y-3.5">
             <div class="dark-card p-8 text-center text-slate-500 text-xs font-bold rounded-3xl">
               Loading active repair tickets...
@@ -336,11 +372,30 @@
       </div>
     </section>
 
+    <section id="viewRequests" class="hidden space-y-4">
+      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-rose-500/30">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <span>📩 Customer Ticket Requests Inbox</span>
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Review customer requests submitted via online customer intake portal (customer_intake.html)</p>
+          </div>
+          <span id="requestsHeaderBadge" class="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full">0 Pending Requests</span>
+        </div>
+
+        <div id="customerRequestsListContainer" class="space-y-3">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- RECEIPTS VIEW -->
     <section id="viewInvoices" class="hidden space-y-4">
       <div class="dark-card p-5 rounded-3xl space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
-          <h2 class="text-base font-black text-white">📄 Printable Customer Receipts</h2>
-          <span class="text-xs text-slate-400 font-medium">Select a ticket below to view and print an itemized customer receipt</span>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <h2 class="text-base font-black text-slate-900 dark:text-white">📄 Printable Customer Thermal Receipts</h2>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Select a ticket to render a 320px/80mm thermal roll print preview & PDF exporter</span>
         </div>
 
         <div id="invoicesListContainer" class="space-y-2.5">
@@ -349,28 +404,27 @@
       </div>
     </section>
 
+    <!-- STORE VIEW -->
     <section id="viewStore" class="hidden space-y-5">
-      
-      <div class="dark-card p-4 sm:p-5 rounded-3xl border border-amber-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div class="dark-card p-4 sm:p-5 rounded-3xl border border-blue-500/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 class="text-base font-black text-white flex items-center gap-2">
+          <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>🛒 Online Store & Hardware Manager</span>
           </h2>
-          <p class="text-xs text-slate-400 font-medium">Manage items listed on your public store & process purchase requests</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage items listed on your public store & process purchase requests</p>
         </div>
 
-        <button onclick="window.openAddStoreItemModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center space-x-1.5">
+        <button onclick="window.openAddStoreItemModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center space-x-1.5">
           <span>➕ Add Item For Sale</span>
         </button>
       </div>
 
-      <!-- Purchase Requests Inbox -->
-      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3 border border-slate-800">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-          <h3 class="text-sm font-black text-white flex items-center gap-2">
-            <span>📥 Customer Purchase Requests Inbox</span>
+      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>📥 Customer Store Purchase Requests</span>
           </h3>
-          <span id="requestsCountBadge" class="text-[10px] font-black bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-full border border-amber-500/30">0 Pending</span>
+          <span id="requestsCountBadge" class="text-[10px] font-black bg-blue-600/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30">0 Pending</span>
         </div>
 
         <div id="purchaseRequestsContainer" class="space-y-2.5">
@@ -378,54 +432,53 @@
         </div>
       </div>
 
-      <!-- Store Inventory Table -->
-      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3 border border-slate-800">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-slate-800 pb-3">
-          <h3 class="text-sm font-black text-white">📦 Active Store Inventory</h3>
-          <input type="text" id="inventorySearchInput" oninput="window.renderStoreInventory()" placeholder="Search inventory items..." class="px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white outline-none w-full sm:w-64">
+      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <h3 class="text-sm font-black text-slate-900 dark:text-white">📦 Active Store Inventory</h3>
+          <input type="text" id="inventorySearchInput" oninput="window.renderStoreInventory()" placeholder="Search inventory items..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none w-full sm:w-64">
         </div>
 
         <div id="inventoryTableContainer" class="overflow-x-auto">
           <!-- Dynamically populated -->
         </div>
       </div>
-
     </section>
 
   </main>
 
-
-
-  <!-- SINGLE-CUSTOMER PRINTABLE INVOICE MODAL -->
-  <div id="invoiceModal" onclick="window.handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto printable-area">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3 no-print">
-        <h3 class="text-sm font-black text-white">📄 Customer Receipt</h3>
+  <div id="invoiceModal" onclick="window.handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-900/70 dark:bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+    <div class="dark-card rounded-3xl max-w-md w-full p-4 sm:p-5 shadow-2xl space-y-3 max-h-[95vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5 no-print">
+        <h3 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+          <span>🧾 Thermal Roll Receipt</span>
+        </h3>
         <div class="flex items-center space-x-2">
-          <button onclick="window.print()" class="px-3 py-1.5 bg-amber-500 text-slate-950 font-black text-xs rounded-xl shadow transition cursor-pointer">
-            🖨️ Print / Save PDF
+          <button onclick="window.print()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+            🖨 Print / Save PDF
           </button>
-          <button onclick="window.closeInvoiceModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <button onclick="window.closeInvoiceModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
       </div>
 
-      <div id="invoicePrintSheet" class="space-y-4 text-slate-200">
-        <!-- Dynamically rendered -->
+      <!-- Thermal Paper Container -->
+      <div id="invoicePrintSheet">
+        <!-- Dynamically rendered Thermal Receipt -->
       </div>
     </div>
   </div>
 
-  <!-- EDIT REPAIR TICKET MODAL WITH DYNAMIC PERCENTAGE BADGES -->
-  <div id="editRepairModal" onclick="window.handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+  <!-- EDIT REPAIR MODAL -->
+  <div id="editRepairModal" onclick="window.handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white flex items-center gap-2">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
           <span>✏️ Edit Repair Ticket</span>
-          <span id="editTicketBadge" class="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20"></span>
+          <span id="editTicketBadge" class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20"></span>
         </h3>
-        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
@@ -433,135 +486,126 @@
       <form id="editRepairForm" onsubmit="window.handleUpdateRepair(event)" class="space-y-3.5 text-xs">
         <input type="hidden" id="editRepairId">
 
-        <!-- Customer Info -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Customer Name *</label>
-            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
+            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Phone Number *</label>
-            <input type="tel" id="editCustomerPhone" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+            <input type="tel" id="editCustomerPhone" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Device Make & Model *</label>
-          <input type="text" id="editMakeModel" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make & Model *</label>
+          <input type="text" id="editMakeModel" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Issue Description *</label>
-          <input type="text" id="editIssue" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:ring-2 focus:ring-amber-500">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
+          <input type="text" id="editIssue" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
-        <!-- Hardware & Cost Breakdown -->
         <div class="grid grid-cols-3 gap-2.5">
           <div class="col-span-2">
-            <label class="block font-bold text-slate-300 mb-1">Internal Hardware Notes</label>
-            <input type="text" id="editPartNote" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Internal Hardware Notes</label>
+            <input type="text" id="editPartNote" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Part Cost ($)</label>
-            <input type="number" id="editPartCost" min="0" step="1" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" oninput="window.recalculateEditTotals()">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Part Cost ($)</label>
+            <input type="number" id="editPartCost" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
           </div>
         </div>
 
-        <!-- Labor Cost & Discount Controls with Live Percentage Badge -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Labor Charge ($)</label>
-            <input type="number" id="editLaborCost" min="0" step="1" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" oninput="window.recalculateEditTotals()">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Labor Charge ($)</label>
+            <input type="number" id="editLaborCost" min="0" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="font-bold text-slate-300">Discount Amount ($)</label>
-              <!-- Live Discount Percentage Indicator Badge -->
-              <span id="editDiscountPercentBadge" class="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">0%</span>
+              <label class="font-bold text-slate-700 dark:text-slate-300">Discount Amount ($)</label>
+              <span id="editDiscountPercentBadge" class="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-500/20">0%</span>
             </div>
-            <input type="number" id="editDiscount" min="0" step="1" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" oninput="window.recalculateEditTotals()">
+            <input type="number" id="editDiscount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
             
-            <!-- Quick Discount Presets -->
             <div class="flex gap-1 mt-1 text-[9px] font-extrabold">
-              <button type="button" onclick="window.applyEditDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-900 text-slate-400 rounded hover:text-white">0%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-900 text-slate-400 rounded hover:text-white">5%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-900 text-slate-400 rounded hover:text-white">10%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-900 text-slate-400 rounded hover:text-white">15%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-900 text-slate-400 rounded hover:text-white">20%</button>
+              <button type="button" onclick="window.applyEditDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">0%</button>
+              <button type="button" onclick="window.applyEditDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">5%</button>
+              <button type="button" onclick="window.applyEditDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">10%</button>
+              <button type="button" onclick="window.applyEditDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">15%</button>
+              <button type="button" onclick="window.applyEditDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">20%</button>
             </div>
           </div>
         </div>
 
-        <!-- Calculated Total & Deposit Controls with Live Deposit Percentage Badge -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-amber-400 mb-1">Calculated Total ($)</label>
-            <input type="number" id="editTotalAmount" readonly class="w-full px-3 py-2 bg-slate-900 border border-amber-500/40 rounded-xl text-amber-400 font-black outline-none">
+            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Calculated Total ($)</label>
+            <input type="number" id="editTotalAmount" readonly class="w-full px-3 py-2 bg-blue-50 dark:bg-slate-900 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-black outline-none">
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-1">
-              <label class="font-bold text-slate-300">Deposit Amount ($)</label>
-              <!-- Live Deposit Percentage Indicator Badge -->
-              <span id="editDepositPercentBadge" class="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">0%</span>
+              <label class="font-bold text-slate-700 dark:text-slate-300">Deposit Amount ($)</label>
+              <span id="editDepositPercentBadge" class="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-500/20">0%</span>
             </div>
-            <input type="number" id="editDepositAmount" min="0" step="1" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" oninput="window.recalculateEditTotals()">
+            <input type="number" id="editDepositAmount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
             
-            <!-- Quick Deposit Presets -->
             <div class="flex gap-1 mt-1 text-[9px] font-extrabold">
-              <button type="button" onclick="window.applyEditDepositPreset(0.25)" class="px-1.5 py-0.5 bg-slate-900 text-amber-400 rounded hover:bg-slate-800">25%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(0.50)" class="px-1.5 py-0.5 bg-slate-900 text-amber-400 rounded hover:bg-slate-800">50%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(0.75)" class="px-1.5 py-0.5 bg-slate-900 text-amber-400 rounded hover:bg-slate-800">75%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(1.00)" class="px-1.5 py-0.5 bg-slate-900 text-amber-400 rounded hover:bg-slate-800">100%</button>
+              <button type="button" onclick="window.applyEditDepositPreset(0.25)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">25%</button>
+              <button type="button" onclick="window.applyEditDepositPreset(0.50)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">50%</button>
+              <button type="button" onclick="window.applyEditDepositPreset(0.75)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">75%</button>
+              <button type="button" onclick="window.applyEditDepositPreset(1.00)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">100%</button>
             </div>
           </div>
         </div>
 
-        <!-- Payment Status & Calculated Remaining Pickup Balance -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Payment Status</label>
-            <select id="editPaymentStatus" onchange="window.recalculateEditTotals()" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-amber-400 font-bold outline-none cursor-pointer">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Status</label>
+            <select id="editPaymentStatus" onchange="window.recalculateEditTotals()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none cursor-pointer">
               <option value="unpaid">🔴 Unpaid</option>
               <option value="deposit_paid">🟡 Deposit Paid</option>
               <option value="paid_in_full">🟢 Paid in Full</option>
             </select>
           </div>
 
-          <div class="bg-slate-900 p-2.5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+          <div class="bg-slate-100 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
             <span class="text-[9px] font-black uppercase text-slate-500">Balance Due at Pickup</span>
-            <p id="editPickupBalanceDisplay" class="text-base font-black text-rose-400">$0</p>
+            <p id="editPickupBalanceDisplay" class="text-base font-black text-rose-600 dark:text-rose-400">$0</p>
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
           Save Ticket Changes
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ADD STORE ITEM MODAL -->
-  <div id="addStoreItemModal" onclick="window.handleBackdropClick(event, 'addStoreItemModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+  <!-- STORE ITEM MODALS -->
+  <div id="addStoreItemModal" onclick="window.handleBackdropClick(event, 'addStoreItemModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">🛍️ Add Store Item For Sale</h3>
-        <button onclick="window.closeAddStoreItemModal()" class="text-slate-400 hover:text-white p-1">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="text-sm font-black text-slate-900 dark:text-white">🛍️ Add Store Item For Sale</h3>
+        <button onclick="window.closeAddStoreItemModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <form id="addStoreItemForm" onsubmit="window.handleSaveStoreItem(event)" class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Item Title *</label>
-          <input type="text" id="storeItemTitle" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="iPhone 13 Pro 128GB - Unlocked">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Title *</label>
+          <input type="text" id="storeItemTitle" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="iPhone 13 Pro 128GB - Unlocked">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Category</label>
-            <select id="storeItemCategory" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Category</label>
+            <select id="storeItemCategory" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
               <option value="Phones">Phones</option>
               <option value="Tablets">Tablets</option>
               <option value="Laptops">Laptops</option>
@@ -571,48 +615,55 @@
             </select>
           </div>
           <div>
-            <label class="block font-bold text-amber-400 mb-1">Sale Price ($) *</label>
-            <input type="number" id="storeItemPrice" step="1" required class="w-full px-3 py-2 bg-slate-950 border border-amber-500/40 rounded-xl text-amber-400 font-bold outline-none" placeholder="550">
+            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Sale Price ($) *</label>
+            <input type="number" id="storeItemPrice" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none" placeholder="550">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Condition</label>
-            <input type="text" id="storeItemCondition" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="Pre-Owned Excellent">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Condition</label>
+            <input type="text" id="storeItemCondition" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Pre-Owned Excellent">
           </div>
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="font-bold text-slate-300">SKU / Barcode</label>
-              <button type="button" onclick="window.openScannerModal()" class="text-[10px] font-black text-amber-400 hover:underline">📷 Scan</button>
+              <label class="font-bold text-slate-700 dark:text-slate-300">SKU / Barcode</label>
+              <button type="button" onclick="window.openScannerModal()" class="text-[10px] font-black text-blue-600 dark:text-blue-400 hover:underline">📷 Scan</button>
             </div>
-            <input type="text" id="storeItemSku" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="IP13P-128">
+            <input type="text" id="storeItemSku" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="IP13P-128">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Image URL</label>
-          <input type="url" id="storeItemImageUrl" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="https://images.unsplash.com/...">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Images</label>
+          <div class="flex gap-1.5">
+            <input type="url" id="addImgUrlInput" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
+            <button type="button" onclick="window.addStoreImageFromInput('add')" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shrink-0 cursor-pointer">+ Add Image</button>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">First image will be used as the main thumbnail cover.</p>
+          
+          <div id="addImagesList" class="grid grid-cols-3 gap-2 mt-2 max-h-36 overflow-y-auto p-1 bg-slate-100 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
+            <!-- Dynamic thumbnails -->
+          </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Description</label>
-          <textarea id="storeItemDescription" rows="2" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none" placeholder="Fully tested, battery 92%, 30-day shop warranty included."></textarea>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+          <textarea id="storeItemDescription" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Fully tested, battery 92%, 30-day shop warranty included."></textarea>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
           Save Item To Store
         </button>
       </form>
     </div>
   </div>
 
-  <!-- EDIT INVENTORY ITEM MODAL -->
-  <div id="editInventoryModal" onclick="window.handleBackdropClick(event, 'editInventoryModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+  <div id="editInventoryModal" onclick="window.handleBackdropClick(event, 'editInventoryModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">✏️ Edit Inventory Item</h3>
-        <button onclick="window.closeEditInventoryModal()" class="text-slate-400 hover:text-white p-1">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="text-sm font-black text-slate-900 dark:text-white">✏️ Edit Inventory Item</h3>
+        <button onclick="window.closeEditInventoryModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
@@ -621,14 +672,14 @@
         <input type="hidden" id="editInvId">
         
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Item Title *</label>
-          <input type="text" id="editInvTitle" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Title *</label>
+          <input type="text" id="editInvTitle" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Category</label>
-            <select id="editInvCategory" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Category</label>
+            <select id="editInvCategory" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
               <option value="Phones">Phones</option>
               <option value="Tablets">Tablets</option>
               <option value="Laptops">Laptops</option>
@@ -638,99 +689,158 @@
             </select>
           </div>
           <div>
-            <label class="block font-bold text-amber-400 mb-1">Sale Price ($) *</label>
-            <input type="number" id="editInvPrice" step="1" required class="w-full px-3 py-2 bg-slate-950 border border-amber-500/40 rounded-xl text-amber-400 font-bold outline-none">
+            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Sale Price ($) *</label>
+            <input type="number" id="editInvPrice" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Condition</label>
-            <input type="text" id="editInvCondition" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Condition</label>
+            <input type="text" id="editInvCondition" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">SKU / Barcode</label>
-            <input type="text" id="editInvSku" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">SKU / Barcode</label>
+            <input type="text" id="editInvSku" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Image URL</label>
-          <input type="url" id="editInvImageUrl" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Manage Images</label>
+          <div class="flex gap-1.5">
+            <input type="url" id="editImgUrlInput" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
+            <button type="button" onclick="window.addStoreImageFromInput('edit')" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shrink-0 cursor-pointer">+ Add Image</button>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">First photo is cover thumbnail.</p>
+
+          <div id="editImagesList" class="grid grid-cols-3 gap-2 mt-2 max-h-40 overflow-y-auto p-1 bg-slate-100 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
+            <!-- Dynamic thumbnails -->
+          </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Description</label>
-          <textarea id="editInvDescription" rows="2" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none"></textarea>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description</label>
+          <textarea id="editInvDescription" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none"></textarea>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
           Update Item Details
         </button>
       </form>
     </div>
   </div>
 
-  <!-- CAMERA BARCODE SCANNER MODAL -->
-  <div id="scannerModal" onclick="window.handleBackdropClick(event, 'scannerModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[101] flex items-center justify-center hidden p-3 sm:p-4">
+  <!-- SCANNER MODAL -->
+  <div id="scannerModal" onclick="window.handleBackdropClick(event, 'scannerModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[101] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-white flex items-center gap-1.5">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <h3 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
           <span>📷 Scan Barcode / UPC</span>
         </h3>
-        <button onclick="window.closeScannerModal()" class="text-slate-400 hover:text-white p-1">
+        <button onclick="window.closeScannerModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
-      <div class="relative rounded-2xl overflow-hidden bg-black border border-slate-800 min-h-[220px]">
+      <div class="relative rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 min-h-[220px]">
         <div id="qrReader" class="w-full h-full"></div>
       </div>
 
-      <!-- Zoom Presets -->
       <div class="flex items-center justify-center gap-2 pt-1 text-[11px] font-bold">
-        <button type="button" onclick="window.setScannerZoom(0.5)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl">0.5x Wide</button>
-        <button type="button" onclick="window.setScannerZoom(1.0)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl">1.0x Normal</button>
-        <button type="button" onclick="window.setScannerZoom(2.0)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl">2.0x Zoom</button>
+        <button type="button" onclick="window.setScannerZoom(0.5)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">0.5x Wide</button>
+        <button type="button" onclick="window.setScannerZoom(1.0)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">1.0x Normal</button>
+        <button type="button" onclick="window.setScannerZoom(2.0)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">2.0x Zoom</button>
       </div>
     </div>
   </div>
 
-  <!-- MANAGE PAYMENT HANDLES MODAL -->
-  <div id="manageMethodsModal" onclick="window.handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+  <!-- MANAGE METHODS MODAL -->
+  <div id="manageMethodsModal" onclick="window.handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-white">💳 Payment Handles Setup</h3>
-        <button onclick="window.closeManageMethodsModal()" class="text-slate-400 hover:text-white p-1">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <h3 class="text-xs font-black text-slate-900 dark:text-white">💳 Payment Handles Setup</h3>
+        <button onclick="window.closeManageMethodsModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <form onsubmit="window.handleSavePaymentMethod(event)" class="space-y-2 text-xs">
-        <input type="text" id="newMethodName" required placeholder="Method Name (e.g. Zelle / Apple Pay)" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-        <input type="text" id="newMethodHandle" required placeholder="Payment Info (e.g. 786-970-7779)" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none">
-        <button type="submit" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl cursor-pointer">Add Handle</button>
+        <input type="text" id="newMethodName" required placeholder="Method Name (e.g. Zelle / Apple Pay)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
+        <input type="text" id="newMethodHandle" required placeholder="Payment Info (e.g. 786-970-7779)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
+        <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">Add Handle</button>
       </form>
 
-      <div id="paymentMethodsList" class="space-y-1.5 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto">
+      <div id="paymentMethodsList" class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 max-h-48 overflow-y-auto">
         <!-- Dynamically populated -->
       </div>
     </div>
   </div>
 
-  <!-- Toast Overlay -->
+  <!-- MANAGE NAV LINKS MODAL -->
+  <div id="manageNavLinksModal" onclick="window.handleBackdropClick(event, 'manageNavLinksModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <h3 class="text-xs font-black text-slate-900 dark:text-white">🔗 Quick Links Manager</h3>
+        <button onclick="window.closeManageNavLinksModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form onsubmit="window.handleSaveNavLink(event)" class="space-y-2 text-xs">
+        <input type="hidden" id="editNavLinkId">
+        <input type="text" id="newLinkTitle" required placeholder="Link Label (e.g. 📩 Customer Portal)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
+        <input type="text" id="newLinkUrl" required placeholder="URL (e.g. customer_intake.html or store.html)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
+        <div class="flex items-center gap-2">
+          <button type="submit" id="saveLinkBtn" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">Add Link</button>
+          <button type="button" id="cancelEditLinkBtn" onclick="window.resetNavLinkForm()" class="hidden px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer">Cancel</button>
+        </div>
+      </form>
+
+      <div id="navLinksManageList" class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 max-h-52 overflow-y-auto">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT SHOP PHONE MODAL -->
+  <div id="editShopPhoneModal" onclick="window.handleBackdropClick(event, 'editShopPhoneModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+        <h3 class="text-xs font-black text-slate-900 dark:text-white">📞 Edit Shop Contact Number</h3>
+        <button onclick="window.closeEditShopPhoneModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form onsubmit="window.handleSaveShopPhone(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Shop Contact Phone Number</label>
+          <input type="tel" id="shopPhoneInput" required placeholder="(786) 970-7779" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">
+          Save Contact Number
+        </button>
+      </form>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed bottom-5 right-5 z-[110] space-y-2 pointer-events-none"></div>
 
   <script>
-    // Supabase Credentials
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
 
-    // Seed Backups
     const defaultPaymentMethods = [
       { id: 'm1', name: 'Zelle / Apple Pay', handle: '786-970-7779' },
       { id: 'm2', name: 'Cash', handle: 'Accepted in store at pickup' }
+    ];
+
+    const defaultNavLinks = [
+      { id: 'nl1', title: '📩 Customer Intake Request Form', url: 'customer_intake.html' },
+      { id: 'nl2', title: '🛍️ Customer Storefront', url: 'store.html' },
+      { id: 'nl3', title: '🔍 Customer Live Tracker', url: 'track.html' },
+      { id: 'nl4', title: '📞 Call Shop (786) 970-7779', url: 'tel:7869707779' }
     ];
 
     const defaultStoreItems = [
@@ -741,19 +851,9 @@
         price: 550,
         condition: 'Pre-Owned Excellent',
         sku: 'IP13P-128-GR',
+        images: ['https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80'],
         imageUrl: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80',
         description: 'Original screen, battery health 92%, fully tested and sanitized. 30-day warranty.',
-        status: 'available'
-      },
-      {
-        id: 'INV-1002',
-        title: 'iPad Air 4th Gen 64GB Wi-Fi - Space Gray',
-        category: 'Tablets',
-        price: 380,
-        condition: 'Refurbished',
-        sku: 'IPADAIR4-64',
-        imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80',
-        description: 'New glass display installed, clean serial number. Includes fast charger.',
         status: 'available'
       }
     ];
@@ -779,14 +879,51 @@
       }
     ];
 
-    // Application State Variables
+    const defaultCustomerRequests = [
+      {
+        id: 'REQ-101',
+        customer_name: 'Marcus Vance',
+        customer_phone: '(786) 555-0192',
+        customer_email: 'marcus.vance@example.com',
+        make_model: 'iPhone 14 Pro 128GB',
+        issue: 'Cracked front OLED glass screen after drop',
+        preferred_time: 'Today - Afternoon',
+        passcode: '1234',
+        status: 'pending',
+        created_at: new Date().toISOString()
+      }
+    ];
+
     let repairs = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || defaultRepairs;
     let storeItems = JSON.parse(localStorage.getItem('ajd_store_items')) || defaultStoreItems;
+    let customerRequests = JSON.parse(localStorage.getItem('ajd_customer_requests')) || defaultCustomerRequests;
     let purchaseRequests = JSON.parse(localStorage.getItem('ajd_purchase_requests')) || [];
     let paymentMethods = JSON.parse(localStorage.getItem('ajd_payment_methods')) || defaultPaymentMethods;
+    let navLinks = JSON.parse(localStorage.getItem('ajd_nav_links')) || defaultNavLinks;
+    let shopPhone = localStorage.getItem('ajd_shop_phone') || '(786) 970-7779';
     let html5QrScanner = null;
 
-    // Ultra-Compact 3-Character Short ID Generator (e.g., AJD-7K3 or AJD-9B2)
+    let addModalImages = [];
+    let editModalImages = [];
+
+    window.setThemeMode = function(mode) {
+      localStorage.setItem('ajd_theme_preference', mode);
+      window.applyTheme();
+      window.showToast(`Theme set to ${mode.toUpperCase()}`);
+    };
+
+    window.applyTheme = function() {
+      const mode = localStorage.getItem('ajd_theme_preference') || 'dark';
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const shouldBeDark = mode === 'dark' || (mode === 'system' && isSystemDark);
+
+      if (shouldBeDark) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+
+      const select = document.getElementById('themeSelectSetting');
+      if (select) select.value = mode;
+    };
+
     window.generateShortId = function(existingArray = [], prefix = 'AJD') {
       const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
       let newId = '';
@@ -800,20 +937,16 @@
       return newId;
     };
 
-    // Automatic ID Migration Sanitizer for Legacy/UUID Tickets
     window.sanitizeRepairIds = function() {
       let modified = false;
       const usedIds = new Set();
 
       repairs = repairs.map(r => {
-        // Standard compact short ID format: AJD-XXX (where XXX is exactly 3 clean characters)
         const isCompactShort = /^AJD-[2-9A-HJ-NP-Z]{3}$/i.test(r.id);
         if (!isCompactShort || usedIds.has(r.id)) {
-          const oldId = r.id;
           r.id = window.generateShortId(repairs, 'AJD');
           usedIds.add(r.id);
           modified = true;
-          console.log(`Sanitized legacy ticket ID from ${oldId} to compact short ID ${r.id}`);
         } else {
           usedIds.add(r.id);
         }
@@ -827,12 +960,7 @@
 
     window.escapeHtml = function(str) {
       if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     };
 
     window.showToast = function(message) {
@@ -858,41 +986,54 @@
       if (event && event.target && event.target.id === modalId) {
         const el = document.getElementById(modalId);
         if (el) el.classList.add('hidden');
+        if (modalId === 'scannerModal') window.closeScannerModal();
       }
     };
 
     window.switchTab = function(tab) {
       const viewRepairs = document.getElementById('viewRepairs');
+      const viewRequests = document.getElementById('viewRequests');
       const viewInvoices = document.getElementById('viewInvoices');
       const viewStore = document.getElementById('viewStore');
       const metricsBar = document.getElementById('metricsBar');
 
       const btnR = document.getElementById('tabBtnRepairs');
+      const btnReq = document.getElementById('tabBtnRequests');
       const btnI = document.getElementById('tabBtnInvoices');
       const btnS = document.getElementById('tabBtnStore');
 
       if (viewRepairs) viewRepairs.classList.add('hidden');
+      if (viewRequests) viewRequests.classList.add('hidden');
       if (viewInvoices) viewInvoices.classList.add('hidden');
       if (viewStore) viewStore.classList.add('hidden');
 
-      if (btnR) btnR.className = "px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition cursor-pointer";
-      if (btnI) btnI.className = "px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition cursor-pointer";
-      if (btnS) btnS.className = "px-3 py-1.5 rounded-xl text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1";
+      const inactive = "px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1";
+      const active = "px-3 py-1.5 rounded-xl bg-blue-600 text-white font-black shadow transition cursor-pointer flex items-center gap-1";
+
+      if (btnR) btnR.className = inactive;
+      if (btnReq) btnReq.className = inactive;
+      if (btnI) btnI.className = inactive;
+      if (btnS) btnS.className = inactive;
 
       if (tab === 'repairs') {
         if (viewRepairs) viewRepairs.classList.remove('hidden');
         if (metricsBar) metricsBar.classList.remove('hidden');
-        if (btnR) btnR.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shadow transition cursor-pointer";
+        if (btnR) btnR.className = active;
         window.renderRepairs();
+      } else if (tab === 'requests') {
+        if (viewRequests) viewRequests.classList.remove('hidden');
+        if (metricsBar) metricsBar.classList.add('hidden');
+        if (btnReq) btnReq.className = active;
+        window.renderCustomerRequests();
       } else if (tab === 'invoices') {
         if (viewInvoices) viewInvoices.classList.remove('hidden');
         if (metricsBar) metricsBar.classList.remove('hidden');
-        if (btnI) btnI.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shadow transition cursor-pointer";
+        if (btnI) btnI.className = active;
         window.renderInvoicesList();
       } else if (tab === 'store') {
         if (viewStore) viewStore.classList.remove('hidden');
         if (metricsBar) metricsBar.classList.add('hidden');
-        if (btnS) btnS.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shadow transition cursor-pointer flex items-center gap-1";
+        if (btnS) btnS.className = active;
         window.renderStoreInventory();
         window.renderPurchaseRequests();
       }
@@ -900,18 +1041,13 @@
 
     function initSupabase() {
       if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-        try {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { enabled: false } });
-        } catch(e){}
+        try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
       }
     }
 
     window.fetchRepairsFromCloud = async function() {
       initSupabase();
-      if (!supabaseClient) {
-        window.sanitizeRepairIds();
-        return repairs;
-      }
+      if (!supabaseClient) return repairs;
 
       try {
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Cloud timeout')), 4000));
@@ -922,6 +1058,14 @@
           repairs = res.data.map(window.normalizeRepair);
           window.sanitizeRepairIds();
           localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        }
+
+        // Fetch customer intake requests
+        const reqPromise = supabaseClient.from('customer_requests').select('*').order('created_at', { ascending: false });
+        const reqRes = await Promise.race([reqPromise, timeoutPromise]);
+        if (reqRes && reqRes.data && reqRes.data.length > 0) {
+          customerRequests = reqRes.data;
+          localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
         }
       } catch (e) {
         window.sanitizeRepairIds();
@@ -960,18 +1104,15 @@
       const partCost = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0);
       const laborCharge = Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
       const discount = Math.ceil(parseFloat(document.getElementById('intakeDiscount').value) || 0);
-      
       const subtotal = partCost + laborCharge;
-      const total = Math.max(0, subtotal - discount);
-      document.getElementById('intakeTotalAmount').value = total;
+      document.getElementById('intakeTotalAmount').value = Math.max(0, subtotal - discount);
     };
 
     window.applyIntakeDiscountPreset = function(percent) {
       const partCost = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0);
       const laborCharge = Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
       const subtotal = partCost + laborCharge;
-      const disc = Math.ceil(subtotal * (percent / 100));
-      document.getElementById('intakeDiscount').value = disc;
+      document.getElementById('intakeDiscount').value = Math.ceil(subtotal * (percent / 100));
       window.recalculateIntakeTotals();
     };
 
@@ -993,7 +1134,7 @@
       const newJob = window.normalizeRepair({
         id: window.generateShortId(repairs, 'AJD'),
         customer_name: document.getElementById('intakeName').value,
-        customer_phone: document.getElementById('intakePhone').value,
+        customer_phone: document.getElementById('intakePhone').value.trim(),
         make_model: document.getElementById('intakeDevice').value,
         issue: document.getElementById('intakeIssue').value,
         part_note: document.getElementById('intakePartNote').value,
@@ -1017,13 +1158,13 @@
       document.getElementById('intakeForm').reset();
       window.recalculateIntakeTotals();
       window.renderRepairs();
-      window.showToast(`Ticket ${newJob.id} registered successfully!`);
+      window.showToast(`Ticket ${newJob.id} registered!`);
     };
 
     window.renderRepairs = function() {
       const container = document.getElementById('repairsContainer');
-      const search = (document.getElementById('repairSearchInput').value || '').toLowerCase();
-      const filter = document.getElementById('repairStatusFilter').value;
+      const search = (document.getElementById('repairSearchInput')?.value || '').toLowerCase();
+      const filter = document.getElementById('repairStatusFilter')?.value || 'all';
 
       if (!container) return;
 
@@ -1053,45 +1194,42 @@
         const balance = Math.ceil(Math.max(0, amount - paid));
 
         return `
-          <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3.5 border border-slate-800 hover:border-amber-500/30 transition">
+          <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3.5 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition">
             
-            <!-- Header Row -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800/80 pb-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-3">
               <div>
                 <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-black text-white">${window.escapeHtml(r.customer_name)}</h3>
-                  <span class="text-[10px] font-black font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">${window.escapeHtml(r.id)}</span>
+                  <h3 class="text-sm font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</h3>
+                  <span class="text-[10px] font-black font-mono text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20">${window.escapeHtml(r.id)}</span>
                 </div>
-                <p class="text-xs font-extrabold text-brand-400 mt-0.5">${window.escapeHtml(r.make_model)}</p>
+                <p class="text-xs font-extrabold text-blue-600 dark:text-blue-400 mt-0.5">${window.escapeHtml(r.make_model)}</p>
               </div>
 
-              <!-- Interactive Progress Selector -->
-              <select onchange="window.updateJobStatus('${r.id}', this.value)" class="px-2.5 py-1 text-xs font-black bg-slate-950 border border-slate-800 rounded-xl text-amber-400 outline-none cursor-pointer">
+              <select onchange="window.updateJobStatus('${r.id}', this.value)" class="px-2.5 py-1 text-xs font-black bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 outline-none cursor-pointer">
                 <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>⏳ Checked In</option>
                 <option value="in-progress" ${r.status === 'in-progress' ? 'selected' : ''}>⚙️ In Repair</option>
                 <option value="completed" ${r.status === 'completed' ? 'selected' : ''}>✅ Ready Pickup</option>
               </select>
             </div>
 
-            <!-- Issue & Notes -->
             <div class="space-y-1 text-xs">
-              <p class="text-slate-300 font-medium"><strong class="text-slate-400">Issue:</strong> ${window.escapeHtml(r.issue)}</p>
-              ${r.part_note ? `<p class="text-slate-400 text-[11px]"><strong class="text-slate-500">Hardware Note:</strong> ${window.escapeHtml(r.part_note)}</p>` : ''}
+              <p class="text-slate-700 dark:text-slate-300 font-medium"><strong class="text-slate-500 dark:text-slate-400">Issue:</strong> ${window.escapeHtml(r.issue)}</p>
+              ${r.part_note ? `<p class="text-slate-500 dark:text-slate-400 text-[11px]"><strong class="text-slate-600 dark:text-slate-500">Hardware Note:</strong> ${window.escapeHtml(r.part_note)}</p>` : ''}
+              ${r.customer_phone ? `<p class="text-slate-500 dark:text-slate-400 text-[11px]"><strong class="text-slate-600 dark:text-slate-500">Phone:</strong> ${window.escapeHtml(r.customer_phone)}</p>` : ''}
             </div>
 
-            <!-- Financial Summary Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/60 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800/60 text-xs">
               <div>
                 <span class="text-[9px] font-black text-slate-500 uppercase">Total Charge</span>
-                <p class="font-black text-white text-sm">$${amount}</p>
+                <p class="font-black text-slate-900 dark:text-white text-sm">$${amount}</p>
               </div>
               <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Deposit Quoted</span>
-                <p class="font-bold text-amber-400">$${deposit}</p>
+                <span class="text-[9px] font-black text-slate-500 uppercase">Deposit Paid</span>
+                <p class="font-bold text-blue-600 dark:text-blue-400">$${deposit}</p>
               </div>
               <div>
                 <span class="text-[9px] font-black text-slate-500 uppercase">Payment Status</span>
-                <select onchange="window.updatePaymentStatus('${r.id}', this.value)" class="block mt-0.5 text-[10px] font-black bg-slate-900 border border-slate-800 rounded-lg text-amber-400 outline-none cursor-pointer">
+                <select onchange="window.updatePaymentStatus('${r.id}', this.value)" class="block mt-0.5 text-[10px] font-black bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg text-blue-600 dark:text-blue-400 outline-none cursor-pointer">
                   <option value="unpaid" ${r.payment_status === 'unpaid' ? 'selected' : ''}>🔴 Unpaid</option>
                   <option value="deposit_paid" ${r.payment_status === 'deposit_paid' ? 'selected' : ''}>🟡 Deposit Paid</option>
                   <option value="paid_in_full" ${r.payment_status === 'paid_in_full' ? 'selected' : ''}>🟢 Paid in Full</option>
@@ -1099,27 +1237,30 @@
               </div>
               <div>
                 <span class="text-[9px] font-black text-slate-500 uppercase">Balance Due</span>
-                <p class="font-black ${balance > 0 ? 'text-rose-400' : 'text-emerald-400'} text-sm">$${balance}</p>
+                <p class="font-black ${balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'} text-sm">$${balance}</p>
               </div>
             </div>
 
-            <!-- Supplier Links Accordion -->
+            <!-- Supplier Links CRUD -->
             <div class="pt-1">
               <details class="text-xs">
-                <summary class="font-extrabold text-slate-400 hover:text-white cursor-pointer select-none flex items-center space-x-1">
+                <summary class="font-extrabold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer select-none flex items-center space-x-1">
                   <span>🔗 Supplier Links (${r.supplier_links.length})</span>
                 </summary>
                 <div class="mt-2 space-y-2 pl-2">
                   ${r.supplier_links.map((link, idx) => `
-                    <div class="flex items-center justify-between bg-slate-900 p-2 rounded-xl text-[11px]">
-                      <a href="${window.escapeHtml(link)}" target="_blank" class="text-brand-400 hover:underline truncate max-w-[200px] sm:max-w-xs">${window.escapeHtml(link)}</a>
-                      <button onclick="window.removeSupplierLink('${r.id}', ${idx})" class="text-rose-400 hover:text-rose-300 font-bold px-1.5 cursor-pointer">✕</button>
+                    <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-900 p-2 rounded-xl text-[11px] gap-2 border border-slate-200 dark:border-slate-800">
+                      <a href="${window.escapeHtml(link)}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[200px] sm:max-w-xs font-semibold">${window.escapeHtml(link)}</a>
+                      <div class="flex items-center space-x-1 shrink-0">
+                        <button onclick="window.editSupplierLink('${r.id}', ${idx})" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-[10px] font-bold px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded cursor-pointer">✏️ Edit</button>
+                        <button onclick="window.removeSupplierLink('${r.id}', ${idx})" class="text-rose-600 dark:text-rose-400 hover:text-rose-700 font-bold px-1.5 py-0.5 bg-rose-500/10 rounded cursor-pointer">✕</button>
+                      </div>
                     </div>
                   `).join('')}
 
                   <div class="flex gap-1.5 pt-1">
-                    <input type="url" id="linkInput_${r.id}" placeholder="https://..." class="px-2.5 py-1 text-[11px] bg-slate-950 border border-slate-800 rounded-xl text-white outline-none flex-1">
-                    <button onclick="window.addSupplierLink('${r.id}')" class="px-3 py-1 bg-amber-500 text-slate-950 font-black text-[10px] rounded-xl cursor-pointer">
+                    <input type="url" id="linkInput_${r.id}" placeholder="https://..." class="px-2.5 py-1 text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
+                    <button onclick="window.addSupplierLink('${r.id}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] rounded-xl cursor-pointer">
                       + Add Link
                     </button>
                   </div>
@@ -1127,24 +1268,23 @@
               </details>
             </div>
 
-            <!-- Action Toolbar Buttons -->
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80 text-xs">
-              <button onclick="window.openLiveTracker('${r.id}')" class="px-2.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow cursor-pointer">
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800/80 text-xs">
+              <button onclick="window.openLiveTracker('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow cursor-pointer">
                 👁️ Live View
               </button>
-              <button onclick="window.copyTrackerLink('${r.id}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl cursor-pointer">
+              <button onclick="window.copyTrackerLink('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
                 🔗 Copy Link
               </button>
-              <button onclick="window.triggerSmsCustomer('${r.id}')" class="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl cursor-pointer">
+              <button onclick="window.triggerSmsCustomer('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl cursor-pointer">
                 💬 SMS
               </button>
-              <button onclick="window.openInvoiceModal('${r.id}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl cursor-pointer">
-                📄 Receipt
+              <button onclick="window.openInvoiceModal('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">
+                🧾 Receipt
               </button>
-              <button onclick="window.openEditModal('${r.id}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl cursor-pointer">
+              <button onclick="window.openEditModal('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
                 ✏️ Edit
               </button>
-              <button onclick="window.deleteRepair('${r.id}')" class="px-2 py-1.5 bg-rose-950/60 hover:bg-rose-900 text-rose-300 font-bold rounded-xl border border-rose-800/40 ml-auto cursor-pointer">
+              <button onclick="window.deleteRepair('${r.id}')" class="px-2 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-300 font-bold rounded-xl border border-rose-500/20 ml-auto cursor-pointer">
                 🗑️ Delete
               </button>
             </div>
@@ -1152,6 +1292,280 @@
           </div>
         `;
       }).join('');
+    };
+
+    window.renderCustomerRequests = function() {
+      const container = document.getElementById('customerRequestsListContainer');
+      const headerBadge = document.getElementById('requestsHeaderBadge');
+      const navReqBadge = document.getElementById('navReqBadge');
+
+      if (!container) return;
+
+      const pending = customerRequests.filter(r => r.status === 'pending');
+
+      if (headerBadge) headerBadge.innerText = `${pending.length} Pending Requests`;
+      if (navReqBadge) {
+        if (pending.length > 0) {
+          navReqBadge.innerText = pending.length;
+          navReqBadge.classList.remove('hidden');
+        } else {
+          navReqBadge.classList.add('hidden');
+        }
+      }
+
+      if (customerRequests.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs font-semibold">No customer intake requests submitted yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = customerRequests.map(req => `
+        <div class="dark-card p-4 rounded-2xl border ${req.status === 'pending' ? 'border-rose-500/40 bg-rose-50/20 dark:bg-slate-900/40' : 'border-slate-200 dark:border-slate-800'} space-y-3 text-xs">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="font-black text-slate-900 dark:text-white text-sm">${window.escapeHtml(req.customer_name)}</span>
+                <span class="text-[10px] font-mono font-black text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">${window.escapeHtml(req.id || 'REQ')}</span>
+              </div>
+              <p class="text-blue-600 dark:text-blue-400 font-extrabold mt-0.5">Device: ${window.escapeHtml(req.make_model)}</p>
+              <p class="text-slate-500 dark:text-slate-400 text-[11px]">📞 ${window.escapeHtml(req.customer_phone || 'N/A')} | 📅 Preferred Drop-Off: <strong class="text-slate-700 dark:text-slate-300">${window.escapeHtml(req.preferred_time || 'ASAP')}</strong></p>
+            </div>
+            
+            <span class="px-2.5 py-0.5 text-[10px] font-black rounded-lg uppercase ${req.status === 'approved' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : req.status === 'denied' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' : 'bg-rose-600 text-white'}">
+              ${req.status}
+            </span>
+          </div>
+
+          <div class="bg-slate-100 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
+            <p class="font-bold text-slate-500 text-[10px] uppercase">Problem Description</p>
+            <p class="text-slate-800 dark:text-slate-200 text-xs mt-0.5">${window.escapeHtml(req.issue)}</p>
+            ${req.passcode ? `<p class="text-slate-500 text-[10px] mt-1">Passcode Note: ${window.escapeHtml(req.passcode)}</p>` : ''}
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+            ${req.status === 'pending' ? `
+              <button onclick="window.approveCustomerRequest('${req.id}')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow cursor-pointer flex items-center gap-1">
+                <span>✅ Approve & Create Ticket</span>
+              </button>
+              <button onclick="window.denyCustomerRequest('${req.id}')" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1">
+                <span>❌ Deny Request</span>
+              </button>
+            ` : ''}
+
+            ${req.customer_phone ? `
+              <a href="sms:${req.customer_phone.replace(/\D/g,'')}?body=${encodeURIComponent(`Hi ${req.customer_name}, regarding your AJD Repair Request for ${req.make_model}: `)}" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
+                💬 SMS Customer
+              </a>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    };
+
+    window.approveCustomerRequest = async function(reqId) {
+      const req = customerRequests.find(r => r.id === reqId);
+      if (!req) return;
+
+      req.status = 'approved';
+      localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
+
+      // Auto-generate active repair ticket
+      const newTicket = window.normalizeRepair({
+        id: window.generateShortId(repairs, 'AJD'),
+        customer_name: req.customer_name,
+        customer_phone: req.customer_phone || '',
+        make_model: req.make_model,
+        issue: req.issue,
+        part_note: req.passcode ? `Passcode: ${req.passcode}` : '',
+        part_cost: 0,
+        labor_cost: 0,
+        amount: 0,
+        discount: 0,
+        deposit_amount: 0,
+        payment_status: 'unpaid',
+        payment_info: paymentMethods[0] ? `${paymentMethods[0].name}: ${paymentMethods[0].handle}` : 'Cash at pickup',
+        status: 'pending'
+      });
+
+      repairs.unshift(newTicket);
+      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('customer_requests').update({ status: 'approved' }).eq('id', reqId);
+          await supabaseClient.from('repairs').insert([newTicket]);
+        } catch(e){}
+      }
+
+      window.renderCustomerRequests();
+      window.renderRepairs();
+      window.showToast(`Request ${reqId} Approved! Ticket ${newTicket.id} created.`);
+      
+      // Auto open edit modal to fill out pricing
+      window.openEditModal(newTicket.id);
+    };
+
+    window.denyCustomerRequest = async function(reqId) {
+      const req = customerRequests.find(r => r.id === reqId);
+      if (!req) return;
+
+      req.status = 'denied';
+      localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
+
+      if (supabaseClient) {
+        try { await supabaseClient.from('customer_requests').update({ status: 'denied' }).eq('id', reqId); } catch(e){}
+      }
+
+      window.renderCustomerRequests();
+      window.showToast(`Request ${reqId} Denied.`);
+    };
+
+    window.openInvoiceModal = function(id) {
+      const job = repairs.find(r => r.id === id);
+      if (!job) return;
+
+      const amount = Math.ceil(job.amount);
+      const deposit = Math.ceil(job.deposit_amount);
+      let paid = 0;
+      if (job.payment_status === 'paid_in_full') paid = amount;
+      else if (job.payment_status === 'deposit_paid') paid = deposit;
+      const balance = Math.ceil(Math.max(0, amount - paid));
+
+      const sheet = document.getElementById('invoicePrintSheet');
+      if (sheet) {
+        sheet.innerHTML = `
+          <div class="thermal-receipt-roll text-center space-y-3">
+            
+            <!-- Logo & Store Header -->
+            <div class="space-y-1">
+              <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto text-lg font-black">
+                AJD
+              </div>
+              <h2 class="text-base font-black tracking-wider uppercase text-black">AJD'S WIRELESS REPAIRS</h2>
+              <p class="text-[10px] font-mono leading-tight">Mobile Phone & Hardware Services</p>
+              <p class="text-[11px] font-mono font-bold">Phone / Zelle: ${window.escapeHtml(shopPhone)}</p>
+            </div>
+
+            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
+
+            <!-- Receipt Metadata -->
+            <div class="text-[11px] text-left space-y-0.5 font-mono">
+              <div class="flex justify-between font-black">
+                <span>TICKET ID:</span>
+                <span>${window.escapeHtml(job.id)}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>DATE:</span>
+                <span>${new Date(job.created_at).toLocaleDateString()}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>CUSTOMER:</span>
+                <span class="font-bold">${window.escapeHtml(job.customer_name)}</span>
+              </div>
+              ${job.customer_phone ? `<div class="flex justify-between"><span>PHONE:</span><span>${window.escapeHtml(job.customer_phone)}</span></div>` : ''}
+            </div>
+
+            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
+
+            <!-- Itemized Repair Table -->
+            <div class="text-[11px] text-left space-y-1.5 font-mono">
+              <p class="font-black text-center uppercase tracking-wider text-[10px] bg-slate-100 py-0.5 border border-slate-300">ITEMIZED REPAIR SERVICE</p>
+              
+              <div>
+                <p class="font-black text-xs">${window.escapeHtml(job.make_model)}</p>
+                <p class="text-[10px] text-slate-700">Issue: ${window.escapeHtml(job.issue)}</p>
+              </div>
+
+              ${job.part_cost > 0 ? `<div class="flex justify-between text-[10px]"><span>Part / Assembly:</span><span>$${Math.ceil(job.part_cost)}</span></div>` : ''}
+              ${job.labor_cost > 0 ? `<div class="flex justify-between text-[10px]"><span>Labor / Install:</span><span>$${Math.ceil(job.labor_cost)}</span></div>` : ''}
+              ${job.discount > 0 ? `<div class="flex justify-between text-[10px] font-bold"><span>Discount Applied:</span><span>-$${Math.ceil(job.discount)}</span></div>` : ''}
+            </div>
+
+            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
+
+            <!-- Financial Totals & Balance -->
+            <div class="text-xs text-left space-y-1 font-mono">
+              <div class="flex justify-between font-bold"><span>TOTAL AMOUNT:</span><span>$${amount}</span></div>
+              <div class="flex justify-between"><span>DEPOSIT PAID:</span><span>$${deposit}</span></div>
+              
+              <div class="my-2 p-2 border-2 border-black bg-slate-50 text-center space-y-0.5">
+                <span class="text-[9px] font-black uppercase tracking-wider block">REMAINING PICKUP BALANCE</span>
+                <span class="text-lg font-black block">$${balance}</span>
+                <span class="text-[9px] font-bold block uppercase bg-black text-white px-1 py-0.2 rounded mt-1">
+                  STATUS: ${job.payment_status.replace(/_/g,' ').toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            <div class="text-[9px] text-left font-mono leading-tight space-y-1 pt-1">
+              <p><strong>Payment Handle:</strong> ${window.escapeHtml(job.payment_info)}</p>
+              <p class="border-t border-slate-300 pt-1">All screen & hardware repairs include a 30-day warranty against manufacturer defect. Liquid damage repairs non-refundable.</p>
+            </div>
+
+            <!-- SVG Barcode Representation -->
+            <div class="pt-2 text-center space-y-1">
+              <svg class="mx-auto h-10 w-44" viewBox="0 0 100 30" preserveAspectRatio="none">
+                <rect x="2" y="2" width="2" height="26" fill="black"/>
+                <rect x="6" y="2" width="1" height="26" fill="black"/>
+                <rect x="9" y="2" width="3" height="26" fill="black"/>
+                <rect x="14" y="2" width="1" height="26" fill="black"/>
+                <rect x="17" y="2" width="2" height="26" fill="black"/>
+                <rect x="21" y="2" width="4" height="26" fill="black"/>
+                <rect x="27" y="2" width="1" height="26" fill="black"/>
+                <rect x="30" y="2" width="2" height="26" fill="black"/>
+                <rect x="34" y="2" width="3" height="26" fill="black"/>
+                <rect x="39" y="2" width="1" height="26" fill="black"/>
+                <rect x="42" y="2" width="2" height="26" fill="black"/>
+                <rect x="46" y="2" width="4" height="26" fill="black"/>
+                <rect x="52" y="2" width="1" height="26" fill="black"/>
+                <rect x="55" y="2" width="3" height="26" fill="black"/>
+                <rect x="60" y="2" width="2" height="26" fill="black"/>
+                <rect x="64" y="2" width="1" height="26" fill="black"/>
+                <rect x="67" y="2" width="4" height="26" fill="black"/>
+                <rect x="73" y="2" width="2" height="26" fill="black"/>
+                <rect x="77" y="2" width="1" height="26" fill="black"/>
+                <rect x="80" y="2" width="3" height="26" fill="black"/>
+                <rect x="85" y="2" width="2" height="26" fill="black"/>
+                <rect x="89" y="2" width="4" height="26" fill="black"/>
+                <rect x="95" y="2" width="2" height="26" fill="black"/>
+              </svg>
+              <span class="text-[10px] font-mono tracking-widest font-black block">*${window.escapeHtml(job.id)}*</span>
+              <p class="text-[9px] font-mono italic">Thank you for choosing AJD's Wireless!</p>
+            </div>
+
+          </div>
+        `;
+      }
+
+      const modal = document.getElementById('invoiceModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeInvoiceModal = function() {
+      const modal = document.getElementById('invoiceModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.renderInvoicesList = function() {
+      const container = document.getElementById('invoicesListContainer');
+      if (!container) return;
+
+      if (repairs.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs font-semibold">No repair tickets available.</div>`;
+        return;
+      }
+
+      container.innerHTML = repairs.map(r => `
+        <div class="dark-card p-3.5 rounded-2xl flex items-center justify-between gap-3 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition">
+          <div>
+            <span class="text-xs font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</span>
+            <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-md ml-2 font-mono">${window.escapeHtml(r.id)}</span>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${window.escapeHtml(r.make_model)} - Total: <strong class="text-slate-900 dark:text-white">$${Math.ceil(r.amount)}</strong></p>
+          </div>
+          <button onclick="window.openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow cursor-pointer flex items-center gap-1">
+            <span>🧾 View Thermal Receipt</span>
+          </button>
+        </div>
+      `).join('');
     };
 
     window.updateMetricsSummary = function() {
@@ -1189,7 +1603,7 @@
         try { await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id); } catch(e){}
       }
       window.renderRepairs();
-      window.showToast(`Ticket ${id} set to ${newStatus}`);
+      window.showToast(`Ticket ${id} status: ${newStatus}`);
     };
 
     window.updatePaymentStatus = async function(id, newPaymentStatus) {
@@ -1201,7 +1615,7 @@
         try { await supabaseClient.from('repairs').update({ payment_status: newPaymentStatus }).eq('id', id); } catch(e){}
       }
       window.renderRepairs();
-      window.showToast(`Payment status for ${id} set to ${newPaymentStatus}`);
+      window.showToast(`Payment status updated for ${id}`);
     };
 
     window.addSupplierLink = function(id) {
@@ -1209,18 +1623,41 @@
       if (!input || !input.value.trim()) return;
       const job = repairs.find(r => r.id === id);
       if (!job) return;
+      if (!Array.isArray(job.supplier_links)) job.supplier_links = [];
       job.supplier_links.push(input.value.trim());
       localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+      if (supabaseClient) {
+        try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
+      }
       window.renderRepairs();
       window.showToast('Supplier link added!');
     };
 
+    window.editSupplierLink = function(id, index) {
+      const job = repairs.find(r => r.id === id);
+      if (!job || !job.supplier_links || !job.supplier_links[index]) return;
+      const newUrl = prompt('Edit supplier URL:', job.supplier_links[index]);
+      if (newUrl !== null && newUrl.trim() !== '') {
+        job.supplier_links[index] = newUrl.trim();
+        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+        if (supabaseClient) {
+          try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
+        }
+        window.renderRepairs();
+        window.showToast('Supplier link updated!');
+      }
+    };
+
     window.removeSupplierLink = function(id, index) {
       const job = repairs.find(r => r.id === id);
-      if (!job) return;
+      if (!job || !job.supplier_links) return;
       job.supplier_links.splice(index, 1);
       localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+      if (supabaseClient) {
+        try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
+      }
       window.renderRepairs();
+      window.showToast('Supplier link removed!');
     };
 
     window.getTrackingUrl = function(id) {
@@ -1248,10 +1685,10 @@
 
     window.triggerSmsCustomer = function(id) {
       const job = repairs.find(r => r.id === id);
-      if (!job) return;
+      if (!job || !job.customer_phone) return;
       const url = window.getTrackingUrl(id);
       const text = `Hi ${job.customer_name}, here is your live repair status tracking link from AJD's Wireless: ${url}`;
-      window.open(`sms:${job.customer_phone}?body=${encodeURIComponent(text)}`, '_self');
+      window.open(`sms:${job.customer_phone.replace(/\D/g,'')}?body=${encodeURIComponent(text)}`, '_self');
     };
 
     window.recalculateEditTotals = function() {
@@ -1263,22 +1700,15 @@
 
       document.getElementById('editTotalAmount').value = total;
 
-      // Calculate Discount %
       const discountPercent = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
       const discBadge = document.getElementById('editDiscountPercentBadge');
-      if (discBadge) {
-        discBadge.innerText = `${discountPercent}% (${discount > 0 ? '$' + discount + ' off' : '0%'})`;
-      }
+      if (discBadge) discBadge.innerText = `${discountPercent}%`;
 
-      // Calculate Deposit %
       const deposit = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
       const depositPercent = total > 0 ? Math.round((deposit / total) * 100) : 0;
       const depBadge = document.getElementById('editDepositPercentBadge');
-      if (depBadge) {
-        depBadge.innerText = `${depositPercent}% (${deposit > 0 ? '$' + deposit : '0%'})`;
-      }
+      if (depBadge) depBadge.innerText = `${depositPercent}%`;
 
-      // Calculate Pickup Balance
       const paymentStatus = document.getElementById('editPaymentStatus').value;
       let paid = 0;
       if (paymentStatus === 'paid_in_full') paid = total;
@@ -1288,7 +1718,7 @@
       const pickupDisplay = document.getElementById('editPickupBalanceDisplay');
       if (pickupDisplay) {
         pickupDisplay.innerText = `$${balance}`;
-        pickupDisplay.className = balance > 0 ? 'text-base font-black text-rose-400' : 'text-base font-black text-emerald-400';
+        pickupDisplay.className = balance > 0 ? 'text-base font-black text-rose-600 dark:text-rose-400' : 'text-base font-black text-emerald-600 dark:text-emerald-400';
       }
     };
 
@@ -1296,8 +1726,7 @@
       const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
       const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
       const subtotal = partCost + laborCost;
-      const disc = Math.ceil(subtotal * (percent / 100));
-      document.getElementById('editDiscount').value = disc;
+      document.getElementById('editDiscount').value = Math.ceil(subtotal * (percent / 100));
       window.recalculateEditTotals();
     };
 
@@ -1314,7 +1743,7 @@
       document.getElementById('editRepairId').value = job.id;
       document.getElementById('editTicketBadge').innerText = job.id;
       document.getElementById('editCustomerName').value = job.customer_name;
-      document.getElementById('editCustomerPhone').value = job.customer_phone;
+      document.getElementById('editCustomerPhone').value = job.customer_phone || '';
       document.getElementById('editMakeModel').value = job.make_model;
       document.getElementById('editIssue').value = job.issue;
       document.getElementById('editPartNote').value = job.part_note || '';
@@ -1344,11 +1773,10 @@
       const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
       const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
       const discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
-      const subtotal = partCost + laborCost;
-      const total = Math.max(0, subtotal - discount);
+      const total = Math.max(0, (partCost + laborCost) - discount);
 
       job.customer_name = document.getElementById('editCustomerName').value;
-      job.customer_phone = document.getElementById('editCustomerPhone').value;
+      job.customer_phone = document.getElementById('editCustomerPhone').value.trim();
       job.make_model = document.getElementById('editMakeModel').value;
       job.issue = document.getElementById('editIssue').value;
       job.part_note = document.getElementById('editPartNote').value;
@@ -1370,7 +1798,7 @@
     };
 
     window.deleteRepair = async function(id) {
-      if (!confirm(`Are you sure you want to delete repair ticket ${id}?`)) return;
+      if (!confirm(`Delete repair ticket ${id}?`)) return;
       repairs = repairs.filter(r => r.id !== id);
       localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
       if (supabaseClient) {
@@ -1380,400 +1808,110 @@
       window.showToast(`Ticket ${id} deleted.`);
     };
 
-    window.openInvoiceModal = function(id) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
+    window.renderNavLinksDropdown = function() {
+      const container = document.getElementById('navLinksListContainer');
+      if (!container) return;
+      container.innerHTML = navLinks.map(l => `
+        <a href="${window.escapeHtml(l.url)}" ${l.url.startsWith('tel:') ? '' : 'target="_blank"'} class="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium truncate">
+          ${window.escapeHtml(l.title)}
+        </a>
+      `).join('');
+    };
 
-      const amount = Math.ceil(job.amount);
-      const deposit = Math.ceil(job.deposit_amount);
-      let paid = 0;
-      if (job.payment_status === 'paid_in_full') paid = amount;
-      else if (job.payment_status === 'deposit_paid') paid = deposit;
-      const balance = Math.ceil(Math.max(0, amount - paid));
-
-      const sheet = document.getElementById('invoicePrintSheet');
-      if (sheet) {
-        sheet.innerHTML = `
-          <div class="text-center space-y-1 border-b border-slate-800 pb-4">
-            <h2 class="text-xl font-black text-white">AJD's Wireless Repairs</h2>
-            <p class="text-xs text-slate-400 font-semibold">Pre-Owned Devices, Hardware & Repair Service</p>
-            <p class="text-xs text-amber-400 font-extrabold">📞 Phone / Zelle: (786) 970-7779</p>
-          </div>
-
-          <div class="grid grid-cols-2 text-xs gap-2 py-2 border-b border-slate-800">
-            <div>
-              <p class="text-slate-400 font-bold">CUSTOMER</p>
-              <p class="font-black text-white">${window.escapeHtml(job.customer_name)}</p>
-              <p class="text-slate-300">${window.escapeHtml(job.customer_phone)}</p>
-            </div>
-            <div class="text-right">
-              <p class="text-slate-400 font-bold">TICKET DETAILS</p>
-              <p class="font-black text-amber-400">ID: ${window.escapeHtml(job.id)}</p>
-              <p class="text-slate-300">${new Date(job.created_at).toLocaleDateString()}</p>
-            </div>
-          </div>
-
-          <div class="space-y-2 text-xs">
-            <p class="font-bold text-slate-400 uppercase tracking-wider">Item Being Repaired</p>
-            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 flex justify-between items-center">
-              <div>
-                <p class="font-black text-white text-sm">${window.escapeHtml(job.make_model)}</p>
-                <p class="text-slate-400 text-xs">${window.escapeHtml(job.issue)}</p>
-              </div>
-              <p class="font-black text-amber-400 text-base">$${amount}</p>
-            </div>
-          </div>
-
-          <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs">
-            <div class="flex justify-between font-semibold"><span>Full Total Charge:</span><span class="font-black text-white">$${amount}</span></div>
-            <div class="flex justify-between text-amber-400 font-semibold"><span>Deposit Quoted / Required:</span><span>$${deposit}</span></div>
-            <div class="flex justify-between text-emerald-400 font-semibold"><span>Total Paid To Date:</span><span>-$${paid}</span></div>
-            <div class="flex justify-between text-sm font-black text-rose-400 pt-2 border-t border-slate-800"><span>Remaining Balance Due at Pickup:</span><span>$${balance}</span></div>
-          </div>
-
-          <div class="text-[11px] text-slate-400 space-y-1 pt-2 border-t border-slate-800">
-            <p><strong class="text-slate-300">Payment Handle:</strong> ${window.escapeHtml(job.payment_info)}</p>
-            <p class="italic">Thank you for choosing AJD's Wireless! All screen replacements include a 30-day warranty against manufacturer defect.</p>
-          </div>
-        `;
-      }
-
-      const modal = document.getElementById('invoiceModal');
+    window.openManageNavLinksModal = function() {
+      window.resetNavLinkForm();
+      window.renderNavLinksManageList();
+      const modal = document.getElementById('manageNavLinksModal');
       if (modal) modal.classList.remove('hidden');
     };
 
-    window.closeInvoiceModal = function() {
-      const modal = document.getElementById('invoiceModal');
+    window.closeManageNavLinksModal = function() {
+      const modal = document.getElementById('manageNavLinksModal');
       if (modal) modal.classList.add('hidden');
     };
 
-    window.renderInvoicesList = function() {
-      const container = document.getElementById('invoicesListContainer');
+    window.resetNavLinkForm = function() {
+      document.getElementById('editNavLinkId').value = '';
+      document.getElementById('newLinkTitle').value = '';
+      document.getElementById('newLinkUrl').value = '';
+    };
+
+    window.renderNavLinksManageList = function() {
+      const container = document.getElementById('navLinksManageList');
       if (!container) return;
-
-      if (repairs.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs font-semibold">No repair tickets available.</div>`;
-        return;
-      }
-
-      container.innerHTML = repairs.map(r => `
-        <div class="dark-card p-3.5 rounded-2xl flex items-center justify-between gap-3 border border-slate-800 hover:border-amber-500/40 transition">
-          <div>
-            <span class="text-xs font-black text-white">${window.escapeHtml(r.customer_name)}</span>
-            <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md ml-2 font-mono">${window.escapeHtml(r.id)}</span>
-            <p class="text-xs text-slate-400 mt-0.5">${window.escapeHtml(r.make_model)} - Total: <strong class="text-white">$${Math.ceil(r.amount)}</strong></p>
+      container.innerHTML = navLinks.map(l => `
+        <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-900 p-2 rounded-xl text-xs border border-slate-200 dark:border-slate-800 gap-2">
+          <div class="min-w-0 flex-1">
+            <p class="font-bold text-slate-900 dark:text-white truncate">${window.escapeHtml(l.title)}</p>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${window.escapeHtml(l.url)}</p>
           </div>
-          <button onclick="window.openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow cursor-pointer">
-            📄 View Receipt
-          </button>
+          <button onclick="window.deleteNavLink('${l.id}')" class="text-rose-600 dark:text-rose-400 font-bold px-1.5 py-0.5 bg-rose-500/10 rounded cursor-pointer">✕</button>
         </div>
       `).join('');
     };
 
-    window.renderStoreInventory = function() {
-      const container = document.getElementById('inventoryTableContainer');
-      const search = (document.getElementById('inventorySearchInput')?.value || '').toLowerCase();
-      if (!container) return;
-
-      const filtered = storeItems.filter(i => 
-        i.title.toLowerCase().includes(search) || 
-        i.category.toLowerCase().includes(search)
-      );
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs font-semibold">No store inventory items.</div>`;
-        return;
-      }
-
-      container.innerHTML = `
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="border-b border-slate-800 text-slate-400 text-[10px] uppercase font-black">
-              <th class="py-2.5 px-3">Item</th>
-              <th class="py-2.5 px-3">Category</th>
-              <th class="py-2.5 px-3">Condition</th>
-              <th class="py-2.5 px-3">Price</th>
-              <th class="py-2.5 px-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800/60 font-medium text-slate-200">
-            ${filtered.map(i => `
-              <tr class="hover:bg-slate-900/60">
-                <td class="py-3 px-3 font-bold text-white flex items-center space-x-2">
-                  <img src="${window.escapeHtml(i.imageUrl)}" class="w-8 h-8 rounded-lg object-cover bg-slate-900 border border-slate-800" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=Item'">
-                  <div>
-                    <p class="leading-tight">${window.escapeHtml(i.title)}</p>
-                    <p class="text-[10px] text-slate-500 font-mono">${window.escapeHtml(i.sku || 'N/A')}</p>
-                  </div>
-                </td>
-                <td class="py-3 px-3 text-slate-400">${window.escapeHtml(i.category)}</td>
-                <td class="py-3 px-3"><span class="px-2 py-0.5 bg-slate-900 text-amber-400 text-[10px] font-bold rounded-lg border border-slate-800">${window.escapeHtml(i.condition)}</span></td>
-                <td class="py-3 px-3 font-black text-amber-400">$${Math.ceil(i.price)}</td>
-                <td class="py-3 px-3 text-right space-x-1">
-                  <button onclick="window.openEditInventoryModal('${i.id}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded-lg cursor-pointer">✏️ Edit</button>
-                  <button onclick="window.deleteStoreItem('${i.id}')" class="px-2 py-1 bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[11px] font-bold rounded-lg border border-rose-800/40 cursor-pointer">✕</button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-    };
-
-    window.openAddStoreItemModal = function() {
-      const modal = document.getElementById('addStoreItemModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeAddStoreItemModal = function() {
-      const modal = document.getElementById('addStoreItemModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.handleSaveStoreItem = function(e) {
+    window.handleSaveNavLink = function(e) {
       e.preventDefault();
-      const newItem = {
-        id: window.generateShortId(storeItems, 'INV'),
-        title: document.getElementById('storeItemTitle').value,
-        category: document.getElementById('storeItemCategory').value,
-        price: Math.ceil(parseFloat(document.getElementById('storeItemPrice').value) || 0),
-        condition: document.getElementById('storeItemCondition').value || 'Pre-Owned',
-        sku: document.getElementById('storeItemSku').value || 'SKU-GEN',
-        imageUrl: document.getElementById('storeItemImageUrl').value || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80',
-        description: document.getElementById('storeItemDescription').value,
-        status: 'available'
-      };
-
-      storeItems.unshift(newItem);
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      document.getElementById('addStoreItemForm').reset();
-      window.closeAddStoreItemModal();
-      window.renderStoreInventory();
-      window.showToast('New item added to Online Store!');
+      const title = document.getElementById('newLinkTitle').value.trim();
+      const url = document.getElementById('newLinkUrl').value.trim();
+      navLinks.push({ id: 'nl_' + Date.now(), title, url });
+      localStorage.setItem('ajd_nav_links', JSON.stringify(navLinks));
+      window.resetNavLinkForm();
+      window.renderNavLinksManageList();
+      window.renderNavLinksDropdown();
+      window.showToast('Quick link added');
     };
 
-    window.openEditInventoryModal = function(id) {
-      const item = storeItems.find(i => i.id === id);
-      if (!item) return;
+    window.deleteNavLink = function(id) {
+      navLinks = navLinks.filter(l => l.id !== id);
+      localStorage.setItem('ajd_nav_links', JSON.stringify(navLinks));
+      window.renderNavLinksManageList();
+      window.renderNavLinksDropdown();
+    };
 
-      document.getElementById('editInvId').value = item.id;
-      document.getElementById('editInvTitle').value = item.title;
-      document.getElementById('editInvCategory').value = item.category;
-      document.getElementById('editInvPrice').value = Math.ceil(item.price);
-      document.getElementById('editInvCondition').value = item.condition || '';
-      document.getElementById('editInvSku').value = item.sku || '';
-      document.getElementById('editInvImageUrl').value = item.imageUrl || '';
-      document.getElementById('editInvDescription').value = item.description || '';
+    window.updateShopPhoneDisplay = function() {
+      const headerDisplay = document.getElementById('headerPhoneDisplay');
+      const headerLink = document.getElementById('headerPhoneLink');
+      const settingsDisplay = document.getElementById('settingsPhoneDisplay');
 
-      const modal = document.getElementById('editInventoryModal');
+      if (headerDisplay) headerDisplay.innerText = shopPhone;
+      if (headerLink) headerLink.href = `tel:${shopPhone.replace(/\D/g, '')}`;
+      if (settingsDisplay) settingsDisplay.innerText = shopPhone;
+    };
+
+    window.openEditShopPhoneModal = function() {
+      const input = document.getElementById('shopPhoneInput');
+      if (input) input.value = shopPhone;
+      const modal = document.getElementById('editShopPhoneModal');
       if (modal) modal.classList.remove('hidden');
     };
 
-    window.closeEditInventoryModal = function() {
-      const modal = document.getElementById('editInventoryModal');
+    window.closeEditShopPhoneModal = function() {
+      const modal = document.getElementById('editShopPhoneModal');
       if (modal) modal.classList.add('hidden');
     };
 
-    window.handleUpdateInventoryItem = function(e) {
+    window.handleSaveShopPhone = function(e) {
       e.preventDefault();
-      const id = document.getElementById('editInvId').value;
-      const item = storeItems.find(i => i.id === id);
-      if (!item) return;
-
-      item.title = document.getElementById('editInvTitle').value;
-      item.category = document.getElementById('editInvCategory').value;
-      item.price = Math.ceil(parseFloat(document.getElementById('editInvPrice').value) || 0);
-      item.condition = document.getElementById('editInvCondition').value;
-      item.sku = document.getElementById('editInvSku').value;
-      item.imageUrl = document.getElementById('editInvImageUrl').value;
-      item.description = document.getElementById('editInvDescription').value;
-
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      window.closeEditInventoryModal();
-      window.renderStoreInventory();
-      window.showToast(`Updated ${item.title}`);
-    };
-
-    window.deleteStoreItem = function(id) {
-      if (!confirm('Delete this item from store inventory?')) return;
-      storeItems = storeItems.filter(i => i.id !== id);
-      localStorage.setItem('ajd_store_items', JSON.stringify(storeItems));
-      window.renderStoreInventory();
-      window.showToast('Item deleted from store.');
-    };
-
-    window.renderPurchaseRequests = function() {
-      const container = document.getElementById('purchaseRequestsContainer');
-      const badge = document.getElementById('requestsCountBadge');
-      const storeBadge = document.getElementById('storeBadge');
-      if (!container) return;
-
-      const pending = purchaseRequests.filter(r => r.status === 'pending');
-      if (badge) badge.innerText = `${pending.length} Pending`;
-      if (storeBadge) {
-        if (pending.length > 0) {
-          storeBadge.innerText = pending.length;
-          storeBadge.classList.remove('hidden');
-        } else {
-          storeBadge.classList.add('hidden');
-        }
-      }
-
-      if (purchaseRequests.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs font-semibold">No customer purchase requests.</div>`;
-        return;
-      }
-
-      container.innerHTML = purchaseRequests.map(req => `
-        <div class="dark-card p-4 rounded-2xl border ${req.status === 'pending' ? 'border-amber-500/40 bg-slate-900/40' : 'border-slate-800'} space-y-2.5 text-xs">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-black text-white text-sm">${window.escapeHtml(req.customerName)}</span>
-              <p class="text-amber-400 font-extrabold mt-0.5">Item: ${window.escapeHtml(req.itemTitle)} ($${Math.ceil(req.itemPrice)})</p>
-              <p class="text-slate-400 text-[11px]">📞 ${window.escapeHtml(req.customerPhone)} | ✉️ ${window.escapeHtml(req.customerEmail || 'No email')}</p>
-            </div>
-            <span class="px-2 py-0.5 text-[10px] font-black rounded-lg uppercase ${req.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : req.status === 'declined' ? 'bg-rose-950 text-rose-400 border border-rose-800/40' : 'bg-amber-950 text-amber-400 border border-amber-800/40'}">${req.status}</span>
-          </div>
-
-          ${req.notes ? `<p class="text-slate-300 text-xs bg-slate-950 p-2 rounded-xl italic">"${window.escapeHtml(req.notes)}"</p>` : ''}
-
-          <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
-            ${req.status === 'pending' ? `
-              <button onclick="window.approvePurchaseRequest('${req.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl cursor-pointer">
-                ✅ Approve
-              </button>
-              <button onclick="window.declinePurchaseRequest('${req.id}')" class="px-3 py-1 bg-rose-900 hover:bg-rose-800 text-rose-200 font-bold rounded-xl cursor-pointer">
-                ❌ Decline
-              </button>
-            ` : ''}
-            
-            <a href="mailto:${window.escapeHtml(req.customerEmail)}?subject=${encodeURIComponent("Update on your Purchase Request - AJD's Wireless")}&body=${encodeURIComponent(`Hi ${req.customerName},\n\nYour request for "${req.itemTitle}" has been ${req.status}.\n\nThank you,\nAJD's Wireless Store\n786-970-7779`)}" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl cursor-pointer">
-              ✉️ Email Customer
-            </a>
-          </div>
-        </div>
-      `).join('');
-    };
-
-    window.approvePurchaseRequest = function(reqId) {
-      const req = purchaseRequests.find(r => r.id === reqId);
-      if (!req) return;
-      req.status = 'approved';
-      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
-      window.renderPurchaseRequests();
-      window.showToast(`Request ${reqId} Approved! Customer notified.`);
-    };
-
-    window.declinePurchaseRequest = function(reqId) {
-      const req = purchaseRequests.find(r => r.id === reqId);
-      if (!req) return;
-      req.status = 'declined';
-      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
-      window.renderPurchaseRequests();
-      window.showToast(`Request ${reqId} Declined.`);
-    };
-
-    window.openScannerModal = function() {
-      const modal = document.getElementById('scannerModal');
-      if (modal) modal.classList.remove('hidden');
-
-      if (window.Html5Qrcode) {
-        try {
-          html5QrScanner = new Html5Qrcode("qrReader");
-          html5QrScanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 200, height: 200 } },
-            (decodedText) => {
-              document.getElementById('storeItemSku').value = decodedText;
-              window.showToast(`Scanned Code: ${decodedText}`);
-              window.closeScannerModal();
-            },
-            () => {}
-          ).catch(() => {});
-        } catch(e){}
-      }
-    };
-
-    window.closeScannerModal = function() {
-      if (html5QrScanner) {
-        try { html5QrScanner.stop().then(() => html5QrScanner.clear()).catch(() => {}); } catch(e){}
-      }
-      const modal = document.getElementById('scannerModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.setScannerZoom = function(zoomVal) {
-      if (html5QrScanner) {
-        try {
-          const capabilities = html5QrScanner.getRunningTrackCapabilities();
-          if (capabilities && capabilities.zoom) {
-            html5QrScanner.applyVideoConstraints({ advanced: [{ zoom: zoomVal }] });
-          }
-        } catch(e){}
-      }
-    };
-
-    window.openManageMethodsModal = function() {
-      window.renderPaymentMethodsList();
-      const modal = document.getElementById('manageMethodsModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeManageMethodsModal = function() {
-      const modal = document.getElementById('manageMethodsModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.renderPaymentMethodsList = function() {
-      const container = document.getElementById('paymentMethodsList');
-      if (!container) return;
-
-      container.innerHTML = paymentMethods.map(m => `
-        <div class="flex items-center justify-between bg-slate-900 p-2 rounded-xl text-xs">
-          <div>
-            <p class="font-bold text-white">${window.escapeHtml(m.name)}</p>
-            <p class="text-[10px] text-slate-400">${window.escapeHtml(m.handle)}</p>
-          </div>
-          <button onclick="window.deletePaymentMethod('${m.id}')" class="text-rose-400 font-bold px-1.5 cursor-pointer">✕</button>
-        </div>
-      `).join('');
-    };
-
-    window.handleSavePaymentMethod = function(e) {
-      e.preventDefault();
-      const name = document.getElementById('newMethodName').value;
-      const handle = document.getElementById('newMethodHandle').value;
-
-      paymentMethods.push({ id: 'm_' + Date.now(), name, handle });
-      localStorage.setItem('ajd_payment_methods', JSON.stringify(paymentMethods));
-
-      document.getElementById('newMethodName').value = '';
-      document.getElementById('newMethodHandle').value = '';
-
-      window.renderPaymentMethodsList();
-      window.populatePaymentMethodsDropdown();
-      window.showToast('Payment handle added!');
-    };
-
-    window.deletePaymentMethod = function(id) {
-      paymentMethods = paymentMethods.filter(m => m.id !== id);
-      localStorage.setItem('ajd_payment_methods', JSON.stringify(paymentMethods));
-      window.renderPaymentMethodsList();
-      window.populatePaymentMethodsDropdown();
-    };
-
-    window.toggleThemeMode = function() {
-      document.documentElement.classList.toggle('dark');
-      window.showToast('Theme mode toggled.');
+      const input = document.getElementById('shopPhoneInput');
+      if (!input) return;
+      shopPhone = input.value.trim() || '(786) 970-7779';
+      localStorage.setItem('ajd_shop_phone', shopPhone);
+      window.updateShopPhoneDisplay();
+      window.closeEditShopPhoneModal();
+      window.showToast('Shop phone updated');
     };
 
     window.onload = async function() {
+      window.applyTheme();
+      window.updateShopPhoneDisplay();
       window.populatePaymentMethodsDropdown();
+      window.renderNavLinksDropdown();
       window.sanitizeRepairIds();
       await window.fetchRepairsFromCloud();
+      window.renderCustomerRequests();
       window.renderRepairs();
     };
   </script>
 </body>
 </html>
-```
