@@ -9,11 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AJD Repairs">
   
-  <!-- Apple Touch & Favicon SVG Data URIs -->
   <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
-  <!-- Tailwind CSS & CDN Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -25,16 +23,8 @@
         extend: {
           colors: {
             brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a'
+              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+              400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8'
             }
           }
         }
@@ -49,66 +39,29 @@
       -webkit-overflow-scrolling: touch;
       overflow-x: hidden;
     }
-    .dark-card {
-      background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-    }
-    .dark .dark-card {
-      background-color: #0f172a;
-      border: 1px solid #1e293b;
-    }
-    .blue-glow {
-      box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.35);
-    }
+    .dark-card { background-color: #ffffff; border: 1px solid #e2e8f0; }
+    .dark .dark-card { background-color: #0f172a; border: 1px solid #1e293b; }
+    .blue-glow { box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.35); }
     
-    /* Thermal Roll Style Preview Styling */
-    .thermal-receipt-roll {
-      width: 100%;
-      max-width: 330px;
-      margin: 0 auto;
-      background: #ffffff !important;
-      color: #0f172a !important;
+    .thermal-paper {
       font-family: 'Courier New', Courier, monospace;
-      padding: 18px 16px;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-    }
-    .thermal-receipt-roll * {
+      background-color: #ffffff !important;
       color: #000000 !important;
+      width: 100%; max-width: 320px; margin: 0 auto; padding: 16px;
+      border: 1px dashed #cccccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+    .thermal-paper * { color: #000000 !important; }
 
-    /* Isolated Thermal Roll Print Rules (iOS / Android PDF & POS Printer) */
     @media print {
-      body * {
-        visibility: hidden !important;
-      }
-      #invoiceModal, #invoiceModal * {
-        visibility: visible !important;
-      }
+      body * { visibility: hidden !important; }
+      #invoiceModal, #invoiceModal * { visibility: visible !important; }
       #invoiceModal {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
+        position: absolute !important; left: 0 !important; top: 0 !important;
+        width: 100% !important; height: auto !important; background: #ffffff !important;
+        color: #000000 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;
       }
-      .no-print {
-        display: none !important;
-      }
-      .thermal-receipt-roll {
-        width: 80mm !important;
-        max-width: 100% !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin: 0 auto !important;
-        padding: 10px !important;
-      }
+      .no-print { display: none !important; }
+      .thermal-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
     }
   </style>
 </head>
@@ -117,7 +70,6 @@
   <header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       
-      <!-- Brand Logo & Badge -->
       <div class="flex items-center justify-between w-full sm:w-auto">
         <div class="flex items-center space-x-3">
           <div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10">
@@ -135,15 +87,9 @@
           </div>
         </div>
 
-        <!-- Header Quick Contact -->
-        <div class="flex items-center space-x-1.5 bg-blue-600/10 px-2.5 py-1 rounded-xl border border-blue-500/20 text-xs font-black text-blue-600 dark:text-blue-400">
-          <a id="headerPhoneLink" href="tel:7869707779" class="hover:underline flex items-center gap-1">
-            📞 <span id="headerPhoneDisplay">(786) 970-7779</span>
-          </a>
-          <button onclick="window.openEditShopPhoneModal()" title="Edit Shop Contact Number" class="hover:text-slate-900 dark:hover:text-white p-0.5 rounded cursor-pointer text-[11px]">
-            ✏️
-          </button>
-        </div>
+        <a href="tel:3055550147" data-shop-tel class="sm:hidden text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2.5 py-1 rounded-xl border border-blue-500/20">
+          📞 <span data-shop-phone>(305) 555-0147</span>
+        </a>
       </div>
 
       <div class="flex items-center justify-between w-full sm:w-auto gap-2">
@@ -151,56 +97,39 @@
           <button id="tabBtnRepairs" onclick="window.switchTab('repairs')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white font-black shadow transition cursor-pointer">
             💻 Repairs
           </button>
-          <button id="tabBtnRequests" onclick="window.switchTab('requests')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
-            <span>📩 Customer Inbox</span>
-            <span id="navReqBadge" class="hidden bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
-          </button>
           <button id="tabBtnInvoices" onclick="window.switchTab('invoices')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
             📄 Receipts
           </button>
           <button id="tabBtnStore" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
-            <span>🛒 Store</span>
+            <span>📥 Requests</span>
             <span id="storeBadge" class="hidden bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
           </button>
         </nav>
 
         <div class="flex items-center space-x-1.5 relative">
-          <!-- Quick Links Menu -->
           <div class="relative">
             <button onclick="window.toggleDropdown('navLinksDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
               🔗 Links
             </button>
             <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-2 space-y-1 text-xs font-semibold">
-              <div id="navLinksListContainer" class="space-y-1">
-                <!-- Dynamically populated links -->
-              </div>
-              <div class="pt-1.5 mt-1.5 border-t border-slate-200 dark:border-slate-800">
-                <button onclick="window.openManageNavLinksModal(); window.toggleDropdown('navLinksDropdownMenu');" class="w-full text-left px-3 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer font-bold flex items-center justify-between text-[11px]">
-                  <span>⚙️ Manage Links</span>
-                  <span class="text-[10px] text-slate-400">+ Add / Edit</span>
-                </button>
-              </div>
+              <a href="request.html" target="_blank" class="block px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800">📝 Customer Request Form</a>
+              <a href="track.html" target="_blank" class="block px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800">🔍 Customer Live Tracker</a>
+              <a href="tel:3055550147" data-shop-tel class="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">📞 Call Shop <span data-shop-phone>(305) 555-0147</span></a>
             </div>
           </div>
 
-          <!-- Settings Menu -->
           <div class="relative">
             <button onclick="window.toggleDropdown('settingsDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
-              ⚙ Settings
+              ⚙️ Settings
             </button>
-            <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-3 space-y-2 text-xs font-semibold">
-              <button onclick="window.openManageMethodsModal(); window.toggleDropdown('settingsDropdownMenu');" class="w-full text-left px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between">
-                <span>💳 Payment Handles</span>
-                <span class="text-[10px] text-slate-400">Setup</span>
-              </button>
+            <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-3 space-y-3 text-xs font-semibold">
+              <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Shop Phone Number</label>
+                <input type="text" id="shopPhoneInput" oninput="window.updateShopPhoneSetting(this.value)" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-bold outline-none">
+              </div>
 
-              <button onclick="window.openEditShopPhoneModal(); window.toggleDropdown('settingsDropdownMenu');" class="w-full text-left px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between">
-                <span>📞 Shop Phone</span>
-                <span id="settingsPhoneDisplay" class="text-[10px] text-slate-400 truncate max-w-[90px]">(786) 970-7779</span>
-              </button>
-              
               <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
-                <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1 px-1">Theme Preference</label>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Theme Preference</label>
                 <select id="themeSelectSetting" onchange="window.setThemeMode(this.value)" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-bold outline-none cursor-pointer">
                   <option value="dark">🌙 Dark Mode</option>
                   <option value="light">☀️ Light Mode</option>
@@ -212,7 +141,6 @@
         </div>
 
       </div>
-
     </div>
   </header>
 
@@ -220,27 +148,27 @@
 
     <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Revenue</span>
+        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Total Revenue</span>
         <p id="statTotalRev" class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400">$0</p>
       </div>
       <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Deposits Collected</span>
+        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Deposits Collected</span>
         <p id="statDeposits" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">$0</p>
       </div>
       <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Unpaid Balance</span>
+        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Unpaid Balance</span>
         <p id="statUnpaid" class="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400">$0</p>
       </div>
       <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Repairs</span>
+        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Active Repairs</span>
         <p id="statActiveJobs" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">0</p>
       </div>
     </div>
 
-    <!-- REPAIRS VIEW -->
     <section id="viewRepairs" class="space-y-5">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
+        <!-- LEFT COLUMN: Sticky Check-In Form -->
         <div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-blue-500/30 blue-glow lg:sticky lg:top-20 z-10">
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
@@ -250,32 +178,31 @@
           </div>
 
           <form id="intakeForm" class="space-y-3.5" onsubmit="window.handleCreateRepair(event)">
-            
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
-                <input type="text" id="intakeName" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="Kayla Smith">
+                <input type="text" id="intakeName" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kayla Smith">
               </div>
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
-                <input type="tel" id="intakePhone" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="(786) 970-7779">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+                <input type="tel" id="intakePhone" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="(305) 555-0147">
               </div>
             </div>
 
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make & Model *</label>
-              <input type="text" id="intakeDevice" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="iPhone 13 Pro 128GB">
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make, Model & Model Number *</label>
+              <input type="text" id="intakeDevice" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="iPhone 14 Pro Max 256GB (A2243)">
             </div>
 
             <div>
               <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
-              <input type="text" id="intakeIssue" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400 dark:placeholder-slate-600" placeholder="Cracked OLED display & battery replacement">
+              <input type="text" id="intakeIssue" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cracked OLED display & battery replacement">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <div class="sm:col-span-2">
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Internal Hardware / Part Notes</label>
-                <input type="text" id="intakePartNote" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none placeholder-slate-400 dark:placeholder-slate-600" placeholder="Premium Soft OLED Assembly">
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Part Notes</label>
+                <input type="text" id="intakePartNote" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Premium Soft OLED">
               </div>
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Part Cost ($)</label>
@@ -298,11 +225,11 @@
               <div class="flex items-center justify-between">
                 <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Discount Amount ($)</label>
                 <div class="flex gap-1 text-[10px] font-extrabold">
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">0%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">5%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">10%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">15%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-300 dark:hover:bg-slate-700">20%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">0%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">5%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">10%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">15%</button>
+                  <button type="button" onclick="window.applyIntakeDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">20%</button>
                 </div>
               </div>
               <input type="number" id="intakeDiscount" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
@@ -310,14 +237,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <div class="flex items-center justify-between mb-1">
-                  <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Required Deposit ($)</label>
-                  <div class="flex gap-1 text-[9px] font-extrabold">
-                    <button type="button" onclick="window.applyIntakeDepositPreset(0.25)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">25%</button>
-                    <button type="button" onclick="window.applyIntakeDepositPreset(0.50)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">50%</button>
-                    <button type="button" onclick="window.applyIntakeDepositPreset(1.00)" class="px-1 py-0.2 bg-slate-200 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded">100%</button>
-                  </div>
-                </div>
+                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Required Deposit ($)</label>
                 <input type="number" id="intakeDeposit" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0">
               </div>
 
@@ -331,26 +251,18 @@
               </div>
             </div>
 
-            <div class="space-y-2">
-              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Payment Handle</label>
-              <select id="intakePaymentMethod" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-800 dark:text-slate-200 font-medium outline-none cursor-pointer">
-                <!-- Dynamically populated -->
-              </select>
-            </div>
-
             <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
               <span>➕ Register Repair Ticket</span>
             </button>
-
           </form>
         </div>
 
+        <!-- RIGHT COLUMN: Active Repair Feed -->
         <div class="lg:col-span-7 space-y-3.5">
-          
           <div class="dark-card p-3 rounded-2xl flex flex-col sm:flex-row gap-2.5 justify-between items-center">
             <div class="relative w-full sm:w-auto flex-1">
-              <input type="text" id="repairSearchInput" oninput="window.renderRepairs()" placeholder="Search customer, ticket ID (e.g. AJD-7K3), device..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none">
-              <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <input type="text" id="repairSearchInput" oninput="window.renderRepairs()" placeholder="Search customer, ticket ID (e.g. AJD-7K3), device..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 outline-none">
+              <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
 
             <select id="repairStatusFilter" onchange="window.renderRepairs()" class="w-full sm:w-auto px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 font-bold outline-none cursor-pointer">
@@ -366,111 +278,62 @@
               Loading active repair tickets...
             </div>
           </div>
-
         </div>
 
       </div>
     </section>
 
-    <section id="viewRequests" class="hidden space-y-4">
-      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-rose-500/30">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div>
-            <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span>📩 Customer Ticket Requests Inbox</span>
-            </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Review customer requests submitted via online customer intake portal (customer_intake.html)</p>
-          </div>
-          <span id="requestsHeaderBadge" class="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full">0 Pending Requests</span>
-        </div>
-
-        <div id="customerRequestsListContainer" class="space-y-3">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-    </section>
-
-    <!-- RECEIPTS VIEW -->
     <section id="viewInvoices" class="hidden space-y-4">
       <div class="dark-card p-5 rounded-3xl space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <h2 class="text-base font-black text-slate-900 dark:text-white">📄 Printable Customer Thermal Receipts</h2>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Select a ticket to render a 320px/80mm thermal roll print preview & PDF exporter</span>
+          <h2 class="text-base font-black text-slate-900 dark:text-white">📄 Printable Thermal Customer Receipts</h2>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Select a ticket to view standard 80mm thermal roll format</span>
         </div>
-
-        <div id="invoicesListContainer" class="space-y-2.5">
-          <!-- Dynamically populated -->
-        </div>
+        <div id="invoicesListContainer" class="space-y-2.5"></div>
       </div>
     </section>
 
-    <!-- STORE VIEW -->
     <section id="viewStore" class="hidden space-y-5">
       <div class="dark-card p-4 sm:p-5 rounded-3xl border border-blue-500/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
           <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <span>🛒 Online Store & Hardware Manager</span>
+            <span>📥 Customer Ticket Requests Inbox</span>
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage items listed on your public store & process purchase requests</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Review customer submissions from request.html, approve with quotes, or decline with reasons.</p>
         </div>
-
-        <button onclick="window.openAddStoreItemModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center space-x-1.5">
-          <span>➕ Add Item For Sale</span>
-        </button>
       </div>
 
       <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3">
         <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <span>📥 Customer Store Purchase Requests</span>
-          </h3>
+          <h3 class="text-sm font-black text-slate-900 dark:text-white">Incoming Ticket Requests</h3>
           <span id="requestsCountBadge" class="text-[10px] font-black bg-blue-600/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30">0 Pending</span>
         </div>
 
         <div id="purchaseRequestsContainer" class="space-y-2.5">
-          <div class="text-center py-6 text-slate-500 text-xs font-semibold">No pending purchase requests.</div>
-        </div>
-      </div>
-
-      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white">📦 Active Store Inventory</h3>
-          <input type="text" id="inventorySearchInput" oninput="window.renderStoreInventory()" placeholder="Search inventory items..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none w-full sm:w-64">
-        </div>
-
-        <div id="inventoryTableContainer" class="overflow-x-auto">
-          <!-- Dynamically populated -->
+          <div class="text-center py-6 text-slate-500 text-xs font-semibold">No pending requests.</div>
         </div>
       </div>
     </section>
 
   </main>
 
-  <div id="invoiceModal" onclick="window.handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-900/70 dark:bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-4 sm:p-5 shadow-2xl space-y-3 max-h-[95vh] overflow-y-auto">
-      
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5 no-print">
-        <h3 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-          <span>🧾 Thermal Roll Receipt</span>
-        </h3>
+  <!-- RECEIPT MODAL -->
+  <div id="invoiceModal" onclick="window.handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
+    <div class="dark-card rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 no-print">
+        <h3 class="text-sm font-black text-slate-900 dark:text-white">🧾 Thermal Receipt Preview</h3>
         <div class="flex items-center space-x-2">
-          <button onclick="window.print()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
-            🖨 Print / Save PDF
+          <button onclick="window.print()" class="px-3 py-1.5 bg-blue-600 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+            🖨️ Print / Save PDF
           </button>
-          <button onclick="window.closeInvoiceModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
+          <button onclick="window.closeInvoiceModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
         </div>
       </div>
-
-      <!-- Thermal Paper Container -->
-      <div id="invoicePrintSheet">
-        <!-- Dynamically rendered Thermal Receipt -->
-      </div>
+      <div id="invoicePrintSheet" class="thermal-paper space-y-3 text-center"></div>
     </div>
   </div>
 
-  <!-- EDIT REPAIR MODAL -->
+  <!-- EDIT TICKET MODAL -->
   <div id="editRepairModal" onclick="window.handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
     <div class="dark-card rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
@@ -478,9 +341,7 @@
           <span>✏️ Edit Repair Ticket</span>
           <span id="editTicketBadge" class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20"></span>
         </h3>
-        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
       </div>
 
       <form id="editRepairForm" onsubmit="window.handleUpdateRepair(event)" class="space-y-3.5 text-xs">
@@ -489,22 +350,22 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
-            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
-            <input type="tel" id="editCustomerPhone" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+            <input type="tel" id="editCustomerPhone" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make & Model *</label>
-          <input type="text" id="editMakeModel" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make, Model & Model Number *</label>
+          <input type="text" id="editMakeModel" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
         </div>
 
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
-          <input type="text" id="editIssue" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="editIssue" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
         </div>
 
         <div class="grid grid-cols-3 gap-2.5">
@@ -523,21 +384,9 @@
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Labor Charge ($)</label>
             <input type="number" id="editLaborCost" min="0" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
           </div>
-
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="font-bold text-slate-700 dark:text-slate-300">Discount Amount ($)</label>
-              <span id="editDiscountPercentBadge" class="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-500/20">0%</span>
-            </div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Discount ($)</label>
             <input type="number" id="editDiscount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-            
-            <div class="flex gap-1 mt-1 text-[9px] font-extrabold">
-              <button type="button" onclick="window.applyEditDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">0%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">5%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">10%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">15%</button>
-              <button type="button" onclick="window.applyEditDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded">20%</button>
-            </div>
           </div>
         </div>
 
@@ -546,20 +395,9 @@
             <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Calculated Total ($)</label>
             <input type="number" id="editTotalAmount" readonly class="w-full px-3 py-2 bg-blue-50 dark:bg-slate-900 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-black outline-none">
           </div>
-
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="font-bold text-slate-700 dark:text-slate-300">Deposit Amount ($)</label>
-              <span id="editDepositPercentBadge" class="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-500/20">0%</span>
-            </div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Deposit Amount ($)</label>
             <input type="number" id="editDepositAmount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-            
-            <div class="flex gap-1 mt-1 text-[9px] font-extrabold">
-              <button type="button" onclick="window.applyEditDepositPreset(0.25)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">25%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(0.50)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">50%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(0.75)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">75%</button>
-              <button type="button" onclick="window.applyEditDepositPreset(1.00)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded">100%</button>
-            </div>
           </div>
         </div>
 
@@ -572,253 +410,14 @@
               <option value="paid_in_full">🟢 Paid in Full</option>
             </select>
           </div>
-
           <div class="bg-slate-100 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
-            <span class="text-[9px] font-black uppercase text-slate-500">Balance Due at Pickup</span>
+            <span class="text-[9px] font-black uppercase text-slate-500">Pickup Balance</span>
             <p id="editPickupBalanceDisplay" class="text-base font-black text-rose-600 dark:text-rose-400">$0</p>
           </div>
         </div>
 
         <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
           Save Ticket Changes
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- STORE ITEM MODALS -->
-  <div id="addStoreItemModal" onclick="window.handleBackdropClick(event, 'addStoreItemModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white">🛍️ Add Store Item For Sale</h3>
-        <button onclick="window.closeAddStoreItemModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <form id="addStoreItemForm" onsubmit="window.handleSaveStoreItem(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Title *</label>
-          <input type="text" id="storeItemTitle" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="iPhone 13 Pro 128GB - Unlocked">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Category</label>
-            <select id="storeItemCategory" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-              <option value="Phones">Phones</option>
-              <option value="Tablets">Tablets</option>
-              <option value="Laptops">Laptops</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Parts">Parts & Hardware</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Sale Price ($) *</label>
-            <input type="number" id="storeItemPrice" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none" placeholder="550">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Condition</label>
-            <input type="text" id="storeItemCondition" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Pre-Owned Excellent">
-          </div>
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="font-bold text-slate-700 dark:text-slate-300">SKU / Barcode</label>
-              <button type="button" onclick="window.openScannerModal()" class="text-[10px] font-black text-blue-600 dark:text-blue-400 hover:underline">📷 Scan</button>
-            </div>
-            <input type="text" id="storeItemSku" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="IP13P-128">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Images</label>
-          <div class="flex gap-1.5">
-            <input type="url" id="addImgUrlInput" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
-            <button type="button" onclick="window.addStoreImageFromInput('add')" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shrink-0 cursor-pointer">+ Add Image</button>
-          </div>
-          <p class="text-[10px] text-slate-400 mt-1">First image will be used as the main thumbnail cover.</p>
-          
-          <div id="addImagesList" class="grid grid-cols-3 gap-2 mt-2 max-h-36 overflow-y-auto p-1 bg-slate-100 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
-            <!-- Dynamic thumbnails -->
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description</label>
-          <textarea id="storeItemDescription" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Fully tested, battery 92%, 30-day shop warranty included."></textarea>
-        </div>
-
-        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
-          Save Item To Store
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div id="editInventoryModal" onclick="window.handleBackdropClick(event, 'editInventoryModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white">✏️ Edit Inventory Item</h3>
-        <button onclick="window.closeEditInventoryModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <form id="editInventoryForm" onsubmit="window.handleUpdateInventoryItem(event)" class="space-y-3 text-xs">
-        <input type="hidden" id="editInvId">
-        
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Item Title *</label>
-          <input type="text" id="editInvTitle" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Category</label>
-            <select id="editInvCategory" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-              <option value="Phones">Phones</option>
-              <option value="Tablets">Tablets</option>
-              <option value="Laptops">Laptops</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Parts">Parts & Hardware</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Sale Price ($) *</label>
-            <input type="number" id="editInvPrice" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Condition</label>
-            <input type="text" id="editInvCondition" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">SKU / Barcode</label>
-            <input type="text" id="editInvSku" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Manage Images</label>
-          <div class="flex gap-1.5">
-            <input type="url" id="editImgUrlInput" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
-            <button type="button" onclick="window.addStoreImageFromInput('edit')" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shrink-0 cursor-pointer">+ Add Image</button>
-          </div>
-          <p class="text-[10px] text-slate-400 mt-1">First photo is cover thumbnail.</p>
-
-          <div id="editImagesList" class="grid grid-cols-3 gap-2 mt-2 max-h-40 overflow-y-auto p-1 bg-slate-100 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
-            <!-- Dynamic thumbnails -->
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description</label>
-          <textarea id="editInvDescription" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none"></textarea>
-        </div>
-
-        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
-          Update Item Details
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- SCANNER MODAL -->
-  <div id="scannerModal" onclick="window.handleBackdropClick(event, 'scannerModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[101] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-          <span>📷 Scan Barcode / UPC</span>
-        </h3>
-        <button onclick="window.closeScannerModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <div class="relative rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 min-h-[220px]">
-        <div id="qrReader" class="w-full h-full"></div>
-      </div>
-
-      <div class="flex items-center justify-center gap-2 pt-1 text-[11px] font-bold">
-        <button type="button" onclick="window.setScannerZoom(0.5)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">0.5x Wide</button>
-        <button type="button" onclick="window.setScannerZoom(1.0)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">1.0x Normal</button>
-        <button type="button" onclick="window.setScannerZoom(2.0)" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl">2.0x Zoom</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MANAGE METHODS MODAL -->
-  <div id="manageMethodsModal" onclick="window.handleBackdropClick(event, 'manageMethodsModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-slate-900 dark:text-white">💳 Payment Handles Setup</h3>
-        <button onclick="window.closeManageMethodsModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <form onsubmit="window.handleSavePaymentMethod(event)" class="space-y-2 text-xs">
-        <input type="text" id="newMethodName" required placeholder="Method Name (e.g. Zelle / Apple Pay)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        <input type="text" id="newMethodHandle" required placeholder="Payment Info (e.g. 786-970-7779)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">Add Handle</button>
-      </form>
-
-      <div id="paymentMethodsList" class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 max-h-48 overflow-y-auto">
-        <!-- Dynamically populated -->
-      </div>
-    </div>
-  </div>
-
-  <!-- MANAGE NAV LINKS MODAL -->
-  <div id="manageNavLinksModal" onclick="window.handleBackdropClick(event, 'manageNavLinksModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-slate-900 dark:text-white">🔗 Quick Links Manager</h3>
-        <button onclick="window.closeManageNavLinksModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <form onsubmit="window.handleSaveNavLink(event)" class="space-y-2 text-xs">
-        <input type="hidden" id="editNavLinkId">
-        <input type="text" id="newLinkTitle" required placeholder="Link Label (e.g. 📩 Customer Portal)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        <input type="text" id="newLinkUrl" required placeholder="URL (e.g. customer_intake.html or store.html)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        <div class="flex items-center gap-2">
-          <button type="submit" id="saveLinkBtn" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">Add Link</button>
-          <button type="button" id="cancelEditLinkBtn" onclick="window.resetNavLinkForm()" class="hidden px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer">Cancel</button>
-        </div>
-      </form>
-
-      <div id="navLinksManageList" class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 max-h-52 overflow-y-auto">
-        <!-- Dynamically populated -->
-      </div>
-    </div>
-  </div>
-
-  <!-- EDIT SHOP PHONE MODAL -->
-  <div id="editShopPhoneModal" onclick="window.handleBackdropClick(event, 'editShopPhoneModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-        <h3 class="text-xs font-black text-slate-900 dark:text-white">📞 Edit Shop Contact Number</h3>
-        <button onclick="window.closeEditShopPhoneModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      </div>
-
-      <form onsubmit="window.handleSaveShopPhone(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Shop Contact Phone Number</label>
-          <input type="tel" id="shopPhoneInput" required placeholder="(786) 970-7779" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-        </div>
-        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">
-          Save Contact Number
         </button>
       </form>
     </div>
@@ -831,219 +430,79 @@
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
 
-    const defaultPaymentMethods = [
-      { id: 'm1', name: 'Zelle / Apple Pay', handle: '786-970-7779' },
-      { id: 'm2', name: 'Cash', handle: 'Accepted in store at pickup' }
-    ];
-
-    const defaultNavLinks = [
-      { id: 'nl1', title: '📩 Customer Intake Request Form', url: 'customer_intake.html' },
-      { id: 'nl2', title: '🛍️ Customer Storefront', url: 'store.html' },
-      { id: 'nl3', title: '🔍 Customer Live Tracker', url: 'track.html' },
-      { id: 'nl4', title: '📞 Call Shop (786) 970-7779', url: 'tel:7869707779' }
-    ];
-
-    const defaultStoreItems = [
-      {
-        id: 'INV-1001',
-        title: 'iPhone 13 Pro 128GB - Graphite (Unlocked)',
-        category: 'Phones',
-        price: 550,
-        condition: 'Pre-Owned Excellent',
-        sku: 'IP13P-128-GR',
-        images: ['https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80'],
-        imageUrl: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80',
-        description: 'Original screen, battery health 92%, fully tested and sanitized. 30-day warranty.',
-        status: 'available'
-      }
-    ];
-
-    const defaultRepairs = [
-      {
-        id: 'AJD-7K3',
-        customer_name: 'Kayla Smith',
-        customer_phone: '(786) 970-7779',
-        make_model: 'MacBook Air 13" M1',
-        issue: 'Cracked LCD Display',
-        part_note: 'Retina Display Panel Assembly',
-        part_cost: 180,
-        labor_cost: 120,
-        amount: 300,
-        discount: 0,
-        deposit_amount: 150,
-        payment_status: 'deposit_paid',
-        payment_info: 'Zelle / Apple Pay: 786-970-7779',
-        status: 'in-progress',
-        supplier_links: ['https://www.injuredgadgets.com'],
-        created_at: new Date().toISOString()
-      }
-    ];
-
-    const defaultCustomerRequests = [
-      {
-        id: 'REQ-101',
-        customer_name: 'Marcus Vance',
-        customer_phone: '(786) 555-0192',
-        customer_email: 'marcus.vance@example.com',
-        make_model: 'iPhone 14 Pro 128GB',
-        issue: 'Cracked front OLED glass screen after drop',
-        preferred_time: 'Today - Afternoon',
-        passcode: '1234',
-        status: 'pending',
-        created_at: new Date().toISOString()
-      }
-    ];
-
-    let repairs = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || defaultRepairs;
-    let storeItems = JSON.parse(localStorage.getItem('ajd_store_items')) || defaultStoreItems;
-    let customerRequests = JSON.parse(localStorage.getItem('ajd_customer_requests')) || defaultCustomerRequests;
+    let repairs = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
     let purchaseRequests = JSON.parse(localStorage.getItem('ajd_purchase_requests')) || [];
-    let paymentMethods = JSON.parse(localStorage.getItem('ajd_payment_methods')) || defaultPaymentMethods;
-    let navLinks = JSON.parse(localStorage.getItem('ajd_nav_links')) || defaultNavLinks;
-    let shopPhone = localStorage.getItem('ajd_shop_phone') || '(786) 970-7779';
-    let html5QrScanner = null;
+    let shopPhone = localStorage.getItem('ajd_shop_phone') || '(305) 555-0147';
 
-    let addModalImages = [];
-    let editModalImages = [];
+    window.updateShopPhoneSetting = function(val) {
+      shopPhone = val || '(305) 555-0147';
+      localStorage.setItem('ajd_shop_phone', shopPhone);
+      window.syncShopPhone();
+    };
+
+    window.syncShopPhone = function() {
+      document.querySelectorAll('[data-shop-phone]').forEach(el => el.innerText = shopPhone);
+      document.querySelectorAll('[data-shop-tel]').forEach(el => el.href = `tel:${shopPhone.replace(/[^0-9]/g, '')}`);
+      const input = document.getElementById('shopPhoneInput');
+      if (input && input.value !== shopPhone) input.value = shopPhone;
+    };
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'ajd_purchase_requests') {
+        purchaseRequests = JSON.parse(e.newValue) || [];
+        window.renderPurchaseRequests();
+      } else if (e.key === 'ajd_repairs_backup') {
+        repairs = JSON.parse(e.newValue) || [];
+        window.renderRepairs();
+      } else if (e.key === 'ajd_shop_phone') {
+        shopPhone = e.newValue || '(305) 555-0147';
+        window.syncShopPhone();
+      }
+    });
 
     window.setThemeMode = function(mode) {
       localStorage.setItem('ajd_theme_preference', mode);
       window.applyTheme();
-      window.showToast(`Theme set to ${mode.toUpperCase()}`);
     };
 
     window.applyTheme = function() {
       const mode = localStorage.getItem('ajd_theme_preference') || 'dark';
       const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const shouldBeDark = mode === 'dark' || (mode === 'system' && isSystemDark);
-
-      if (shouldBeDark) document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
-
+      if (mode === 'dark' || (mode === 'system' && isSystemDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
       const select = document.getElementById('themeSelectSetting');
       if (select) select.value = mode;
     };
 
-    window.generateShortId = function(existingArray = [], prefix = 'AJD') {
-      const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-      let newId = '';
-      do {
-        let code = '';
-        for (let i = 0; i < 3; i++) {
-          code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        newId = `${prefix}-${code}`;
-      } while (existingArray && existingArray.some(item => item && item.id === newId));
-      return newId;
-    };
-
-    window.sanitizeRepairIds = function() {
-      let modified = false;
-      const usedIds = new Set();
-
-      repairs = repairs.map(r => {
-        const isCompactShort = /^AJD-[2-9A-HJ-NP-Z]{3}$/i.test(r.id);
-        if (!isCompactShort || usedIds.has(r.id)) {
-          r.id = window.generateShortId(repairs, 'AJD');
-          usedIds.add(r.id);
-          modified = true;
-        } else {
-          usedIds.add(r.id);
-        }
-        return r;
-      });
-
-      if (modified) {
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      }
-    };
-
-    window.escapeHtml = function(str) {
-      if (str === null || str === undefined) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    };
-
-    window.showToast = function(message) {
-      const container = document.getElementById('toastContainer');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = 'px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-black text-white bg-slate-900 border border-slate-700 transition-all duration-300 transform translate-y-3 opacity-0 flex items-center space-x-2 pointer-events-auto';
-      toast.innerHTML = `<span>ℹ️</span><span>${window.escapeHtml(message)}</span>`;
-      container.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.remove('translate-y-3', 'opacity-0'));
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-3');
-        setTimeout(() => toast.parentNode && toast.parentNode.removeChild(toast), 300);
-      }, 3500);
-    };
-
-    window.toggleDropdown = function(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.toggle('hidden');
-    };
-
-    window.handleBackdropClick = function(event, modalId) {
-      if (event && event.target && event.target.id === modalId) {
-        const el = document.getElementById(modalId);
-        if (el) el.classList.add('hidden');
-        if (modalId === 'scannerModal') window.closeScannerModal();
-      }
-    };
-
-    window.switchTab = function(tab) {
-      const viewRepairs = document.getElementById('viewRepairs');
-      const viewRequests = document.getElementById('viewRequests');
-      const viewInvoices = document.getElementById('viewInvoices');
-      const viewStore = document.getElementById('viewStore');
-      const metricsBar = document.getElementById('metricsBar');
-
-      const btnR = document.getElementById('tabBtnRepairs');
-      const btnReq = document.getElementById('tabBtnRequests');
-      const btnI = document.getElementById('tabBtnInvoices');
-      const btnS = document.getElementById('tabBtnStore');
-
-      if (viewRepairs) viewRepairs.classList.add('hidden');
-      if (viewRequests) viewRequests.classList.add('hidden');
-      if (viewInvoices) viewInvoices.classList.add('hidden');
-      if (viewStore) viewStore.classList.add('hidden');
-
-      const inactive = "px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1";
-      const active = "px-3 py-1.5 rounded-xl bg-blue-600 text-white font-black shadow transition cursor-pointer flex items-center gap-1";
-
-      if (btnR) btnR.className = inactive;
-      if (btnReq) btnReq.className = inactive;
-      if (btnI) btnI.className = inactive;
-      if (btnS) btnS.className = inactive;
-
-      if (tab === 'repairs') {
-        if (viewRepairs) viewRepairs.classList.remove('hidden');
-        if (metricsBar) metricsBar.classList.remove('hidden');
-        if (btnR) btnR.className = active;
-        window.renderRepairs();
-      } else if (tab === 'requests') {
-        if (viewRequests) viewRequests.classList.remove('hidden');
-        if (metricsBar) metricsBar.classList.add('hidden');
-        if (btnReq) btnReq.className = active;
-        window.renderCustomerRequests();
-      } else if (tab === 'invoices') {
-        if (viewInvoices) viewInvoices.classList.remove('hidden');
-        if (metricsBar) metricsBar.classList.remove('hidden');
-        if (btnI) btnI.className = active;
-        window.renderInvoicesList();
-      } else if (tab === 'store') {
-        if (viewStore) viewStore.classList.remove('hidden');
-        if (metricsBar) metricsBar.classList.add('hidden');
-        if (btnS) btnS.className = active;
-        window.renderStoreInventory();
-        window.renderPurchaseRequests();
-      }
-    };
-
     function initSupabase() {
       if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-        try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { enabled: false } });
+        } catch(e){}
       }
     }
+
+    // Save repair ticket directly to LocalStorage + Cloud Upsert
+    window.saveRepairTicketToStorageAndCloud = async function(job) {
+      const idx = repairs.findIndex(r => r.id === job.id);
+      if (idx >= 0) repairs[idx] = job;
+      else repairs.unshift(job);
+
+      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+
+      initSupabase();
+      if (supabaseClient) {
+        try {
+          const { error } = await supabaseClient.from('repairs').upsert([job], { onConflict: 'id' });
+          if (error) console.error('Supabase upsert warning:', error.message);
+        } catch(err){
+          console.warn('Cloud sync offline/fallback active');
+        }
+      }
+    };
 
     window.fetchRepairsFromCloud = async function() {
       initSupabase();
@@ -1055,22 +514,56 @@
         const res = await Promise.race([fetchPromise, timeoutPromise]);
         
         if (res && res.data && res.data.length > 0) {
-          repairs = res.data.map(window.normalizeRepair);
-          window.sanitizeRepairIds();
+          const cloudRepairs = res.data.map(window.normalizeRepair);
+          const mergedMap = new Map();
+          cloudRepairs.forEach(r => mergedMap.set(r.id, r));
+          repairs.forEach(r => mergedMap.set(r.id, r)); // Local overrides stale cloud
+          repairs = Array.from(mergedMap.values());
           localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
         }
-
-        // Fetch customer intake requests
-        const reqPromise = supabaseClient.from('customer_requests').select('*').order('created_at', { ascending: false });
-        const reqRes = await Promise.race([reqPromise, timeoutPromise]);
-        if (reqRes && reqRes.data && reqRes.data.length > 0) {
-          customerRequests = reqRes.data;
-          localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
-        }
-      } catch (e) {
-        window.sanitizeRepairIds();
-      }
+      } catch (e){}
       return repairs;
+    };
+
+    window.fetchPurchaseRequestsFromCloud = async function() {
+      initSupabase();
+      if (!supabaseClient) return purchaseRequests;
+
+      try {
+        const res = await supabaseClient.from('purchase_requests').select('*').order('created_at', { ascending: false });
+        if (res && res.data && res.data.length > 0) {
+          const cloudReqs = res.data.map(r => ({
+            id: r.id,
+            customerName: r.customer_name || r.customerName || 'Customer',
+            customerPhone: r.customer_phone || r.customerPhone || '',
+            customerEmail: r.customer_email || r.customerEmail || '',
+            itemTitle: r.item_title || r.itemTitle || 'Repair Service',
+            notes: r.notes || '',
+            shop_note: r.shop_note || r.shopNote || '',
+            status: r.status || 'pending',
+            created_at: r.created_at || new Date().toISOString()
+          }));
+
+          const reqMap = new Map();
+          cloudReqs.forEach(rq => reqMap.set(rq.id, rq));
+          purchaseRequests.forEach(rq => reqMap.set(rq.id, rq));
+          purchaseRequests = Array.from(reqMap.values());
+          localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+          window.renderPurchaseRequests();
+        }
+      } catch(e){}
+      return purchaseRequests;
+    };
+
+    window.generateShortId = function(existingArray = [], prefix = 'AJD') {
+      const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let newId = '';
+      do {
+        let code = '';
+        for (let i = 0; i < 3; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+        newId = `${prefix}-${code}`;
+      } while (existingArray && existingArray.some(item => item && item.id === newId));
+      return newId;
     };
 
     window.normalizeRepair = function(item) {
@@ -1093,7 +586,7 @@
         discount: discount,
         deposit_amount: deposit,
         payment_status: item.payment_status || item.paymentStatus || 'unpaid',
-        payment_info: item.payment_info || item.paymentInfo || 'Zelle / Apple Pay: 786-970-7779',
+        payment_info: item.payment_info || item.paymentInfo || `Zelle / Apple Pay: ${shopPhone}`,
         status: item.status || 'pending',
         supplier_links: Array.isArray(item.supplier_links) ? item.supplier_links : [],
         created_at: item.created_at || new Date().toISOString()
@@ -1104,29 +597,13 @@
       const partCost = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0);
       const laborCharge = Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
       const discount = Math.ceil(parseFloat(document.getElementById('intakeDiscount').value) || 0);
-      const subtotal = partCost + laborCharge;
-      document.getElementById('intakeTotalAmount').value = Math.max(0, subtotal - discount);
+      document.getElementById('intakeTotalAmount').value = Math.max(0, partCost + laborCharge - discount);
     };
 
     window.applyIntakeDiscountPreset = function(percent) {
-      const partCost = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0);
-      const laborCharge = Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
-      const subtotal = partCost + laborCharge;
-      document.getElementById('intakeDiscount').value = Math.ceil(subtotal * (percent / 100));
+      const sub = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0) + Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
+      document.getElementById('intakeDiscount').value = Math.ceil(sub * (percent / 100));
       window.recalculateIntakeTotals();
-    };
-
-    window.applyIntakeDepositPreset = function(factor) {
-      const total = Math.ceil(parseFloat(document.getElementById('intakeTotalAmount').value) || 0);
-      document.getElementById('intakeDeposit').value = Math.ceil(total * factor);
-    };
-
-    window.populatePaymentMethodsDropdown = function() {
-      const select = document.getElementById('intakePaymentMethod');
-      if (!select) return;
-      select.innerHTML = paymentMethods.map(m => `
-        <option value="${window.escapeHtml(m.name + ': ' + m.handle)}">${window.escapeHtml(m.name)} - ${window.escapeHtml(m.handle)}</option>
-      `).join('');
     };
 
     window.handleCreateRepair = async function(e) {
@@ -1134,7 +611,7 @@
       const newJob = window.normalizeRepair({
         id: window.generateShortId(repairs, 'AJD'),
         customer_name: document.getElementById('intakeName').value,
-        customer_phone: document.getElementById('intakePhone').value.trim(),
+        customer_phone: document.getElementById('intakePhone').value,
         make_model: document.getElementById('intakeDevice').value,
         issue: document.getElementById('intakeIssue').value,
         part_note: document.getElementById('intakePartNote').value,
@@ -1144,38 +621,26 @@
         discount: document.getElementById('intakeDiscount').value,
         deposit_amount: document.getElementById('intakeDeposit').value,
         payment_status: document.getElementById('intakePaymentStatus').value,
-        payment_info: document.getElementById('intakePaymentMethod').value,
+        payment_info: `Zelle / Cash: ${shopPhone}`,
         status: 'pending'
       });
 
-      repairs.unshift(newJob);
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-
-      if (supabaseClient) {
-        try { await supabaseClient.from('repairs').insert([newJob]); } catch(e){}
-      }
-
+      await window.saveRepairTicketToStorageAndCloud(newJob);
       document.getElementById('intakeForm').reset();
       window.recalculateIntakeTotals();
       window.renderRepairs();
-      window.showToast(`Ticket ${newJob.id} registered!`);
+      window.showToast(`Ticket ${newJob.id} created & saved!`);
     };
 
     window.renderRepairs = function() {
       const container = document.getElementById('repairsContainer');
-      const search = (document.getElementById('repairSearchInput')?.value || '').toLowerCase();
-      const filter = document.getElementById('repairStatusFilter')?.value || 'all';
-
+      const search = (document.getElementById('repairSearchInput').value || '').toLowerCase();
+      const filter = document.getElementById('repairStatusFilter').value;
       if (!container) return;
 
       const filtered = repairs.filter(r => {
-        const matchesSearch = 
-          (r.customer_name || '').toLowerCase().includes(search) ||
-          (r.id || '').toLowerCase().includes(search) ||
-          (r.make_model || '').toLowerCase().includes(search) ||
-          (r.issue || '').toLowerCase().includes(search);
-        const matchesFilter = filter === 'all' || r.status === filter;
-        return matchesSearch && matchesFilter;
+        const matchesSearch = (r.customer_name || '').toLowerCase().includes(search) || (r.id || '').toLowerCase().includes(search) || (r.make_model || '').toLowerCase().includes(search);
+        return matchesSearch && (filter === 'all' || r.status === filter);
       });
 
       window.updateMetricsSummary();
@@ -1188,15 +653,12 @@
       container.innerHTML = filtered.map(r => {
         const amount = Math.ceil(r.amount);
         const deposit = Math.ceil(r.deposit_amount);
-        let paid = 0;
-        if (r.payment_status === 'paid_in_full') paid = amount;
-        else if (r.payment_status === 'deposit_paid') paid = deposit;
+        let paid = r.payment_status === 'paid_in_full' ? amount : (r.payment_status === 'deposit_paid' ? deposit : 0);
         const balance = Math.ceil(Math.max(0, amount - paid));
 
         return `
           <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3.5 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition">
-            
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
               <div>
                 <div class="flex items-center space-x-2">
                   <h3 class="text-sm font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</h3>
@@ -1212,382 +674,41 @@
               </select>
             </div>
 
-            <div class="space-y-1 text-xs">
-              <p class="text-slate-700 dark:text-slate-300 font-medium"><strong class="text-slate-500 dark:text-slate-400">Issue:</strong> ${window.escapeHtml(r.issue)}</p>
-              ${r.part_note ? `<p class="text-slate-500 dark:text-slate-400 text-[11px]"><strong class="text-slate-600 dark:text-slate-500">Hardware Note:</strong> ${window.escapeHtml(r.part_note)}</p>` : ''}
-              ${r.customer_phone ? `<p class="text-slate-500 dark:text-slate-400 text-[11px]"><strong class="text-slate-600 dark:text-slate-500">Phone:</strong> ${window.escapeHtml(r.customer_phone)}</p>` : ''}
-            </div>
+            <p class="text-xs text-slate-700 dark:text-slate-300"><strong>Issue:</strong> ${window.escapeHtml(r.issue)}</p>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800/60 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs">
+              <div><span class="text-[9px] font-black text-slate-500 uppercase">Total</span><p class="font-black text-slate-900 dark:text-white">$${amount}</p></div>
+              <div><span class="text-[9px] font-black text-slate-500 uppercase">Deposit</span><p class="font-bold text-blue-600 dark:text-blue-400">$${deposit}</p></div>
               <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Total Charge</span>
-                <p class="font-black text-slate-900 dark:text-white text-sm">$${amount}</p>
-              </div>
-              <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Deposit Paid</span>
-                <p class="font-bold text-blue-600 dark:text-blue-400">$${deposit}</p>
-              </div>
-              <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Payment Status</span>
-                <select onchange="window.updatePaymentStatus('${r.id}', this.value)" class="block mt-0.5 text-[10px] font-black bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg text-blue-600 dark:text-blue-400 outline-none cursor-pointer">
+                <span class="text-[9px] font-black text-slate-500 uppercase">Status</span>
+                <select onchange="window.updatePaymentStatus('${r.id}', this.value)" class="block mt-0.5 text-[10px] font-black bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg text-blue-600 dark:text-blue-400">
                   <option value="unpaid" ${r.payment_status === 'unpaid' ? 'selected' : ''}>🔴 Unpaid</option>
                   <option value="deposit_paid" ${r.payment_status === 'deposit_paid' ? 'selected' : ''}>🟡 Deposit Paid</option>
                   <option value="paid_in_full" ${r.payment_status === 'paid_in_full' ? 'selected' : ''}>🟢 Paid in Full</option>
                 </select>
               </div>
-              <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Balance Due</span>
-                <p class="font-black ${balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'} text-sm">$${balance}</p>
-              </div>
+              <div><span class="text-[9px] font-black text-slate-500 uppercase">Balance</span><p class="font-black ${balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">$${balance}</p></div>
             </div>
 
-            <!-- Supplier Links CRUD -->
-            <div class="pt-1">
-              <details class="text-xs">
-                <summary class="font-extrabold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer select-none flex items-center space-x-1">
-                  <span>🔗 Supplier Links (${r.supplier_links.length})</span>
-                </summary>
-                <div class="mt-2 space-y-2 pl-2">
-                  ${r.supplier_links.map((link, idx) => `
-                    <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-900 p-2 rounded-xl text-[11px] gap-2 border border-slate-200 dark:border-slate-800">
-                      <a href="${window.escapeHtml(link)}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[200px] sm:max-w-xs font-semibold">${window.escapeHtml(link)}</a>
-                      <div class="flex items-center space-x-1 shrink-0">
-                        <button onclick="window.editSupplierLink('${r.id}', ${idx})" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-[10px] font-bold px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded cursor-pointer">✏️ Edit</button>
-                        <button onclick="window.removeSupplierLink('${r.id}', ${idx})" class="text-rose-600 dark:text-rose-400 hover:text-rose-700 font-bold px-1.5 py-0.5 bg-rose-500/10 rounded cursor-pointer">✕</button>
-                      </div>
-                    </div>
-                  `).join('')}
-
-                  <div class="flex gap-1.5 pt-1">
-                    <input type="url" id="linkInput_${r.id}" placeholder="https://..." class="px-2.5 py-1 text-[11px] bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none flex-1">
-                    <button onclick="window.addSupplierLink('${r.id}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] rounded-xl cursor-pointer">
-                      + Add Link
-                    </button>
-                  </div>
-                </div>
-              </details>
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
+              <button onclick="window.openInvoiceModal('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 text-white font-black rounded-xl">🧾 Receipt</button>
+              <button onclick="window.openEditModal('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl">✏️ Edit</button>
+              <button onclick="window.deleteRepair('${r.id}')" class="px-2 py-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-300 font-bold rounded-xl border border-rose-500/20 ml-auto">🗑️ Delete</button>
             </div>
-
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800/80 text-xs">
-              <button onclick="window.openLiveTracker('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow cursor-pointer">
-                👁️ Live View
-              </button>
-              <button onclick="window.copyTrackerLink('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
-                🔗 Copy Link
-              </button>
-              <button onclick="window.triggerSmsCustomer('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl cursor-pointer">
-                💬 SMS
-              </button>
-              <button onclick="window.openInvoiceModal('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl cursor-pointer">
-                🧾 Receipt
-              </button>
-              <button onclick="window.openEditModal('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
-                ✏️ Edit
-              </button>
-              <button onclick="window.deleteRepair('${r.id}')" class="px-2 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-300 font-bold rounded-xl border border-rose-500/20 ml-auto cursor-pointer">
-                🗑️ Delete
-              </button>
-            </div>
-
           </div>
         `;
       }).join('');
     };
 
-    window.renderCustomerRequests = function() {
-      const container = document.getElementById('customerRequestsListContainer');
-      const headerBadge = document.getElementById('requestsHeaderBadge');
-      const navReqBadge = document.getElementById('navReqBadge');
-
-      if (!container) return;
-
-      const pending = customerRequests.filter(r => r.status === 'pending');
-
-      if (headerBadge) headerBadge.innerText = `${pending.length} Pending Requests`;
-      if (navReqBadge) {
-        if (pending.length > 0) {
-          navReqBadge.innerText = pending.length;
-          navReqBadge.classList.remove('hidden');
-        } else {
-          navReqBadge.classList.add('hidden');
-        }
-      }
-
-      if (customerRequests.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs font-semibold">No customer intake requests submitted yet.</div>`;
-        return;
-      }
-
-      container.innerHTML = customerRequests.map(req => `
-        <div class="dark-card p-4 rounded-2xl border ${req.status === 'pending' ? 'border-rose-500/40 bg-rose-50/20 dark:bg-slate-900/40' : 'border-slate-200 dark:border-slate-800'} space-y-3 text-xs">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div>
-              <div class="flex items-center space-x-2">
-                <span class="font-black text-slate-900 dark:text-white text-sm">${window.escapeHtml(req.customer_name)}</span>
-                <span class="text-[10px] font-mono font-black text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">${window.escapeHtml(req.id || 'REQ')}</span>
-              </div>
-              <p class="text-blue-600 dark:text-blue-400 font-extrabold mt-0.5">Device: ${window.escapeHtml(req.make_model)}</p>
-              <p class="text-slate-500 dark:text-slate-400 text-[11px]">📞 ${window.escapeHtml(req.customer_phone || 'N/A')} | 📅 Preferred Drop-Off: <strong class="text-slate-700 dark:text-slate-300">${window.escapeHtml(req.preferred_time || 'ASAP')}</strong></p>
-            </div>
-            
-            <span class="px-2.5 py-0.5 text-[10px] font-black rounded-lg uppercase ${req.status === 'approved' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : req.status === 'denied' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' : 'bg-rose-600 text-white'}">
-              ${req.status}
-            </span>
-          </div>
-
-          <div class="bg-slate-100 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80">
-            <p class="font-bold text-slate-500 text-[10px] uppercase">Problem Description</p>
-            <p class="text-slate-800 dark:text-slate-200 text-xs mt-0.5">${window.escapeHtml(req.issue)}</p>
-            ${req.passcode ? `<p class="text-slate-500 text-[10px] mt-1">Passcode Note: ${window.escapeHtml(req.passcode)}</p>` : ''}
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
-            ${req.status === 'pending' ? `
-              <button onclick="window.approveCustomerRequest('${req.id}')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow cursor-pointer flex items-center gap-1">
-                <span>✅ Approve & Create Ticket</span>
-              </button>
-              <button onclick="window.denyCustomerRequest('${req.id}')" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1">
-                <span>❌ Deny Request</span>
-              </button>
-            ` : ''}
-
-            ${req.customer_phone ? `
-              <a href="sms:${req.customer_phone.replace(/\D/g,'')}?body=${encodeURIComponent(`Hi ${req.customer_name}, regarding your AJD Repair Request for ${req.make_model}: `)}" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl cursor-pointer">
-                💬 SMS Customer
-              </a>
-            ` : ''}
-          </div>
-        </div>
-      `).join('');
-    };
-
-    window.approveCustomerRequest = async function(reqId) {
-      const req = customerRequests.find(r => r.id === reqId);
-      if (!req) return;
-
-      req.status = 'approved';
-      localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
-
-      // Auto-generate active repair ticket
-      const newTicket = window.normalizeRepair({
-        id: window.generateShortId(repairs, 'AJD'),
-        customer_name: req.customer_name,
-        customer_phone: req.customer_phone || '',
-        make_model: req.make_model,
-        issue: req.issue,
-        part_note: req.passcode ? `Passcode: ${req.passcode}` : '',
-        part_cost: 0,
-        labor_cost: 0,
-        amount: 0,
-        discount: 0,
-        deposit_amount: 0,
-        payment_status: 'unpaid',
-        payment_info: paymentMethods[0] ? `${paymentMethods[0].name}: ${paymentMethods[0].handle}` : 'Cash at pickup',
-        status: 'pending'
-      });
-
-      repairs.unshift(newTicket);
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('customer_requests').update({ status: 'approved' }).eq('id', reqId);
-          await supabaseClient.from('repairs').insert([newTicket]);
-        } catch(e){}
-      }
-
-      window.renderCustomerRequests();
-      window.renderRepairs();
-      window.showToast(`Request ${reqId} Approved! Ticket ${newTicket.id} created.`);
-      
-      // Auto open edit modal to fill out pricing
-      window.openEditModal(newTicket.id);
-    };
-
-    window.denyCustomerRequest = async function(reqId) {
-      const req = customerRequests.find(r => r.id === reqId);
-      if (!req) return;
-
-      req.status = 'denied';
-      localStorage.setItem('ajd_customer_requests', JSON.stringify(customerRequests));
-
-      if (supabaseClient) {
-        try { await supabaseClient.from('customer_requests').update({ status: 'denied' }).eq('id', reqId); } catch(e){}
-      }
-
-      window.renderCustomerRequests();
-      window.showToast(`Request ${reqId} Denied.`);
-    };
-
-    window.openInvoiceModal = function(id) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-
-      const amount = Math.ceil(job.amount);
-      const deposit = Math.ceil(job.deposit_amount);
-      let paid = 0;
-      if (job.payment_status === 'paid_in_full') paid = amount;
-      else if (job.payment_status === 'deposit_paid') paid = deposit;
-      const balance = Math.ceil(Math.max(0, amount - paid));
-
-      const sheet = document.getElementById('invoicePrintSheet');
-      if (sheet) {
-        sheet.innerHTML = `
-          <div class="thermal-receipt-roll text-center space-y-3">
-            
-            <!-- Logo & Store Header -->
-            <div class="space-y-1">
-              <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto text-lg font-black">
-                AJD
-              </div>
-              <h2 class="text-base font-black tracking-wider uppercase text-black">AJD'S WIRELESS REPAIRS</h2>
-              <p class="text-[10px] font-mono leading-tight">Mobile Phone & Hardware Services</p>
-              <p class="text-[11px] font-mono font-bold">Phone / Zelle: ${window.escapeHtml(shopPhone)}</p>
-            </div>
-
-            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
-
-            <!-- Receipt Metadata -->
-            <div class="text-[11px] text-left space-y-0.5 font-mono">
-              <div class="flex justify-between font-black">
-                <span>TICKET ID:</span>
-                <span>${window.escapeHtml(job.id)}</span>
-              </div>
-              <div class="flex justify-between">
-                <span>DATE:</span>
-                <span>${new Date(job.created_at).toLocaleDateString()}</span>
-              </div>
-              <div class="flex justify-between">
-                <span>CUSTOMER:</span>
-                <span class="font-bold">${window.escapeHtml(job.customer_name)}</span>
-              </div>
-              ${job.customer_phone ? `<div class="flex justify-between"><span>PHONE:</span><span>${window.escapeHtml(job.customer_phone)}</span></div>` : ''}
-            </div>
-
-            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
-
-            <!-- Itemized Repair Table -->
-            <div class="text-[11px] text-left space-y-1.5 font-mono">
-              <p class="font-black text-center uppercase tracking-wider text-[10px] bg-slate-100 py-0.5 border border-slate-300">ITEMIZED REPAIR SERVICE</p>
-              
-              <div>
-                <p class="font-black text-xs">${window.escapeHtml(job.make_model)}</p>
-                <p class="text-[10px] text-slate-700">Issue: ${window.escapeHtml(job.issue)}</p>
-              </div>
-
-              ${job.part_cost > 0 ? `<div class="flex justify-between text-[10px]"><span>Part / Assembly:</span><span>$${Math.ceil(job.part_cost)}</span></div>` : ''}
-              ${job.labor_cost > 0 ? `<div class="flex justify-between text-[10px]"><span>Labor / Install:</span><span>$${Math.ceil(job.labor_cost)}</span></div>` : ''}
-              ${job.discount > 0 ? `<div class="flex justify-between text-[10px] font-bold"><span>Discount Applied:</span><span>-$${Math.ceil(job.discount)}</span></div>` : ''}
-            </div>
-
-            <div class="border-b-2 border-dashed border-slate-400 my-2"></div>
-
-            <!-- Financial Totals & Balance -->
-            <div class="text-xs text-left space-y-1 font-mono">
-              <div class="flex justify-between font-bold"><span>TOTAL AMOUNT:</span><span>$${amount}</span></div>
-              <div class="flex justify-between"><span>DEPOSIT PAID:</span><span>$${deposit}</span></div>
-              
-              <div class="my-2 p-2 border-2 border-black bg-slate-50 text-center space-y-0.5">
-                <span class="text-[9px] font-black uppercase tracking-wider block">REMAINING PICKUP BALANCE</span>
-                <span class="text-lg font-black block">$${balance}</span>
-                <span class="text-[9px] font-bold block uppercase bg-black text-white px-1 py-0.2 rounded mt-1">
-                  STATUS: ${job.payment_status.replace(/_/g,' ').toUpperCase()}
-                </span>
-              </div>
-            </div>
-
-            <div class="text-[9px] text-left font-mono leading-tight space-y-1 pt-1">
-              <p><strong>Payment Handle:</strong> ${window.escapeHtml(job.payment_info)}</p>
-              <p class="border-t border-slate-300 pt-1">All screen & hardware repairs include a 30-day warranty against manufacturer defect. Liquid damage repairs non-refundable.</p>
-            </div>
-
-            <!-- SVG Barcode Representation -->
-            <div class="pt-2 text-center space-y-1">
-              <svg class="mx-auto h-10 w-44" viewBox="0 0 100 30" preserveAspectRatio="none">
-                <rect x="2" y="2" width="2" height="26" fill="black"/>
-                <rect x="6" y="2" width="1" height="26" fill="black"/>
-                <rect x="9" y="2" width="3" height="26" fill="black"/>
-                <rect x="14" y="2" width="1" height="26" fill="black"/>
-                <rect x="17" y="2" width="2" height="26" fill="black"/>
-                <rect x="21" y="2" width="4" height="26" fill="black"/>
-                <rect x="27" y="2" width="1" height="26" fill="black"/>
-                <rect x="30" y="2" width="2" height="26" fill="black"/>
-                <rect x="34" y="2" width="3" height="26" fill="black"/>
-                <rect x="39" y="2" width="1" height="26" fill="black"/>
-                <rect x="42" y="2" width="2" height="26" fill="black"/>
-                <rect x="46" y="2" width="4" height="26" fill="black"/>
-                <rect x="52" y="2" width="1" height="26" fill="black"/>
-                <rect x="55" y="2" width="3" height="26" fill="black"/>
-                <rect x="60" y="2" width="2" height="26" fill="black"/>
-                <rect x="64" y="2" width="1" height="26" fill="black"/>
-                <rect x="67" y="2" width="4" height="26" fill="black"/>
-                <rect x="73" y="2" width="2" height="26" fill="black"/>
-                <rect x="77" y="2" width="1" height="26" fill="black"/>
-                <rect x="80" y="2" width="3" height="26" fill="black"/>
-                <rect x="85" y="2" width="2" height="26" fill="black"/>
-                <rect x="89" y="2" width="4" height="26" fill="black"/>
-                <rect x="95" y="2" width="2" height="26" fill="black"/>
-              </svg>
-              <span class="text-[10px] font-mono tracking-widest font-black block">*${window.escapeHtml(job.id)}*</span>
-              <p class="text-[9px] font-mono italic">Thank you for choosing AJD's Wireless!</p>
-            </div>
-
-          </div>
-        `;
-      }
-
-      const modal = document.getElementById('invoiceModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeInvoiceModal = function() {
-      const modal = document.getElementById('invoiceModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.renderInvoicesList = function() {
-      const container = document.getElementById('invoicesListContainer');
-      if (!container) return;
-
-      if (repairs.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-500 text-xs font-semibold">No repair tickets available.</div>`;
-        return;
-      }
-
-      container.innerHTML = repairs.map(r => `
-        <div class="dark-card p-3.5 rounded-2xl flex items-center justify-between gap-3 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition">
-          <div>
-            <span class="text-xs font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</span>
-            <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-md ml-2 font-mono">${window.escapeHtml(r.id)}</span>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${window.escapeHtml(r.make_model)} - Total: <strong class="text-slate-900 dark:text-white">$${Math.ceil(r.amount)}</strong></p>
-          </div>
-          <button onclick="window.openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow cursor-pointer flex items-center gap-1">
-            <span>🧾 View Thermal Receipt</span>
-          </button>
-        </div>
-      `).join('');
-    };
-
     window.updateMetricsSummary = function() {
-      let totalRev = 0;
-      let deposits = 0;
-      let unpaid = 0;
-      let activeJobs = 0;
-
+      let totalRev = 0, deposits = 0, unpaid = 0, activeJobs = 0;
       repairs.forEach(r => {
-        const amt = Math.ceil(r.amount);
-        const dep = Math.ceil(r.deposit_amount);
-        totalRev += amt;
-        deposits += dep;
-
-        let paid = 0;
-        if (r.payment_status === 'paid_in_full') paid = amt;
-        else if (r.payment_status === 'deposit_paid') paid = dep;
-
+        const amt = Math.ceil(r.amount), dep = Math.ceil(r.deposit_amount);
+        totalRev += amt; deposits += dep;
+        let paid = r.payment_status === 'paid_in_full' ? amt : (r.payment_status === 'deposit_paid' ? dep : 0);
         unpaid += Math.max(0, amt - paid);
         if (r.status !== 'completed') activeJobs++;
       });
-
       document.getElementById('statTotalRev').innerText = `$${totalRev}`;
       document.getElementById('statDeposits').innerText = `$${deposits}`;
       document.getElementById('statUnpaid').innerText = `$${unpaid}`;
@@ -1598,142 +719,16 @@
       const job = repairs.find(r => r.id === id);
       if (!job) return;
       job.status = newStatus;
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      if (supabaseClient) {
-        try { await supabaseClient.from('repairs').update({ status: newStatus }).eq('id', id); } catch(e){}
-      }
+      await window.saveRepairTicketToStorageAndCloud(job);
       window.renderRepairs();
-      window.showToast(`Ticket ${id} status: ${newStatus}`);
     };
 
     window.updatePaymentStatus = async function(id, newPaymentStatus) {
       const job = repairs.find(r => r.id === id);
       if (!job) return;
       job.payment_status = newPaymentStatus;
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      if (supabaseClient) {
-        try { await supabaseClient.from('repairs').update({ payment_status: newPaymentStatus }).eq('id', id); } catch(e){}
-      }
+      await window.saveRepairTicketToStorageAndCloud(job);
       window.renderRepairs();
-      window.showToast(`Payment status updated for ${id}`);
-    };
-
-    window.addSupplierLink = function(id) {
-      const input = document.getElementById(`linkInput_${id}`);
-      if (!input || !input.value.trim()) return;
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-      if (!Array.isArray(job.supplier_links)) job.supplier_links = [];
-      job.supplier_links.push(input.value.trim());
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      if (supabaseClient) {
-        try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
-      }
-      window.renderRepairs();
-      window.showToast('Supplier link added!');
-    };
-
-    window.editSupplierLink = function(id, index) {
-      const job = repairs.find(r => r.id === id);
-      if (!job || !job.supplier_links || !job.supplier_links[index]) return;
-      const newUrl = prompt('Edit supplier URL:', job.supplier_links[index]);
-      if (newUrl !== null && newUrl.trim() !== '') {
-        job.supplier_links[index] = newUrl.trim();
-        localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        if (supabaseClient) {
-          try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
-        }
-        window.renderRepairs();
-        window.showToast('Supplier link updated!');
-      }
-    };
-
-    window.removeSupplierLink = function(id, index) {
-      const job = repairs.find(r => r.id === id);
-      if (!job || !job.supplier_links) return;
-      job.supplier_links.splice(index, 1);
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      if (supabaseClient) {
-        try { supabaseClient.from('repairs').update({ supplier_links: job.supplier_links }).eq('id', id); } catch(e){}
-      }
-      window.renderRepairs();
-      window.showToast('Supplier link removed!');
-    };
-
-    window.getTrackingUrl = function(id) {
-      return `${window.location.origin}${window.location.pathname.replace('index.html', '')}track.html?id=${id}`;
-    };
-
-    window.openLiveTracker = function(id) {
-      window.open(window.getTrackingUrl(id), '_blank');
-    };
-
-    window.copyTrackerLink = function(id) {
-      const url = window.getTrackingUrl(id);
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url);
-      } else {
-        const dummy = document.createElement('input');
-        document.body.appendChild(dummy);
-        dummy.value = url;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
-      }
-      window.showToast(`Link for ${id} copied!`);
-    };
-
-    window.triggerSmsCustomer = function(id) {
-      const job = repairs.find(r => r.id === id);
-      if (!job || !job.customer_phone) return;
-      const url = window.getTrackingUrl(id);
-      const text = `Hi ${job.customer_name}, here is your live repair status tracking link from AJD's Wireless: ${url}`;
-      window.open(`sms:${job.customer_phone.replace(/\D/g,'')}?body=${encodeURIComponent(text)}`, '_self');
-    };
-
-    window.recalculateEditTotals = function() {
-      const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
-      const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
-      const subtotal = partCost + laborCost;
-      const discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
-      const total = Math.max(0, subtotal - discount);
-
-      document.getElementById('editTotalAmount').value = total;
-
-      const discountPercent = subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
-      const discBadge = document.getElementById('editDiscountPercentBadge');
-      if (discBadge) discBadge.innerText = `${discountPercent}%`;
-
-      const deposit = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
-      const depositPercent = total > 0 ? Math.round((deposit / total) * 100) : 0;
-      const depBadge = document.getElementById('editDepositPercentBadge');
-      if (depBadge) depBadge.innerText = `${depositPercent}%`;
-
-      const paymentStatus = document.getElementById('editPaymentStatus').value;
-      let paid = 0;
-      if (paymentStatus === 'paid_in_full') paid = total;
-      else if (paymentStatus === 'deposit_paid') paid = deposit;
-      const balance = Math.ceil(Math.max(0, total - paid));
-
-      const pickupDisplay = document.getElementById('editPickupBalanceDisplay');
-      if (pickupDisplay) {
-        pickupDisplay.innerText = `$${balance}`;
-        pickupDisplay.className = balance > 0 ? 'text-base font-black text-rose-600 dark:text-rose-400' : 'text-base font-black text-emerald-600 dark:text-emerald-400';
-      }
-    };
-
-    window.applyEditDiscountPreset = function(percent) {
-      const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
-      const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
-      const subtotal = partCost + laborCost;
-      document.getElementById('editDiscount').value = Math.ceil(subtotal * (percent / 100));
-      window.recalculateEditTotals();
-    };
-
-    window.applyEditDepositPreset = function(factor) {
-      const total = Math.ceil(parseFloat(document.getElementById('editTotalAmount').value) || 0);
-      document.getElementById('editDepositAmount').value = Math.ceil(total * factor);
-      window.recalculateEditTotals();
     };
 
     window.openEditModal = function(id) {
@@ -1743,7 +738,7 @@
       document.getElementById('editRepairId').value = job.id;
       document.getElementById('editTicketBadge').innerText = job.id;
       document.getElementById('editCustomerName').value = job.customer_name;
-      document.getElementById('editCustomerPhone').value = job.customer_phone || '';
+      document.getElementById('editCustomerPhone').value = job.customer_phone;
       document.getElementById('editMakeModel').value = job.make_model;
       document.getElementById('editIssue').value = job.issue;
       document.getElementById('editPartNote').value = job.part_note || '';
@@ -1754,14 +749,25 @@
       document.getElementById('editPaymentStatus').value = job.payment_status || 'unpaid';
 
       window.recalculateEditTotals();
-
-      const modal = document.getElementById('editRepairModal');
-      if (modal) modal.classList.remove('hidden');
+      document.getElementById('editRepairModal').classList.remove('hidden');
     };
 
     window.closeEditModal = function() {
-      const modal = document.getElementById('editRepairModal');
-      if (modal) modal.classList.add('hidden');
+      document.getElementById('editRepairModal').classList.add('hidden');
+    };
+
+    window.recalculateEditTotals = function() {
+      const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
+      const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
+      const discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
+      const total = Math.max(0, partCost + laborCost - discount);
+      document.getElementById('editTotalAmount').value = total;
+
+      const deposit = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
+      const paymentStatus = document.getElementById('editPaymentStatus').value;
+      let paid = paymentStatus === 'paid_in_full' ? total : (paymentStatus === 'deposit_paid' ? deposit : 0);
+      const balance = Math.ceil(Math.max(0, total - paid));
+      document.getElementById('editPickupBalanceDisplay').innerText = `$${balance}`;
     };
 
     window.handleUpdateRepair = async function(e) {
@@ -1770,146 +776,178 @@
       const job = repairs.find(r => r.id === id);
       if (!job) return;
 
-      const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
-      const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
-      const discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
-      const total = Math.max(0, (partCost + laborCost) - discount);
-
       job.customer_name = document.getElementById('editCustomerName').value;
-      job.customer_phone = document.getElementById('editCustomerPhone').value.trim();
+      job.customer_phone = document.getElementById('editCustomerPhone').value;
       job.make_model = document.getElementById('editMakeModel').value;
       job.issue = document.getElementById('editIssue').value;
       job.part_note = document.getElementById('editPartNote').value;
-      job.part_cost = partCost;
-      job.labor_cost = laborCost;
-      job.discount = discount;
-      job.amount = total;
+      job.part_cost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
+      job.labor_cost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
+      job.discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
+      job.amount = Math.ceil(parseFloat(document.getElementById('editTotalAmount').value) || 0);
       job.deposit_amount = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
       job.payment_status = document.getElementById('editPaymentStatus').value;
 
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      if (supabaseClient) {
-        try { await supabaseClient.from('repairs').update(job).eq('id', id); } catch(e){}
-      }
-
+      await window.saveRepairTicketToStorageAndCloud(job);
       window.closeEditModal();
       window.renderRepairs();
-      window.showToast(`Updated ticket ${id}`);
+      window.showToast(`Updated & saved ticket ${id}`);
     };
 
     window.deleteRepair = async function(id) {
-      if (!confirm(`Delete repair ticket ${id}?`)) return;
+      if (!confirm(`Delete ticket ${id}?`)) return;
       repairs = repairs.filter(r => r.id !== id);
       localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+      initSupabase();
       if (supabaseClient) {
         try { await supabaseClient.from('repairs').delete().eq('id', id); } catch(e){}
       }
       window.renderRepairs();
-      window.showToast(`Ticket ${id} deleted.`);
+      window.showToast(`Deleted ${id}`);
     };
 
-    window.renderNavLinksDropdown = function() {
-      const container = document.getElementById('navLinksListContainer');
+    window.openInvoiceModal = function(id) {
+      const job = repairs.find(r => r.id === id);
+      if (!job) return;
+
+      const amount = Math.ceil(job.amount);
+      const deposit = Math.ceil(job.deposit_amount);
+      let paid = job.payment_status === 'paid_in_full' ? amount : (job.payment_status === 'deposit_paid' ? deposit : 0);
+      const balance = Math.ceil(Math.max(0, amount - paid));
+
+      document.getElementById('invoicePrintSheet').innerHTML = `
+        <div class="text-center space-y-1 pb-2 border-b border-dashed border-black">
+          <h2 class="text-base font-bold uppercase">AJD'S WIRELESS</h2>
+          <p class="text-[10px]">PHONE: ${shopPhone}</p>
+          <p class="text-[9px] pt-1">${new Date(job.created_at).toLocaleString()}</p>
+        </div>
+        <div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black text-left">
+          <p><strong>TICKET:</strong> ${window.escapeHtml(job.id)}</p>
+          <p><strong>CUSTOMER:</strong> ${window.escapeHtml(job.customer_name)}</p>
+          <p><strong>PHONE:</strong> ${window.escapeHtml(job.customer_phone)}</p>
+          <p><strong>DEVICE:</strong> ${window.escapeHtml(job.make_model)}</p>
+        </div>
+        <div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black">
+          <div class="flex justify-between"><span>TOTAL CHARGE:</span><span>$${amount}</span></div>
+          <div class="flex justify-between"><span>DEPOSIT:</span><span>$${deposit}</span></div>
+          <div class="flex justify-between"><span>PAID TO DATE:</span><span>-$${paid}</span></div>
+          <div class="flex justify-between font-bold pt-1"><span>BALANCE DUE:</span><span>$${balance}</span></div>
+        </div>
+      `;
+      document.getElementById('invoiceModal').classList.remove('hidden');
+    };
+
+    window.closeInvoiceModal = function() {
+      document.getElementById('invoiceModal').classList.add('hidden');
+    };
+
+    window.renderPurchaseRequests = function() {
+      const container = document.getElementById('purchaseRequestsContainer');
+      const badge = document.getElementById('requestsCountBadge');
       if (!container) return;
-      container.innerHTML = navLinks.map(l => `
-        <a href="${window.escapeHtml(l.url)}" ${l.url.startsWith('tel:') ? '' : 'target="_blank"'} class="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium truncate">
-          ${window.escapeHtml(l.title)}
-        </a>
-      `).join('');
-    };
 
-    window.openManageNavLinksModal = function() {
-      window.resetNavLinkForm();
-      window.renderNavLinksManageList();
-      const modal = document.getElementById('manageNavLinksModal');
-      if (modal) modal.classList.remove('hidden');
-    };
+      const pending = purchaseRequests.filter(r => r.status === 'pending');
+      if (badge) badge.innerText = `${pending.length} Pending`;
 
-    window.closeManageNavLinksModal = function() {
-      const modal = document.getElementById('manageNavLinksModal');
-      if (modal) modal.classList.add('hidden');
-    };
+      if (purchaseRequests.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs font-semibold">No requests logged.</div>`;
+        return;
+      }
 
-    window.resetNavLinkForm = function() {
-      document.getElementById('editNavLinkId').value = '';
-      document.getElementById('newLinkTitle').value = '';
-      document.getElementById('newLinkUrl').value = '';
-    };
-
-    window.renderNavLinksManageList = function() {
-      const container = document.getElementById('navLinksManageList');
-      if (!container) return;
-      container.innerHTML = navLinks.map(l => `
-        <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-900 p-2 rounded-xl text-xs border border-slate-200 dark:border-slate-800 gap-2">
-          <div class="min-w-0 flex-1">
-            <p class="font-bold text-slate-900 dark:text-white truncate">${window.escapeHtml(l.title)}</p>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${window.escapeHtml(l.url)}</p>
+      container.innerHTML = purchaseRequests.map(req => `
+        <div class="dark-card p-4 rounded-2xl border ${req.status === 'pending' ? 'border-blue-500/40 bg-blue-50/50 dark:bg-slate-900/40' : 'border-slate-200 dark:border-slate-800'} space-y-2 text-xs">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-black text-slate-900 dark:text-white text-sm">${window.escapeHtml(req.customerName)}</span>
+              <p class="text-blue-600 dark:text-blue-400 font-bold">Device: ${window.escapeHtml(req.itemTitle)}</p>
+              <p class="text-slate-500 text-[11px]">📞 ${window.escapeHtml(req.customerPhone)}</p>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-black rounded uppercase ${req.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500' : (req.status === 'declined' ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-500')}">${req.status}</span>
           </div>
-          <button onclick="window.deleteNavLink('${l.id}')" class="text-rose-600 dark:text-rose-400 font-bold px-1.5 py-0.5 bg-rose-500/10 rounded cursor-pointer">✕</button>
+          ${req.notes ? `<p class="text-slate-600 dark:text-slate-300 italic bg-slate-100 dark:bg-slate-950 p-2 rounded-xl">"${window.escapeHtml(req.notes)}"</p>` : ''}
+          ${req.shop_note ? `<p class="text-blue-600 dark:text-blue-400 font-bold text-[11px]">Shop Note: ${window.escapeHtml(req.shop_note)}</p>` : ''}
+          <div class="flex gap-2 pt-1 border-t border-slate-200 dark:border-slate-800">
+            ${req.status === 'pending' ? `
+              <button onclick="window.approveRequestPrompt('${req.id}')" class="px-3 py-1 bg-emerald-600 text-white font-black rounded-xl">✅ Approve</button>
+              <button onclick="window.declineRequestPrompt('${req.id}')" class="px-3 py-1 bg-rose-600 text-white font-bold rounded-xl">❌ Decline</button>
+            ` : ''}
+          </div>
         </div>
       `).join('');
     };
 
-    window.handleSaveNavLink = function(e) {
-      e.preventDefault();
-      const title = document.getElementById('newLinkTitle').value.trim();
-      const url = document.getElementById('newLinkUrl').value.trim();
-      navLinks.push({ id: 'nl_' + Date.now(), title, url });
-      localStorage.setItem('ajd_nav_links', JSON.stringify(navLinks));
-      window.resetNavLinkForm();
-      window.renderNavLinksManageList();
-      window.renderNavLinksDropdown();
-      window.showToast('Quick link added');
+    window.approveRequestPrompt = async function(reqId) {
+      const req = purchaseRequests.find(r => r.id === reqId);
+      if (!req) return;
+      const note = prompt('Optional approval note for customer:', 'Parts in stock! Bring device in today.');
+      req.status = 'approved';
+      req.shop_note = note || '';
+      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+
+      const newTicket = window.normalizeRepair({
+        id: window.generateShortId(repairs, 'AJD'),
+        customer_name: req.customerName,
+        customer_phone: req.customerPhone,
+        make_model: req.itemTitle,
+        issue: req.notes || 'Online Request',
+        status: 'pending'
+      });
+      await window.saveRepairTicketToStorageAndCloud(newTicket);
+
+      initSupabase();
+      if (supabaseClient) {
+        try { await supabaseClient.from('purchase_requests').upsert([{ id: req.id, status: 'approved', shop_note: req.shop_note }]); } catch(e){}
+      }
+
+      window.renderPurchaseRequests();
+      window.renderRepairs();
+      window.showToast(`Approved & Created Ticket ${newTicket.id}`);
     };
 
-    window.deleteNavLink = function(id) {
-      navLinks = navLinks.filter(l => l.id !== id);
-      localStorage.setItem('ajd_nav_links', JSON.stringify(navLinks));
-      window.renderNavLinksManageList();
-      window.renderNavLinksDropdown();
+    window.declineRequestPrompt = async function(reqId) {
+      const req = purchaseRequests.find(r => r.id === reqId);
+      if (!req) return;
+      const note = prompt('Reason for declining request:', 'Parts backordered / Unrepairable.');
+      req.status = 'declined';
+      req.shop_note = note || 'Request declined.';
+      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
+
+      initSupabase();
+      if (supabaseClient) {
+        try { await supabaseClient.from('purchase_requests').upsert([{ id: req.id, status: 'declined', shop_note: req.shop_note }]); } catch(e){}
+      }
+
+      window.renderPurchaseRequests();
+      window.showToast('Request declined.');
     };
 
-    window.updateShopPhoneDisplay = function() {
-      const headerDisplay = document.getElementById('headerPhoneDisplay');
-      const headerLink = document.getElementById('headerPhoneLink');
-      const settingsDisplay = document.getElementById('settingsPhoneDisplay');
-
-      if (headerDisplay) headerDisplay.innerText = shopPhone;
-      if (headerLink) headerLink.href = `tel:${shopPhone.replace(/\D/g, '')}`;
-      if (settingsDisplay) settingsDisplay.innerText = shopPhone;
+    window.showToast = function(msg) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'px-4 py-2.5 rounded-2xl text-xs font-black text-white bg-slate-900 border border-slate-700 shadow-2xl';
+      toast.innerText = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     };
 
-    window.openEditShopPhoneModal = function() {
-      const input = document.getElementById('shopPhoneInput');
-      if (input) input.value = shopPhone;
-      const modal = document.getElementById('editShopPhoneModal');
-      if (modal) modal.classList.remove('hidden');
-    };
+    window.toggleDropdown = id => document.getElementById(id)?.classList.toggle('hidden');
+    window.handleBackdropClick = (e, id) => { if (e.target.id === id) document.getElementById(id).classList.add('hidden'); };
 
-    window.closeEditShopPhoneModal = function() {
-      const modal = document.getElementById('editShopPhoneModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.handleSaveShopPhone = function(e) {
-      e.preventDefault();
-      const input = document.getElementById('shopPhoneInput');
-      if (!input) return;
-      shopPhone = input.value.trim() || '(786) 970-7779';
-      localStorage.setItem('ajd_shop_phone', shopPhone);
-      window.updateShopPhoneDisplay();
-      window.closeEditShopPhoneModal();
-      window.showToast('Shop phone updated');
+    window.switchTab = function(tab) {
+      document.getElementById('viewRepairs').classList.add('hidden');
+      document.getElementById('viewInvoices').classList.add('hidden');
+      document.getElementById('viewStore').classList.add('hidden');
+      if (tab === 'repairs') document.getElementById('viewRepairs').classList.remove('hidden');
+      if (tab === 'invoices') { document.getElementById('viewInvoices').classList.remove('hidden'); window.renderInvoicesList(); }
+      if (tab === 'store') { document.getElementById('viewStore').classList.remove('hidden'); window.renderPurchaseRequests(); }
     };
 
     window.onload = async function() {
       window.applyTheme();
-      window.updateShopPhoneDisplay();
-      window.populatePaymentMethodsDropdown();
-      window.renderNavLinksDropdown();
-      window.sanitizeRepairIds();
+      window.syncShopPhone();
       await window.fetchRepairsFromCloud();
-      window.renderCustomerRequests();
+      await window.fetchPurchaseRequestsFromCloud();
       window.renderRepairs();
     };
   </script>
