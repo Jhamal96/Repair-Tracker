@@ -1,1002 +1,376 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>AJD's Wireless Repair Tracker & Store Manager</title>
-  <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="AJD Repairs">
-  
-  <!-- Apple Touch & Favicon SVG Data URIs -->
-  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23000000'/><circle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/><path d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='%23ffffff' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-
-  <!-- External CDNs -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-  <!-- Tailwind Configuration -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
-              400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8'
-            }
-          }
-        }
-      }
+<html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AJD's Wireless Repairs | Admin Dashboard</title><meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AJD's Wireless Repairs">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='38' stroke='%232563eb' stroke-width='6' fill='none'/%3E%3Cpath d='M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42' stroke='white' stroke-width='5.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{500:'#3b82f6',600:'#2563eb'}}}}}</script>
+<style>*{-webkit-tap-highlight-color:transparent}body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden}.dark-card{background:#fff;border:1px solid #e2e8f0}.dark .dark-card{background:#0f172a;border-color:#1e293b}.blue-glow{box-shadow:0 0 20px -5px rgba(37,99,235,.35)}.field{width:100%;padding:9px 12px;font-size:12px;border-radius:12px;background:#f8fafc;border:1px solid #cbd5e1;color:#0f172a;outline:none}.dark .field{background:#020617;border-color:#1e293b;color:white}.lbl{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:#475569}.dark .lbl{color:#cbd5e1}.btn{border-radius:12px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}.pct{border:1px solid #47556955;border-radius:9px;padding:5px 8px;font-size:11px;font-weight:800;background:#e2e8f0;color:#1e293b}.dark .pct{background:#1e293b;color:#e2e8f0}.pct.active{background:#2563eb!important;color:white!important;border-color:#2563eb}.thermal-paper{font-family:'Courier New',monospace;background:#fff!important;color:#000!important;width:100%;max-width:320px;margin:auto;padding:16px;border:1px dashed #ccc}.thermal-paper *{color:#000!important}.modal{position:fixed;inset:0;z-index:100;background:#000b;display:flex;align-items:center;justify-content:center;padding:12px}.modal.hidden{display:none}.modal-inner{width:100%;max-width:540px;max-height:92vh;overflow-y:auto}.mini{font-size:11px;color:#64748b}.dark .mini{color:#94a3b8}@media print{@page{margin:5mm;size:80mm auto}body *{visibility:hidden!important}#invoiceModal,#invoiceModal *{visibility:visible!important}#invoiceModal{position:absolute!important;inset:0!important;width:100%!important;height:auto!important;background:white!important;padding:0!important}#invoiceModal .modal-inner{background:white!important;border:0!important;box-shadow:none!important;max-height:none!important;padding:0!important}#invoicePrintSheet{border:0!important;width:72mm!important;max-width:72mm!important;padding:0!important}.no-print{display:none!important}}</style></head>
+<body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased">
+<header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5"><div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3"><div class="flex items-center justify-between w-full sm:w-auto"><div class="flex items-center gap-3"><div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 shadow-md w-10 h-10"><svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h1 class="text-base sm:text-lg font-black tracking-tight flex items-center gap-2">AJD's Wireless Repairs <span id="cloudStatusIndicator" class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500" title="Local data available; cloud unverified"></span></h1><p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Repair Tracker & Store Manager</p></div></div><a data-shop-tel href="tel:7869707779" class="sm:hidden text-xs font-black text-blue-600 dark:text-blue-400">📞 <span data-shop-phone>(786) 970-7779</span></a></div>
+<div class="flex flex-wrap items-center justify-center gap-2"><nav class="flex items-center gap-1 bg-slate-200 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300 dark:border-slate-800 text-xs font-extrabold"><button id="tabBtnRepairs" class="btn bg-blue-600 text-white" onclick="switchTab('repairs')">💻 Repairs</button><button id="tabBtnHistory" class="btn" onclick="switchTab('history')">🗂️ Repair History</button><button id="tabBtnInvoices" class="btn" onclick="switchTab('invoices')">📄 Receipts</button><button id="tabBtnStore" class="btn" onclick="switchTab('store')">📥 Requests <span id="storeBadge"></span></button><button id="tabBtnInventory" class="btn" onclick="switchTab('inventory')">🛍️ Store Management</button></nav><div class="relative"><button class="btn dark-card" onclick="toggleDropdown('navLinksDropdownMenu')">🔗 Links</button><div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-64 dark-card rounded-2xl shadow-2xl z-50 p-3 text-xs space-y-2"><div id="navLinksList" class="space-y-2 max-h-52 overflow-y-auto"></div><div class="border-t border-slate-700/20 pt-2"><button type="button" class="btn bg-blue-600 text-white w-full" onclick="openLinksManager()">⚙️ Manage Links</button></div></div></div><div class="relative"><button class="btn dark-card text-blue-500" onclick="toggleDropdown('settingsDropdownMenu')">⚙️ Settings</button><div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-72 dark-card rounded-2xl shadow-2xl z-50 p-4 space-y-3 max-h-[82vh] overflow-y-auto"><div class="border-b border-slate-700/20 pb-3 space-y-2"><h3 class="font-black text-sm">☁️ Cloud Admin Access</h3><p id="cloudAuthStatus" class="mini">Checking Supabase sign-in…</p><form id="cloudLoginForm" class="space-y-2" onsubmit="signInAdmin(event)"><input type="email" id="cloudLoginEmail" class="field" placeholder="Admin email" autocomplete="username" required><input type="password" id="cloudLoginPassword" class="field" placeholder="Password" autocomplete="current-password" required><button class="btn bg-blue-600 text-white w-full">Sign In to Cloud</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(true)">Create a Cloud Account</button></form><form id="cloudSignupForm" class="space-y-2 hidden" onsubmit="createCloudAccount(event)"><p class="mini">Create an account using your email address. Your account needs administrator approval before it can access customer records.</p><label for="cloudSignupEmail" class="lbl">Email Address</label><input type="email" id="cloudSignupEmail" class="field" autocomplete="email" placeholder="you@example.com" required maxlength="254"><label for="cloudSignupPassword" class="lbl">Password (8+ characters)</label><input type="password" id="cloudSignupPassword" class="field" autocomplete="new-password" minlength="8" required><label for="cloudSignupConfirm" class="lbl">Confirm Password</label><input type="password" id="cloudSignupConfirm" class="field" autocomplete="new-password" minlength="8" required><button type="submit" id="cloudSignupSubmit" class="btn bg-blue-600 text-white w-full">Create Account</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(false)">Back to Sign In</button></form><p id="cloudSignupStatus" class="mini" role="status" aria-live="polite"></p><div id="cloudAccountIdBox" class="hidden bg-slate-100 dark:bg-slate-950 rounded-xl p-2 space-y-1"><p class="mini font-bold">Your Account ID (for admin approval)</p><p id="cloudAccountId" class="break-all text-[10px] font-mono"></p><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="copyCloudAccountId()">Copy Account ID</button></div><button id="cloudLogoutButton" class="btn bg-slate-200 dark:bg-slate-800 w-full hidden" onclick="signOutAdmin()">Sign Out</button></div><div><label class="lbl">Shop Contact Phone</label><input class="field" id="shopPhoneInput" oninput="updateShopPhoneSetting(this.value)" onblur="flushShopPhoneSetting()"><p id="shopPhoneCloudStatus" class="mini mt-1" role="status">Changes save locally; admin sign-in is required for cloud updates.</p></div><div><label class="lbl" for="shopEmailInput">Business Contact Email</label><input class="field" id="shopEmailInput" type="email" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="contact@yourbusiness.com" oninput="updateShopEmailSetting(this.value)" onblur="flushShopEmailSetting()"><p id="shopEmailCloudStatus" class="mini mt-1" role="status">Changes are saved locally until an authorized admin publishes them to Supabase.</p></div><div><label class="lbl">Theme</label><select class="field" id="themeSelectSetting" onchange="setThemeMode(this.value)"><option value="dark">🌙 Dark</option><option value="light">☀️ Light</option><option value="system">📱 System</option></select></div><div class="border-t border-slate-700/30 pt-3"><h3 class="font-black text-sm mb-2">Labor Price Manager</h3><div id="laborPresetList" class="space-y-1 max-h-44 overflow-auto"></div><div class="grid grid-cols-3 gap-1 mt-2"><input class="field col-span-2" id="newLaborName" placeholder="Repair type"><input class="field" id="newLaborPrice" type="number" min="0" step=".01" placeholder="$"></div><button class="btn bg-blue-600 text-white w-full mt-2" onclick="addLaborPreset()">+ Add / Update Labor</button></div><button class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="exportBackup()">⬇ Export JSON Backup</button><label class="btn bg-slate-200 dark:bg-slate-800 block text-center">⬆ Import JSON Backup<input type="file" accept=".json,application/json" class="hidden" onchange="importBackup(event)"></label></div></div></div></div></header>
+<main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-5"><div class="dark-card rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3"><div><p class="font-black text-xs">☁️ Supabase Synchronization</p><p id="cloudSyncMessage" class="mini">Checking cloud permissions. Local backups remain available.</p><p id="cloudPendingMessage" class="text-xs font-bold text-amber-500"></p></div><div class="flex gap-2 flex-wrap"><button class="btn bg-blue-600 text-white" onclick="syncAllCloud()">↻ Sync Now</button><button class="btn bg-slate-200 dark:bg-slate-800" onclick="openCloudSettings()">Cloud Login</button><button id="cloudRestoreButton" class="btn bg-amber-600 text-white hidden" onclick="restoreLocalOnlyRepairs()">⬆ Upload Local-Only Tickets</button></div></div><div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Total Revenue</span><p id="statTotalRev" class="text-xl font-black text-emerald-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Deposits Collected</span><p id="statDeposits" class="text-xl font-black text-blue-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Unpaid Balance</span><p id="statUnpaid" class="text-xl font-black text-rose-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Active Repairs</span><p id="statActiveJobs" class="text-xl font-black text-blue-500">0</p></div></div>
+<section id="viewRepairs"><div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start"><div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 blue-glow lg:sticky lg:top-20"><div class="flex justify-between border-b border-slate-700/20 pb-3"><h2 class="text-base font-black">📝 Check-In New Repair</h2><span class="text-[10px] font-black text-blue-500">INTAKE</span></div><form id="intakeForm" class="space-y-3" onsubmit="handleCreateRepair(event)"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Customer Name *</label><input id="intakeName" class="field" required placeholder="Kayla Smith"></div><div><label class="lbl">Phone Number (Optional)</label><input id="intakePhone" class="field" type="tel" placeholder="(305) 555-0147"></div></div><div><label class="lbl">Device Make, Model & Model Number *</label><input id="intakeDevice" class="field" required placeholder="iPhone 14 Pro Max"></div><div><label class="lbl">Issue Description *</label><input id="intakeIssue" class="field" required placeholder="Cracked OLED display"></div><div><label class="lbl">Repair Type / Automatic Labor</label><select id="intakeRepairType" class="field" onchange="applyLaborPreset('intake')"></select></div><div><label class="lbl">Parts (internal only)</label><div id="intakePartsList" class="space-y-2"></div><button type="button" class="btn bg-slate-200 dark:bg-slate-800 mt-2" onclick="addPartRow('intake')">+ Add Part</button></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Labor Charge ($) — editable</label><input id="intakeLaborCharge" class="field" type="number" min="0" step=".01" value="0" oninput="recalculate('intake')" required></div><div><label class="lbl text-blue-500">Calculated Customer Total ($)</label><input id="intakeTotalAmount" class="field font-black text-blue-500" readonly value="0.00"></div></div><div><label class="lbl">Discount — select percentage or enter amount</label><div id="intakeDiscountButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="intakeDiscount" class="field" type="number" min="0" step=".01" value="0" oninput="setManualPercent('intake','Discount');recalculate('intake')"><p class="mini mt-1">Discount applies before the final total rounds up to a whole dollar.</p></div><div><label class="lbl">Required Deposit — percentage or custom amount</label><div id="intakeDepositButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="intakeDeposit" class="field" type="number" min="0" step=".01" value="0" oninput="setManualPercent('intake','Deposit');recalculate('intake')"><p class="mini mt-1">A required deposit is not considered paid until marked collected.</p></div><div><label class="lbl">Payment Status</label><select id="intakePaymentStatus" class="field"><option value="unpaid">🔴 Unpaid</option><option value="deposit_paid">🟡 Deposit Paid</option><option value="paid_in_full">🟢 Paid in Full</option></select></div><button class="btn w-full py-3 bg-blue-600 text-white">➕ Register Repair Ticket</button></form></div>
+<div class="lg:col-span-7 space-y-3"><div class="dark-card p-3 rounded-2xl flex flex-col sm:flex-row gap-2"><input id="repairSearchInput" class="field flex-1" placeholder="Search customer, ticket ID, device..." oninput="renderRepairs()"><select id="repairStatusFilter" class="field sm:w-auto" onchange="renderRepairs()"><option value="all">All Repair Tickets</option><option value="pending">⏳ Checked In</option><option value="in-progress">⚙️ In Repair</option><option value="completed">✅ Ready Pickup</option></select></div><div id="repairsContainer" class="space-y-3"><div class="dark-card p-8 rounded-3xl text-center">Loading repair history...</div></div></div></div></section>
+<section id="viewHistory" class="hidden space-y-3"><div class="dark-card p-5 rounded-3xl"><h2 class="font-black text-lg">🗂️ Picked Up — Repair History</h2><p class="mini">Completed pickups are kept here, not deleted. Search by customer, device or ticket number.</p><input class="field mt-3" id="historySearchInput" placeholder="Search archived tickets..." oninput="renderHistory()"></div><div id="historyContainer" class="space-y-3"></div></section>
+<section id="viewInvoices" class="hidden"><div class="dark-card p-5 rounded-3xl space-y-4"><h2 class="font-black border-b border-slate-700/20 pb-3">📄 Printable Thermal Customer Receipts</h2><div id="invoicesListContainer" class="space-y-2"></div></div></section>
+<section id="viewStore" class="hidden space-y-4"><div class="dark-card p-5 rounded-3xl"><h2 class="font-black">📥 Customer Ticket Requests Inbox</h2><p class="mini">Review customer submissions from request.html, approve or decline.</p></div><div class="dark-card p-5 rounded-3xl"><div class="flex justify-between"><h3 class="font-black">Incoming Ticket Requests</h3><span id="requestsCountBadge" class="mini">0 Pending</span></div><div id="purchaseRequestsContainer" class="space-y-3 mt-3"></div></div><div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex items-center justify-between gap-2"><div><h3 class="font-black">📨 Online Repair Requests</h3><p class="mini">Requests submitted through request.html; approve and bring details into Check-In.</p></div><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchOnlineRepairRequests()">↻ Refresh</button></div><p id="onlineRepairRequestsStatus" class="mini">Sign in to load online repair requests.</p><div id="onlineRepairRequestsList" class="space-y-3"></div></div></section>
+<section id="viewInventory" class="hidden space-y-4">
+<div class="dark-card p-5 rounded-3xl space-y-2"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="font-black text-lg">🛍️ Store Management</h2><a href="store.html" target="_blank" class="btn bg-blue-600 text-white">↗ Customer Storefront</a></div><p class="mini">Manage the shared product catalog and purchase requests. Cloud edits require an authenticated admin account and Supabase policies; until then, the editor will display a permission error rather than falsely claim to save.</p><p id="inventoryCloudStatus" class="text-xs font-bold text-amber-500">Checking cloud inventory…</p></div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start"><form id="productForm" class="dark-card rounded-3xl p-5 space-y-3 lg:col-span-2" onsubmit="saveStoreProduct(event)"><h3 class="font-black">➕ Add / Edit Store Item</h3><input type="hidden" id="productId"><label class="lbl">Item Name *</label><input class="field" id="productTitle" required maxlength="160" placeholder="iPhone 13 Pro 128GB"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Category</label><select class="field" id="productCategory"><option>Phones</option><option>Tablets</option><option>Laptops</option><option>Accessories</option><option>Parts</option><option>Other</option></select></div><div><label class="lbl">Price ($) *</label><input class="field" type="number" min="0" step="0.01" id="productPrice" required></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">SKU</label><input class="field" id="productSku" maxlength="80"></div><div><label class="lbl">Condition</label><input class="field" id="productCondition" placeholder="Pre-Owned Excellent" maxlength="100"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Stock Quantity</label><input class="field" id="productStock" type="number" min="0" step="1" value="1" required></div><div><label class="lbl">Visibility</label><select class="field" id="productStatus"><option value="available">Available</option><option value="out_of_stock">Out of stock</option><option value="hidden">Hidden</option></select></div></div><label class="lbl">Product Description</label><textarea class="field" id="productDescription" rows="3" maxlength="3000"></textarea><label class="lbl">Product Image URL</label><input class="field" type="url" id="productImageUrl" placeholder="https://..." oninput="previewProductImage()"><label class="lbl">Or upload a product image</label><input class="field" type="file" id="productImageFile" accept="image/jpeg,image/png,image/webp" onchange="previewProductImage()"><p class="mini">Uploads use the Supabase Storage bucket <b>product-images</b> and require admin access.</p><img id="productImagePreview" class="hidden h-32 w-full object-contain rounded-xl bg-slate-950" alt="Product preview"><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1" type="submit">💾 Save to Cloud</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetProductForm()">Clear</button></div></form><div class="lg:col-span-3 space-y-3"><div class="dark-card rounded-2xl p-3 flex gap-2"><input class="field flex-1" id="inventorySearch" placeholder="Search products / SKU" oninput="renderInventory()"><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchInventory()">↻ Refresh</button></div><div id="inventoryItems" class="space-y-3"></div></div></div>
+<div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex flex-wrap justify-between items-center gap-2"><h3 class="font-black">📦 Customer Purchase Requests</h3><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchStoreOrders()">↻ Refresh Requests</button></div><p class="mini">Approving a request reserves stock only if enough units remain. Declining or awaiting restock does not reserve stock.</p><div id="storeOrders" class="space-y-3"></div></div>
+</section></main>
+<footer class="max-w-7xl mx-auto px-4 pb-7 pt-3 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800"><span>© <span id="footerYear"></span> AJD's Wireless Repairs</span> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-tel href="tel:7869707779"><span data-shop-phone>(786) 970-7779</span></a><span data-shop-email-container hidden> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-mailto href="#"><span data-shop-email></span></a></span></footer>
+<div id="invoiceModal" class="modal hidden" onclick="handleBackdropClick(event,'invoiceModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-4"><div class="flex justify-between items-center no-print"><h3 class="font-black">🧾 Thermal Receipt Preview</h3><div class="flex gap-2"><button class="btn bg-blue-600 text-white" onclick="window.print()">🖨 Print / Save PDF</button><button class="btn" onclick="closeInvoiceModal()">✕</button></div></div><div id="invoicePrintSheet" class="thermal-paper space-y-3 text-center"></div></div></div>
+<div id="editRepairModal" class="modal hidden" onclick="handleBackdropClick(event,'editRepairModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-3"><div class="flex justify-between"><h3 class="font-black">✏️ Edit Repair Ticket <span id="editTicketBadge" class="text-blue-500"></span></h3><button onclick="closeEditModal()">✕</button></div><form id="editRepairForm" class="space-y-3" onsubmit="handleUpdateRepair(event)"><input type="hidden" id="editRepairId"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Customer Name *</label><input id="editCustomerName" class="field" required></div><div><label class="lbl">Phone Number (Optional)</label><input id="editCustomerPhone" class="field"></div></div><div><label class="lbl">Device Make, Model & Number *</label><input id="editMakeModel" class="field" required></div><div><label class="lbl">Issue Description *</label><input id="editIssue" class="field" required></div><div><label class="lbl">Repair Type / Automatic Labor</label><select id="editRepairType" class="field" onchange="applyLaborPreset('edit')"></select></div><div><label class="lbl">Parts (internal only)</label><div id="editPartsList" class="space-y-2"></div><button type="button" class="btn bg-slate-200 dark:bg-slate-800 mt-2" onclick="addPartRow('edit')">+ Add Part</button></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Labor Charge ($) — editable</label><input id="editLaborCost" class="field" type="number" min="0" step=".01" oninput="recalculate('edit')"></div><div><label class="lbl">Calculated Customer Total ($)</label><input id="editTotalAmount" class="field font-black text-blue-500" readonly></div></div><div><label class="lbl">Discount</label><div id="editDiscountButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="editDiscount" class="field" type="number" min="0" step=".01" oninput="setManualPercent('edit','Discount');recalculate('edit')"></div><div><label class="lbl">Required Deposit</label><div id="editDepositButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="editDepositAmount" class="field" type="number" min="0" step=".01" oninput="setManualPercent('edit','Deposit');recalculate('edit')"></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Payment Status</label><select id="editPaymentStatus" class="field" onchange="recalculate('edit')"><option value="unpaid">🔴 Unpaid</option><option value="deposit_paid">🟡 Deposit Paid</option><option value="paid_in_full">🟢 Paid in Full</option></select></div><div class="bg-slate-100 dark:bg-slate-900 p-3 rounded-xl"><span class="mini">PICKUP BALANCE</span><p id="editPickupBalanceDisplay" class="font-black text-rose-500">$0.00</p></div></div><button class="btn bg-blue-600 text-white w-full py-3">Save Ticket Changes</button></form></div></div>
+<div id="linksManagerModal" class="modal hidden" onclick="handleBackdropClick(event,'linksManagerModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-4"><div class="flex justify-between items-center"><div><h3 class="font-black">🔗 Links Manager</h3><p class="mini">Add, edit, or remove shortcuts in the Links dropdown.</p></div><button class="btn" onclick="closeLinksManager()">✕</button></div><div id="managedLinksList" class="space-y-2 max-h-64 overflow-y-auto"></div><form id="linkEditorForm" onsubmit="saveManagedLink(event)" class="space-y-2 border-t border-slate-700/20 pt-3"><input id="managedLinkId" type="hidden"><div class="grid grid-cols-3 gap-2"><div><label class="lbl">Emoji (optional)</label><input class="field" id="managedLinkIcon" placeholder="🔗" maxlength="8"></div><div class="col-span-2"><label class="lbl">Link Name *</label><input class="field" id="managedLinkLabel" required maxlength="100" placeholder="Customer Storefront"></div></div><div><label class="lbl">URL or page *</label><input class="field" id="managedLinkUrl" required maxlength="2048" placeholder="store.html or https://..."></div><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1">Save Link</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetLinkEditor()">Clear</button></div></form><p id="managedLinksSyncNote" class="mini"></p></div></div>
+<div id="toastContainer" class="fixed bottom-5 right-5 z-[110] space-y-2 pointer-events-none"></div>
+<script>
+'use strict';
+const SUPABASE_URL='https://vxpufrahrnwmtgltjstd.supabase.co';
+const SUPABASE_KEY='sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+num(n).toFixed(2);
+const num=v=>{let n=Number(v);return Number.isFinite(n)?Math.max(0,n):0};
+const cents=v=>Math.round(num(v)*100)/100;
+const ceilDollar=v=>Math.ceil(Math.max(0,Math.round(v*100)/100-1e-9));
+const read=(k,d)=>{try{let v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}};
+let onlineRepairRequests=[];
+let repairs=read('ajd_repairs_backup',[]),purchaseRequests=read('ajd_purchase_requests',[]),shopPhone=localStorage.getItem('ajd_shop_phone')||'(786) 970-7779';
+const SHOP_PHONE_PENDING_KEY='ajd_shop_phone_pending_v1';
+const SHOP_EMAIL_KEY='ajd_shop_email',SHOP_EMAIL_PENDING_KEY='ajd_shop_email_pending_v1';
+let shopEmail=localStorage.getItem(SHOP_EMAIL_KEY)||'',shopEmailSyncing=false,shopEmailSaveTimer=null;
+let shopPhoneSaveTimer=null,shopPhoneSyncing=false;
+let presets=read('ajd_labor_presets_v2',null)||[{id:'screen',name:'Screen Replacement',price:60},{id:'battery',name:'Battery Replacement',price:40},{id:'charging',name:'Charging Port Repair',price:55},{id:'backglass',name:'Back Glass Replacement',price:75},{id:'diagnostic',name:'Diagnostic Service',price:25},{id:'custom',name:'Custom Repair',price:0}];
+let sb=null,cloudReady=false,isCloudAdmin=false,lastCloudError='',localOnlyRepairIds=[];
+const percentage={intake:{Discount:null,Deposit:null},edit:{Discount:null,Deposit:null}};
+const PENDING_REPAIRS_KEY='ajd_pending_repairs_v3';
+let pendingRepairs=read(PENDING_REPAIRS_KEY,[]);
+if(!Array.isArray(pendingRepairs))pendingRepairs=[];
+function initSupabase(){if(!sb&&window.supabase?.createClient){try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){console.warn(e)}}return sb}
+function setCloudMessage(msg,error=false){lastCloudError=error?msg:'';const el=$('cloudSyncMessage');if(el){el.textContent=msg;el.className='mini '+(error?'text-rose-500':'')}updateCloudUI()}
+function cloudIndicator(ok){cloudReady=ok;const el=$('cloudStatusIndicator');if(el){el.className='inline-block w-2.5 h-2.5 rounded-full '+(ok?'bg-emerald-500':'bg-amber-500');el.title=ok?'Authorized cloud read verified':'Cloud save unverified — local backup available'}updateCloudUI()}
+function updateCloudUI(){const el=$('cloudPendingMessage');if(el){el.textContent=pendingRepairs.length?`${pendingRepairs.length} repair change(s) waiting for cloud sync.`:'No queued repair changes.';el.className='text-xs font-bold '+(pendingRepairs.length?'text-amber-500':'text-emerald-500')}$('cloudRestoreButton')?.classList.toggle('hidden',!isCloudAdmin||!localOnlyRepairIds.length);if(localStorage.getItem(SHOP_PHONE_PENDING_KEY)){const msg=$('cloudPendingMessage');if(msg)msg.textContent+=' Shop phone change pending cloud sync.'}if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null){const msg=$('cloudPendingMessage');if(msg)msg.textContent+=' Business email change pending cloud sync.'}const note=$('managedLinksSyncNote');if(note)note.textContent=isCloudAdmin?'Changes sync through your admin account; unsent edits remain on this device.':'Links save in this browser until you sign in with an authorized Supabase admin account.'}
+function queueRepair(op){const idx=pendingRepairs.findIndex(x=>x.id===op.id);if(idx>=0){const previous=pendingRepairs[idx];op.kind=op.kind==='delete'?'delete':previous.kind==='insert'?'insert':op.kind;pendingRepairs[idx]=op}else pendingRepairs.push(op);persistPendingRepairs()}
+function persistPendingRepairs(){localStorage.setItem(PENDING_REPAIRS_KEY,JSON.stringify(pendingRepairs));updateCloudUI()}
+function saveLocal(){localStorage.setItem('ajd_repairs_backup',JSON.stringify(repairs))}
+function norm(x){const pc=cents(x.part_cost??x.partCost??0),lc=cents(x.labor_cost??x.laborCost??0),discount=cents(x.discount??0);const parts=Array.isArray(x.parts)&&x.parts.length?x.parts.map(p=>({name:String(p.name??''),cost:cents(p.cost)})):[{name:String(x.part_note??x.partNote??''),cost:pc}];const partCost=parts.reduce((s,p)=>s+p.cost,0);return {...x,id:String(x.id||shortId()),customer_name:x.customer_name??x.customerName??'Customer',customer_phone:x.customer_phone??x.customerPhone??'',make_model:x.make_model??x.makeModel??'Device',issue:x.issue??'Repair Service',part_note:x.part_note??x.partNote??'',parts,part_cost:cents(partCost),labor_cost:lc,discount,amount:x.amount===undefined||x.amount===null?ceilDollar(partCost+lc-discount):cents(x.amount),deposit_amount:cents(x.deposit_amount??x.depositAmount??0),payment_status:x.payment_status??x.paymentStatus??'unpaid',status:x.status??'pending',repair_type:x.repair_type??'',created_at:x.created_at??new Date().toISOString(),supplier_links:Array.isArray(x.supplier_links)?x.supplier_links:[]}}
+repairs=repairs.map(norm);
+function shortId(){const chars='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';let id;do{const bytes=new Uint8Array(4);crypto.getRandomValues(bytes);id='AJ'+Array.from(bytes,b=>chars[b%chars.length]).join('')}while(repairs.some(x=>x.id===id));return id}
+function cloudPayload(job){const keys=['id','customer_name','customer_phone','make_model','issue','part_note','part_cost','labor_cost','amount','discount','deposit_amount','payment_status','payment_info','status','supplier_links','created_at','picked_up_at','repair_type','parts'];return Object.fromEntries(keys.filter(k=>job[k]!==undefined).map(k=>[k,job[k]]))}
+async function saveJob(job){job=norm(job);const i=repairs.findIndex(x=>x.id===job.id),isNew=i<0;if(isNew)repairs.unshift(job);else repairs[i]=job;saveLocal();queueRepair({id:job.id,kind:isNew?'insert':'update',job});renderRepairs();renderHistory();if(isCloudAdmin)await syncPendingRepairs();else toast('Saved locally; sign in to sync this repair to Supabase')}
+async function refreshCloudAccess(){const client=initSupabase();if(!client){setCloudMessage('Supabase library could not load. Check your internet connection and reload.',true);cloudIndicator(false);return}try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;const email=session?.user?.email||'';if(!session){isCloudAdmin=false;$('cloudAuthStatus').textContent='Not signed in. Cloud writing is disabled.';if($('cloudSignupForm').classList.contains('hidden'))$('cloudLoginForm').classList.remove('hidden');$('cloudLogoutButton').classList.add('hidden');$('cloudAccountIdBox').classList.add('hidden');setCloudMessage('Not signed in: repairs are saved to this browser only. Use Cloud Login to enable protected synchronization.',true);cloudIndicator(false);renderInventoryIfNeeded();return}
+const result=await client.rpc('ajd_is_admin');if(result.error)throw result.error;isCloudAdmin=result.data===true;$('cloudAuthStatus').textContent=isCloudAdmin?'Signed in as '+email+' (authorized admin)':'Signed in as '+email+' — account is not yet listed in ajd_admin_users.';$('cloudLoginForm').classList.add('hidden');$('cloudSignupForm').classList.add('hidden');$('cloudLogoutButton').classList.remove('hidden');$('cloudAccountId').textContent=session.user.id;$('cloudAccountIdBox').classList.toggle('hidden',isCloudAdmin);if(!isCloudAdmin){setCloudMessage('Access denied: ask the project owner to add this Auth user ID to ajd_admin_users.',true);cloudIndicator(false);return}setCloudMessage('Admin session verified. Checking repairs, links, and inventory…');await Promise.all([fetchCloud(),fetchRequests(),fetchOnlineRepairRequests(),fetchLinksCloud(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();if(pendingRepairs.length===0&&managedLinksPending.length===0&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&cloudReady&&!lastCloudError)setCloudMessage('Authorized Supabase read verified. No repair or link changes are waiting to upload.');}
+catch(e){isCloudAdmin=false;cloudIndicator(false);setCloudMessage('Supabase connection/authorization error: '+e.message,true);$('cloudAuthStatus').textContent=e.message;console.warn('Supabase auth/connect failure',e)}finally{updateCloudUI()}}
+function renderInventoryIfNeeded(){invStatus('Sign in as an admin to load and edit full inventory.');$('storeOrders').innerHTML='<p class="mini">Sign in as an admin to see customer requests.</p>'}
+async function signInAdmin(e){e.preventDefault();if(!initSupabase())return toast('Supabase library unavailable');const email=$('cloudLoginEmail').value.trim(),password=$('cloudLoginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('cloudLoginPassword').value='';if(error){setCloudMessage('Sign-in failed: '+error.message,true);toast('Cloud sign-in failed');return}await refreshCloudAccess();if(isCloudAdmin){$('settingsDropdownMenu').classList.add('hidden');toast('Signed in — cloud administrator verified')}}
+function toggleCloudSignup(show){
+ $('cloudSignupForm').classList.toggle('hidden',!show);
+ $('cloudLoginForm').classList.toggle('hidden',show);
+ $('cloudSignupStatus').textContent='';
+ if(show){$('cloudSignupEmail').value=$('cloudLoginEmail').value.trim();$('cloudSignupEmail').focus()}
+ else{$('cloudSignupPassword').value='';$('cloudSignupConfirm').value='';$('cloudLoginEmail').focus()}
+}
+async function createCloudAccount(e){
+ e.preventDefault();
+ if(!initSupabase()){setCloudMessage('Supabase library unavailable. Connect to the internet and retry.',true);return}
+ const email=$('cloudSignupEmail').value.trim();
+ const password=$('cloudSignupPassword').value;
+ const confirmPassword=$('cloudSignupConfirm').value;
+ const status=$('cloudSignupStatus'),button=$('cloudSignupSubmit');
+ if(password.length<8){status.textContent='Use a password with at least 8 characters.';return}
+ if(password!==confirmPassword){status.textContent='Passwords do not match.';return}
+ button.disabled=true;button.textContent='Creating account…';status.textContent='Sending signup request to Supabase…';
+ try{
+   const {data,error}=await sb.auth.signUp({email,password});
+   if(error)throw error;
+   $('cloudSignupPassword').value='';$('cloudSignupConfirm').value='';
+   $('cloudLoginEmail').value=email;
+   if(data?.session){
+     status.textContent='Account created. Your cloud access is pending administrator approval.';
+     await refreshCloudAccess();
+   }else{
+     toggleCloudSignup(false);
+     $('cloudSignupStatus').textContent='If registration is available, check your email for a confirmation link. Then sign in. Admin approval is required for cloud data access.';
+     $('cloudAuthStatus').textContent='Check your email to confirm your account, then sign in.';
+   }
+ }catch(err){status.textContent='Account creation failed: '+err.message;setCloudMessage('Account creation error: '+err.message,true)}
+ finally{button.disabled=false;button.textContent='Create Account'}
+}
+function copyCloudAccountId(){
+ const id=$('cloudAccountId').textContent;
+ if(!id)return;
+ if(navigator.clipboard?.writeText){navigator.clipboard.writeText(id).then(()=>toast('Account ID copied')).catch(()=>prompt('Copy Account ID:',id))}
+ else prompt('Copy Account ID:',id)
+}
+async function signOutAdmin(){if(initSupabase())await sb.auth.signOut();isCloudAdmin=false;cloudIndicator(false);await refreshCloudAccess();toast('Signed out of cloud')}
+function openCloudSettings(){$('settingsDropdownMenu').classList.remove('hidden');$('cloudLoginEmail').focus()}
+async function syncOneRepair(op){
+ if(op.kind==='delete'){
+   const {error}=await sb.from('repairs').delete().eq('id',op.id);
+   if(error)throw error;
+   return;
+ }
+ let payload=cloudPayload(op.job);
+ if(op.kind==='insert'){
+   for(let attempt=0;attempt<5;attempt++){
+     const {error}=await sb.from('repairs').insert(payload);
+     if(!error)return;
+     if(String(error.code)==='23505'&&String(op.id).startsWith('AJ')&&attempt<4){
+       const previous=op.id,newId=shortId();
+       op.id=newId;op.job.id=newId;payload.id=newId;
+       for(const job of repairs){if(job.id===previous){job.id=newId;break}}
+       saveLocal();persistPendingRepairs();renderRepairs();renderHistory();renderInvoicesList();
+       toast('Ticket number was already used in cloud; changed '+previous+' to '+newId);
+       continue;
+     }
+     throw error;
+   }
+ }else{
+   const {data,error}=await sb.from('repairs').update(payload).eq('id',op.id).select('id');
+   if(error)throw error;
+   if(!data?.length){
+     // The ticket exists locally but not in cloud; insert rather than silently losing it.
+     const {error:insertError}=await sb.from('repairs').insert(payload);
+     if(insertError)throw insertError;
+     toast('Restored local ticket '+op.id+' to cloud');
+   }
+ }
+}
+let syncingRepairs=false;
+async function syncPendingRepairs(){if(!isCloudAdmin||syncingRepairs)return;syncingRepairs=true;let failure=null;let saved=0;try{for(const op of [...pendingRepairs]){try{await syncOneRepair(op);saved++;pendingRepairs=pendingRepairs.filter(x=>x.id!==op.id);persistPendingRepairs()}catch(e){failure=e;console.warn('Repair sync failure',op.id,e);break}}if(failure){cloudIndicator(false);setCloudMessage('Repair sync failed: '+failure.message,true)}else if(!pendingRepairs.length&&saved){cloudIndicator(true);setCloudMessage(saved+' repair change(s) saved successfully to Supabase.') }}finally{syncingRepairs=false;updateCloudUI()}}
+async function fetchCloud(){if(!isCloudAdmin)return;try{const {data,error}=await sb.from('repairs').select('*').order('created_at',{ascending:false});if(error)throw error;const server=new Map((data||[]).map(x=>[String(x.id),norm(x)]));const local=repairs.slice();const pendingIds=new Set(pendingRepairs.map(x=>x.id));localOnlyRepairIds=local.filter(x=>!server.has(x.id)&&!pendingIds.has(x.id)).map(x=>x.id);const merged=new Map(server);for(const x of local){if(!merged.has(x.id)&&!pendingRepairs.some(p=>p.id===x.id&&p.kind==='delete'))merged.set(x.id,x)}for(const op of pendingRepairs){if(op.kind==='delete')merged.delete(op.id);else merged.set(op.id,norm(op.job))}repairs=[...merged.values()].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));saveLocal();renderRepairs();renderHistory();renderInvoicesList();cloudIndicator(true);if(localOnlyRepairIds.length)setCloudMessage(`${localOnlyRepairIds.length} local-only ticket(s) were retained but not uploaded. Review them with Upload Local-Only Tickets.`)}catch(e){cloudIndicator(false);setCloudMessage('Repair download failed: '+e.message,true);console.warn('Repairs cloud read failed',e)}}
+async function restoreLocalOnlyRepairs(){if(!isCloudAdmin)return toast('Cloud admin sign-in required');if(!localOnlyRepairIds.length)return toast('No local-only tickets');if(!confirm('Upload '+localOnlyRepairIds.length+' locally saved repair ticket(s) absent from Supabase? This will NOT replace existing cloud ticket IDs.'))return;for(const id of [...localOnlyRepairIds]){const job=repairs.find(r=>r.id===id);if(job)queueRepair({id,kind:'insert',job})}localOnlyRepairIds=[];await syncPendingRepairs();await fetchCloud()}
+async function syncAllCloud(){if(!isCloudAdmin){openCloudSettings();toast('Sign in with your authorized Supabase admin account');return}await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();await Promise.all([fetchCloud(),fetchRequests(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);if(!pendingRepairs.length&&!managedLinksPending.length&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&!lastCloudError)setCloudMessage('Cloud sync complete. All queued changes saved.');else if(!pendingRepairs.length&&!managedLinksPending.length&&cloudReady)setCloudMessage('Cloud refresh complete. Check individual section messages for any access errors.')}
+async function fetchRequests(){if(!isCloudAdmin)return;try{const {data,error}=await sb.from('purchase_requests').select('*').order('created_at',{ascending:false});if(error)throw error;const server=(data||[]).map(x=>({id:x.id,customerName:x.customer_name??x.customerName??'Customer',customerPhone:x.customer_phone??x.customerPhone??'',customerEmail:x.customer_email??'',itemTitle:x.item_title??x.itemTitle??'Repair Service',notes:x.notes??'',shop_note:x.shop_note??'',status:x.status??'pending',created_at:x.created_at}));const map=new Map(server.map(x=>[x.id,x]));for(const x of purchaseRequests){if(!map.has(x.id))map.set(x.id,x)}purchaseRequests=[...map.values()];localStorage.setItem('ajd_purchase_requests',JSON.stringify(purchaseRequests))}catch(e){setCloudMessage('Customer requests could not sync: '+e.message,true);console.warn('Requests cloud unavailable',e)}renderPurchaseRequests()}
+// The storefront reads this same phone setting from Supabase. Until cloud write succeeds,
+// keep the change pending locally rather than claiming it is visible to all customers.
+function phoneStatus(message,error=false){const el=$('shopPhoneCloudStatus');if(el){el.textContent=message;el.className='mini mt-1 '+(error?'text-rose-500':'')}}
+function syncShopPhone(){document.querySelectorAll('[data-shop-phone]').forEach(e=>e.textContent=shopPhone);document.querySelectorAll('[data-shop-tel]').forEach(e=>e.href='tel:'+shopPhone.replace(/\D/g,''));const input=$('shopPhoneInput');if(input&&document.activeElement!==input)input.value=shopPhone}
+function updateShopPhoneSetting(value){
+  shopPhone=String(value||'').trim()||'(786) 970-7779';
+  localStorage.setItem('ajd_shop_phone',shopPhone);
+  localStorage.setItem(SHOP_PHONE_PENDING_KEY,shopPhone);
+  syncShopPhone();
+  phoneStatus(isCloudAdmin?'Saving phone to cloud…':'Saved on this device; sign in as cloud admin to publish to the storefront.');
+  clearTimeout(shopPhoneSaveTimer);
+  shopPhoneSaveTimer=setTimeout(()=>{void syncShopPhoneCloud()},900);
+}
+function flushShopPhoneSetting(){clearTimeout(shopPhoneSaveTimer);void syncShopPhoneCloud()}
+async function fetchShopPhoneCloud(){
+  if(!initSupabase())return;
+  try{
+    const {data,error}=await sb.from('shop_settings').select('phone').eq('id','business').maybeSingle();
+    if(error)throw error;
+    if(localStorage.getItem(SHOP_PHONE_PENDING_KEY)){
+      phoneStatus('Phone edit pending upload; your local change has not been replaced.');
+      return;
     }
-  </script>
-
-  <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      -webkit-overflow-scrolling: touch;
-      overflow-x: hidden;
+    if(data?.phone){
+      shopPhone=data.phone;
+      localStorage.setItem('ajd_shop_phone',shopPhone);
+      syncShopPhone();
+      phoneStatus('Shop phone loaded from Supabase.');
     }
-    .dark-card { background-color: #ffffff; border: 1px solid #e2e8f0; }
-    .dark .dark-card { background-color: #0f172a; border: 1px solid #1e293b; }
-    .blue-glow { box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.35); }
-    
-    /* 80mm Thermal Receipt Styling */
-    .thermal-paper {
-      font-family: 'Courier New', Courier, monospace;
-      background-color: #ffffff !important;
-      color: #000000 !important;
-      width: 100%; max-width: 320px; margin: 0 auto; padding: 16px;
-      border: 1px dashed #cccccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }catch(e){phoneStatus('Phone cloud read unavailable: '+e.message,true);console.warn('Shop phone cloud read failed',e)}
+}
+async function syncShopPhoneCloud(){
+  if(shopPhoneSyncing||!isCloudAdmin||!initSupabase())return;
+  const pending=localStorage.getItem(SHOP_PHONE_PENDING_KEY);
+  if(!pending)return;
+  if(!/^[+()\d.\s-]{7,40}$/.test(pending)||pending.replace(/\D/g,'').length<7){phoneStatus('Enter a valid phone number before publishing.',true);return}
+  shopPhoneSyncing=true;
+  try{
+    const {error}=await sb.from('shop_settings').upsert({id:'business',phone:pending,updated_at:new Date().toISOString()},{onConflict:'id'});
+    if(error)throw error;
+    // Only clear pending if the user has not typed another number during this request.
+    if(localStorage.getItem(SHOP_PHONE_PENDING_KEY)===pending){
+      localStorage.removeItem(SHOP_PHONE_PENDING_KEY);
+      phoneStatus('Published to Supabase — customers will see the updated number.');
     }
-    .thermal-paper * { color: #000000 !important; }
-
-    @media print {
-      body * { visibility: hidden !important; }
-      #invoiceModal, #invoiceModal * { visibility: visible !important; }
-      #invoiceModal {
-        position: absolute !important; left: 0 !important; top: 0 !important;
-        width: 100% !important; height: auto !important; background: #ffffff !important;
-        color: #000000 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;
-      }
-      .no-print { display: none !important; }
-      .thermal-paper { border: none !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+  }catch(e){phoneStatus('Could not publish phone: '+e.message+'. Change stays saved on this device.',true);console.warn('Shop phone sync failed',e)}
+  finally{
+    shopPhoneSyncing=false;
+    if(isCloudAdmin&&localStorage.getItem(SHOP_PHONE_PENDING_KEY)!==pending&&localStorage.getItem(SHOP_PHONE_PENDING_KEY)){
+      void syncShopPhoneCloud();
     }
-  </style>
-</head>
-<body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
-
-  <header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-      
-      <!-- Brand Logo & Shop Status -->
-      <div class="flex items-center justify-between w-full sm:w-auto">
-        <div class="flex items-center space-x-3">
-          <div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 shadow-md shrink-0 flex items-center justify-center w-10 h-10">
-            <svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-              <circle cx="50" cy="50" r="42" stroke-width="6"/>
-              <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight flex items-center gap-2">
-              <span>AJD's Wireless</span>
-              <span id="cloudStatusIndicator" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Cloud Sync Active"></span>
-            </h1>
-            <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Repair Tracker & Store Manager</p>
-          </div>
-        </div>
-
-        <a href="tel:3055550147" data-shop-tel class="sm:hidden text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2.5 py-1 rounded-xl border border-blue-500/20">
-          📞 <span data-shop-phone>(305) 555-0147</span>
-        </a>
-      </div>
-
-      <!-- Navigation Bar & Controls -->
-      <div class="flex items-center justify-between w-full sm:w-auto gap-2">
-        <nav class="flex items-center space-x-1 bg-slate-200 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300 dark:border-slate-800 text-xs font-extrabold">
-          <button id="tabBtnRepairs" onclick="window.switchTab('repairs')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white font-black shadow transition cursor-pointer">
-            💻 Repairs
-          </button>
-          <button id="tabBtnInvoices" onclick="window.switchTab('invoices')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
-            📄 Receipts
-          </button>
-          <button id="tabBtnStore" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
-            <span>📥 Requests</span>
-            <span id="storeBadge" class="hidden bg-blue-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
-          </button>
-        </nav>
-
-        <div class="flex items-center space-x-1.5 relative">
-          <!-- Links Dropdown Menu -->
-          <div class="relative">
-            <button onclick="window.toggleDropdown('navLinksDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
-              🔗 Links
-            </button>
-            <div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-2 space-y-1 text-xs font-semibold">
-              <a href="request.html" target="_blank" class="block px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800">📝 Customer Request Form</a>
-              <a href="tel:3055550147" data-shop-tel class="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">📞 Call Shop <span data-shop-phone>(305) 555-0147</span></a>
-            </div>
-          </div>
-
-          <!-- Settings Dropdown Menu -->
-          <div class="relative">
-            <button onclick="window.toggleDropdown('settingsDropdownMenu')" class="p-2 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-xl border border-slate-300 dark:border-slate-800 text-xs font-bold transition cursor-pointer">
-              ⚙️ Settings
-            </button>
-            <div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] p-3 space-y-3 text-xs font-semibold">
-              <div>
-                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Shop Contact Phone Number</label>
-                <input type="text" id="shopPhoneInput" oninput="window.updateShopPhoneSetting(this.value)" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-bold outline-none">
-              </div>
-
-              <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
-                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Theme Preference</label>
-                <select id="themeSelectSetting" onchange="window.setThemeMode(this.value)" class="w-full px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-bold outline-none cursor-pointer">
-                  <option value="dark">🌙 Dark Mode</option>
-                  <option value="light">☀️ Light Mode</option>
-                  <option value="system">📱 Follow Device (System)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-5">
-
-    <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Total Revenue</span>
-        <p id="statTotalRev" class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400">$0</p>
-      </div>
-      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Deposits Collected</span>
-        <p id="statDeposits" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">$0</p>
-      </div>
-      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Unpaid Balance</span>
-        <p id="statUnpaid" class="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400">$0</p>
-      </div>
-      <div class="dark-card p-3.5 rounded-2xl space-y-0.5">
-        <span class="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400">Active Repairs</span>
-        <p id="statActiveJobs" class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">0</p>
-      </div>
-    </div>
-
-    <section id="viewRepairs" class="space-y-5">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        
-        <!-- LEFT COLUMN: Sticky Check-In Intake Form -->
-        <div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 border border-blue-500/30 blue-glow lg:sticky lg:top-20 z-10">
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-            <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span class="text-blue-600 dark:text-blue-400">📝</span> Check-In New Repair
-            </h2>
-            <span class="text-[10px] font-extrabold uppercase bg-blue-600/10 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-xl border border-blue-500/20">Intake</span>
-          </div>
-
-          <form id="intakeForm" class="space-y-3.5" onsubmit="window.handleCreateRepair(event)">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
-                <input type="text" id="intakeName" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kayla Smith">
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
-                <input type="tel" id="intakePhone" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="(305) 555-0147">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make, Model & Model Number *</label>
-              <input type="text" id="intakeDevice" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="iPhone 14 Pro Max 256GB (A2243)">
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
-              <input type="text" id="intakeIssue" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cracked OLED display & battery replacement">
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <div class="sm:col-span-2">
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Part Notes</label>
-                <input type="text" id="intakePartNote" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="Premium Soft OLED">
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Part Cost ($)</label>
-                <input type="number" id="intakePartCost" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Labor Charge ($)</label>
-                <input type="number" id="intakeLaborCharge" min="0" step="1" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-blue-600 dark:text-blue-400 mb-1">Calculated Total ($)</label>
-                <input type="number" id="intakeTotalAmount" readonly class="w-full px-3 py-2 text-xs bg-blue-50 dark:bg-slate-900 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-black outline-none" value="0">
-              </div>
-            </div>
-
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between">
-                <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Discount Amount ($)</label>
-                <div class="flex gap-1 text-[10px] font-extrabold">
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(0)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">0%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(5)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">5%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(10)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">10%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(15)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">15%</button>
-                  <button type="button" onclick="window.applyIntakeDiscountPreset(20)" class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">20%</button>
-                </div>
-              </div>
-              <input type="number" id="intakeDiscount" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0" oninput="window.recalculateIntakeTotals()">
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Required Deposit ($)</label>
-                <input type="number" id="intakeDeposit" min="0" step="1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" placeholder="0">
-              </div>
-
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Status</label>
-                <select id="intakePaymentStatus" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none cursor-pointer">
-                  <option value="unpaid">🔴 Unpaid</option>
-                  <option value="deposit_paid">🟡 Deposit Paid</option>
-                  <option value="paid_in_full">🟢 Paid in Full</option>
-                </select>
-              </div>
-            </div>
-
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-2xl shadow-lg transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
-              <span>➕ Register Repair Ticket</span>
-            </button>
-          </form>
-        </div>
-
-        <!-- RIGHT COLUMN: Active Repair Feed -->
-        <div class="lg:col-span-7 space-y-3.5">
-          <div class="dark-card p-3 rounded-2xl flex flex-col sm:flex-row gap-2.5 justify-between items-center">
-            <div class="relative w-full sm:w-auto flex-1">
-              <input type="text" id="repairSearchInput" oninput="window.renderRepairs()" placeholder="Search customer, ticket ID (e.g. AJD-7K3), device..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 outline-none">
-              <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-
-            <select id="repairStatusFilter" onchange="window.renderRepairs()" class="w-full sm:w-auto px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 font-bold outline-none cursor-pointer">
-              <option value="all">All Repair Tickets</option>
-              <option value="pending">⏳ Checked In</option>
-              <option value="in-progress">⚙ In Repair</option>
-              <option value="completed">✅ Ready Pickup</option>
-            </select>
-          </div>
-
-          <div id="repairsContainer" class="space-y-3.5">
-            <div class="dark-card p-8 text-center text-slate-500 text-xs font-bold rounded-3xl">
-              Loading active repair tickets...
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section id="viewInvoices" class="hidden space-y-4">
-      <div class="dark-card p-5 rounded-3xl space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <h2 class="text-base font-black text-slate-900 dark:text-white">📄 Printable Thermal Customer Receipts</h2>
-          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Select a ticket to view standard 80mm thermal roll format</span>
-        </div>
-        <div id="invoicesListContainer" class="space-y-2.5"></div>
-      </div>
-    </section>
-
-    <section id="viewStore" class="hidden space-y-5">
-      <div class="dark-card p-4 sm:p-5 rounded-3xl border border-blue-500/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <span>📥 Customer Ticket Requests Inbox</span>
-          </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Review customer submissions from request.html, approve with quotes, or decline with reasons.</p>
-        </div>
-      </div>
-
-      <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white">Incoming Ticket Requests</h3>
-          <span id="requestsCountBadge" class="text-[10px] font-black bg-blue-600/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30">0 Pending</span>
-        </div>
-
-        <div id="purchaseRequestsContainer" class="space-y-2.5">
-          <div class="text-center py-6 text-slate-500 text-xs font-semibold">No pending requests.</div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- RECEIPT MODAL -->
-  <div id="invoiceModal" onclick="window.handleBackdropClick(event, 'invoiceModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 no-print">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white">🧾 Thermal Receipt Preview</h3>
-        <div class="flex items-center space-x-2">
-          <button onclick="window.print()" class="px-3 py-1.5 bg-blue-600 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
-            🖨️ Print / Save PDF
-          </button>
-          <button onclick="window.closeInvoiceModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
-        </div>
-      </div>
-      <div id="invoicePrintSheet" class="thermal-paper space-y-3 text-center"></div>
-    </div>
-  </div>
-
-  <!-- EDIT TICKET MODAL -->
-  <div id="editRepairModal" onclick="window.handleBackdropClick(event, 'editRepairModal')" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center hidden p-3 sm:p-4">
-    <div class="dark-card rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-          <span>✏️ Edit Repair Ticket</span>
-          <span id="editTicketBadge" class="text-xs font-mono font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20"></span>
-        </h3>
-        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">✕</button>
-      </div>
-
-      <form id="editRepairForm" onsubmit="window.handleUpdateRepair(event)" class="space-y-3.5 text-xs">
-        <input type="hidden" id="editRepairId">
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Customer Name *</label>
-            <input type="text" id="editCustomerName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
-            <input type="tel" id="editCustomerPhone" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make, Model & Model Number *</label>
-          <input type="text" id="editMakeModel" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
-          <input type="text" id="editIssue" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-        </div>
-
-        <div class="grid grid-cols-3 gap-2.5">
-          <div class="col-span-2">
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Internal Hardware Notes</label>
-            <input type="text" id="editPartNote" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Part Cost ($)</label>
-            <input type="number" id="editPartCost" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Labor Charge ($)</label>
-            <input type="number" id="editLaborCost" min="0" step="1" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Discount ($)</label>
-            <input type="number" id="editDiscount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-blue-600 dark:text-blue-400 mb-1">Calculated Total ($)</label>
-            <input type="number" id="editTotalAmount" readonly class="w-full px-3 py-2 bg-blue-50 dark:bg-slate-900 border border-blue-500/40 rounded-xl text-blue-600 dark:text-blue-400 font-black outline-none">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Deposit Amount ($)</label>
-            <input type="number" id="editDepositAmount" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white outline-none" oninput="window.recalculateEditTotals()">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Status</label>
-            <select id="editPaymentStatus" onchange="window.recalculateEditTotals()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 font-bold outline-none cursor-pointer">
-              <option value="unpaid">🔴 Unpaid</option>
-              <option value="deposit_paid">🟡 Deposit Paid</option>
-              <option value="paid_in_full">🟢 Paid in Full</option>
-            </select>
-          </div>
-          <div class="bg-slate-100 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
-            <span class="text-[9px] font-black uppercase text-slate-500">Pickup Balance</span>
-            <p id="editPickupBalanceDisplay" class="text-base font-black text-rose-600 dark:text-rose-400">$0</p>
-          </div>
-        </div>
-
-        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-lg transition active:scale-95 cursor-pointer">
-          Save Ticket Changes
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-[110] space-y-2 pointer-events-none"></div>
-
-  <script>
-    /* Mandatory Utilities Scope Fix */
-    window.escapeHtml = function(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    };
-
-    const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
-    let supabaseClient = null;
-
-    let repairs = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-    let purchaseRequests = JSON.parse(localStorage.getItem('ajd_purchase_requests')) || [];
-    let shopPhone = localStorage.getItem('ajd_shop_phone') || '(305) 555-0147';
-
-    window.updateShopPhoneSetting = function(val) {
-      shopPhone = val || '(305) 555-0147';
-      localStorage.setItem('ajd_shop_phone', shopPhone);
-      window.syncShopPhone();
-    };
-
-    window.syncShopPhone = function() {
-      document.querySelectorAll('[data-shop-phone]').forEach(el => el.innerText = shopPhone);
-      document.querySelectorAll('[data-shop-tel]').forEach(el => el.href = `tel:${shopPhone.replace(/[^0-9]/g, '')}`);
-      const input = document.getElementById('shopPhoneInput');
-      if (input && input.value !== shopPhone) input.value = shopPhone;
-    };
-
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'ajd_purchase_requests') {
-        purchaseRequests = JSON.parse(e.newValue) || [];
-        window.renderPurchaseRequests();
-      } else if (e.key === 'ajd_repairs_backup') {
-        repairs = JSON.parse(e.newValue) || [];
-        window.renderRepairs();
-      } else if (e.key === 'ajd_shop_phone') {
-        shopPhone = e.newValue || '(305) 555-0147';
-        window.syncShopPhone();
-      }
-    });
-
-    window.setThemeMode = function(mode) {
-      localStorage.setItem('ajd_theme_preference', mode);
-      window.applyTheme();
-    };
-
-    window.applyTheme = function() {
-      const mode = localStorage.getItem('ajd_theme_preference') || 'dark';
-      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (mode === 'dark' || (mode === 'system' && isSystemDark)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      const select = document.getElementById('themeSelectSetting');
-      if (select) select.value = mode;
-    };
-
-    function initSupabase() {
-      if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-        try {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { enabled: false } });
-        } catch(e){}
-      }
+  }
+}
+// Shared public business email is stored separately from customers' private emails.
+function validShopEmail(value){return !value || (/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value) && value.length<=254)}
+function emailStatus(message,error=false){const el=$('shopEmailCloudStatus');if(el){el.textContent=message;el.className='mini mt-1 '+(error?'text-rose-500':'')}}
+function renderShopEmail(){
+  const verified=validShopEmail(shopEmail)?shopEmail:'';
+  document.querySelectorAll('[data-shop-email-container]').forEach(node=>node.hidden=!verified);
+  document.querySelectorAll('[data-shop-email]').forEach(node=>node.textContent=verified);
+  document.querySelectorAll('[data-shop-mailto]').forEach(node=>node.href=verified?'mailto:'+verified:'#');
+  const input=$('shopEmailInput');if(input&&document.activeElement!==input)input.value=shopEmail;
+}
+function updateShopEmailSetting(value){
+  shopEmail=String(value??'').trim().toLowerCase();
+  if(shopEmail)localStorage.setItem(SHOP_EMAIL_KEY,shopEmail);
+  else localStorage.removeItem(SHOP_EMAIL_KEY);
+  // Empty pending value means the owner intentionally removed the published email.
+  localStorage.setItem(SHOP_EMAIL_PENDING_KEY,shopEmail);
+  renderShopEmail();updateCloudUI();
+  if(!validShopEmail(shopEmail)){emailStatus('Enter a valid email address, or clear the field to remove it.',true);return}
+  emailStatus(isCloudAdmin?'Saving business email to cloud…':'Saved on this device. Admin cloud sign-in is required to publish the email.');
+  clearTimeout(shopEmailSaveTimer);
+  shopEmailSaveTimer=setTimeout(()=>{void syncShopEmailCloud()},900);
+}
+function flushShopEmailSetting(){clearTimeout(shopEmailSaveTimer);void syncShopEmailCloud()}
+async function fetchShopEmailCloud(){
+  if(!initSupabase())return;
+  try{
+    const {data,error}=await sb.from('shop_settings').select('email').eq('id','business').maybeSingle();
+    if(error)throw error;
+    if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null){emailStatus('Business email edit pending cloud upload.');return}
+    shopEmail=String(data?.email||'').trim().toLowerCase();
+    if(shopEmail)localStorage.setItem(SHOP_EMAIL_KEY,shopEmail);
+    else localStorage.removeItem(SHOP_EMAIL_KEY);
+    renderShopEmail();
+    emailStatus(shopEmail?'Business email loaded from Supabase.':'No business email published yet. Add one in Settings.');
+  }catch(e){emailStatus('Cannot read business email from Supabase: '+e.message,true);console.warn('Business email cloud read failed',e)}
+}
+async function syncShopEmailCloud(){
+  if(shopEmailSyncing||!isCloudAdmin||!initSupabase())return;
+  const pending=localStorage.getItem(SHOP_EMAIL_PENDING_KEY);
+  if(pending===null)return;
+  if(!validShopEmail(pending)){emailStatus('Enter a valid business email before publishing.',true);return}
+  shopEmailSyncing=true;
+  try{
+    // UPDATE only email: avoids overwriting a newer shop phone from another device.
+    const {data,error}=await sb.from('shop_settings').update({email:pending||null,updated_at:new Date().toISOString()}).eq('id','business').select('email').single();
+    if(error)throw error;
+    if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===pending){
+      localStorage.removeItem(SHOP_EMAIL_PENDING_KEY);
+      emailStatus(data?.email?'Published to Supabase — customers will see your email.':'Email removed from the public footer in Supabase.');
+      updateCloudUI();
     }
+  }catch(e){emailStatus('Could not publish business email: '+e.message+'. Your change remains on this device.',true);console.warn('Business email sync failed',e)}
+  finally{
+    shopEmailSyncing=false;
+    if(isCloudAdmin&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==pending)void syncShopEmailCloud();
+  }
+}
+function setThemeMode(v){localStorage.setItem('ajd_theme_preference',v);applyTheme()}
+function applyTheme(){const mode=localStorage.getItem('ajd_theme_preference')||'dark';document.documentElement.classList.toggle('dark',mode==='dark'||(mode==='system'&&matchMedia('(prefers-color-scheme: dark)').matches));$('themeSelectSetting').value=mode}
+function toggleDropdown(id){$(id).classList.toggle('hidden')}
 
-    window.saveRepairTicketToStorageAndCloud = async function(job) {
-      const idx = repairs.findIndex(r => r.id === job.id);
-      if (idx >= 0) repairs[idx] = job;
-      else repairs.unshift(job);
+// Links Manager: offline-first, with optional admin-only cloud synchronization.
+const LINK_KEY='ajd_managed_links_v1', LINK_PENDING_KEY='ajd_links_pending_v1';
+const DEFAULT_LINKS=[{id:'request',label:'Customer Request Form',url:'request.html',icon:'📝'},{id:'store',label:'Customer Storefront',url:'store.html',icon:'🛍️'},{id:'track',label:'Track My Repair',url:'track.html',icon:'🔎'},{id:'call',label:'Call Shop',url:'tel:7869707779',icon:'📞'}];
+let managedLinks=read(LINK_KEY,null),managedLinksPending=read(LINK_PENDING_KEY,[]);
+if(!Array.isArray(managedLinks)){managedLinks=DEFAULT_LINKS.map(x=>({...x}));localStorage.setItem(LINK_KEY,JSON.stringify(managedLinks))}
+if(!Array.isArray(managedLinksPending))managedLinksPending=[];
+function safeManagedUrl(url){const v=String(url??'').trim();if(!v||/[\u0000-\u001F\u007F]/.test(v))return null;try{const parsed=new URL(v,location.href);if(/^https?:$/i.test(parsed.protocol))return (/^https?:\/\//i.test(v)||/^(?!\/\/)(?:\/?[a-zA-Z0-9_.-]+)(?:[/?#][^\s]*)?$/.test(v))?v:null;if(/^(tel:|mailto:)/i.test(v)&&['tel:','mailto:'].includes(parsed.protocol))return v;return null}catch{return null}}
+function persistLinks(){localStorage.setItem(LINK_KEY,JSON.stringify(managedLinks));renderLinks();renderManagedLinksList();updateCloudUI()}
+function markLinkPending(entry){const i=managedLinksPending.findIndex(x=>x.id===entry.id);if(i>=0)managedLinksPending[i]=entry;else managedLinksPending.push(entry);localStorage.setItem(LINK_PENDING_KEY,JSON.stringify(managedLinksPending));updateCloudUI()}
+function renderLinks(){const root=$('navLinksList');if(!root)return;root.replaceChildren();if(!managedLinks.length){const p=document.createElement('p');p.className='mini';p.textContent='No links yet. Select Manage Links below.';root.append(p)}for(const link of managedLinks){const href=safeManagedUrl(link.url);if(!href)continue;const a=document.createElement('a');a.className='block p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 break-words';a.href=href;a.target=href.startsWith('tel:')||href.startsWith('mailto:')?'_self':'_blank';if(a.target==='_blank')a.rel='noopener noreferrer';a.textContent=(link.icon?link.icon+' ':'')+link.label;root.append(a)}}
+function openLinksManager(){$('navLinksDropdownMenu').classList.add('hidden');$('linksManagerModal').classList.remove('hidden');renderManagedLinksList();updateCloudUI()}
+function closeLinksManager(){$('linksManagerModal').classList.add('hidden')}
+function renderManagedLinksList(){const root=$('managedLinksList');if(!root)return;root.replaceChildren();for(const link of managedLinks){const wrap=document.createElement('div');wrap.className='flex items-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-900 p-2';const info=document.createElement('div');info.className='flex-1 min-w-0 text-xs';const name=document.createElement('p');name.className='font-black break-words';name.textContent=(link.icon?link.icon+' ':'')+link.label;const url=document.createElement('p');url.className='mini break-all';url.textContent=link.url;info.append(name,url);const edit=document.createElement('button');edit.className='btn bg-blue-600 text-white';edit.textContent='Edit';edit.onclick=()=>editManagedLink(link.id);const remove=document.createElement('button');remove.className='btn text-rose-500';remove.textContent='Remove';remove.onclick=()=>removeManagedLink(link.id);wrap.append(info,edit,remove);root.append(wrap)}if(!managedLinks.length){root.textContent='No links saved yet.'}}
+function editManagedLink(id){const item=managedLinks.find(x=>x.id===id);if(!item)return;for(const [key,value] of [['managedLinkId',item.id],['managedLinkLabel',item.label],['managedLinkUrl',item.url],['managedLinkIcon',item.icon||'']])$(key).value=value;$('managedLinkLabel').focus()}
+function resetLinkEditor(){$('linkEditorForm').reset();$('managedLinkId').value=''}
+async function saveManagedLink(e){e.preventDefault();const label=$('managedLinkLabel').value.trim(),url=$('managedLinkUrl').value.trim(),icon=$('managedLinkIcon').value.trim();if(!label||!safeManagedUrl(url)){toast('Enter a name and valid http(s), tel:, mailto:, or local page URL');return}const id=$('managedLinkId').value||crypto.randomUUID();const item={id,label,url,icon};const i=managedLinks.findIndex(x=>x.id===id);if(i<0)managedLinks.push(item);else managedLinks[i]=item;markLinkPending({id,kind:'upsert',item});persistLinks();resetLinkEditor();if(isCloudAdmin)await syncManagedLinks();toast(isCloudAdmin?'Link saved; cloud status shown above':'Link saved locally; cloud sync pending admin login')}
+async function removeManagedLink(id){const item=managedLinks.find(x=>x.id===id);if(!item||!confirm('Remove '+item.label+' from your Links menu?'))return;managedLinks=managedLinks.filter(x=>x.id!==id);markLinkPending({id,kind:'delete'});persistLinks();if(isCloudAdmin)await syncManagedLinks();toast('Link removed from menu')}
+async function fetchLinksCloud(){if(!isCloudAdmin)return;try{const {data,error}=await sb.from('admin_links').select('id,label,url,icon,position').order('position',{ascending:true});if(error)throw error;if(data.length){const cloud=data.filter(x=>x.id!=='__initialized__'&&safeManagedUrl(x.url)).map(x=>({id:x.id,label:x.label,url:x.url,icon:x.icon}));const map=new Map(cloud.map(x=>[x.id,x]));for(const op of managedLinksPending){if(op.kind==='delete')map.delete(op.id);else map.set(op.id,op.item)}managedLinks=[...map.values()];persistLinks()}else{for(const item of managedLinks){if(!managedLinksPending.some(x=>x.id===item.id))markLinkPending({id:item.id,kind:'upsert',item})}}renderLinks()}catch(e){setCloudMessage('Links cloud load failed: '+e.message+'. Run the Links SQL migration.',true);console.warn(e)}}
+let syncingLinks=false;
+async function syncManagedLinks(){if(!isCloudAdmin||syncingLinks)return;syncingLinks=true;try{if(managedLinksPending.length){const {error:markerError}=await sb.from('admin_links').upsert({id:'__initialized__',label:'Links initialized',url:'about:blank',icon:'',position:-9999},{onConflict:'id'});if(markerError)throw markerError}for(const op of [...managedLinksPending]){let error;if(op.kind==='delete'){({error}=await sb.from('admin_links').delete().eq('id',op.id))}else{const p=op.item;({error}=await sb.from('admin_links').upsert({id:p.id,label:p.label,url:p.url,icon:p.icon||'',position:managedLinks.findIndex(x=>x.id===p.id)},{onConflict:'id'}))}if(error)throw error;managedLinksPending=managedLinksPending.filter(x=>x.id!==op.id);localStorage.setItem(LINK_PENDING_KEY,JSON.stringify(managedLinksPending))}if(!managedLinksPending.length&&cloudReady)setCloudMessage('Links saved to Supabase successfully.')}catch(e){setCloudMessage('Links sync failed: '+e.message,true);console.warn('Links sync failed',e)}finally{syncingLinks=false;updateCloudUI()}}
 
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
+function switchTab(tab){['repairs','history','invoices','store','inventory'].forEach(t=>{$('view'+t[0].toUpperCase()+t.slice(1)).classList.toggle('hidden',t!==tab);$('tabBtn'+t[0].toUpperCase()+t.slice(1)).classList.toggle('bg-blue-600',t===tab);$('tabBtn'+t[0].toUpperCase()+t.slice(1)).classList.toggle('text-white',t===tab)});if(tab==='history')renderHistory();if(tab==='invoices')renderInvoicesList();if(tab==='store')renderPurchaseRequests();if(tab==='inventory'){fetchInventory();fetchStoreOrders()}}
+function renderLaborPresets(){for(const prefix of ['intake','edit']){const el=$(prefix+'RepairType'),v=el.value;el.innerHTML='<option value="">Select repair type...</option>'+presets.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} — ${money(p.price)}</option>`).join('');if(presets.some(p=>p.id===v))el.value=v} $('laborPresetList').innerHTML=presets.map(p=>`<div class="flex justify-between gap-2 items-center text-xs"><span class="truncate">${esc(p.name)} — ${money(p.price)}</span><button class="text-blue-500" onclick="editLaborPreset('${esc(p.id)}')">Edit</button><button class="text-rose-500" onclick="removeLaborPreset('${esc(p.id)}')">✕</button></div>`).join('')}
+function addLaborPreset(){const name=$('newLaborName').value.trim(),price=num($('newLaborPrice').value);if(!name){toast('Enter repair type');return}const found=presets.find(p=>p.name.toLowerCase()===name.toLowerCase());if(found)found.price=price;else presets.push({id:'labor_'+Date.now(),name,price});localStorage.setItem('ajd_labor_presets_v2',JSON.stringify(presets));$('newLaborName').value='';$('newLaborPrice').value='';renderLaborPresets();toast('Labor preset saved')}
+function editLaborPreset(id){const p=presets.find(p=>p.id===id);if(!p)return;$('newLaborName').value=p.name;$('newLaborPrice').value=p.price;$('newLaborName').focus()}
+function removeLaborPreset(id){if(!confirm('Delete this labor preset?'))return;presets=presets.filter(p=>p.id!==id);localStorage.setItem('ajd_labor_presets_v2',JSON.stringify(presets));renderLaborPresets()}
+function applyLaborPreset(prefix){const p=presets.find(p=>p.id===$(prefix+'RepairType').value);$(prefix==='intake'?'intakeLaborCharge':'editLaborCost').value=p?p.price:0;recalculate(prefix)}
+function addPartRow(prefix,part={name:'',cost:0}){const row=document.createElement('div');row.className='grid grid-cols-12 gap-1';row.innerHTML=`<input aria-label="Part name" class="field col-span-7 part-name" placeholder="Part name / notes" value="${esc(part.name)}"><input aria-label="Part cost" type="number" min="0" step=".01" class="field col-span-4 part-cost" value="${cents(part.cost)}"><button type="button" class="btn col-span-1 text-rose-500 !px-0" aria-label="Remove part" title="Remove part">✕</button>`;row.querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>recalculate(prefix)));row.querySelector('button').onclick=()=>{row.remove();recalculate(prefix)};$(prefix+'PartsList').appendChild(row);recalculate(prefix)}
+function getParts(prefix){return [...$(prefix+'PartsList').children].map(row=>({name:row.querySelector('.part-name').value.trim(),cost:cents(row.querySelector('.part-cost').value)}))}
+function initPercentButtons(prefix,kind,values){const id=prefix+kind+'Buttons';$(id).innerHTML=values.map(v=>`<button type="button" class="pct" data-pct="${v}" onclick="applyPercent('${prefix}','${kind}',${v})">${v}%</button>`).join('')}
+function highlight(prefix,kind){$(prefix+kind+'Buttons').querySelectorAll('button').forEach(b=>b.classList.toggle('active',percentage[prefix][kind]===Number(b.dataset.pct)))}
+function setManualPercent(prefix,kind){percentage[prefix][kind]=null;highlight(prefix,kind)}
+function applyPercent(prefix,kind,v){percentage[prefix][kind]=v;highlight(prefix,kind);recalculate(prefix)}
+function totals(prefix){const parts=getParts(prefix),partCost=cents(parts.reduce((s,p)=>s+p.cost,0)),labor=cents($(prefix==='intake'?'intakeLaborCharge':'editLaborCost').value),sub=partCost+labor;const discountField=$(prefix+'Discount');let discount=percentage[prefix].Discount===null?cents(discountField.value):cents(sub*percentage[prefix].Discount/100);discount=Math.min(discount,cents(sub));if(percentage[prefix].Discount!==null)discountField.value=discount.toFixed(2);const total=ceilDollar(sub-discount);const depField=$(prefix==='intake'?'intakeDeposit':'editDepositAmount');let deposit=percentage[prefix].Deposit===null?cents(depField.value):cents(total*percentage[prefix].Deposit/100);deposit=Math.min(deposit,total);if(percentage[prefix].Deposit!==null)depField.value=deposit.toFixed(2);return{parts,partCost,labor,discount,total,deposit}}
+function recalculate(prefix){const t=totals(prefix);$(prefix+'TotalAmount').value=t.total.toFixed(2);if(prefix==='edit'){const status=$('editPaymentStatus').value;const paid=status==='paid_in_full'?t.total:status==='deposit_paid'?t.deposit:0;$('editPickupBalanceDisplay').textContent=money(Math.max(0,t.total-paid))}return t}
+function payment(job){const total=cents(job.amount),required=cents(job.deposit_amount),paid=job.payment_status==='paid_in_full'?total:job.payment_status==='deposit_paid'?Math.min(total,required):0;return{total,required,paid,balance:cents(Math.max(0,total-paid))}}
+async function handleCreateRepair(e){e.preventDefault();const t=recalculate('intake');const job=norm({id:shortId(),customer_name:$('intakeName').value.trim(),customer_phone:$('intakePhone').value.trim(),make_model:$('intakeDevice').value.trim(),issue:$('intakeIssue').value.trim(),repair_type:$('intakeRepairType').value,parts:t.parts,part_note:t.parts.map(p=>p.name).filter(Boolean).join(', '),part_cost:t.partCost,labor_cost:t.labor,discount:t.discount,amount:t.total,deposit_amount:t.deposit,payment_status:$('intakePaymentStatus').value,payment_info:'Zelle / Cash: '+shopPhone,status:'pending',created_at:new Date().toISOString()});await saveJob(job);$('intakeForm').reset();$('intakePartsList').innerHTML='';addPartRow('intake');percentage.intake={Discount:null,Deposit:null};highlight('intake','Discount');highlight('intake','Deposit');recalculate('intake');toast('Ticket '+job.id+' created')}
+function renderRepairs(){const q=($('repairSearchInput').value||'').toLowerCase(),filter=$('repairStatusFilter').value;const data=repairs.filter(r=>([r.customer_name,r.id,r.make_model,r.issue].some(v=>String(v||'').toLowerCase().includes(q)))&&r.status!=='picked_up'&&(filter==='all'||r.status===filter));$('repairsContainer').innerHTML=data.length?data.map(r=>{const p=payment(r);return `<div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3"><div class="flex justify-between items-start gap-2"><div><div class="flex gap-2 flex-wrap items-center"><h3 class="text-sm font-black">${esc(r.customer_name)}</h3><span class="text-[10px] font-mono font-black text-blue-500">${esc(r.id)}</span></div><p class="text-xs font-black text-blue-500">${esc(r.make_model)}</p></div><select class="field !w-auto" onchange="updateJobStatus('${esc(r.id)}',this.value)"><option value="pending" ${r.status==='pending'?'selected':''}>⏳ Checked In</option><option value="in-progress" ${r.status==='in-progress'?'selected':''}>⚙️ In Repair</option><option value="completed" ${r.status==='completed'?'selected':''}>✅ Ready Pickup</option><option value="picked_up">📦 Picked Up → History</option></select></div><p class="text-xs"><b>Issue:</b> ${esc(r.issue)}</p><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl text-xs"><div><span class="mini uppercase">Total</span><p class="font-black">${money(p.total)}</p></div><div><span class="mini uppercase">Required Deposit</span><p class="font-black text-blue-500">${money(p.required)}</p></div><div><span class="mini uppercase">Payment</span><select class="field !p-1" onchange="updatePaymentStatus('${esc(r.id)}',this.value)"><option value="unpaid" ${r.payment_status==='unpaid'?'selected':''}>🔴 Unpaid</option><option value="deposit_paid" ${r.payment_status==='deposit_paid'?'selected':''}>🟡 Deposit Paid</option><option value="paid_in_full" ${r.payment_status==='paid_in_full'?'selected':''}>🟢 Paid in Full</option></select></div><div><span class="mini uppercase">Balance</span><p class="font-black ${p.balance?'text-rose-500':'text-emerald-500'}">${money(p.balance)}</p></div></div><div class="flex gap-2 flex-wrap border-t border-slate-700/20 pt-3"><button class="btn bg-blue-600 text-white" onclick="openInvoiceModal('${esc(r.id)}')">🧾 Receipt</button><button class="btn bg-slate-200 dark:bg-slate-800" onclick="openEditModal('${esc(r.id)}')">✏️ Edit</button><button class="btn text-rose-500 ml-auto" onclick="deleteRepair('${esc(r.id)}')">🗑️ Delete</button></div></div>`}).join(''):'<div class="dark-card p-8 rounded-3xl text-center text-xs">No repair tickets found.</div>';updateMetricsSummary()}
+function updateMetricsSummary(){let total=0,deposits=0,unpaid=0,active=0;repairs.forEach(r=>{const p=payment(r);total+=p.total;deposits+=r.payment_status==='deposit_paid'?p.paid:0;unpaid+=p.balance;if(r.status!=='completed')active++});$('statTotalRev').textContent=money(total);$('statDeposits').textContent=money(deposits);$('statUnpaid').textContent=money(unpaid);$('statActiveJobs').textContent=active}
+async function updateJobStatus(id,status){const r=repairs.find(r=>r.id===id);if(r){if(status==='picked_up'&&!confirm('Confirm customer collected this device? It will move to Repair History.')){renderRepairs();return}r.status=status;if(status==='picked_up')r.picked_up_at=new Date().toISOString();else r.picked_up_at=null;await saveJob(r);renderHistory()}}
+async function updatePaymentStatus(id,status){const r=repairs.find(r=>r.id===id);if(r){r.payment_status=status;await saveJob(r)}}
+function openEditModal(id){const r=repairs.find(r=>r.id===id);if(!r)return;$('editRepairId').value=r.id;$('editTicketBadge').textContent=r.id;[['editCustomerName',r.customer_name],['editCustomerPhone',r.customer_phone],['editMakeModel',r.make_model],['editIssue',r.issue],['editLaborCost',r.labor_cost],['editDiscount',r.discount],['editDepositAmount',r.deposit_amount],['editPaymentStatus',r.payment_status]].forEach(([id,v])=>$(id).value=v??'');$('editRepairType').value=r.repair_type||'';$('editPartsList').innerHTML='';(r.parts?.length?r.parts:[{name:r.part_note||'',cost:r.part_cost||0}]).forEach(p=>addPartRow('edit',p));percentage.edit={Discount:null,Deposit:null};highlight('edit','Discount');highlight('edit','Deposit');recalculate('edit');$('editRepairModal').classList.remove('hidden')}
+function closeEditModal(){$('editRepairModal').classList.add('hidden')}
+async function handleUpdateRepair(e){e.preventDefault();const id=$('editRepairId').value,r=repairs.find(r=>r.id===id);if(!r)return;const t=recalculate('edit');Object.assign(r,{customer_name:$('editCustomerName').value.trim(),customer_phone:$('editCustomerPhone').value.trim(),make_model:$('editMakeModel').value.trim(),issue:$('editIssue').value.trim(),repair_type:$('editRepairType').value,parts:t.parts,part_note:t.parts.map(p=>p.name).filter(Boolean).join(', '),part_cost:t.partCost,labor_cost:t.labor,discount:t.discount,amount:t.total,deposit_amount:t.deposit,payment_status:$('editPaymentStatus').value});await saveJob(r);closeEditModal();toast('Ticket '+id+' updated')}
+async function deleteRepair(id){if(!confirm('Delete ticket '+id+'? A synchronized deletion cannot be undone.'))return;const wasQueuedInsert=pendingRepairs.some(op=>op.id===id&&op.kind==='insert');repairs=repairs.filter(r=>r.id!==id);saveLocal();renderRepairs();renderHistory();renderInvoicesList();if(wasQueuedInsert){pendingRepairs=pendingRepairs.filter(op=>op.id!==id);persistPendingRepairs();toast('Local-only ticket deleted');return}queueRepair({id,kind:'delete'});if(isCloudAdmin)await syncPendingRepairs();else toast('Ticket removed locally; cloud deletion queued until admin sign-in')}
+function renderHistory(){const el=$('historyContainer');if(!el)return;const q=($('historySearchInput')?.value||'').toLowerCase();const data=repairs.filter(r=>r.status==='picked_up'&&[r.customer_name,r.id,r.make_model,r.issue].some(v=>String(v||'').toLowerCase().includes(q)));el.innerHTML=data.length?data.map(r=>`<div class="dark-card p-4 rounded-2xl flex flex-wrap justify-between items-center gap-3"><div><b class="text-sm">${esc(r.customer_name)} · ${esc(r.make_model)}</b><p class="mini">Ticket ${esc(r.id)} · Picked up ${esc(r.picked_up_at?new Date(r.picked_up_at).toLocaleDateString():'Date not recorded')}</p><p class="mini">Total: ${money(r.amount)}</p></div><div class="flex gap-2"><button class="btn bg-blue-600 text-white" onclick="openEditModal('${esc(r.id)}')">View / Edit</button><button class="btn bg-slate-200 dark:bg-slate-800" onclick="updateJobStatus('${esc(r.id)}','completed')">Reopen</button></div></div>`).join(''):'<p class="mini text-center p-8">No picked-up repairs found.</p>'}
+function renderInvoicesList(){$('invoicesListContainer').innerHTML=repairs.length?repairs.map(r=>{const p=payment(r);return `<div class="dark-card p-4 rounded-2xl flex justify-between items-center gap-2"><div><b class="text-xs">${esc(r.id)} — ${esc(r.customer_name)}</b><p class="mini">${esc(r.make_model)} • Total ${money(p.total)} • Balance ${money(p.balance)}</p></div><button class="btn bg-blue-600 text-white shrink-0" onclick="openInvoiceModal('${esc(r.id)}')">🧾 Receipt</button></div>`}).join(''):'<p class="mini text-center py-8">No receipts yet.</p>'}
+function openInvoiceModal(id){const r=repairs.find(r=>r.id===id);if(!r)return;const p=payment(r);$('invoicePrintSheet').innerHTML=`<div class="text-center space-y-1 pb-2 border-b border-dashed border-black"><h2 class="text-base font-bold uppercase">AJD'S WIRELESS REPAIRS</h2><p class="text-[10px]">PHONE: ${esc(shopPhone)}</p><p class="text-[9px]">${esc(new Date(r.created_at).toLocaleString())}</p></div><div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black text-left"><p><b>TICKET:</b> ${esc(r.id)}</p><p><b>CUSTOMER:</b> ${esc(r.customer_name)}</p>${r.customer_phone ? `<p><b>PHONE:</b> ${esc(r.customer_phone)}</p>` : ''}<p><b>DEVICE:</b> ${esc(r.make_model)}</p><p><b>SERVICE:</b> ${esc(r.issue)}</p></div><div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black"><div class="flex justify-between"><span>TOTAL REPAIR CHARGE:</span><b>${money(p.total)}</b></div><div class="flex justify-between"><span>REQUIRED DEPOSIT:</span><span>${money(p.required)}</span></div><div class="flex justify-between"><span>PAID TO DATE:</span><span>${money(p.paid)}</span></div><div class="flex justify-between font-bold"><span>BALANCE DUE:</span><span>${money(p.balance)}</span></div></div><p class="text-[10px] text-center">Thank you for choosing AJD's Wireless Repairs!</p>`;$('invoiceModal').classList.remove('hidden')}
+function closeInvoiceModal(){$('invoiceModal').classList.add('hidden')}
+function handleBackdropClick(e,id){if(e.target.id===id)$(id).classList.add('hidden')}
+function renderPurchaseRequests(){const pending=purchaseRequests.filter(r=>r.status==='pending');$('requestsCountBadge').textContent=pending.length+' Pending';$('storeBadge').textContent=pending.length?pending.length:'';$('purchaseRequestsContainer').innerHTML=purchaseRequests.length?purchaseRequests.map(r=>`<div class="dark-card p-4 rounded-2xl space-y-2 text-xs"><div class="flex justify-between"><div><b>${esc(r.customerName)}</b><p class="text-blue-500">Device: ${esc(r.itemTitle)}</p><p class="mini">📞 ${esc(r.customerPhone)}</p></div><b>${esc(r.status)}</b></div>${r.notes?`<p class="italic">${esc(r.notes)}</p>`:''}${r.shop_note?`<p class="text-blue-500">Shop Note: ${esc(r.shop_note)}</p>`:''}${r.status==='pending'?`<div class="flex gap-2"><button class="btn bg-emerald-600 text-white" onclick="approveRequestPrompt('${esc(r.id)}')">✅ Approve</button><button class="btn bg-rose-600 text-white" onclick="declineRequestPrompt('${esc(r.id)}')">❌ Decline</button></div>`:''}</div>`).join(''):'<p class="mini text-center py-6">No requests logged.</p>'}
+async function fetchOnlineRepairRequests(){
+ const status=$('onlineRepairRequestsStatus');
+ if(!isCloudAdmin){status.textContent='Cloud administrator sign-in required to view customer requests.';$('onlineRepairRequestsList').innerHTML='';return}
+ const client=initSupabase();if(!client){status.textContent='Supabase client not available.';return}
+ status.textContent='Loading online repair requests…';
+ try{
+   const {data,error}=await client.from('repair_requests').select('id,reference_code,customer_name,customer_phone,customer_email,make_model,issue,contact_preference,status,shop_note,created_at').order('created_at',{ascending:false}).limit(200);
+   if(error)throw error;
+   onlineRepairRequests=data||[];
+   status.textContent=onlineRepairRequests.length+' online repair request(s).';
+   renderOnlineRepairRequests();
+ }catch(err){status.textContent='Online requests unavailable: '+err.message;console.warn('Repair inbox cloud failure',err)}
+}
+function renderOnlineRepairRequests(){
+ const el=$('onlineRepairRequestsList');
+ el.innerHTML=onlineRepairRequests.length?onlineRepairRequests.map(r=>`<div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 space-y-2 text-xs"><div class="flex flex-wrap items-center justify-between gap-2"><b class="text-blue-500">${esc(r.reference_code)}</b><span class="mini">${esc(r.status)} · ${esc(new Date(r.created_at).toLocaleDateString())}</span></div><b>${esc(r.customer_name)}</b><p class="mini">${esc(r.make_model)} · ${esc(r.contact_preference)}</p>${r.customer_phone?`<p>📞 ${esc(r.customer_phone)}</p>`:''}${r.customer_email?`<p>✉️ ${esc(r.customer_email)}</p>`:''}<p>${esc(r.issue)}</p>${r.shop_note?`<p class="text-blue-500">Shop note: ${esc(r.shop_note)}</p>`:''}${r.status==='pending'?`<div class="flex gap-2 flex-wrap"><button class="btn bg-emerald-600 text-white" onclick="decideOnlineRepairRequest('${r.id}','approved')">✅ Approve & Prepare Check-In</button><button class="btn bg-rose-600 text-white" onclick="decideOnlineRepairRequest('${r.id}','declined')">❌ Decline</button></div>`:''}${r.status==='approved'?`<button class="btn bg-blue-600 text-white" onclick="fillCheckinFromOnlineRequest('${r.id}')">📝 Open Check-In</button>`:''}</div>`).join(''):'<p class="mini">No online repair requests yet.</p>';
+}
+async function decideOnlineRepairRequest(id,decision){
+ if(!isCloudAdmin){toast('Cloud admin sign-in required');return}
+ const req=onlineRepairRequests.find(r=>r.id===id);if(!req||req.status!=='pending')return;
+ const shopNote=prompt(decision==='approved'?'Optional approval note:':'Reason for declining:','');
+ if(shopNote===null)return;
+ try{
+   const {data,error}=await sb.from('repair_requests').update({status:decision,shop_note:shopNote.slice(0,1000),updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending').select('id,status');
+   if(error)throw error;
+   if(!data?.length)throw Error('Request was already updated by another administrator');
+   req.status=decision;req.shop_note=shopNote.slice(0,1000);
+   renderOnlineRepairRequests();
+   if(decision==='approved'){fillCheckinFromOnlineRequest(id);toast('Approved. Review costs, then register the repair ticket.')}else toast('Request declined in cloud');
+ }catch(err){setCloudMessage('Request decision not saved: '+err.message,true);toast('Could not update cloud request')}
+}
+function fillCheckinFromOnlineRequest(id){
+ const r=onlineRepairRequests.find(x=>x.id===id);if(!r)return;
+ switchTab('repairs');
+ $('intakeName').value=r.customer_name||'';
+ $('intakePhone').value=r.customer_phone||'';
+ $('intakeDevice').value=r.make_model||'';
+ $('intakeIssue').value=r.issue||'';
+ window.scrollTo({top:0,behavior:'smooth'});
+ toast('Review this request and pricing, then register a new AJ ticket.');
+}
+async function updateRequest(req,changes){if(!isCloudAdmin){toast('Admin cloud login required to approve or decline requests');return false}try{const {data,error}=await sb.from('purchase_requests').update(changes).eq('id',req.id).select('id');if(error)throw error;if(!data?.length)throw Error('Request not present in cloud');Object.assign(req,changes);localStorage.setItem('ajd_purchase_requests',JSON.stringify(purchaseRequests));renderPurchaseRequests();return true}catch(e){setCloudMessage('Request update failed: '+e.message,true);toast('Approval was not saved to cloud');return false}}
+async function approveRequestPrompt(id){const req=purchaseRequests.find(r=>r.id===id);if(!req||req.status!=='pending')return;const note=prompt('Optional approval note:','Parts in stock! Bring device in today.');if(note===null)return;if(!await updateRequest(req,{status:'approved',shop_note:note}))return;const job=norm({id:shortId(),customer_name:req.customerName,customer_phone:req.customerPhone,make_model:req.itemTitle,issue:req.notes||'Online Request',status:'pending',amount:0});await saveJob(job);toast('Approved; created ticket '+job.id)}
+async function declineRequestPrompt(id){const req=purchaseRequests.find(r=>r.id===id);if(!req||req.status!=='pending')return;const note=prompt('Reason for declining:','Parts backordered / Unrepairable.');if(note===null)return;if(await updateRequest(req,{status:'declined',shop_note:note}))toast('Request declined')}
+function toast(msg){const e=document.createElement('div');e.className='px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-xl';e.textContent=msg;$('toastContainer').appendChild(e);setTimeout(()=>e.remove(),3500)}
+function exportBackup(){const blob=new Blob([JSON.stringify({version:2,exported_at:new Date().toISOString(),repairs,purchaseRequests,presets,shopPhone,shopEmail},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='AJD_Backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function importBackup(e){const file=e.target.files?.[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.repairs))throw Error('Not a valid AJD backup');if(!confirm('Import '+data.repairs.length+' repair tickets? Existing tickets with matching IDs will be replaced locally.'))return;const map=new Map(repairs.map(r=>[r.id,r]));data.repairs.map(norm).forEach(r=>map.set(r.id,r));repairs=[...map.values()];saveLocal();if(Array.isArray(data.presets)){presets=data.presets;localStorage.setItem('ajd_labor_presets_v2',JSON.stringify(presets));renderLaborPresets()}if(Array.isArray(data.purchaseRequests)){const reqmap=new Map(purchaseRequests.map(r=>[r.id,r]));data.purchaseRequests.forEach(r=>reqmap.set(r.id,r));purchaseRequests=[...reqmap.values()];localStorage.setItem('ajd_purchase_requests',JSON.stringify(purchaseRequests))}renderRepairs();renderPurchaseRequests();toast('Backup imported locally; cloud not overwritten')}catch(err){alert('Could not import backup: '+err.message)}finally{e.target.value=''}}
 
-      initSupabase();
-      if (supabaseClient) {
-        try {
-          const { error } = await supabaseClient.from('repairs').upsert([job], { onConflict: 'id' });
-          if (error) console.error('Supabase upsert warning:', error.message);
-        } catch(err){
-          console.warn('Cloud sync offline/fallback active');
-        }
-      }
-    };
+/* CLOUD STOREFRONT ADMIN — protected writes; no anonymous edit policies */
+let storeProducts=[],storeOrders=[];
+const invStatus=(msg,ok=false)=>{const e=$('inventoryCloudStatus');if(e){e.textContent=msg;e.className='text-xs font-bold '+(ok?'text-emerald-500':'text-amber-500')}};
+function productImageSafe(url){try{const u=new URL(url);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+function previewProductImage(){const el=$('productImagePreview'),f=$('productImageFile').files?.[0];if(el.dataset.objectUrl){URL.revokeObjectURL(el.dataset.objectUrl);delete el.dataset.objectUrl}let src=productImageSafe($('productImageUrl').value);if(f){src=URL.createObjectURL(f);el.dataset.objectUrl=src}el.src=src;el.classList.toggle('hidden',!src)}
+async function fetchInventory(){if(!isCloudAdmin){invStatus('Sign in with an authorized admin account to load all products.');return}if(!initSupabase()){invStatus('Supabase library unavailable.');return}try{const {data,error}=await sb.from('store_items').select('*').order('created_at',{ascending:false});if(error)throw error;storeProducts=data||[];invStatus('Cloud catalog loaded · '+storeProducts.length+' items',true);renderInventory()}catch(e){invStatus('Catalog unavailable: '+e.message);$('inventoryItems').innerHTML='<p class="mini">Run the provided SQL migration, then refresh.</p>'}}
+function renderInventory(){const q=($('inventorySearch').value||'').toLowerCase(),items=storeProducts.filter(p=>[p.title,p.sku,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('inventoryItems').innerHTML=items.length?items.map(p=>`<div class="dark-card rounded-2xl p-3 flex gap-3 items-center"><img class="h-20 w-20 object-cover rounded-xl bg-slate-900 shrink-0" src="${esc(productImageSafe(p.image_url)||'')}" alt="" onerror="this.style.visibility='hidden'"><div class="flex-1 min-w-0"><b class="text-xs block">${esc(p.title)}</b><p class="mini">${esc(p.category)} · ${esc(p.sku||'No SKU')} · ${money(p.price)}</p><p class="mini">Stock: ${Number(p.stock_quantity)||0} · Reserved: ${Number(p.reserved_quantity)||0} · ${esc(p.status)}</p><div class="flex gap-2 mt-2"><button class="btn bg-blue-600 text-white" onclick="editStoreProduct('${esc(p.id)}')">✏️ Edit</button><button class="btn text-rose-500" onclick="deleteStoreProduct('${esc(p.id)}')">🗑️ Delete</button></div></div></div>`).join(''):'<p class="mini text-center p-8">No products found in cloud inventory.</p>'}
+function editStoreProduct(id){const p=storeProducts.find(x=>x.id===id);if(!p)return;[['productId',p.id],['productTitle',p.title],['productCategory',p.category],['productPrice',p.price],['productSku',p.sku],['productCondition',p.condition],['productStock',p.stock_quantity],['productStatus',p.status],['productDescription',p.description],['productImageUrl',p.image_url]].forEach(([id,v])=>$(id).value=v??'');$('productImageFile').value='';previewProductImage();$('productTitle').scrollIntoView({behavior:'smooth',block:'center'})}
+function resetProductForm(){$('productForm').reset();$('productId').value='';$('productStock').value='1';previewProductImage()}
+async function saveStoreProduct(e){e.preventDefault();if(!isCloudAdmin)return toast('Sign in as a Supabase admin to save products');if(!initSupabase())return toast('Cloud connection unavailable');const id=$('productId').value||crypto.randomUUID();const file=$('productImageFile').files?.[0];let imageUrl=productImageSafe($('productImageUrl').value);if(file){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)return toast('Use JPG, PNG, or WebP under 5 MB');const ext=file.type.split('/')[1]==='jpeg'?'jpg':file.type.split('/')[1];const path=`${id}/${crypto.randomUUID()}.${ext}`;const {error}=await sb.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)return toast('Image upload failed: '+error.message);imageUrl=sb.storage.from('product-images').getPublicUrl(path).data.publicUrl}
+const product={id,title:$('productTitle').value.trim(),category:$('productCategory').value,price:Math.ceil(Math.max(0,num($('productPrice').value))*100)/100,sku:$('productSku').value.trim(),condition:$('productCondition').value.trim(),stock_quantity:Math.max(0,Math.floor(num($('productStock').value))),status:$('productStatus').value,description:$('productDescription').value.trim(),image_url:imageUrl};const {error}=await sb.from('store_items').upsert(product,{onConflict:'id'});if(error){toast('Cloud save blocked: '+error.message);return}toast('Product saved to Supabase');resetProductForm();await fetchInventory()}
+async function deleteStoreProduct(id){if(!isCloudAdmin)return toast('Admin cloud login required');if(!confirm('Delete this product? Existing purchase requests will retain their item reference.'))return;const {error}=await sb.from('store_items').delete().eq('id',id);if(error)return toast('Delete blocked: '+error.message);toast('Product deleted');await fetchInventory()}
+async function fetchStoreOrders(){if(!isCloudAdmin){$('storeOrders').innerHTML='<p class="mini">Admin login required to view customer requests.</p>';return}if(!initSupabase())return;const {data,error}=await sb.from('store_purchase_requests').select('*').order('created_at',{ascending:false});if(error){$('storeOrders').innerHTML=`<p class="mini">Cannot load purchase requests: ${esc(error.message)}</p>`;return}storeOrders=data||[];renderStoreOrders()}
+function renderStoreOrders(){$('storeOrders').innerHTML=storeOrders.length?storeOrders.map(o=>`<div class="dark-card rounded-2xl p-4 space-y-2 text-xs"><div class="flex flex-wrap justify-between gap-2"><div><b>${esc(o.customer_name)}</b><p class="text-blue-500 font-bold">${esc(o.item_title)} · Qty ${Number(o.quantity)||1}</p><p class="mini">${esc(o.customer_email||'')} · ${esc(o.customer_phone||'')}</p></div><b>${esc(o.status)}</b></div>${o.notes?`<p>${esc(o.notes)}</p>`:''}${o.shop_note?`<p class="text-blue-500">Shop note: ${esc(o.shop_note)}</p>`:''}<div class="flex gap-2 flex-wrap"><button class="btn bg-emerald-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','approved')">Approve</button><button class="btn bg-amber-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','awaiting_restock')">Await Restock</button><button class="btn bg-rose-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','declined')">Decline</button></div></div>`).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>'}
+async function setStoreOrderStatus(id,status){if(!isCloudAdmin)return toast('Admin cloud login required');const note=prompt('Optional note for this request:','');if(note===null)return;const {error}=await sb.rpc('admin_update_store_request',{p_request_id:id,p_status:status,p_note:note});if(error)return toast('Cloud update blocked: '+error.message);toast('Request updated');await Promise.all([fetchStoreOrders(),fetchInventory()])}
 
-    window.fetchRepairsFromCloud = async function() {
-      initSupabase();
-      if (!supabaseClient) return repairs;
-
-      try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Cloud timeout')), 4000));
-        const fetchPromise = supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
-        const res = await Promise.race([fetchPromise, timeoutPromise]);
-        
-        if (res && res.data && res.data.length > 0) {
-          const cloudRepairs = res.data.map(window.normalizeRepair);
-          const mergedMap = new Map();
-          cloudRepairs.forEach(r => mergedMap.set(r.id, r));
-          repairs.forEach(r => mergedMap.set(r.id, r));
-          repairs = Array.from(mergedMap.values());
-          localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-        }
-      } catch (e){}
-      return repairs;
-    };
-
-    window.fetchPurchaseRequestsFromCloud = async function() {
-      initSupabase();
-      if (!supabaseClient) return purchaseRequests;
-
-      try {
-        const res = await supabaseClient.from('purchase_requests').select('*').order('created_at', { ascending: false });
-        if (res && res.data && res.data.length > 0) {
-          const cloudReqs = res.data.map(r => ({
-            id: r.id,
-            customerName: r.customer_name || r.customerName || 'Customer',
-            customerPhone: r.customer_phone || r.customerPhone || '',
-            customerEmail: r.customer_email || r.customerEmail || '',
-            itemTitle: r.item_title || r.itemTitle || 'Repair Service',
-            notes: r.notes || '',
-            shop_note: r.shop_note || r.shopNote || '',
-            status: r.status || 'pending',
-            created_at: r.created_at || new Date().toISOString()
-          }));
-
-          const reqMap = new Map();
-          cloudReqs.forEach(rq => reqMap.set(rq.id, rq));
-          purchaseRequests.forEach(rq => reqMap.set(rq.id, rq));
-          purchaseRequests = Array.from(reqMap.values());
-          localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
-          window.renderPurchaseRequests();
-        }
-      } catch(e){}
-      return purchaseRequests;
-    };
-
-    window.generateShortId = function(existingArray = [], prefix = 'AJD') {
-      const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-      let newId = '';
-      do {
-        let code = '';
-        for (let i = 0; i < 3; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-        newId = `${prefix}-${code}`;
-      } while (existingArray && existingArray.some(item => item && item.id === newId));
-      return newId;
-    };
-
-    window.normalizeRepair = function(item) {
-      const partCost = Math.ceil(parseFloat(item.part_cost || item.partCost || 0));
-      const laborCost = Math.ceil(parseFloat(item.labor_cost || item.laborCost || 0));
-      const amount = Math.ceil(parseFloat(item.amount || (partCost + laborCost)));
-      const discount = Math.ceil(parseFloat(item.discount || 0));
-      const deposit = Math.ceil(parseFloat(item.deposit_amount || item.depositAmount || 0));
-
-      return {
-        id: item.id || window.generateShortId(repairs, 'AJD'),
-        customer_name: item.customer_name || item.customerName || 'Customer',
-        customer_phone: item.customer_phone || item.customerPhone || '',
-        make_model: item.make_model || item.makeModel || 'Device',
-        issue: item.issue || 'Repair Service',
-        part_note: item.part_note || item.partNote || '',
-        part_cost: partCost,
-        labor_cost: laborCost,
-        amount: amount,
-        discount: discount,
-        deposit_amount: deposit,
-        payment_status: item.payment_status || item.paymentStatus || 'unpaid',
-        payment_info: item.payment_info || item.paymentInfo || `Zelle / Apple Pay: ${shopPhone}`,
-        status: item.status || 'pending',
-        supplier_links: Array.isArray(item.supplier_links) ? item.supplier_links : [],
-        created_at: item.created_at || new Date().toISOString()
-      };
-    };
-
-    window.recalculateIntakeTotals = function() {
-      const partCost = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0);
-      const laborCharge = Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
-      const discount = Math.ceil(parseFloat(document.getElementById('intakeDiscount').value) || 0);
-      document.getElementById('intakeTotalAmount').value = Math.max(0, partCost + laborCharge - discount);
-    };
-
-    window.applyIntakeDiscountPreset = function(percent) {
-      const sub = Math.ceil(parseFloat(document.getElementById('intakePartCost').value) || 0) + Math.ceil(parseFloat(document.getElementById('intakeLaborCharge').value) || 0);
-      document.getElementById('intakeDiscount').value = Math.ceil(sub * (percent / 100));
-      window.recalculateIntakeTotals();
-    };
-
-    window.handleCreateRepair = async function(e) {
-      e.preventDefault();
-      const newJob = window.normalizeRepair({
-        id: window.generateShortId(repairs, 'AJD'),
-        customer_name: document.getElementById('intakeName').value,
-        customer_phone: document.getElementById('intakePhone').value,
-        make_model: document.getElementById('intakeDevice').value,
-        issue: document.getElementById('intakeIssue').value,
-        part_note: document.getElementById('intakePartNote').value,
-        part_cost: document.getElementById('intakePartCost').value,
-        labor_cost: document.getElementById('intakeLaborCharge').value,
-        amount: document.getElementById('intakeTotalAmount').value,
-        discount: document.getElementById('intakeDiscount').value,
-        deposit_amount: document.getElementById('intakeDeposit').value,
-        payment_status: document.getElementById('intakePaymentStatus').value,
-        payment_info: `Zelle / Cash: ${shopPhone}`,
-        status: 'pending'
-      });
-
-      await window.saveRepairTicketToStorageAndCloud(newJob);
-      document.getElementById('intakeForm').reset();
-      window.recalculateIntakeTotals();
-      window.renderRepairs();
-      window.showToast(`Ticket ${newJob.id} created & saved!`);
-    };
-
-    window.renderRepairs = function() {
-      const container = document.getElementById('repairsContainer');
-      const search = (document.getElementById('repairSearchInput').value || '').toLowerCase();
-      const filter = document.getElementById('repairStatusFilter').value;
-      if (!container) return;
-
-      const filtered = repairs.filter(r => {
-        const matchesSearch = (r.customer_name || '').toLowerCase().includes(search) || (r.id || '').toLowerCase().includes(search) || (r.make_model || '').toLowerCase().includes(search);
-        return matchesSearch && (filter === 'all' || r.status === filter);
-      });
-
-      window.updateMetricsSummary();
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="dark-card p-8 text-center text-slate-500 text-xs font-bold rounded-3xl">No repair tickets found.</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(r => {
-        const amount = Math.ceil(r.amount);
-        const deposit = Math.ceil(r.deposit_amount);
-        let paid = r.payment_status === 'paid_in_full' ? amount : (r.payment_status === 'deposit_paid' ? deposit : 0);
-        const balance = Math.ceil(Math.max(0, amount - paid));
-
-        return `
-          <div class="dark-card p-4 sm:p-5 rounded-3xl space-y-3.5 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 transition">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</h3>
-                  <span class="text-[10px] font-black font-mono text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20">${window.escapeHtml(r.id)}</span>
-                </div>
-                <p class="text-xs font-extrabold text-blue-600 dark:text-blue-400 mt-0.5">${window.escapeHtml(r.make_model)}</p>
-              </div>
-
-              <select onchange="window.updateJobStatus('${r.id}', this.value)" class="px-2.5 py-1 text-xs font-black bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-blue-600 dark:text-blue-400 outline-none cursor-pointer">
-                <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>⏳ Checked In</option>
-                <option value="in-progress" ${r.status === 'in-progress' ? 'selected' : ''}>⚙️ In Repair</option>
-                <option value="completed" ${r.status === 'completed' ? 'selected' : ''}>✅ Ready Pickup</option>
-              </select>
-            </div>
-
-            <p class="text-xs text-slate-700 dark:text-slate-300"><strong>Issue:</strong> ${window.escapeHtml(r.issue)}</p>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs">
-              <div><span class="text-[9px] font-black text-slate-500 uppercase">Total</span><p class="font-black text-slate-900 dark:text-white">$${amount}</p></div>
-              <div><span class="text-[9px] font-black text-slate-500 uppercase">Deposit</span><p class="font-bold text-blue-600 dark:text-blue-400">$${deposit}</p></div>
-              <div>
-                <span class="text-[9px] font-black text-slate-500 uppercase">Status</span>
-                <select onchange="window.updatePaymentStatus('${r.id}', this.value)" class="block mt-0.5 text-[10px] font-black bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg text-blue-600 dark:text-blue-400">
-                  <option value="unpaid" ${r.payment_status === 'unpaid' ? 'selected' : ''}>🔴 Unpaid</option>
-                  <option value="deposit_paid" ${r.payment_status === 'deposit_paid' ? 'selected' : ''}>🟡 Deposit Paid</option>
-                  <option value="paid_in_full" ${r.payment_status === 'paid_in_full' ? 'selected' : ''}>🟢 Paid in Full</option>
-                </select>
-              </div>
-              <div><span class="text-[9px] font-black text-slate-500 uppercase">Balance</span><p class="font-black ${balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">$${balance}</p></div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
-              <button onclick="window.openInvoiceModal('${r.id}')" class="px-2.5 py-1.5 bg-blue-600 text-white font-black rounded-xl">🧾 Receipt</button>
-              <button onclick="window.openEditModal('${r.id}')" class="px-2.5 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold rounded-xl">✏️ Edit</button>
-              <button onclick="window.deleteRepair('${r.id}')" class="px-2 py-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-300 font-bold rounded-xl border border-rose-500/20 ml-auto">🗑️ Delete</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    };
-
-    window.updateMetricsSummary = function() {
-      let totalRev = 0, deposits = 0, unpaid = 0, activeJobs = 0;
-      repairs.forEach(r => {
-        const amt = Math.ceil(r.amount), dep = Math.ceil(r.deposit_amount);
-        totalRev += amt; deposits += dep;
-        let paid = r.payment_status === 'paid_in_full' ? amt : (r.payment_status === 'deposit_paid' ? dep : 0);
-        unpaid += Math.max(0, amt - paid);
-        if (r.status !== 'completed') activeJobs++;
-      });
-      document.getElementById('statTotalRev').innerText = `$${totalRev}`;
-      document.getElementById('statDeposits').innerText = `$${deposits}`;
-      document.getElementById('statUnpaid').innerText = `$${unpaid}`;
-      document.getElementById('statActiveJobs').innerText = activeJobs;
-    };
-
-    window.updateJobStatus = async function(id, newStatus) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-      job.status = newStatus;
-      await window.saveRepairTicketToStorageAndCloud(job);
-      window.renderRepairs();
-    };
-
-    window.updatePaymentStatus = async function(id, newPaymentStatus) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-      job.payment_status = newPaymentStatus;
-      await window.saveRepairTicketToStorageAndCloud(job);
-      window.renderRepairs();
-    };
-
-    window.openEditModal = function(id) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-
-      document.getElementById('editRepairId').value = job.id;
-      document.getElementById('editTicketBadge').innerText = job.id;
-      document.getElementById('editCustomerName').value = job.customer_name;
-      document.getElementById('editCustomerPhone').value = job.customer_phone;
-      document.getElementById('editMakeModel').value = job.make_model;
-      document.getElementById('editIssue').value = job.issue;
-      document.getElementById('editPartNote').value = job.part_note || '';
-      document.getElementById('editPartCost').value = Math.ceil(job.part_cost || 0);
-      document.getElementById('editLaborCost').value = Math.ceil(job.labor_cost || 0);
-      document.getElementById('editDiscount').value = Math.ceil(job.discount || 0);
-      document.getElementById('editDepositAmount').value = Math.ceil(job.deposit_amount || 0);
-      document.getElementById('editPaymentStatus').value = job.payment_status || 'unpaid';
-
-      window.recalculateEditTotals();
-      document.getElementById('editRepairModal').classList.remove('hidden');
-    };
-
-    window.closeEditModal = function() {
-      document.getElementById('editRepairModal').classList.add('hidden');
-    };
-
-    window.recalculateEditTotals = function() {
-      const partCost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
-      const laborCost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
-      const discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
-      const total = Math.max(0, partCost + laborCost - discount);
-      document.getElementById('editTotalAmount').value = total;
-
-      const deposit = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
-      const paymentStatus = document.getElementById('editPaymentStatus').value;
-      let paid = paymentStatus === 'paid_in_full' ? total : (paymentStatus === 'deposit_paid' ? deposit : 0);
-      const balance = Math.ceil(Math.max(0, total - paid));
-      document.getElementById('editPickupBalanceDisplay').innerText = `$${balance}`;
-    };
-
-    window.handleUpdateRepair = async function(e) {
-      e.preventDefault();
-      const id = document.getElementById('editRepairId').value;
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-
-      job.customer_name = document.getElementById('editCustomerName').value;
-      job.customer_phone = document.getElementById('editCustomerPhone').value;
-      job.make_model = document.getElementById('editMakeModel').value;
-      job.issue = document.getElementById('editIssue').value;
-      job.part_note = document.getElementById('editPartNote').value;
-      job.part_cost = Math.ceil(parseFloat(document.getElementById('editPartCost').value) || 0);
-      job.labor_cost = Math.ceil(parseFloat(document.getElementById('editLaborCost').value) || 0);
-      job.discount = Math.ceil(parseFloat(document.getElementById('editDiscount').value) || 0);
-      job.amount = Math.ceil(parseFloat(document.getElementById('editTotalAmount').value) || 0);
-      job.deposit_amount = Math.ceil(parseFloat(document.getElementById('editDepositAmount').value) || 0);
-      job.payment_status = document.getElementById('editPaymentStatus').value;
-
-      await window.saveRepairTicketToStorageAndCloud(job);
-      window.closeEditModal();
-      window.renderRepairs();
-      window.showToast(`Updated & saved ticket ${id}`);
-    };
-
-    window.deleteRepair = async function(id) {
-      if (!confirm(`Delete ticket ${id}?`)) return;
-      repairs = repairs.filter(r => r.id !== id);
-      localStorage.setItem('ajd_repairs_backup', JSON.stringify(repairs));
-      initSupabase();
-      if (supabaseClient) {
-        try { await supabaseClient.from('repairs').delete().eq('id', id); } catch(e){}
-      }
-      window.renderRepairs();
-      window.showToast(`Deleted ${id}`);
-    };
-
-    /* Mandatory Receipts Scope Fix */
-    window.renderInvoicesList = function() {
-      const container = document.getElementById('invoicesListContainer');
-      if (!container) return;
-      if (repairs.length === 0) {
-        container.innerHTML = '<div class="dark-card p-8 text-center text-slate-500 text-xs font-bold rounded-3xl">No printable receipts generated yet.</div>';
-        return;
-      }
-      container.innerHTML = repairs.map(r => {
-        const amt = Math.ceil(r.amount);
-        const dep = Math.ceil(r.deposit_amount);
-        let paid = r.payment_status === 'paid_in_full' ? amt : (r.payment_status === 'deposit_paid' ? dep : 0);
-        const bal = Math.ceil(Math.max(0, amt - paid));
-        return `
-          <div class="dark-card p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-black font-mono text-blue-600 dark:text-blue-400 bg-blue-600/10 px-2 py-0.5 rounded-lg border border-blue-500/20">${window.escapeHtml(r.id)}</span>
-                <h4 class="text-xs font-black text-slate-900 dark:text-white">${window.escapeHtml(r.customer_name)}</h4>
-              </div>
-              <p class="text-[11px] font-bold text-slate-500 mt-1">${window.escapeHtml(r.make_model)} • Total: $${amt} | Deposit: $${dep} | Balance: $${bal}</p>
-            </div>
-            <button onclick="window.openInvoiceModal('${r.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow transition active:scale-95 cursor-pointer">
-              🧾 View 80mm Receipt
-            </button>
-          </div>
-        `;
-      }).join('');
-    };
-
-    window.openInvoiceModal = function(id) {
-      const job = repairs.find(r => r.id === id);
-      if (!job) return;
-
-      const amount = Math.ceil(job.amount);
-      const deposit = Math.ceil(job.deposit_amount);
-      let paid = job.payment_status === 'paid_in_full' ? amount : (job.payment_status === 'deposit_paid' ? deposit : 0);
-      const balance = Math.ceil(Math.max(0, amount - paid));
-
-      document.getElementById('invoicePrintSheet').innerHTML = `
-        <div class="text-center space-y-1 pb-2 border-b border-dashed border-black">
-          <h2 class="text-base font-bold uppercase">AJD'S WIRELESS</h2>
-          <p class="text-[10px]">PHONE: ${shopPhone}</p>
-          <p class="text-[9px] pt-1">${new Date(job.created_at).toLocaleString()}</p>
-        </div>
-        <div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black text-left">
-          <p><strong>TICKET:</strong> ${window.escapeHtml(job.id)}</p>
-          <p><strong>CUSTOMER:</strong> ${window.escapeHtml(job.customer_name)}</p>
-          <p><strong>PHONE:</strong> ${window.escapeHtml(job.customer_phone)}</p>
-          <p><strong>DEVICE:</strong> ${window.escapeHtml(job.make_model)}</p>
-        </div>
-        <div class="text-[10px] space-y-1 py-2 border-b border-dashed border-black">
-          <div class="flex justify-between"><span>TOTAL CHARGE:</span><span>$${amount}</span></div>
-          <div class="flex justify-between"><span>DEPOSIT:</span><span>$${deposit}</span></div>
-          <div class="flex justify-between"><span>PAID TO DATE:</span><span>-$${paid}</span></div>
-          <div class="flex justify-between font-bold pt-1"><span>BALANCE DUE:</span><span>$${balance}</span></div>
-        </div>
-      `;
-      document.getElementById('invoiceModal').classList.remove('hidden');
-    };
-
-    window.closeInvoiceModal = function() {
-      document.getElementById('invoiceModal').classList.add('hidden');
-    };
-
-    window.renderPurchaseRequests = function() {
-      const container = document.getElementById('purchaseRequestsContainer');
-      const badge = document.getElementById('requestsCountBadge');
-      if (!container) return;
-
-      const pending = purchaseRequests.filter(r => r.status === 'pending');
-      if (badge) badge.innerText = `${pending.length} Pending`;
-
-      if (purchaseRequests.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs font-semibold">No requests logged.</div>`;
-        return;
-      }
-
-      container.innerHTML = purchaseRequests.map(req => `
-        <div class="dark-card p-4 rounded-2xl border ${req.status === 'pending' ? 'border-blue-500/40 bg-blue-50/50 dark:bg-slate-900/40' : 'border-slate-200 dark:border-slate-800'} space-y-2 text-xs">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-black text-slate-900 dark:text-white text-sm">${window.escapeHtml(req.customerName)}</span>
-              <p class="text-blue-600 dark:text-blue-400 font-bold">Device: ${window.escapeHtml(req.itemTitle)}</p>
-              <p class="text-slate-500 text-[11px]">📞 ${window.escapeHtml(req.customerPhone)}</p>
-            </div>
-            <span class="px-2 py-0.5 text-[10px] font-black rounded uppercase ${req.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500' : (req.status === 'declined' ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-500')}">${req.status}</span>
-          </div>
-          ${req.notes ? `<p class="text-slate-600 dark:text-slate-300 italic bg-slate-100 dark:bg-slate-950 p-2 rounded-xl">"${window.escapeHtml(req.notes)}"</p>` : ''}
-          ${req.shop_note ? `<p class="text-blue-600 dark:text-blue-400 font-bold text-[11px]">Shop Note: ${window.escapeHtml(req.shop_note)}</p>` : ''}
-          <div class="flex gap-2 pt-1 border-t border-slate-200 dark:border-slate-800">
-            ${req.status === 'pending' ? `
-              <button onclick="window.approveRequestPrompt('${req.id}')" class="px-3 py-1 bg-emerald-600 text-white font-black rounded-xl">✅ Approve</button>
-              <button onclick="window.declineRequestPrompt('${req.id}')" class="px-3 py-1 bg-rose-600 text-white font-bold rounded-xl">❌ Decline</button>
-            ` : ''}
-          </div>
-        </div>
-      `).join('');
-    };
-
-    window.approveRequestPrompt = async function(reqId) {
-      const req = purchaseRequests.find(r => r.id === reqId);
-      if (!req) return;
-      const note = prompt('Optional approval note for customer:', 'Parts in stock! Bring device in today.');
-      req.status = 'approved';
-      req.shop_note = note || '';
-      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
-
-      const newTicket = window.normalizeRepair({
-        id: window.generateShortId(repairs, 'AJD'),
-        customer_name: req.customerName,
-        customer_phone: req.customerPhone,
-        make_model: req.itemTitle,
-        issue: req.notes || 'Online Request',
-        status: 'pending'
-      });
-      await window.saveRepairTicketToStorageAndCloud(newTicket);
-
-      initSupabase();
-      if (supabaseClient) {
-        try { await supabaseClient.from('purchase_requests').upsert([{ id: req.id, status: 'approved', shop_note: req.shop_note }]); } catch(e){}
-      }
-
-      window.renderPurchaseRequests();
-      window.renderRepairs();
-      window.showToast(`Approved & Created Ticket ${newTicket.id}`);
-    };
-
-    window.declineRequestPrompt = async function(reqId) {
-      const req = purchaseRequests.find(r => r.id === reqId);
-      if (!req) return;
-      const note = prompt('Reason for declining request:', 'Parts backordered / Unrepairable.');
-      req.status = 'declined';
-      req.shop_note = note || 'Request declined.';
-      localStorage.setItem('ajd_purchase_requests', JSON.stringify(purchaseRequests));
-
-      initSupabase();
-      if (supabaseClient) {
-        try { await supabaseClient.from('purchase_requests').upsert([{ id: req.id, status: 'declined', shop_note: req.shop_note }]); } catch(e){}
-      }
-
-      window.renderPurchaseRequests();
-      window.showToast('Request declined.');
-    };
-
-    window.showToast = function(msg) {
-      const container = document.getElementById('toastContainer');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = 'px-4 py-2.5 rounded-2xl text-xs font-black text-white bg-slate-900 border border-slate-700 shadow-2xl';
-      toast.innerText = msg;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    };
-
-    window.toggleDropdown = id => document.getElementById(id)?.classList.toggle('hidden');
-    window.handleBackdropClick = (e, id) => { if (e.target.id === id) document.getElementById(id).classList.add('hidden'); };
-
-    window.switchTab = function(tab) {
-      document.getElementById('viewRepairs').classList.add('hidden');
-      document.getElementById('viewInvoices').classList.add('hidden');
-      document.getElementById('viewStore').classList.add('hidden');
-      if (tab === 'repairs') document.getElementById('viewRepairs').classList.remove('hidden');
-      if (tab === 'invoices') { document.getElementById('viewInvoices').classList.remove('hidden'); window.renderInvoicesList(); }
-      if (tab === 'store') { document.getElementById('viewStore').classList.remove('hidden'); window.renderPurchaseRequests(); }
-    };
-
-    window.onload = async function() {
-      window.applyTheme();
-      window.syncShopPhone();
-      await window.fetchRepairsFromCloud();
-      await window.fetchPurchaseRequestsFromCloud();
-      window.renderRepairs();
-    };
-  </script>
-</body>
-</html>
+window.addEventListener('storage',e=>{if(e.key==='ajd_repairs_backup'){repairs=read(e.key,[]).map(norm);renderRepairs()}if(e.key==='ajd_purchase_requests'){purchaseRequests=read(e.key,[]);renderPurchaseRequests()}if(e.key==='ajd_shop_phone'){shopPhone=e.newValue||'(786) 970-7779';syncShopPhone()}if(e.key===SHOP_EMAIL_KEY){shopEmail=e.newValue||'';renderShopEmail()}if(e.key===SHOP_EMAIL_PENDING_KEY){updateCloudUI();if(e.newValue===null)void fetchShopEmailCloud()}if(e.key===LINK_KEY){managedLinks=read(LINK_KEY,DEFAULT_LINKS);renderLinks()}if(e.key===PENDING_REPAIRS_KEY){pendingRepairs=read(PENDING_REPAIRS_KEY,[]);updateCloudUI()}});
+window.addEventListener('DOMContentLoaded',async()=>{applyTheme();$('footerYear').textContent=new Date().getFullYear();syncShopPhone();renderShopEmail();if(localStorage.getItem(SHOP_PHONE_PENDING_KEY))phoneStatus('Phone change pending cloud upload; sign in as admin to publish it.');if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null)emailStatus('Email change pending cloud upload; sign in as admin to publish it.');renderLaborPresets();for(const prefix of ['intake','edit']){initPercentButtons(prefix,'Discount',[0,5,10,15,20,25,50]);initPercentButtons(prefix,'Deposit',[0,10,20,25,30,50,75,100]);addPartRow(prefix)}renderRepairs();renderPurchaseRequests();renderLinks();updateCloudUI();await refreshCloudAccess();if(!isCloudAdmin)await fetchShopEmailCloud();renderRepairs();renderPurchaseRequests()});
+</script></body></html>
