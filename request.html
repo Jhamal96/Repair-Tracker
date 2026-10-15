@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Submit Repair Request | AJD's Wireless</title>
+  <title>Submit Repair Request | AJD's Wireless Repairs</title>
   <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -69,13 +69,13 @@
           </svg>
         </div>
         <div>
-          <h1 class="text-base font-black text-slate-900 dark:text-white leading-tight">AJD's Wireless</h1>
+          <h1 class="text-base font-black text-slate-900 dark:text-white leading-tight">AJD's Wireless Repairs</h1>
           <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Online Repair Ticket Request</p>
         </div>
       </div>
 
-      <a href="tel:3055550147" class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-3 py-1.5 rounded-xl border border-blue-500/20 hover:bg-blue-600/20 transition">
-        📞 (305) 555-0147
+      <a data-shop-tel href="tel:7869707779" class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-600/10 px-3 py-1.5 rounded-xl border border-blue-500/20 hover:bg-blue-600/20 transition">
+        📞 <span data-shop-phone>(786) 970-7779</span>
       </a>
     </div>
   </header>
@@ -89,7 +89,7 @@
       <div class="text-center space-y-1.5 border-b border-slate-200 dark:border-slate-800 pb-4">
         <span class="inline-block px-3 py-1 bg-blue-600/10 text-blue-600 dark:text-blue-400 text-xs font-black rounded-full border border-blue-500/20 uppercase tracking-wider">Fast Repair Quote</span>
         <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Submit Repair Details</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Fill out your device info below. We'll assign a reference code and review your ticket immediately!</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Fill out your device info below. We'll assign a reference code once your request has been securely submitted.</p>
       </div>
 
       <!-- Request Form -->
@@ -99,31 +99,33 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
-            <input type="text" id="custName" required placeholder="e.g. Kayla Smith" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="text" id="custName" required maxlength="120" placeholder="e.g. Kayla Smith" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
-            <input type="tel" id="custPhone" required placeholder="e.g. (305) 555-0147" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number (Optional)</label>
+            <input type="tel" id="custPhone" maxlength="35" placeholder="e.g. (305) 555-0147" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
         <!-- Email Address -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address (Optional)</label>
-          <input type="email" id="custEmail" placeholder="e.g. kayla@example.com" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="email" id="custEmail" maxlength="254" placeholder="e.g. kayla@example.com" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <!-- Device Make, Model & Model Number -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Device Make, Model & Model Number *</label>
-          <input type="text" id="custDevice" required placeholder="e.g. iPhone 14 Pro Max 256GB (A2243) / MacBook Air M2" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="custDevice" required maxlength="180" placeholder="e.g. iPhone 14 Pro Max 256GB (A2243) / MacBook Air M2" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <!-- Issue Description -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Issue Description *</label>
-          <textarea id="custIssue" rows="3" required placeholder="Describe what needs repair (e.g. Cracked front screen, battery draining fast, liquid damage, charge port broken)..." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <textarea id="custIssue" rows="3" required maxlength="3000" placeholder="Describe what needs repair (e.g. Cracked front screen, battery draining fast, liquid damage, charge port broken)..." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
+
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">Provide at least one contact method (phone or email). Select Email below if you prefer email-only contact.</p>
 
         <!-- Preferred Contact Method -->
         <div>
@@ -134,6 +136,10 @@
             <option value="Email">✉️ Email</option>
           </select>
         </div>
+
+        <p id="requestFormStatus" class="text-xs text-rose-500 font-semibold hidden" role="alert" aria-live="polite"></p>
+        <!-- Honeypot field (helps catch basic automated spam; not a substitute for server-side protection) -->
+        <div class="absolute left-[-10000px]" aria-hidden="true"><label for="websiteField">Website</label><input id="websiteField" name="website" type="text" tabindex="-1" autocomplete="off"></div>
 
         <!-- Submit Button -->
         <button type="submit" id="submitBtn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-sm rounded-2xl shadow-xl transition active:scale-95 cursor-pointer flex items-center justify-center space-x-2">
@@ -163,7 +169,7 @@
         <p id="generatedReqCode" class="text-2xl font-mono font-black text-blue-600 dark:text-blue-400">REQ-0000</p>
       </div>
 
-      <p class="text-[11px] text-slate-500 dark:text-slate-400 italic">We will review your device details and contact you shortly with estimated pricing & turnaround time.</p>
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 italic">We'll review your repair request and contact you about estimated pricing and turnaround time. This reference code confirms submission, not repair approval.</p>
 
       <div class="pt-2 space-y-2">
         <button onclick="window.copyRequestCode()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl shadow cursor-pointer">
@@ -178,90 +184,126 @@
 
   <!-- Footer -->
   <footer class="text-center py-4 text-[11px] text-slate-500 border-t border-slate-200 dark:border-slate-900">
-    AJD's Wireless Repair Services &copy; 2026. All rights reserved.
+    <div class="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 mb-1">
+      <a data-shop-tel href="tel:7869707779" class="text-blue-600 dark:text-blue-400 hover:underline">📞 <span data-shop-phone>(786) 970-7779</span></a>
+      <span id="requestFooterEmail" class="hidden"><a data-shop-mailto href="#" class="text-blue-600 dark:text-blue-400 hover:underline">✉️ <span data-shop-email></span></a></span>
+    </div>
+    AJD's Wireless Repairs &copy; <span id="requestFooterYear">2026</span>. All rights reserved.
   </footer>
 
   <script>
-    // Supabase Credentials
+    // AJD's Wireless Repairs public repair request form.
+    // Supabase creates and returns a unique reference only AFTER saving the request.
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
     let supabaseClient = null;
+    try {
+      if (window.supabase?.createClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch (err) { console.warn('Supabase unavailable', err); }
 
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      try {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { enabled: false } });
-      } catch(e){}
+    function requestStatus(message) {
+      const el = document.getElementById('requestFormStatus');
+      el.textContent = message;
+      el.classList.toggle('hidden', !message);
     }
-
-    // Generate Random Numeric Request ID (e.g., REQ-8492 or REQ-39201)
-    window.generateRandomNumericCode = function() {
-      const randomDigits = Math.floor(1000 + Math.random() * 90000);
-      return `REQ-${randomDigits}`;
-    };
-
-    window.handleCustomerSubmit = async function(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submitBtn');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳ Submitting...</span>';
+    function renderPublicContact(phone, email) {
+      if (phone) {
+        document.querySelectorAll('[data-shop-phone]').forEach(el => el.textContent = phone);
+        document.querySelectorAll('[data-shop-tel]').forEach(el => el.href = 'tel:' + phone.replace(/[^\d+]/g,''));
       }
-
-      // Generate Random Reference Code
-      const randomCode = window.generateRandomNumericCode();
-
-      const requestPayload = {
-        id: randomCode,
-        customerName: document.getElementById('custName').value.trim(),
-        customerPhone: document.getElementById('custPhone').value.trim(),
-        customerEmail: document.getElementById('custEmail').value.trim(),
-        itemTitle: document.getElementById('custDevice').value.trim(),
-        notes: document.getElementById('custIssue').value.trim(),
-        contactPref: document.getElementById('custContactPref').value,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      };
-
-      // 1. Save to Local Storage for instant shop dashboard sync
-      let existingRequests = JSON.parse(localStorage.getItem('ajd_purchase_requests')) || [];
-      existingRequests.unshift(requestPayload);
-      localStorage.setItem('ajd_purchase_requests', JSON.stringify(existingRequests));
-
-      // 2. Cloud Backup via Supabase if available
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('purchase_requests').insert([{
-            id: requestPayload.id,
-            customer_name: requestPayload.customerName,
-            customer_phone: requestPayload.customerPhone,
-            customer_email: requestPayload.customerEmail,
-            item_title: requestPayload.itemTitle,
-            notes: requestPayload.notes,
-            status: 'pending'
-          }]);
-        } catch(err){}
+      const visible = !!email;
+      document.getElementById('requestFooterEmail').classList.toggle('hidden', !visible);
+      if (visible) {
+        document.querySelectorAll('[data-shop-email]').forEach(el => el.textContent = email);
+        document.querySelectorAll('[data-shop-mailto]').forEach(el => el.href = 'mailto:' + encodeURIComponent(email));
       }
-
-      // 3. Show Confirmation Modal with Random Code
-      document.getElementById('generatedReqCode').innerText = randomCode;
-      document.getElementById('confirmModal').classList.remove('hidden');
-    };
-
-    window.copyRequestCode = function() {
-      const code = document.getElementById('generatedReqCode').innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(code);
-      } else {
-        const dummy = document.createElement('input');
-        document.body.appendChild(dummy);
-        dummy.value = code;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
+    }
+    async function refreshPublicContact() {
+      // Read PUBLISHED contact information for visitors on any device.
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient.from('shop_settings').select('phone,email').eq('id','business').maybeSingle();
+        if (error) throw error;
+        if (data) renderPublicContact(data.phone, data.email);
+      } catch (err) { console.warn('Public contact settings not available:', err.message); }
+    }
+    window.handleCustomerSubmit = async function(event) {
+      event.preventDefault();
+      requestStatus('');
+      const button = document.getElementById('submitBtn');
+      const original = button.innerHTML;
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+      const device = document.getElementById('custDevice').value.trim();
+      const issue = document.getElementById('custIssue').value.trim();
+      const preference = document.getElementById('custContactPref').value;
+      if (document.getElementById('websiteField').value.trim()) {
+        requestStatus('Unable to submit your request.'); return;
       }
-      alert(`Copied ${code} to clipboard!`);
+      if (!phone && !email) {
+        requestStatus('Please provide a phone number or email address so we can contact you.'); return;
+      }
+      if (preference === 'Email' && !email) {
+        requestStatus('Enter an email address or choose a different contact method.'); return;
+      }
+      if (preference !== 'Email' && !phone) {
+        requestStatus('Enter a phone number, or select Email as your preferred contact method.'); return;
+      }
+      if (!supabaseClient) {
+        requestStatus('Cloud connection unavailable. Your request has not been sent. Check your internet connection and retry.'); return;
+      }
+      button.disabled = true;
+      button.innerHTML = '<span>⏳ Submitting securely...</span>';
+      try {
+        // Requires ajd_repair_request_submission.sql in Supabase SQL Editor.
+        const { data, error } = await supabaseClient.rpc('ajd_submit_repair_request', {
+          p_customer_name: name,
+          p_customer_phone: phone,
+          p_customer_email: email,
+          p_device: device,
+          p_issue: issue,
+          p_contact_preference: preference
+        });
+        if (error) throw error;
+        if (typeof data !== 'string' || !/^RQ[0-9A-F]{6}$/.test(data)) throw new Error('Cloud did not return a valid reference. Contact the shop before resubmitting.');
+        document.getElementById('generatedReqCode').textContent = data;
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.getElementById('customerIntakeForm').reset();
+      } catch (err) {
+        console.error('Repair request failed', err);
+        requestStatus('Request not confirmed: ' + (err.message || 'Cloud error') + '. Please check the connection and try again.');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = original;
+      }
     };
+    window.copyRequestCode = async function() {
+      const code = document.getElementById('generatedReqCode').textContent.trim();
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(code);
+        else {
+          const temp = document.createElement('input');
+          temp.value = code;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          temp.remove();
+        }
+        alert('Copied ' + code + ' to clipboard!');
+      } catch (err) { prompt('Copy your reference code:', code); }
+    };
+    document.getElementById('requestFooterYear').textContent = String(new Date().getFullYear());
+    void refreshPublicContact();
+    window.addEventListener('storage', event => {
+      // Admin and request page in the same browser: reflect locally updated contacts.
+      if (event.key === 'ajd_shop_phone' || event.key === 'ajd_shop_email') {
+        const phone = localStorage.getItem('ajd_shop_phone');
+        const email = localStorage.getItem('ajd_shop_email');
+        renderPublicContact(phone, email);
+      }
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) void refreshPublicContact(); });
   </script>
 </body>
 </html>
