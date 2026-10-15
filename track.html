@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>AJD's Wireless Repairs - Live Repair Tracker</title>
+  <title>AJD's Wireless Repairs | Repair Tracking</title>
   <meta name="theme-color" content="#0B0F19">
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <button type="button" onclick="handlePrint()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition transform active:scale-95 cursor-pointer flex items-center space-x-1.5">
+      <button type="button" onclick="handlePrint()" id="printReceiptButton" disabled class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition transform active:scale-95 cursor-pointer flex items-center space-x-1.5">
         <span>Print Receipt</span>
       </button>
     </div>
@@ -84,318 +84,139 @@
       <label class="block text-xs font-extrabold uppercase tracking-wider text-brand-400">🔍 Search Your Repair Status</label>
       <div class="flex gap-2">
         <div class="relative flex-1">
-          <input type="text" id="trackerSearchInput" placeholder="Enter Customer Name or Ticket ID..." class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
+          <input type="text" id="trackerSearchInput" placeholder="Enter ticket ID (e.g. AJ7K3M)" autocomplete="off" maxlength="80" class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
           <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
         <button type="button" onclick="performCustomerSearch()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-extrabold text-xs rounded-2xl shadow transition active:scale-95 cursor-pointer shrink-0">
           Search
         </button>
       </div>
-      <p class="text-[11px] text-slate-400 font-medium">Tip: Search by your Name (e.g., John Doe) or Ticket ID.</p>
+      <label for="trackerContactInput" class="block text-xs font-extrabold tracking-wide text-brand-400">Verify your phone number or email</label>
+      <input type="text" id="trackerContactInput" placeholder="Phone number or email used at check-in" autocomplete="off" maxlength="254" class="w-full px-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
+      <p class="text-[11px] text-slate-400 font-medium">For privacy, enter the ticket ID and the same phone number or email given at check-in. Name-only searches are unavailable.</p>
     </div>
 
     <!-- Active Job or Results Container -->
     <div id="trackerContent" class="dark-card p-5 sm:p-8 rounded-3xl shadow-2xl printable-card space-y-6">
       <div class="text-center py-12 space-y-3">
         <svg class="animate-spin w-8 h-8 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <p class="text-xs font-bold text-slate-400">Loading repair tracker...</p>
+        <p class="text-xs font-bold text-slate-400">Enter your ticket number and contact information above to see repair progress.</p>
       </div>
     </div>
 
   </main>
 
+  <footer class="border-t border-slate-800 px-4 py-6 text-center text-xs text-slate-400 space-y-2 no-print">
+    <p class="font-bold text-slate-200">AJD's Wireless Repairs</p>
+    <p><a data-shop-tel href="tel:7869707779" class="text-blue-400 hover:underline">📞 <span data-shop-phone>(786) 970-7779</span></a>
+    <span data-shop-email-container hidden> · <a data-shop-mailto href="#" class="text-blue-400 hover:underline">✉️ <span data-shop-email></span></a></span></p>
+    <p>© <span id="footerYear">2026</span> AJD's Wireless Repairs. All rights reserved.</p>
+  </footer>
+
   <script>
     const SUPABASE_URL = 'https://vxpufrahrnwmtgltjstd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_tRjMtsoo9aT-6n7dzj9p-w_HsUqJ520';
-    let supabaseClient = null;
-    let realtimeChannel = null;
-    let trackPollingTimer = null;
-    let currentLoadedJobId = null;
+    const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY) || null;
+    const $ = id => document.getElementById(id);
+    let currentJob = null;
+    let pollTimer = null;
+    let loading = false;
 
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function escapeHtml(input) {
+      return String(input ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
-
-    function handlePrint() {
-      try { window.print(); } catch (e) {}
+    function dollars(value) { return '$' + (Number(value) || 0).toFixed(2); }
+    function handlePrint() { if (currentJob) window.print(); }
+    function showMessage(title, message) {
+      $('trackerContent').innerHTML = `<div class="text-center py-10 space-y-3"><h2 class="text-lg font-black text-white">${escapeHtml(title)}</h2><p class="text-xs text-slate-400 leading-relaxed">${escapeHtml(message)}</p></div>`;
+      $('printReceiptButton').disabled = true;
+      currentJob = null;
     }
-
-    function getJobIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('id')) return urlParams.get('id');
-      if (urlParams.has('track')) return urlParams.get('track');
-      const hash = window.location.hash;
-      if (hash && hash.includes('track=')) return hash.split('track=')[1].split('&')[0];
-      if (hash && hash.startsWith('#')) return hash.substring(1);
-      return null;
-    }
-
-    function initSupabase() {
-      if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-        try {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch(e){}
-      }
-    }
-
-    async function loadTrackedJob(specifiedId) {
-      const jobId = specifiedId || getJobIdFromUrl();
-      const container = document.getElementById('trackerContent');
-      if (!container) return;
-
-      initSupabase();
-
-      if (!jobId) {
-        container.innerHTML = `
-          <div class="text-center py-10 space-y-3">
-            <div class="w-14 h-14 bg-brand-950/60 text-brand-400 rounded-3xl mx-auto flex items-center justify-center text-2xl border border-brand-800/40">🔍</div>
-            <h2 class="text-lg font-black text-white">Track Your Device Repair</h2>
-            <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">Please enter your Customer Name or Ticket ID in the search bar above to view your repair progress.</p>
-          </div>
-        `;
-        return;
-      }
-
-      currentLoadedJobId = jobId;
-
-      let job = null;
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
-
-      if (supabaseClient && isUuid) {
-        try {
-          const { data } = await supabaseClient.from('repairs').select('*').eq('id', jobId).single();
-          if (data) job = data;
-        } catch (e) {}
-      }
-
-      if (!job) {
-        const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-        job = local.find(r => String(r.id) === String(jobId));
-      }
-
-      if (!job) {
-        container.innerHTML = `
-          <div class="text-center py-10 space-y-2">
-            <p class="text-2xl">❓</p>
-            <h2 class="text-base font-bold text-white">Repair Order Not Found</h2>
-            <p class="text-xs text-slate-400">No ticket matched ID "${escapeHtml(jobId)}". Try searching by your Name above.</p>
-          </div>
-        `;
-        return;
-      }
-
-      setupRealtimeLiveTrackerSafely(job.id);
-      renderSingleJobDetails(job, container);
-    }
-
-    async function performCustomerSearch() {
-      const query = (document.getElementById('trackerSearchInput').value || '').trim();
-      const container = document.getElementById('trackerContent');
-      if (!container) return;
-
-      if (!query) {
-        loadTrackedJob();
-        return;
-      }
-
-      container.innerHTML = `
-        <div class="text-center py-10 space-y-2">
-          <svg class="animate-spin w-7 h-7 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          <p class="text-xs font-bold text-slate-400">Searching repair database...</p>
-        </div>
-      `;
-
-      initSupabase();
-
-      let results = [];
-
-      if (supabaseClient) {
-        try {
-          const { data } = await supabaseClient.from('repairs').select('*').order('created_at', { ascending: false });
-          if (data && data.length) {
-            results = data.filter(item => {
-              const nameMatch = (item.customer_name || item.customerName || '').toLowerCase().includes(query.toLowerCase());
-              const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
-              const modelMatch = (item.make_model || item.makeModel || '').toLowerCase().includes(query.toLowerCase());
-              return nameMatch || idMatch || modelMatch;
-            });
-          }
-        } catch (e) {}
-      }
-
-      if (results.length === 0) {
-        const local = JSON.parse(localStorage.getItem('ajd_repairs_backup')) || [];
-        results = local.filter(item => {
-          const nameMatch = (item.customerName || item.customer_name || '').toLowerCase().includes(query.toLowerCase());
-          const idMatch = String(item.id).toLowerCase().includes(query.toLowerCase());
-          const modelMatch = (item.makeModel || item.make_model || '').toLowerCase().includes(query.toLowerCase());
-          return nameMatch || idMatch || modelMatch;
-        });
-      }
-
-      if (results.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-10 space-y-2">
-            <p class="text-2xl">🔍</p>
-            <h2 class="text-base font-bold text-white">No Tickets Found</h2>
-            <p class="text-xs text-slate-400">No repair jobs matched "${escapeHtml(query)}". Please double check your name or contact the shop.</p>
-          </div>
-        `;
-        return;
-      }
-
-      if (results.length === 1) {
-        setupRealtimeLiveTrackerSafely(results[0].id);
-        renderSingleJobDetails(results[0], container);
-        return;
-      }
-
-      container.innerHTML = `
-        <div class="space-y-4">
-          <div class="border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-black text-white">Found ${results.length} Repairs for "${escapeHtml(query)}"</h3>
-            <p class="text-xs text-slate-400">Select your device repair ticket below to view live status:</p>
-          </div>
-
-          <div class="space-y-2.5">
-            ${results.map(r => `
-              <button onclick="selectSearchResult('${r.id}')" class="w-full text-left p-4 rounded-2xl dark-card hover:border-brand-500/60 hover:bg-slate-900 transition flex items-center justify-between gap-3 group active:scale-98 cursor-pointer">
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs font-black text-white">${escapeHtml(r.customer_name || r.customerName)}</span>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${r.status === 'completed' ? 'bg-emerald-950 text-emerald-400' : 'bg-brand-950 text-brand-400'} border border-slate-800 uppercase">${escapeHtml(r.status || 'pending')}</span>
-                  </div>
-                  <p class="text-xs font-extrabold text-brand-400 mt-0.5">${escapeHtml(r.make_model || r.makeModel)}</p>
-                  <p class="text-[10px] text-slate-500 font-semibold mt-1">Checked In: ${new Date(r.created_at || Date.now()).toLocaleDateString()}</p>
-                </div>
-
-                <div class="shrink-0 text-right">
-                  <span class="text-xs font-black text-white group-hover:text-brand-400 transition">View Progress →</span>
-                </div>
-              </button>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function selectSearchResult(id) {
-      loadTrackedJob(id);
-    }
-
-    function renderSingleJobDetails(job, container) {
-      let desc = String(job.description || '');
-      let meta = {};
-      const metaMatch = desc.match(/\[META:({.*?})\]/);
-      if (metaMatch) {
-        try { meta = JSON.parse(metaMatch[1]); } catch(e){}
-      }
-
-      const amount = Math.ceil(parseFloat(job.amount) || 0);
-      const reqDeposit = Math.ceil(parseFloat(job.deposit_amount !== undefined ? job.deposit_amount : (meta.deposit_amount || job.depositAmount || 0)));
-      const paymentStatus = job.payment_status || meta.payment_status || (job.deposit_paid ? 'deposit_paid' : 'unpaid');
-      
-      let paidSoFar = 0;
-      if (paymentStatus === 'paid_in_full') {
-        paidSoFar = amount;
-      } else if (paymentStatus === 'deposit_paid') {
-        paidSoFar = reqDeposit;
-      } else {
-        paidSoFar = 0;
-      }
-
-      const balance = Math.ceil(Math.max(0, amount - paidSoFar));
-      const step = job.status === 'completed' ? 4 : job.status === 'in-progress' ? 2 : 1;
-
-      container.innerHTML = `
-        <div class="text-center space-y-2 border-b border-slate-800 pb-6">
-          <h2 class="text-2xl font-black text-white">AJD's Wireless Repairs</h2>
-          <p class="text-xs text-slate-400 font-semibold">Live Device Repair Tracking Portal</p>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex items-center justify-between text-xs font-bold">
-            <span class="text-slate-400">Customer: <span class="text-white font-black">${escapeHtml(job.customer_name || job.customerName)}</span></span>
-            <span class="text-slate-400">Device: <span class="text-brand-400 font-black">${escapeHtml(job.make_model || job.makeModel)}</span></span>
-          </div>
-
-          <div class="relative py-4">
-            <div class="overflow-hidden h-3 text-xs flex rounded-full bg-slate-800">
-              <div style="width: ${step === 4 ? '100%' : step === 2 ? '60%' : '25%'}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-600 transition-all duration-700"></div>
-            </div>
-            <div class="grid grid-cols-3 text-[11px] font-bold text-center mt-3 text-slate-400">
-              <span class="${step >= 1 ? 'text-brand-400 font-black' : ''}">1. Checked In</span>
-              <span class="${step >= 2 ? 'text-brand-400 font-black' : ''}">2. Hardware Repair</span>
-              <span class="${step === 4 ? 'text-emerald-400 font-black' : ''}">3. Ready For Pickup</span>
-            </div>
-          </div>
-        </div>
-
+    function render(job) {
+      currentJob = job;
+      $('printReceiptButton').disabled = false;
+      const status = String(job.status || 'pending');
+      const pickup = status === 'completed' || status === 'picked_up';
+      const progress = status === 'picked_up' ? 100 : pickup ? 100 : status === 'in-progress' ? 60 : 25;
+      const total = Number(job.amount) || 0;
+      const quotedDeposit = Number(job.deposit_amount) || 0;
+      const paid = job.payment_status === 'paid_in_full' ? total : job.payment_status === 'deposit_paid' ? Math.min(total, quotedDeposit) : 0;
+      const balance = Math.max(0, total - paid);
+      const stage = status === 'picked_up' ? 'Picked Up' : pickup ? 'Ready for Pickup' : status === 'in-progress' ? 'In Repair' : 'Checked In';
+      $('trackerContent').innerHTML = `
+        <div class="text-center space-y-2 border-b border-slate-800 pb-6"><h2 class="text-xl font-black text-white">AJD's Wireless Repairs</h2><p class="text-xs text-slate-400">Device Repair Progress</p></div>
+        <div class="flex flex-wrap justify-between items-center gap-2 text-xs"><div><span class="text-slate-400">Ticket:</span> <b class="text-blue-400">${escapeHtml(job.id)}</b></div><div><span class="text-slate-400">Device:</span> <b>${escapeHtml(job.make_model || 'Device')}</b></div></div>
+        <div class="space-y-3"><p class="font-extrabold text-blue-400 text-sm">${escapeHtml(stage)}</p><div class="h-3 rounded-full bg-slate-800 overflow-hidden"><div class="h-full bg-blue-600 rounded-full" style="width:${progress}%"></div></div><div class="grid grid-cols-3 text-[11px] font-semibold text-slate-400 text-center"><span>Checked In</span><span>In Repair</span><span>${status === 'picked_up' ? 'Picked Up' : 'Ready for Pickup'}</span></div></div>
         <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
-          <div class="flex justify-between font-semibold text-slate-300"><span>Full Repair Charge:</span><span class="font-black text-white text-sm">$${amount}</span></div>
-          <div class="flex justify-between text-indigo-400 font-semibold"><span>Deposit Required / Quoted:</span><span>$${reqDeposit}</span></div>
-          <div class="flex justify-between text-emerald-400 font-semibold"><span>Deposit Collected:</span><span>-$${paidSoFar}</span></div>
-          <div class="flex justify-between text-sm font-black text-rose-400 pt-2 border-t border-slate-800"><span>Balance Due at Pickup:</span><span>$${balance}</span></div>
+          <div class="flex justify-between"><span>Total Repair Charge</span><b>${dollars(total)}</b></div>
+          <div class="flex justify-between"><span>Required Deposit</span><span>${dollars(quotedDeposit)}</span></div>
+          <div class="flex justify-between text-emerald-400"><span>Paid to Date</span><span>${dollars(paid)}</span></div>
+          <div class="flex justify-between border-t border-slate-800 pt-2 font-black text-rose-400"><span>Balance Due</span><span>${dollars(balance)}</span></div>
         </div>
-
-        <div class="bg-brand-950/30 p-4 rounded-2xl border border-brand-900/50 space-y-1.5">
-          <p class="text-[10px] font-black text-brand-400 uppercase tracking-wider">💳 Payment Handles & Pickup Info</p>
-          <p class="text-xs text-slate-200 font-medium leading-relaxed">${escapeHtml(job.payment_info || meta.payment_info || job.paymentInfo || 'Zelle / Apple Pay: 786-970-7779 | Cash accepted at pickup')}</p>
-        </div>
-      `;
+        <p class="text-[11px] text-slate-400">For service questions or payment arrangements, contact the shop using the number in the footer.</p>`;
     }
-
-    function isWebSocketAllowed() {
-      try {
-        if (!('WebSocket' in window)) return false;
-        const testWs = new WebSocket('wss://vxpufrahrnwmtgltjstd.supabase.co/realtime/v1/websocket');
-        testWs.close();
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    function setupRealtimeLiveTrackerSafely(jobId) {
-      if (!supabaseClient) return;
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId);
-      if (!isUuid) return;
-
-      if (!isWebSocketAllowed()) {
-        startTrackPollingFallback();
+    async function loadTrackedJob(silent = false) {
+      if (loading) return;
+      const ticket = $('trackerSearchInput').value.trim();
+      const contact = $('trackerContactInput').value.trim();
+      if (!ticket || !contact) {
+        if (!silent) showMessage('Verification needed', 'Please enter your ticket number and full phone number or email address.');
         return;
       }
-
-      try {
-        if (realtimeChannel) {
-          try { realtimeChannel.unsubscribe(); } catch(e){}
-        }
-
-        realtimeChannel = supabaseClient
-          .channel('public:repairs_track_' + jobId)
-          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'repairs', filter: `id=eq.${jobId}` }, () => {
-            if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
-          });
-
-        realtimeChannel.subscribe((status, err) => {
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
-            startTrackPollingFallback();
-          }
-        });
-      } catch (e) {
-        startTrackPollingFallback();
+      if (!supabaseClient) {
+        if (!silent) showMessage('Connection unavailable', 'Please check your internet connection and try again.');
+        return;
       }
+      loading = true;
+      try {
+        const {data, error} = await supabaseClient.rpc('ajd_public_track_repair', {p_ticket: ticket, p_contact: contact});
+        if (error) throw error;
+        if (!data) {
+          if (!silent) showMessage('Repair not found', 'We could not verify this ticket and contact combination. Check the details or contact the shop.');
+          return;
+        }
+        render(data);
+      } catch (err) {
+        if (!silent) showMessage('Tracking temporarily unavailable', 'The secure tracking database may not be configured yet. Please try again or call the shop.');
+        console.warn('AJD secure tracker:', err);
+      } finally { loading = false; }
     }
-
-    function startTrackPollingFallback() {
-      if (trackPollingTimer) return;
-      trackPollingTimer = setInterval(() => {
-        if (currentLoadedJobId) loadTrackedJob(currentLoadedJobId);
-      }, 10000);
+    function performCustomerSearch() {
+      clearInterval(pollTimer);
+      void loadTrackedJob();
+      pollTimer = setInterval(() => { if (!document.hidden && currentJob) void loadTrackedJob(true); }, 30000);
     }
-
-    window.onload = () => loadTrackedJob();
+    async function refreshContact() {
+      const setContact = (phone, email) => {
+        if (phone) {
+          document.querySelectorAll('[data-shop-phone]').forEach(el => el.textContent=phone);
+          document.querySelectorAll('[data-shop-tel]').forEach(el => el.href='tel:'+phone.replace(/[^\d+]/g,''));
+        }
+        if (email) {
+          document.querySelectorAll('[data-shop-email]').forEach(el => el.textContent=email);
+          document.querySelectorAll('[data-shop-mailto]').forEach(el => el.href='mailto:'+email);
+          document.querySelectorAll('[data-shop-email-container]').forEach(el => el.hidden=false);
+        } else document.querySelectorAll('[data-shop-email-container]').forEach(el => el.hidden=true);
+      };
+      try {
+        const localPhone=localStorage.getItem('ajd_shop_phone');
+        const localEmail=localStorage.getItem('ajd_shop_email');
+        setContact(localPhone, localEmail);
+      } catch {}
+      if (!supabaseClient) return;
+      try {
+        const {data,error}=await supabaseClient.from('shop_settings').select('phone,email').eq('id','business').maybeSingle();
+        if (error) throw error;
+        if (data) setContact(data.phone, data.email);
+      } catch(err) { console.warn('AJD contact sync:',err); }
+    }
+    $('footerYear').textContent = new Date().getFullYear();
+    $('trackerSearchInput').value = new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('track') || '';
+    showMessage('Track Your Device Repair', 'Enter your ticket number and verified phone or email above to check your repair progress.');
+    void refreshContact();
+    window.addEventListener('focus', () => void refreshContact());
+    window.addEventListener('storage', e => {if (e.key === 'ajd_shop_phone' || e.key === 'ajd_shop_email') void refreshContact();});
+    document.addEventListener('visibilitychange', () => {if (!document.hidden) {void refreshContact(); if (currentJob) void loadTrackedJob(true);}});
   </script>
 </body>
 </html>
