@@ -6,7 +6,7 @@
 <style>*{-webkit-tap-highlight-color:transparent}body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden}.dark-card{background:#fff;border:1px solid #e2e8f0}.dark .dark-card{background:#0f172a;border-color:#1e293b}.blue-glow{box-shadow:0 0 20px -5px rgba(37,99,235,.35)}.field{width:100%;padding:9px 12px;font-size:12px;border-radius:12px;background:#f8fafc;border:1px solid #cbd5e1;color:#0f172a;outline:none}.dark .field{background:#020617;border-color:#1e293b;color:white}.lbl{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:#475569}.dark .lbl{color:#cbd5e1}.btn{border-radius:12px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}.pct{border:1px solid #47556955;border-radius:9px;padding:5px 8px;font-size:11px;font-weight:800;background:#e2e8f0;color:#1e293b}.dark .pct{background:#1e293b;color:#e2e8f0}.pct.active{background:#2563eb!important;color:white!important;border-color:#2563eb}.thermal-paper{font-family:'Courier New',monospace;background:#fff!important;color:#000!important;width:100%;max-width:320px;margin:auto;padding:16px;border:1px dashed #ccc}.thermal-paper *{color:#000!important}.modal{position:fixed;inset:0;z-index:100;background:#000b;display:flex;align-items:center;justify-content:center;padding:12px}.modal.hidden{display:none}.modal-inner{width:100%;max-width:540px;max-height:92vh;overflow-y:auto}.mini{font-size:11px;color:#64748b}.dark .mini{color:#94a3b8}@media print{@page{margin:5mm;size:80mm auto}body *{visibility:hidden!important}#invoiceModal,#invoiceModal *{visibility:visible!important}#invoiceModal{position:absolute!important;inset:0!important;width:100%!important;height:auto!important;background:white!important;padding:0!important}#invoiceModal .modal-inner{background:white!important;border:0!important;box-shadow:none!important;max-height:none!important;padding:0!important}#invoicePrintSheet{border:0!important;width:72mm!important;max-width:72mm!important;padding:0!important}.no-print{display:none!important}}</style></head>
 <body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased">
 <header class="sticky top-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 py-2.5"><div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3"><div class="flex items-center justify-between w-full sm:w-auto"><div class="flex items-center gap-3"><div class="bg-blue-600/10 text-blue-600 dark:text-blue-400 p-2 rounded-2xl border border-blue-500/30 shadow-md w-10 h-10"><svg class="w-7 h-7" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="42" stroke-width="6"/><path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h1 class="text-base sm:text-lg font-black tracking-tight flex items-center gap-2">AJD's Wireless Repairs <span id="cloudStatusIndicator" class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500" title="Local data available; cloud unverified"></span></h1><p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Repair Tracker & Store Manager</p></div></div><a data-shop-tel href="tel:7869707779" class="sm:hidden text-xs font-black text-blue-600 dark:text-blue-400">📞 <span data-shop-phone>(786) 970-7779</span></a></div>
-<div class="flex flex-wrap items-center justify-center gap-2"><nav class="flex items-center gap-1 bg-slate-200 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300 dark:border-slate-800 text-xs font-extrabold"><button id="tabBtnRepairs" class="btn bg-blue-600 text-white" onclick="switchTab('repairs')">💻 Repairs</button><button id="tabBtnHistory" class="btn" onclick="switchTab('history')">🗂️ Repair History</button><button id="tabBtnInvoices" class="btn" onclick="switchTab('invoices')">📄 Receipts</button><button id="tabBtnStore" class="btn" onclick="switchTab('store')">📥 Requests <span id="storeBadge"></span></button><button id="tabBtnInventory" class="btn" onclick="switchTab('inventory')">🛍️ Store Management</button></nav><div class="relative"><button class="btn dark-card" onclick="toggleDropdown('navLinksDropdownMenu')">🔗 Links</button><div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-64 dark-card rounded-2xl shadow-2xl z-50 p-3 text-xs space-y-2"><div id="navLinksList" class="space-y-2 max-h-52 overflow-y-auto"></div><div class="border-t border-slate-700/20 pt-2"><button type="button" class="btn bg-blue-600 text-white w-full" onclick="openLinksManager()">⚙️ Manage Links</button></div></div></div><div class="relative"><button class="btn dark-card text-blue-500" onclick="toggleDropdown('settingsDropdownMenu')">⚙️ Settings</button><div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-72 dark-card rounded-2xl shadow-2xl z-50 p-4 space-y-3 max-h-[82vh] overflow-y-auto"><div class="border-b border-slate-700/20 pb-3 space-y-2"><h3 class="font-black text-sm">☁️ Cloud Admin Access</h3><p id="cloudAuthStatus" class="mini">Checking Supabase sign-in…</p><form id="cloudLoginForm" class="space-y-2" onsubmit="signInAdmin(event)"><input type="email" id="cloudLoginEmail" class="field" placeholder="Admin email" autocomplete="username" required><input type="password" id="cloudLoginPassword" class="field" placeholder="Password" autocomplete="current-password" required><button class="btn bg-blue-600 text-white w-full">Sign In to Cloud</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(true)">Create a Cloud Account</button></form><form id="cloudSignupForm" class="space-y-2 hidden" onsubmit="createCloudAccount(event)"><p class="mini">Create an account with an email and password. For instant signup without an email confirmation link, turn off <strong>Confirm Email</strong> in Supabase → Authentication → Sign In / Providers → Email. New accounts still require separate administrator approval to access private repair data.</p><label for="cloudSignupEmail" class="lbl">Email Address</label><input type="email" id="cloudSignupEmail" class="field" autocomplete="email" placeholder="you@example.com" required maxlength="254"><label for="cloudSignupPassword" class="lbl">Password (8+ characters)</label><input type="password" id="cloudSignupPassword" class="field" autocomplete="new-password" minlength="8" required><label for="cloudSignupConfirm" class="lbl">Confirm Password</label><input type="password" id="cloudSignupConfirm" class="field" autocomplete="new-password" minlength="8" required><button type="submit" id="cloudSignupSubmit" class="btn bg-blue-600 text-white w-full">Create Account</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(false)">Back to Sign In</button></form><p id="cloudSignupStatus" class="mini" role="status" aria-live="polite"></p><div id="cloudAccountIdBox" class="hidden bg-slate-100 dark:bg-slate-950 rounded-xl p-2 space-y-1"><p class="mini font-bold">Your Account ID (for admin approval)</p><p id="cloudAccountId" class="break-all text-[10px] font-mono"></p><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="copyCloudAccountId()">Copy Account ID</button></div><button id="cloudLogoutButton" class="btn bg-slate-200 dark:bg-slate-800 w-full hidden" onclick="signOutAdmin()">Sign Out</button></div><div><label class="lbl">Shop Contact Phone</label><input class="field" id="shopPhoneInput" oninput="updateShopPhoneSetting(this.value)" onblur="flushShopPhoneSetting()"><p id="shopPhoneCloudStatus" class="mini mt-1" role="status">Changes save locally; admin sign-in is required for cloud updates.</p></div><div><label class="lbl" for="shopEmailInput">Business Contact Email</label><input class="field" id="shopEmailInput" type="email" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="contact@yourbusiness.com" oninput="updateShopEmailSetting(this.value)" onblur="flushShopEmailSetting()"><p id="shopEmailCloudStatus" class="mini mt-1" role="status">Changes are saved locally until an authorized admin publishes them to Supabase.</p></div><div><label class="lbl">Theme</label><select class="field" id="themeSelectSetting" onchange="setThemeMode(this.value)"><option value="dark">🌙 Dark</option><option value="light">☀️ Light</option><option value="system">📱 System</option></select></div><div class="border-t border-slate-700/30 pt-3"><h3 class="font-black text-sm mb-2">Labor Price Manager</h3><div id="laborPresetList" class="space-y-1 max-h-44 overflow-auto"></div><div class="grid grid-cols-3 gap-1 mt-2"><input class="field col-span-2" id="newLaborName" placeholder="Repair type"><input class="field" id="newLaborPrice" type="number" min="0" step=".01" placeholder="$"></div><button class="btn bg-blue-600 text-white w-full mt-2" onclick="addLaborPreset()">+ Add / Update Labor</button></div><button class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="exportBackup()">⬇ Export JSON Backup</button><label class="btn bg-slate-200 dark:bg-slate-800 block text-center">⬆ Import JSON Backup<input type="file" accept=".json,application/json" class="hidden" onchange="importBackup(event)"></label></div></div></div></div></header>
+<div class="flex flex-wrap items-center justify-center gap-2"><nav class="flex items-center gap-1 bg-slate-200 dark:bg-slate-900 p-1 rounded-2xl border border-slate-300 dark:border-slate-800 text-xs font-extrabold"><button id="tabBtnRepairs" class="btn bg-blue-600 text-white" onclick="switchTab('repairs')">💻 Repairs</button><button id="tabBtnHistory" class="btn" onclick="switchTab('history')">🗂️ Repair History</button><button id="tabBtnInvoices" class="btn" onclick="switchTab('invoices')">📄 Receipts</button><button id="tabBtnStore" class="btn" onclick="switchTab('store')">📥 Requests <span id="storeBadge"></span></button><button id="tabBtnInventory" class="btn" onclick="switchTab('inventory')">🛍️ Store Management</button></nav><div class="relative"><button class="btn dark-card" onclick="toggleDropdown('navLinksDropdownMenu')">🔗 Links</button><div id="navLinksDropdownMenu" class="hidden absolute right-0 mt-2 w-64 dark-card rounded-2xl shadow-2xl z-50 p-3 text-xs space-y-2"><div id="navLinksList" class="space-y-2 max-h-52 overflow-y-auto"></div><div class="border-t border-slate-700/20 pt-2"><button type="button" class="btn bg-blue-600 text-white w-full" onclick="openLinksManager()">⚙️ Manage Links</button></div></div></div><div class="relative"><button class="btn dark-card text-blue-500" onclick="toggleDropdown('settingsDropdownMenu')">⚙️ Settings</button><div id="settingsDropdownMenu" class="hidden absolute right-0 mt-2 w-72 dark-card rounded-2xl shadow-2xl z-50 p-4 space-y-3 max-h-[82vh] overflow-y-auto"><div class="border-b border-slate-700/20 pb-3 space-y-2"><h3 class="font-black text-sm">☁️ Cloud Admin Access</h3><p id="cloudAuthStatus" class="mini">Checking Supabase sign-in…</p><form id="cloudLoginForm" class="space-y-2" onsubmit="signInAdmin(event)"><input type="email" id="cloudLoginEmail" class="field" placeholder="Admin email" autocomplete="username" required><input type="password" id="cloudLoginPassword" class="field" placeholder="Password" autocomplete="current-password" required><button class="btn bg-blue-600 text-white w-full">Sign In to Cloud</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(true)">Create a Cloud Account</button><button type="button" class="btn text-blue-600 dark:text-blue-400 w-full" onclick="openAccountSettings('forgot')">Forgot your password?</button></form><form id="cloudSignupForm" class="space-y-2 hidden" onsubmit="createCloudAccount(event)"><p class="mini">Create an account with an email and password. For instant signup without an email confirmation link, turn off <strong>Confirm Email</strong> in Supabase → Authentication → Sign In / Providers → Email. New accounts still require separate administrator approval to access private repair data.</p><label for="cloudSignupEmail" class="lbl">Email Address</label><input type="email" id="cloudSignupEmail" class="field" autocomplete="email" placeholder="you@example.com" required maxlength="254"><label for="cloudSignupPassword" class="lbl">Password (8+ characters)</label><input type="password" id="cloudSignupPassword" class="field" autocomplete="new-password" minlength="8" required><label for="cloudSignupConfirm" class="lbl">Confirm Password</label><input type="password" id="cloudSignupConfirm" class="field" autocomplete="new-password" minlength="8" required><button type="submit" id="cloudSignupSubmit" class="btn bg-blue-600 text-white w-full">Create Account</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="toggleCloudSignup(false)">Back to Sign In</button></form><p id="cloudSignupStatus" class="mini" role="status" aria-live="polite"></p><div id="cloudAccountIdBox" class="hidden bg-slate-100 dark:bg-slate-950 rounded-xl p-2 space-y-1"><p class="mini font-bold">Your Account ID (for admin approval)</p><p id="cloudAccountId" class="break-all text-[10px] font-mono"></p><button type="button" class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="copyCloudAccountId()">Copy Account ID</button></div><button id="openAccountSettingsButton" type="button" class="btn bg-blue-600/15 text-blue-600 dark:text-blue-400 border border-blue-500/20 w-full hidden" onclick="openAccountSettings()">👤 Account Settings · Email & Password</button><button id="cloudLogoutButton" class="btn bg-slate-200 dark:bg-slate-800 w-full hidden" onclick="signOutAdmin()">Sign Out</button></div><div><label class="lbl">Shop Contact Phone</label><input class="field" id="shopPhoneInput" oninput="updateShopPhoneSetting(this.value)" onblur="flushShopPhoneSetting()"><p id="shopPhoneCloudStatus" class="mini mt-1" role="status">Changes save locally; admin sign-in is required for cloud updates.</p></div><div><label class="lbl" for="shopEmailInput">Business Contact Email</label><input class="field" id="shopEmailInput" type="email" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="contact@yourbusiness.com" oninput="updateShopEmailSetting(this.value)" onblur="flushShopEmailSetting()"><p id="shopEmailCloudStatus" class="mini mt-1" role="status">Changes are saved locally until an authorized admin publishes them to Supabase.</p></div><div><label class="lbl">Theme</label><select class="field" id="themeSelectSetting" onchange="setThemeMode(this.value)"><option value="dark">🌙 Dark</option><option value="light">☀️ Light</option><option value="system">📱 System</option></select></div><div class="border-t border-slate-700/30 pt-3"><h3 class="font-black text-sm mb-2">Labor Price Manager</h3><div id="laborPresetList" class="space-y-1 max-h-44 overflow-auto"></div><div class="grid grid-cols-3 gap-1 mt-2"><input class="field col-span-2" id="newLaborName" placeholder="Repair type"><input class="field" id="newLaborPrice" type="number" min="0" step=".01" placeholder="$"></div><button class="btn bg-blue-600 text-white w-full mt-2" onclick="addLaborPreset()">+ Add / Update Labor</button></div><button class="btn bg-slate-200 dark:bg-slate-800 w-full" onclick="exportBackup()">⬇ Export JSON Backup</button><label class="btn bg-slate-200 dark:bg-slate-800 block text-center">⬆ Import JSON Backup<input type="file" accept=".json,application/json" class="hidden" onchange="importBackup(event)"></label></div></div></div></div></header>
 <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-5"><div class="dark-card rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3"><div><p class="font-black text-xs">☁️ Supabase Synchronization</p><p id="cloudSyncMessage" class="mini">Checking cloud permissions. Local backups remain available.</p><p id="cloudPendingMessage" class="text-xs font-bold text-amber-500"></p></div><div class="flex gap-2 flex-wrap"><button class="btn bg-blue-600 text-white" onclick="syncAllCloud()">↻ Sync Now</button><button class="btn bg-slate-200 dark:bg-slate-800" onclick="openCloudSettings()">Cloud Login</button><button id="cloudRestoreButton" class="btn bg-amber-600 text-white hidden" onclick="restoreLocalOnlyRepairs()">⬆ Upload Local-Only Tickets</button></div></div><div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Total Revenue</span><p id="statTotalRev" class="text-xl font-black text-emerald-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Deposits Collected</span><p id="statDeposits" class="text-xl font-black text-blue-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Unpaid Balance</span><p id="statUnpaid" class="text-xl font-black text-rose-500">$0</p></div><div class="dark-card p-3.5 rounded-2xl"><span class="mini font-black uppercase">Active Repairs</span><p id="statActiveJobs" class="text-xl font-black text-blue-500">0</p></div></div>
 <section id="viewRepairs"><div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start"><div class="lg:col-span-5 dark-card p-4 sm:p-5 rounded-3xl space-y-4 blue-glow lg:sticky lg:top-20"><div class="flex justify-between border-b border-slate-700/20 pb-3"><h2 class="text-base font-black">📝 Check-In New Repair</h2><span class="text-[10px] font-black text-blue-500">INTAKE</span></div><form id="intakeForm" class="space-y-3" onsubmit="handleCreateRepair(event)"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Customer Name *</label><input id="intakeName" class="field" required placeholder="Kayla Smith"></div><div><label class="lbl">Phone Number (Optional)</label><input id="intakePhone" class="field" type="tel" placeholder="(305) 555-0147"></div></div><div><label class="lbl">Device Make, Model & Model Number *</label><input id="intakeDevice" class="field" required placeholder="iPhone 14 Pro Max"></div><div><label class="lbl">Issue Description *</label><input id="intakeIssue" class="field" required placeholder="Cracked OLED display"></div><div><label class="lbl">Repair Type / Automatic Labor</label><select id="intakeRepairType" class="field" onchange="applyLaborPreset('intake')"></select></div><div><label class="lbl">Parts (internal only)</label><div id="intakePartsList" class="space-y-2"></div><button type="button" class="btn bg-slate-200 dark:bg-slate-800 mt-2" onclick="addPartRow('intake')">+ Add Part</button></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Labor Charge ($) — editable</label><input id="intakeLaborCharge" class="field" type="number" min="0" step=".01" value="0" oninput="recalculate('intake')" required></div><div><label class="lbl text-blue-500">Calculated Customer Total ($)</label><input id="intakeTotalAmount" class="field font-black text-blue-500" readonly value="0.00"></div></div><div><label class="lbl">Discount — select percentage or enter amount</label><div id="intakeDiscountButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="intakeDiscount" class="field" type="number" min="0" step=".01" value="0" oninput="setManualPercent('intake','Discount');recalculate('intake')"><p class="mini mt-1">Discount applies before the final total rounds up to a whole dollar.</p></div><div><label class="lbl">Required Deposit — percentage or custom amount</label><div id="intakeDepositButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="intakeDeposit" class="field" type="number" min="0" step=".01" value="0" oninput="setManualPercent('intake','Deposit');recalculate('intake')"><p class="mini mt-1">A required deposit is not considered paid until marked collected.</p></div><div><label class="lbl">Payment Status</label><select id="intakePaymentStatus" class="field"><option value="unpaid">🔴 Unpaid</option><option value="deposit_paid">🟡 Deposit Paid</option><option value="paid_in_full">🟢 Paid in Full</option></select></div><button class="btn w-full py-3 bg-blue-600 text-white">➕ Register Repair Ticket</button></form></div>
 <div class="lg:col-span-7 space-y-3"><div class="dark-card p-3 rounded-2xl flex flex-col sm:flex-row gap-2"><input id="repairSearchInput" class="field flex-1" placeholder="Search customer, ticket ID, device..." oninput="renderRepairs()"><select id="repairStatusFilter" class="field sm:w-auto" onchange="renderRepairs()"><option value="all">All Repair Tickets</option><option value="pending">⏳ Checked In</option><option value="in-progress">⚙️ In Repair</option><option value="completed">✅ Ready Pickup</option></select></div><div id="repairsContainer" class="space-y-3"><div class="dark-card p-8 rounded-3xl text-center">Loading repair history...</div></div></div></div></section>
@@ -15,13 +15,85 @@
 <section id="viewStore" class="hidden space-y-4"><div class="dark-card p-5 rounded-3xl"><h2 class="font-black">📥 Customer Ticket Requests Inbox</h2><p class="mini">Review customer submissions from request.html, approve or decline.</p></div><div class="dark-card p-5 rounded-3xl"><div class="flex justify-between"><h3 class="font-black">Incoming Ticket Requests</h3><span id="requestsCountBadge" class="mini">0 Pending</span></div><div id="purchaseRequestsContainer" class="space-y-3 mt-3"></div></div><div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex items-center justify-between gap-2"><div><h3 class="font-black">📨 Online Repair Requests</h3><p class="mini">Requests submitted through request.html; approve and bring details into Check-In.</p></div><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchOnlineRepairRequests()">↻ Refresh</button></div><p id="onlineRepairRequestsStatus" class="mini">Sign in to load online repair requests.</p><div id="onlineRepairRequestsList" class="space-y-3"></div></div></section>
 <section id="viewInventory" class="hidden space-y-4">
 <div class="dark-card p-5 rounded-3xl space-y-2"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="font-black text-lg">🛍️ Store Management</h2><a href="store.html" target="_blank" class="btn bg-blue-600 text-white">↗ Customer Storefront</a></div><p class="mini">Manage the shared product catalog and purchase requests. Cloud edits require an authenticated admin account and Supabase policies; until then, the editor will display a permission error rather than falsely claim to save.</p><p id="inventoryCloudStatus" class="text-xs font-bold text-amber-500">Checking cloud inventory…</p></div>
-<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start"><form id="productForm" class="dark-card rounded-3xl p-5 space-y-3 lg:col-span-2" onsubmit="saveStoreProduct(event)"><h3 class="font-black">➕ Add / Edit Store Item</h3><input type="hidden" id="productId"><label class="lbl">Item Name *</label><input class="field" id="productTitle" required maxlength="160" placeholder="iPhone 13 Pro 128GB"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Category</label><select class="field" id="productCategory"><option>Phones</option><option>Tablets</option><option>Laptops</option><option>Accessories</option><option>Parts</option><option>Other</option></select></div><div><label class="lbl">Price ($) *</label><input class="field" type="number" min="0" step="0.01" id="productPrice" required></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">SKU</label><input class="field" id="productSku" maxlength="80"></div><div><label class="lbl">Condition</label><input class="field" id="productCondition" placeholder="Pre-Owned Excellent" maxlength="100"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Stock Quantity</label><input class="field" id="productStock" type="number" min="0" step="1" value="1" required></div><div><label class="lbl">Visibility</label><select class="field" id="productStatus"><option value="available">Available</option><option value="out_of_stock">Out of stock</option><option value="hidden">Hidden</option></select></div></div><label class="lbl">Product Description</label><textarea class="field" id="productDescription" rows="3" maxlength="3000"></textarea><label class="lbl">Product Image URL</label><input class="field" type="url" id="productImageUrl" placeholder="https://..." oninput="previewProductImage()"><label class="lbl">Or upload a product image</label><input class="field" type="file" id="productImageFile" accept="image/jpeg,image/png,image/webp" onchange="previewProductImage()"><p class="mini">Uploads use the Supabase Storage bucket <b>product-images</b> and require admin access.</p><img id="productImagePreview" class="hidden h-32 w-full object-contain rounded-xl bg-slate-950" alt="Product preview"><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1" type="submit">💾 Save to Cloud</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetProductForm()">Clear</button></div></form><div class="lg:col-span-3 space-y-3"><div class="dark-card rounded-2xl p-3 flex gap-2"><input class="field flex-1" id="inventorySearch" placeholder="Search products / SKU" oninput="renderInventory()"><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchInventory()">↻ Refresh</button></div><div id="inventoryItems" class="space-y-3"></div></div></div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start"><form id="productForm" class="dark-card rounded-3xl p-5 space-y-3 lg:col-span-2" onsubmit="saveStoreProduct(event)"><h3 class="font-black">➕ Add / Edit Store Item</h3><input type="hidden" id="productId"><label class="lbl">Item Name *</label><input class="field" id="productTitle" required maxlength="160" placeholder="iPhone 13 Pro 128GB"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Category</label><select class="field" id="productCategory"><option>Phones</option><option>Tablets</option><option>Laptops</option><option>Accessories</option><option>Parts</option><option>Other</option></select></div><div><label class="lbl">Price ($) *</label><input class="field" type="number" min="0" step="0.01" id="productPrice" required></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">SKU</label><input class="field" id="productSku" maxlength="80"></div><div><label class="lbl">Condition</label><input class="field" id="productCondition" placeholder="Pre-Owned Excellent" maxlength="100"></div></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Stock Quantity</label><input class="field" id="productStock" type="number" min="0" step="1" value="1" required></div><div><label class="lbl">Visibility</label><select class="field" id="productStatus"><option value="available">Available</option><option value="out_of_stock">Out of stock</option><option value="hidden">Hidden</option></select></div></div><label class="lbl">Product Description</label><textarea class="field" id="productDescription" rows="3" maxlength="3000"></textarea><div class="space-y-2 border-t border-slate-700/20 pt-3">
+  <h4 class="font-black text-sm">📷 Product Photo</h4>
+  <label class="lbl" for="productImageUrl">Paste an image link (URL)</label>
+  <div class="flex flex-col sm:flex-row gap-2">
+    <input class="field flex-1 min-w-0" type="url" id="productImageUrl" placeholder="https://example.com/photo.jpg" inputmode="url" autocomplete="off" oninput="onProductImageUrlChanged()">
+    <button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="applyProductImageUrl()">🔎 Preview Link</button>
+  </div>
+  <p class="mini">Use a direct public HTTPS image link, or choose a photo from your device below.</p>
+  <input type="file" id="productImageFile" class="sr-only" accept="image/jpeg,image/png,image/webp" onchange="onProductImageFileChanged(event)" aria-describedby="productImageStatus">
+  <div class="flex flex-wrap gap-2">
+    <label for="productImageFile" class="btn inline-flex items-center bg-blue-600 text-white cursor-pointer select-none">📁 Choose Photo</label>
+    <button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="pasteProductImageFromClipboard()">📋 Paste Image</button>
+    <button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="removeProductImage()">✕ Remove Image</button>
+  </div>
+  <div id="productImagePasteZone" role="region" aria-label="Paste or drop a product image" tabindex="0" class="rounded-xl border-2 border-dashed border-blue-500/40 bg-blue-600/5 p-4 text-center text-xs text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" onpaste="handleProductImagePaste(event)" ondragover="event.preventDefault()" ondrop="handleProductImageDrop(event)">
+    🖼️ Drop a JPG, PNG, or WebP here, or click here and press <b>Ctrl+V / ⌘V</b> to paste a copied image or URL.
+  </div>
+  <p id="productImageStatus" class="mini" role="status" aria-live="polite">Choose a photo or paste a link. File images upload to Supabase when you save the product (5 MB maximum).</p>
+  <img id="productImagePreview" class="hidden h-44 w-full object-contain rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-700/20" alt="Selected product photo preview">
+  <p class="mini">Cloud photo uploads require an authorized account and the Supabase Storage bucket <b>product-images</b>. If uploading fails, the error appears above.</p>
+</div><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1" type="submit">💾 Save to Cloud</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetProductForm()">Clear</button></div></form><div class="lg:col-span-3 space-y-3"><div class="dark-card rounded-2xl p-3 flex gap-2"><input class="field flex-1" id="inventorySearch" placeholder="Search products / SKU" oninput="renderInventory()"><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchInventory()">↻ Refresh</button></div><div id="inventoryItems" class="space-y-3"></div></div></div>
 <div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex flex-wrap justify-between items-center gap-2"><h3 class="font-black">📦 Customer Purchase Requests</h3><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchStoreOrders()">↻ Refresh Requests</button></div><p class="mini">Approving a request reserves stock only if enough units remain. Declining or awaiting restock does not reserve stock.</p><div id="storeOrders" class="space-y-3"></div></div>
 </section></main>
 <footer class="max-w-7xl mx-auto px-4 pb-7 pt-3 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800"><span>© <span id="footerYear"></span> AJD's Wireless Repairs</span> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-tel href="tel:7869707779"><span data-shop-phone>(786) 970-7779</span></a><span data-shop-email-container hidden> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-mailto href="#"><span data-shop-email></span></a></span></footer>
 <div id="invoiceModal" class="modal hidden" onclick="handleBackdropClick(event,'invoiceModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-4"><div class="flex justify-between items-center no-print"><h3 class="font-black">🧾 Thermal Receipt Preview</h3><div class="flex gap-2"><button class="btn bg-blue-600 text-white" onclick="window.print()">🖨 Print / Save PDF</button><button class="btn" onclick="closeInvoiceModal()">✕</button></div></div><div id="invoicePrintSheet" class="thermal-paper space-y-3 text-center"></div></div></div>
 <div id="editRepairModal" class="modal hidden" onclick="handleBackdropClick(event,'editRepairModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-3"><div class="flex justify-between"><h3 class="font-black">✏️ Edit Repair Ticket <span id="editTicketBadge" class="text-blue-500"></span></h3><button onclick="closeEditModal()">✕</button></div><form id="editRepairForm" class="space-y-3" onsubmit="handleUpdateRepair(event)"><input type="hidden" id="editRepairId"><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Customer Name *</label><input id="editCustomerName" class="field" required></div><div><label class="lbl">Phone Number (Optional)</label><input id="editCustomerPhone" class="field"></div></div><div><label class="lbl">Device Make, Model & Number *</label><input id="editMakeModel" class="field" required></div><div><label class="lbl">Issue Description *</label><input id="editIssue" class="field" required></div><div><label class="lbl">Repair Type / Automatic Labor</label><select id="editRepairType" class="field" onchange="applyLaborPreset('edit')"></select></div><div><label class="lbl">Parts (internal only)</label><div id="editPartsList" class="space-y-2"></div><button type="button" class="btn bg-slate-200 dark:bg-slate-800 mt-2" onclick="addPartRow('edit')">+ Add Part</button></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Labor Charge ($) — editable</label><input id="editLaborCost" class="field" type="number" min="0" step=".01" oninput="recalculate('edit')"></div><div><label class="lbl">Calculated Customer Total ($)</label><input id="editTotalAmount" class="field font-black text-blue-500" readonly></div></div><div><label class="lbl">Discount</label><div id="editDiscountButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="editDiscount" class="field" type="number" min="0" step=".01" oninput="setManualPercent('edit','Discount');recalculate('edit')"></div><div><label class="lbl">Required Deposit</label><div id="editDepositButtons" class="flex flex-wrap gap-1 mb-2"></div><input id="editDepositAmount" class="field" type="number" min="0" step=".01" oninput="setManualPercent('edit','Deposit');recalculate('edit')"></div><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Payment Status</label><select id="editPaymentStatus" class="field" onchange="recalculate('edit')"><option value="unpaid">🔴 Unpaid</option><option value="deposit_paid">🟡 Deposit Paid</option><option value="paid_in_full">🟢 Paid in Full</option></select></div><div class="bg-slate-100 dark:bg-slate-900 p-3 rounded-xl"><span class="mini">PICKUP BALANCE</span><p id="editPickupBalanceDisplay" class="font-black text-rose-500">$0.00</p></div></div><button class="btn bg-blue-600 text-white w-full py-3">Save Ticket Changes</button></form></div></div>
 <div id="linksManagerModal" class="modal hidden" onclick="handleBackdropClick(event,'linksManagerModal')"><div class="modal-inner dark-card rounded-3xl p-5 shadow-2xl space-y-4"><div class="flex justify-between items-center"><div><h3 class="font-black">🔗 Links Manager</h3><p class="mini">Add, edit, or remove shortcuts in the Links dropdown.</p></div><button class="btn" onclick="closeLinksManager()">✕</button></div><div id="managedLinksList" class="space-y-2 max-h-64 overflow-y-auto"></div><form id="linkEditorForm" onsubmit="saveManagedLink(event)" class="space-y-2 border-t border-slate-700/20 pt-3"><input id="managedLinkId" type="hidden"><div class="grid grid-cols-3 gap-2"><div><label class="lbl">Emoji (optional)</label><input class="field" id="managedLinkIcon" placeholder="🔗" maxlength="8"></div><div class="col-span-2"><label class="lbl">Link Name *</label><input class="field" id="managedLinkLabel" required maxlength="100" placeholder="Customer Storefront"></div></div><div><label class="lbl">URL or page *</label><input class="field" id="managedLinkUrl" required maxlength="2048" placeholder="store.html or https://..."></div><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1">Save Link</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetLinkEditor()">Clear</button></div></form><p id="managedLinksSyncNote" class="mini"></p></div></div>
+
+<!-- Supabase Auth Account Settings: kept separate from the public business contact email. -->
+<div id="accountSettingsModal" class="modal hidden no-print" onclick="handleBackdropClick(event,'accountSettingsModal')" role="dialog" aria-modal="true" aria-labelledby="accountSettingsTitle">
+  <div class="modal-inner dark-card rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
+    <div class="flex items-start justify-between gap-2">
+      <div><h2 id="accountSettingsTitle" class="text-lg font-black">👤 Account Settings</h2><p class="mini">Manage the email and password used for cloud login.</p></div>
+      <button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="closeAccountSettings()" aria-label="Close account settings">✕</button>
+    </div>
+    <p id="accountIdentity" class="text-xs rounded-xl bg-slate-100 dark:bg-slate-950 p-3 font-bold break-words" role="status">Checking login…</p>
+    <p class="mini">Your <strong>login email</strong> is separate from the public <strong>Business Contact Email</strong> in Settings. Changing one does not change the other.</p>
+
+    <form id="accountEmailForm" onsubmit="updateCloudLoginEmail(event)" class="space-y-2 border-t border-slate-700/20 pt-4">
+      <h3 class="text-sm font-black">✉️ Change Login Email</h3>
+      <label class="lbl" for="accountNewEmail">New email address</label>
+      <input id="accountNewEmail" class="field" type="email" autocomplete="email" maxlength="254" autocapitalize="off" spellcheck="false" placeholder="your-new-email@example.com" required>
+      <button id="accountEmailSubmit" type="submit" class="btn bg-blue-600 text-white w-full">Save New Login Email</button>
+      <p id="accountEmailResult" class="mini" aria-live="polite" role="status"></p>
+    </form>
+
+    <form id="accountPasswordForm" onsubmit="changeCloudPassword(event)" class="space-y-2 border-t border-slate-700/20 pt-4">
+      <h3 class="text-sm font-black">🔐 Change Password</h3>
+      <label class="lbl" for="accountCurrentPassword">Current password</label>
+      <input id="accountCurrentPassword" class="field" type="password" autocomplete="current-password" required>
+      <label class="lbl" for="accountNewPassword">New password (at least 8 characters)</label>
+      <input id="accountNewPassword" class="field" type="password" autocomplete="new-password" minlength="8" required>
+      <label class="lbl" for="accountConfirmPassword">Confirm new password</label>
+      <input id="accountConfirmPassword" class="field" type="password" autocomplete="new-password" minlength="8" required>
+      <button id="accountPasswordSubmit" type="submit" class="btn bg-blue-600 text-white w-full">Update Password</button>
+      <p id="accountPasswordResult" class="mini" aria-live="polite" role="status"></p>
+    </form>
+
+    <form id="accountResetEmailForm" onsubmit="sendCloudPasswordReset(event)" class="space-y-2 border-t border-slate-700/20 pt-4">
+      <h3 class="text-sm font-black">📨 Forgot Password? Send Reset Link</h3>
+      <p class="mini">Supabase will email a reset link. A reset email is still required even if signup email confirmation is disabled.</p>
+      <label class="lbl" for="accountResetEmail">Account email</label>
+      <input id="accountResetEmail" class="field" type="email" autocomplete="email" maxlength="254" required placeholder="your@email.com">
+      <button id="accountResetSubmit" type="submit" class="btn bg-slate-200 dark:bg-slate-800 w-full">Send Password Reset Email</button>
+      <p id="accountResetResult" class="mini" aria-live="polite" role="status"></p>
+    </form>
+
+    <form id="accountRecoveryForm" onsubmit="completeCloudPasswordRecovery(event)" class="hidden space-y-2 border-t border-blue-500/30 rounded-2xl p-4">
+      <h3 class="text-sm font-black text-blue-500">🔑 Set Your New Password</h3>
+      <p class="mini">Your password-reset link was recognized. Enter a new password below to finish resetting it.</p>
+      <label class="lbl" for="accountRecoveryPassword">New password</label>
+      <input id="accountRecoveryPassword" class="field" type="password" autocomplete="new-password" minlength="8" required>
+      <label class="lbl" for="accountRecoveryConfirm">Confirm new password</label>
+      <input id="accountRecoveryConfirm" class="field" type="password" autocomplete="new-password" minlength="8" required>
+      <button id="accountRecoverySubmit" type="submit" class="btn bg-blue-600 text-white w-full">Save Reset Password</button>
+      <p id="accountRecoveryResult" class="mini" aria-live="polite" role="status"></p>
+    </form>
+  </div>
+</div>
 <div id="toastContainer" class="fixed bottom-5 right-5 z-[110] space-y-2 pointer-events-none"></div>
 <script>
 'use strict';
@@ -46,7 +118,14 @@ const percentage={intake:{Discount:null,Deposit:null},edit:{Discount:null,Deposi
 const PENDING_REPAIRS_KEY='ajd_pending_repairs_v3';
 let pendingRepairs=read(PENDING_REPAIRS_KEY,[]);
 if(!Array.isArray(pendingRepairs))pendingRepairs=[];
-function initSupabase(){if(!sb&&window.supabase?.createClient){try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){console.warn(e)}}return sb}
+function initSupabase(){if(!sb&&window.supabase?.createClient){try{
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  // PASSWORD_RECOVERY is emitted after Supabase consumes a valid recovery URL.
+  sb.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY')setTimeout(()=>openAccountSettings('recovery'),0);
+    if(event==='SIGNED_OUT'||event==='USER_UPDATED'||event==='SIGNED_IN')setTimeout(()=>renderCloudAccountIdentity(session?.user||null),0);
+  });
+}catch(e){console.warn(e)}}return sb}
 function setCloudMessage(msg,error=false){lastCloudError=error?msg:'';const el=$('cloudSyncMessage');if(el){el.textContent=msg;el.className='mini '+(error?'text-rose-500':'')}updateCloudUI()}
 function cloudIndicator(ok){cloudReady=ok;const el=$('cloudStatusIndicator');if(el){el.className='inline-block w-2.5 h-2.5 rounded-full '+(ok?'bg-emerald-500':'bg-amber-500');el.title=ok?'Authorized cloud read verified':'Cloud save unverified — local backup available'}updateCloudUI()}
 function updateCloudUI(){const el=$('cloudPendingMessage');if(el){el.textContent=pendingRepairs.length?`${pendingRepairs.length} repair change(s) waiting for cloud sync.`:'No queued repair changes.';el.className='text-xs font-bold '+(pendingRepairs.length?'text-amber-500':'text-emerald-500')}$('cloudRestoreButton')?.classList.toggle('hidden',!isCloudAdmin||!localOnlyRepairIds.length);if(localStorage.getItem(SHOP_PHONE_PENDING_KEY)){const msg=$('cloudPendingMessage');if(msg)msg.textContent+=' Shop phone change pending cloud sync.'}if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null){const msg=$('cloudPendingMessage');if(msg)msg.textContent+=' Business email change pending cloud sync.'}const note=$('managedLinksSyncNote');if(note)note.textContent=isCloudAdmin?'Changes sync through your admin account; unsent edits remain on this device.':'Links save in this browser until you sign in with an authorized Supabase admin account.'}
@@ -58,8 +137,8 @@ repairs=repairs.map(norm);
 function shortId(){const chars='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';let id;do{const bytes=new Uint8Array(4);crypto.getRandomValues(bytes);id='AJ'+Array.from(bytes,b=>chars[b%chars.length]).join('')}while(repairs.some(x=>x.id===id));return id}
 function cloudPayload(job){const keys=['id','customer_name','customer_phone','make_model','issue','part_note','part_cost','labor_cost','amount','discount','deposit_amount','payment_status','payment_info','status','supplier_links','created_at','picked_up_at','repair_type','parts'];return Object.fromEntries(keys.filter(k=>job[k]!==undefined).map(k=>[k,job[k]]))}
 async function saveJob(job){job=norm(job);const i=repairs.findIndex(x=>x.id===job.id),isNew=i<0;if(isNew)repairs.unshift(job);else repairs[i]=job;saveLocal();queueRepair({id:job.id,kind:isNew?'insert':'update',job});renderRepairs();renderHistory();if(isCloudAdmin)await syncPendingRepairs();else toast('Saved locally; sign in to sync this repair to Supabase')}
-async function refreshCloudAccess(){const client=initSupabase();if(!client){setCloudMessage('Supabase library could not load. Check your internet connection and reload.',true);cloudIndicator(false);return}try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;const email=session?.user?.email||'';if(!session){isCloudAdmin=false;$('cloudAuthStatus').textContent='Not signed in. Cloud writing is disabled.';if($('cloudSignupForm').classList.contains('hidden'))$('cloudLoginForm').classList.remove('hidden');$('cloudLogoutButton').classList.add('hidden');$('cloudAccountIdBox').classList.add('hidden');setCloudMessage('Not signed in: repairs are saved to this browser only. Use Cloud Login to enable protected synchronization.',true);cloudIndicator(false);renderInventoryIfNeeded();return}
-const result=await client.rpc('ajd_is_admin');if(result.error)throw result.error;isCloudAdmin=result.data===true;$('cloudAuthStatus').textContent=isCloudAdmin?'Signed in as '+email+' (authorized admin)':'Signed in as '+email+' — account is not yet listed in ajd_admin_users.';$('cloudLoginForm').classList.add('hidden');$('cloudSignupForm').classList.add('hidden');$('cloudLogoutButton').classList.remove('hidden');$('cloudAccountId').textContent=session.user.id;$('cloudAccountIdBox').classList.toggle('hidden',isCloudAdmin);if(!isCloudAdmin){setCloudMessage('Access denied: ask the project owner to add this Auth user ID to ajd_admin_users.',true);cloudIndicator(false);return}setCloudMessage('Admin session verified. Checking repairs, links, and inventory…');await Promise.all([fetchCloud(),fetchRequests(),fetchOnlineRepairRequests(),fetchLinksCloud(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();if(pendingRepairs.length===0&&managedLinksPending.length===0&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&cloudReady&&!lastCloudError)setCloudMessage('Authorized Supabase read verified. No repair or link changes are waiting to upload.');}
+async function refreshCloudAccess(){const client=initSupabase();if(!client){setCloudMessage('Supabase library could not load. Check your internet connection and reload.',true);cloudIndicator(false);return}try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;const email=session?.user?.email||'';if(!session){isCloudAdmin=false;$('cloudAuthStatus').textContent='Not signed in. Cloud writing is disabled.';if($('cloudSignupForm').classList.contains('hidden'))$('cloudLoginForm').classList.remove('hidden');$('cloudLogoutButton').classList.add('hidden');$('cloudAccountIdBox').classList.add('hidden');$('openAccountSettingsButton').classList.add('hidden');renderCloudAccountIdentity(null);setCloudMessage('Not signed in: repairs are saved to this browser only. Use Cloud Login to enable protected synchronization.',true);cloudIndicator(false);renderInventoryIfNeeded();return}
+const result=await client.rpc('ajd_is_admin');if(result.error)throw result.error;isCloudAdmin=result.data===true;$('cloudAuthStatus').textContent=isCloudAdmin?'Signed in as '+email+' (authorized admin)':'Signed in as '+email+' — account is not yet listed in ajd_admin_users.';$('cloudLoginForm').classList.add('hidden');$('cloudSignupForm').classList.add('hidden');$('cloudLogoutButton').classList.remove('hidden');$('openAccountSettingsButton').classList.remove('hidden');renderCloudAccountIdentity(session.user);$('cloudAccountId').textContent=session.user.id;$('cloudAccountIdBox').classList.toggle('hidden',isCloudAdmin);if(!isCloudAdmin){setCloudMessage('Access denied: ask the project owner to add this Auth user ID to ajd_admin_users.',true);cloudIndicator(false);return}setCloudMessage('Admin session verified. Checking repairs, links, and inventory…');await Promise.all([fetchCloud(),fetchRequests(),fetchOnlineRepairRequests(),fetchLinksCloud(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();if(pendingRepairs.length===0&&managedLinksPending.length===0&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&cloudReady&&!lastCloudError)setCloudMessage('Authorized Supabase read verified. No repair or link changes are waiting to upload.');}
 catch(e){isCloudAdmin=false;cloudIndicator(false);setCloudMessage('Supabase connection/authorization error: '+e.message,true);$('cloudAuthStatus').textContent=e.message;console.warn('Supabase auth/connect failure',e)}finally{updateCloudUI()}}
 function renderInventoryIfNeeded(){invStatus('Sign in as an admin to load and edit full inventory.');$('storeOrders').innerHTML='<p class="mini">Sign in as an admin to see customer requests.</p>'}
 async function signInAdmin(e){e.preventDefault();if(!initSupabase())return toast('Supabase library unavailable');const email=$('cloudLoginEmail').value.trim(),password=$('cloudLoginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('cloudLoginPassword').value='';if(error){setCloudMessage('Sign-in failed: '+error.message,true);toast('Cloud sign-in failed');return}await refreshCloudAccess();if(isCloudAdmin){$('settingsDropdownMenu').classList.add('hidden');toast('Signed in — cloud administrator verified')}}
@@ -124,6 +203,124 @@ function copyCloudAccountId(){
  if(!id)return;
  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(id).then(()=>toast('Account ID copied')).catch(()=>prompt('Copy Account ID:',id))}
  else prompt('Copy Account ID:',id)
+}
+
+// Supabase Auth account management. Passwords are never stored in localStorage.
+function renderCloudAccountIdentity(user){
+  const identity=$('accountIdentity');
+  if(!identity)return;
+  const email=user?.email||'';
+  identity.textContent=email?'Signed in as '+email+(user?.new_email?' · Pending new email: '+user.new_email:''):'Not signed in. Use the reset-email section below, or sign in from Settings.';
+  if(email&&document.activeElement!==$('accountResetEmail'))$('accountResetEmail').value=email;
+}
+function closeAccountSettings(){
+  $('accountSettingsModal').classList.add('hidden');
+  for(const id of ['accountCurrentPassword','accountNewPassword','accountConfirmPassword','accountRecoveryPassword','accountRecoveryConfirm'])$(id).value='';
+}
+async function openAccountSettings(mode='normal'){
+  $('settingsDropdownMenu').classList.add('hidden');
+  $('accountSettingsModal').classList.remove('hidden');
+  const client=initSupabase();
+  let user=null;
+  if(client){
+    const {data,error}=await client.auth.getUser();
+    if(!error)user=data?.user||null;
+  }
+  renderCloudAccountIdentity(user);
+  $('accountEmailForm').classList.toggle('hidden',!user);
+  $('accountPasswordForm').classList.toggle('hidden',!user);
+  $('accountRecoveryForm').classList.toggle('hidden',mode!=='recovery');
+  $('accountResetEmail').value=user?.email||$('cloudLoginEmail').value.trim()||$('accountResetEmail').value;
+  if(mode==='recovery')$('accountRecoveryPassword').focus();
+  else if(mode==='forgot'||!user)$('accountResetEmail').focus();
+  else $('accountNewEmail').focus();
+}
+async function updateCloudLoginEmail(event){
+  event.preventDefault();
+  const client=initSupabase(),result=$('accountEmailResult'),button=$('accountEmailSubmit');
+  if(!client){result.textContent='Supabase is unavailable. Check your internet connection.';return}
+  const email=$('accountNewEmail').value.trim();
+  button.disabled=true;button.textContent='Saving email…';result.textContent='';
+  try{
+    const {data:{user:me},error:authError}=await client.auth.getUser();
+    if(authError||!me)throw Error('Sign in to change your login email.');
+    if(email.toLowerCase()===me.email?.toLowerCase())throw Error('This is already your login email.');
+    const {data,error}=await client.auth.updateUser({email});
+    if(error)throw error;
+    // Depending on Auth provider settings, Supabase may require verification first.
+    const pending=data?.user?.new_email;
+    result.textContent=pending?'Email change requested. Check your email for verification link(s) before the new login address takes effect.':'Email update accepted by Supabase. If confirmation is enabled, check your email before using the new address.';
+    $('accountNewEmail').value='';
+    const updated=await client.auth.getUser();
+    renderCloudAccountIdentity(updated.data?.user||me);
+    await refreshCloudAccess();
+    toast('Login email update requested');
+  }catch(err){result.textContent='Could not change email: '+err.message}
+  finally{button.disabled=false;button.textContent='Save New Login Email'}
+}
+async function changeCloudPassword(event){
+  event.preventDefault();
+  const client=initSupabase(),result=$('accountPasswordResult'),button=$('accountPasswordSubmit');
+  const current=$('accountCurrentPassword').value,newPass=$('accountNewPassword').value,confirmation=$('accountConfirmPassword').value;
+  if(newPass.length<8){result.textContent='Your new password must be at least 8 characters.';return}
+  if(newPass!==confirmation){result.textContent='The new passwords do not match.';return}
+  if(newPass===current){result.textContent='Choose a new password different from your current password.';return}
+  if(!client){result.textContent='Supabase is unavailable.';return}
+  button.disabled=true;button.textContent='Updating password…';result.textContent='';
+  try{
+    const {data:{user},error:authError}=await client.auth.getUser();
+    if(authError||!user?.email)throw Error('Please sign in to update your password.');
+    // Verify current password; do not change another user's account if a different session is active.
+    const {data:verification,error:verifyError}=await client.auth.signInWithPassword({email:user.email,password:current});
+    if(verifyError)throw Error('Current password is incorrect, or reauthentication failed.');
+    if(verification.user?.id!==user.id)throw Error('Account mismatch: please sign in again.');
+    const {error}=await client.auth.updateUser({password:newPass});
+    if(error)throw error;
+    $('accountPasswordForm').reset();
+    result.textContent='Password changed successfully in Supabase Auth.';
+    toast('Cloud login password updated');
+  }catch(err){result.textContent='Password not changed: '+err.message}
+  finally{
+    $('accountCurrentPassword').value='';$('accountNewPassword').value='';$('accountConfirmPassword').value='';
+    button.disabled=false;button.textContent='Update Password';
+  }
+}
+async function sendCloudPasswordReset(event){
+  event.preventDefault();
+  const client=initSupabase(),result=$('accountResetResult'),button=$('accountResetSubmit');
+  if(!client){result.textContent='Supabase is unavailable.';return}
+  const email=$('accountResetEmail').value.trim();
+  button.disabled=true;button.textContent='Sending reset link…';result.textContent='';
+  try{
+    // Redirect to this deployed page only when it has an http(s) URL.
+    const options=/^https?:$/.test(location.protocol)?{redirectTo:location.origin+location.pathname}:undefined;
+    const {error}=await client.auth.resetPasswordForEmail(email,options);
+    if(error)throw error;
+    result.textContent='If the account exists, a password reset link will be sent. Check your inbox and spam folder. The reset redirect must be allowed in Supabase Authentication → URL Configuration.';
+    toast('Password reset request submitted');
+  }catch(err){result.textContent='Could not send reset email: '+err.message}
+  finally{button.disabled=false;button.textContent='Send Password Reset Email'}
+}
+async function completeCloudPasswordRecovery(event){
+  event.preventDefault();
+  const client=initSupabase(),result=$('accountRecoveryResult'),button=$('accountRecoverySubmit');
+  const newPass=$('accountRecoveryPassword').value,confirmation=$('accountRecoveryConfirm').value;
+  if(newPass.length<8){result.textContent='Use at least 8 characters.';return}
+  if(newPass!==confirmation){result.textContent='The passwords do not match.';return}
+  if(!client){result.textContent='Supabase is unavailable.';return}
+  button.disabled=true;button.textContent='Saving new password…';result.textContent='';
+  try{
+    const {data:{user},error:authError}=await client.auth.getUser();
+    if(authError||!user)throw Error('The reset session is unavailable or expired. Request another link.');
+    const {error}=await client.auth.updateUser({password:newPass});
+    if(error)throw error;
+    $('accountRecoveryForm').reset();
+    result.textContent='Your password has been reset successfully. You can now sign in with the new password.';
+    toast('Password reset successfully');
+    // Avoid retaining recovery tokens in the visible URL.
+    if(location.protocol.startsWith('http'))history.replaceState(null,'',location.pathname+location.search);
+  }catch(err){result.textContent='Could not reset password: '+err.message}
+  finally{button.disabled=false;button.textContent='Save Reset Password'}
 }
 async function signOutAdmin(){if(initSupabase())await sb.auth.signOut();isCloudAdmin=false;cloudIndicator(false);await refreshCloudAccess();toast('Signed out of cloud')}
 function openCloudSettings(){$('settingsDropdownMenu').classList.remove('hidden');$('cloudLoginEmail').focus()}
@@ -381,14 +578,147 @@ async function importBackup(e){const file=e.target.files?.[0];if(!file)return;tr
 /* CLOUD STOREFRONT ADMIN — protected writes; no anonymous edit policies */
 let storeProducts=[],storeOrders=[];
 const invStatus=(msg,ok=false)=>{const e=$('inventoryCloudStatus');if(e){e.textContent=msg;e.className='text-xs font-bold '+(ok?'text-emerald-500':'text-amber-500')}};
-function productImageSafe(url){try{const u=new URL(url);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
-function previewProductImage(){const el=$('productImagePreview'),f=$('productImageFile').files?.[0];if(el.dataset.objectUrl){URL.revokeObjectURL(el.dataset.objectUrl);delete el.dataset.objectUrl}let src=productImageSafe($('productImageUrl').value);if(f){src=URL.createObjectURL(f);el.dataset.objectUrl=src}el.src=src;el.classList.toggle('hidden',!src)}
+function productImageSafe(url){try{const u=new URL(String(url||'').trim());return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+let stagedProductImage=null;
+let activeProductImagePreviewURL='';
+let savingStoreProduct=false;
+const PRODUCT_IMAGE_ALLOWED_TYPES=['image/jpeg','image/png','image/webp'];
+const PRODUCT_IMAGE_MAX_BYTES=5*1024*1024;
+function setProductImageStatus(message,kind='neutral'){
+  const el=$('productImageStatus');if(!el)return;
+  el.textContent=message;
+  el.className=kind==='error'?'text-xs font-semibold text-rose-500':kind==='success'?'text-xs font-semibold text-emerald-500':kind==='info'?'text-xs font-semibold text-blue-500':'mini';
+}
+function releaseProductImagePreview(){if(activeProductImagePreviewURL){URL.revokeObjectURL(activeProductImagePreviewURL);activeProductImagePreviewURL=''}}
+function previewProductImage(){
+  const el=$('productImagePreview');if(!el)return;
+  releaseProductImagePreview();
+  const file=stagedProductImage || $('productImageFile').files?.[0];
+  const src=file?(activeProductImagePreviewURL=URL.createObjectURL(file)):productImageSafe($('productImageUrl').value);
+  if(src){el.src=src;el.classList.remove('hidden')}else{el.removeAttribute('src');el.classList.add('hidden')}
+}
+function stageProductImage(file){
+  if(!file)return;
+  if(!PRODUCT_IMAGE_ALLOWED_TYPES.includes(file.type)){
+    setProductImageStatus('Unsupported format. Choose a JPG, PNG, or WebP image.','error');return;
+  }
+  if(file.size>PRODUCT_IMAGE_MAX_BYTES){
+    setProductImageStatus('This image is larger than 5 MB. Choose a smaller photo.','error');return;
+  }
+  if(!file.size){setProductImageStatus('The selected image is empty. Choose another file.','error');return}
+  stagedProductImage=file;
+  $('productImageFile').value='';
+  $('productImageUrl').value='';
+  previewProductImage();
+  setProductImageStatus('Ready: '+(file.name||'Pasted image')+' ('+(file.size/1048576).toFixed(2)+' MB). Click Save to Cloud below to upload the photo with your product.','success');
+}
+function onProductImageFileChanged(event){
+  const file=event.target.files?.[0];
+  if(file)stageProductImage(file);
+}
+function onProductImageUrlChanged(){
+  stagedProductImage=null;$('productImageFile').value='';
+  const raw=$('productImageUrl').value.trim();
+  previewProductImage();
+  setProductImageStatus(raw?(productImageSafe(raw)?'Image link ready. Click Save to Cloud to publish it.':'Enter a full http:// or https:// image URL.'): 'Choose a photo or paste a link.',''+(raw&&!productImageSafe(raw)?'error':'neutral'));
+}
+function applyProductImageUrl(){
+  const raw=$('productImageUrl').value.trim();
+  if(!productImageSafe(raw))return setProductImageStatus('Paste a complete http:// or https:// image link first.','error');
+  onProductImageUrlChanged();$('productImagePreview').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function removeProductImage(){
+  stagedProductImage=null;$('productImageFile').value='';$('productImageUrl').value='';
+  previewProductImage();setProductImageStatus('Image removed from the form. Save the product to update the storefront.','info');
+}
+function handleProductImagePaste(event){
+  const items=[...(event.clipboardData?.items||[])];
+  const imageItem=items.find(item=>item.kind==='file'&&item.type.startsWith('image/'));
+  if(imageItem){event.preventDefault();const blob=imageItem.getAsFile();if(blob)stageProductImage(new File([blob],'pasted-product-image.'+(blob.type==='image/jpeg'?'jpg':blob.type==='image/webp'?'webp':'png'),{type:blob.type}));return}
+  const pasted=(event.clipboardData?.getData('text/uri-list')||event.clipboardData?.getData('text/plain')||'').trim();
+  if(productImageSafe(pasted)){event.preventDefault();$('productImageUrl').value=pasted;onProductImageUrlChanged();setProductImageStatus('Image link pasted. Click Save to Cloud to publish.','success')}
+  else setProductImageStatus('Clipboard did not contain a supported image or a complete image URL.','error');
+}
+function handleProductImageDrop(event){
+  event.preventDefault();
+  const file=event.dataTransfer?.files?.[0];if(file){stageProductImage(file);return}
+  const url=(event.dataTransfer?.getData('text/uri-list')||event.dataTransfer?.getData('text/plain')||'').trim();
+  if(productImageSafe(url)){$('productImageUrl').value=url;onProductImageUrlChanged();setProductImageStatus('Image link added. Click Save to Cloud to publish.','success')}
+  else setProductImageStatus('Drop a JPG, PNG, WebP, or a public image URL.','error');
+}
+async function pasteProductImageFromClipboard(){
+  const zone=$('productImagePasteZone');
+  try{
+    if(navigator.clipboard?.read){
+      const entries=await navigator.clipboard.read();
+      for(const item of entries){
+        const type=item.types.find(t=>PRODUCT_IMAGE_ALLOWED_TYPES.includes(t));
+        if(type){const blob=await item.getType(type);stageProductImage(new File([blob],'pasted-product-image.'+(type==='image/jpeg'?'jpg':type==='image/webp'?'webp':'png'),{type}));return}
+        if(item.types.includes('text/plain')){const text=(await (await item.getType('text/plain')).text()).trim();if(productImageSafe(text)){$('productImageUrl').value=text;onProductImageUrlChanged();setProductImageStatus('Image link pasted. Click Save to Cloud to publish.','success');return}}
+      }
+    }
+    if(navigator.clipboard?.readText){const text=(await navigator.clipboard.readText()).trim();if(productImageSafe(text)){$('productImageUrl').value=text;onProductImageUrlChanged();setProductImageStatus('Image link pasted. Click Save to Cloud to publish.','success');return}}
+    setProductImageStatus('No supported image or image URL found. Click the dashed box and press Ctrl+V / ⌘V.','info');
+  }catch(e){
+    setProductImageStatus('Browser blocked clipboard access. Click the dashed box, then press Ctrl+V / ⌘V, or use Choose Photo.','info');
+  }
+  zone.focus();
+}
 async function fetchInventory(){if(!isCloudAdmin){invStatus('Sign in with an authorized admin account to load all products.');return}if(!initSupabase()){invStatus('Supabase library unavailable.');return}try{const {data,error}=await sb.from('store_items').select('*').order('created_at',{ascending:false});if(error)throw error;storeProducts=data||[];invStatus('Cloud catalog loaded · '+storeProducts.length+' items',true);renderInventory()}catch(e){invStatus('Catalog unavailable: '+e.message);$('inventoryItems').innerHTML='<p class="mini">Run the provided SQL migration, then refresh.</p>'}}
 function renderInventory(){const q=($('inventorySearch').value||'').toLowerCase(),items=storeProducts.filter(p=>[p.title,p.sku,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('inventoryItems').innerHTML=items.length?items.map(p=>`<div class="dark-card rounded-2xl p-3 flex gap-3 items-center"><img class="h-20 w-20 object-cover rounded-xl bg-slate-900 shrink-0" src="${esc(productImageSafe(p.image_url)||'')}" alt="" onerror="this.style.visibility='hidden'"><div class="flex-1 min-w-0"><b class="text-xs block">${esc(p.title)}</b><p class="mini">${esc(p.category)} · ${esc(p.sku||'No SKU')} · ${money(p.price)}</p><p class="mini">Stock: ${Number(p.stock_quantity)||0} · Reserved: ${Number(p.reserved_quantity)||0} · ${esc(p.status)}</p><div class="flex gap-2 mt-2"><button class="btn bg-blue-600 text-white" onclick="editStoreProduct('${esc(p.id)}')">✏️ Edit</button><button class="btn text-rose-500" onclick="deleteStoreProduct('${esc(p.id)}')">🗑️ Delete</button></div></div></div>`).join(''):'<p class="mini text-center p-8">No products found in cloud inventory.</p>'}
-function editStoreProduct(id){const p=storeProducts.find(x=>x.id===id);if(!p)return;[['productId',p.id],['productTitle',p.title],['productCategory',p.category],['productPrice',p.price],['productSku',p.sku],['productCondition',p.condition],['productStock',p.stock_quantity],['productStatus',p.status],['productDescription',p.description],['productImageUrl',p.image_url]].forEach(([id,v])=>$(id).value=v??'');$('productImageFile').value='';previewProductImage();$('productTitle').scrollIntoView({behavior:'smooth',block:'center'})}
-function resetProductForm(){$('productForm').reset();$('productId').value='';$('productStock').value='1';previewProductImage()}
-async function saveStoreProduct(e){e.preventDefault();if(!isCloudAdmin)return toast('Sign in as a Supabase admin to save products');if(!initSupabase())return toast('Cloud connection unavailable');const id=$('productId').value||crypto.randomUUID();const file=$('productImageFile').files?.[0];let imageUrl=productImageSafe($('productImageUrl').value);if(file){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)return toast('Use JPG, PNG, or WebP under 5 MB');const ext=file.type.split('/')[1]==='jpeg'?'jpg':file.type.split('/')[1];const path=`${id}/${crypto.randomUUID()}.${ext}`;const {error}=await sb.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)return toast('Image upload failed: '+error.message);imageUrl=sb.storage.from('product-images').getPublicUrl(path).data.publicUrl}
-const product={id,title:$('productTitle').value.trim(),category:$('productCategory').value,price:Math.ceil(Math.max(0,num($('productPrice').value))*100)/100,sku:$('productSku').value.trim(),condition:$('productCondition').value.trim(),stock_quantity:Math.max(0,Math.floor(num($('productStock').value))),status:$('productStatus').value,description:$('productDescription').value.trim(),image_url:imageUrl};const {error}=await sb.from('store_items').upsert(product,{onConflict:'id'});if(error){toast('Cloud save blocked: '+error.message);return}toast('Product saved to Supabase');resetProductForm();await fetchInventory()}
+function editStoreProduct(id){const p=storeProducts.find(x=>x.id===id);if(!p)return;[['productId',p.id],['productTitle',p.title],['productCategory',p.category],['productPrice',p.price],['productSku',p.sku],['productCondition',p.condition],['productStock',p.stock_quantity],['productStatus',p.status],['productDescription',p.description],['productImageUrl',p.image_url]].forEach(([id,v])=>$(id).value=v??'');stagedProductImage=null;$('productImageFile').value='';previewProductImage();setProductImageStatus('Current product image loaded. Choose a new photo, paste a URL, or leave as-is.');$('productTitle').scrollIntoView({behavior:'smooth',block:'center'})}
+function resetProductForm(){stagedProductImage=null;$('productForm').reset();$('productImageFile').value='';$('productId').value='';$('productStock').value='1';previewProductImage();setProductImageStatus('Choose a photo or paste a link. File images upload when you save the product (5 MB maximum).')}
+async function saveStoreProduct(e){
+  e.preventDefault();
+  if(savingStoreProduct)return;
+  if(!isCloudAdmin){setProductImageStatus('Cloud admin approval is required for image and product uploads. Open Settings → Cloud Admin Access.','error');toast('Cloud admin access required to save products');return}
+  if(!initSupabase()){setProductImageStatus('Supabase connection is unavailable. Check your internet connection.','error');return toast('Cloud connection unavailable')}
+  const rawUrl=$('productImageUrl').value.trim();
+  if(rawUrl&&!productImageSafe(rawUrl)){setProductImageStatus('The image link is invalid. Use a complete http:// or https:// URL.','error');return}
+  const file=stagedProductImage||$('productImageFile').files?.[0];
+  if(file&&(!PRODUCT_IMAGE_ALLOWED_TYPES.includes(file.type)||file.size>PRODUCT_IMAGE_MAX_BYTES||!file.size)){
+    setProductImageStatus('The image must be JPG, PNG, or WebP and 5 MB or smaller.','error');return;
+  }
+  const id=$('productId').value||crypto.randomUUID();
+  let uploadedPath=null;
+  let imageUrl=productImageSafe(rawUrl);
+  const saveButton=$('productForm').querySelector('button[type="submit"]');
+  const previousText=saveButton.textContent;
+  savingStoreProduct=true;saveButton.disabled=true;saveButton.textContent='⏳ Saving…';
+  try{
+    if(file){
+      setProductImageStatus('Uploading photo to Supabase Storage…','info');
+      const ext=file.type==='image/jpeg'?'jpg':file.type==='image/webp'?'webp':'png';
+      uploadedPath=id+'/'+crypto.randomUUID()+'.'+ext;
+      const {error:uploadError}=await sb.storage.from('product-images').upload(uploadedPath,file,{contentType:file.type,upsert:false});
+      if(uploadError){uploadedPath=null;throw new Error('Image upload failed: '+uploadError.message+'. Check the product-images bucket and Storage admin policies.')}
+      imageUrl=sb.storage.from('product-images').getPublicUrl(uploadedPath).data.publicUrl;
+      if(!imageUrl)throw new Error('Storage returned no image URL. Check that the product-images bucket is public.');
+      setProductImageStatus('Photo uploaded. Saving product to the catalog…','info');
+    }else setProductImageStatus('Saving product to Supabase…','info');
+    const product={
+      id,title:$('productTitle').value.trim(),category:$('productCategory').value,
+      price:Math.ceil(Math.max(0,num($('productPrice').value))*100)/100,
+      sku:$('productSku').value.trim(),condition:$('productCondition').value.trim(),
+      stock_quantity:Math.max(0,Math.floor(num($('productStock').value))),
+      status:$('productStatus').value,description:$('productDescription').value.trim(),image_url:imageUrl
+    };
+    const {error}=await sb.from('store_items').upsert(product,{onConflict:'id'});
+    if(error){
+      if(uploadedPath){try{await sb.storage.from('product-images').remove([uploadedPath])}catch(_){}}
+      throw new Error('Product save failed: '+error.message);
+    }
+    resetProductForm();
+    setProductImageStatus(file?'Product and photo saved to Supabase. The image should appear on store.html.':'Product saved to Supabase.','success');
+    toast('Product saved to Supabase');
+    await fetchInventory();
+  }catch(error){
+    const message=error?.message||String(error);
+    setProductImageStatus(message,'error');
+    toast(message);
+    console.error('AJD store product save:',error);
+  }finally{savingStoreProduct=false;saveButton.disabled=false;saveButton.textContent=previousText}
+}
 async function deleteStoreProduct(id){if(!isCloudAdmin)return toast('Admin cloud login required');if(!confirm('Delete this product? Existing purchase requests will retain their item reference.'))return;const {error}=await sb.from('store_items').delete().eq('id',id);if(error)return toast('Delete blocked: '+error.message);toast('Product deleted');await fetchInventory()}
 async function fetchStoreOrders(){if(!isCloudAdmin){$('storeOrders').innerHTML='<p class="mini">Admin login required to view customer requests.</p>';return}if(!initSupabase())return;const {data,error}=await sb.from('store_purchase_requests').select('*').order('created_at',{ascending:false});if(error){$('storeOrders').innerHTML=`<p class="mini">Cannot load purchase requests: ${esc(error.message)}</p>`;return}storeOrders=data||[];renderStoreOrders()}
 function renderStoreOrders(){$('storeOrders').innerHTML=storeOrders.length?storeOrders.map(o=>`<div class="dark-card rounded-2xl p-4 space-y-2 text-xs"><div class="flex flex-wrap justify-between gap-2"><div><b>${esc(o.customer_name)}</b><p class="text-blue-500 font-bold">${esc(o.item_title)} · Qty ${Number(o.quantity)||1}</p><p class="mini">${esc(o.customer_email||'')} · ${esc(o.customer_phone||'')}</p></div><b>${esc(o.status)}</b></div>${o.notes?`<p>${esc(o.notes)}</p>`:''}${o.shop_note?`<p class="text-blue-500">Shop note: ${esc(o.shop_note)}</p>`:''}<div class="flex gap-2 flex-wrap"><button class="btn bg-emerald-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','approved')">Approve</button><button class="btn bg-amber-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','awaiting_restock')">Await Restock</button><button class="btn bg-rose-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','declined')">Decline</button></div></div>`).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>'}
