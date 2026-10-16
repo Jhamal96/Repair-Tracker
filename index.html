@@ -22,7 +22,8 @@
     <input class="field flex-1 min-w-0" type="url" id="productImageUrl" placeholder="https://example.com/photo.jpg" inputmode="url" autocomplete="off" oninput="onProductImageUrlChanged()">
     <button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="applyProductImageUrl()">🔎 Preview Link</button>
   </div>
-  <p class="mini">Use a direct public HTTPS image link, or choose a photo from your device below.</p>
+  <p class="mini">Use a direct, publicly viewable image URL (not a Google Images results page or a private sharing link). You can test the picture before saving.</p>
+  <a id="productImageOpenLink" class="hidden text-xs font-bold text-blue-500 underline break-all" target="_blank" rel="noopener noreferrer">↗ Open image link to verify it works</a>
   <input type="file" id="productImageFile" class="sr-only" accept="image/jpeg,image/png,image/webp" onchange="onProductImageFileChanged(event)" aria-describedby="productImageStatus">
   <div class="flex flex-wrap gap-2">
     <label for="productImageFile" class="btn inline-flex items-center bg-blue-600 text-white cursor-pointer select-none">📁 Choose Photo</label>
@@ -33,7 +34,7 @@
     🖼️ Drop a JPG, PNG, or WebP here, or click here and press <b>Ctrl+V / ⌘V</b> to paste a copied image or URL.
   </div>
   <p id="productImageStatus" class="mini" role="status" aria-live="polite">Choose a photo or paste a link. File images upload to Supabase when you save the product (5 MB maximum).</p>
-  <img id="productImagePreview" class="hidden h-44 w-full object-contain rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-700/20" alt="Selected product photo preview">
+  <div id="productImagePreviewContainer" class="hidden rounded-xl overflow-hidden border border-slate-700/20 bg-slate-100 dark:bg-slate-950"><img id="productImagePreview" class="h-44 w-full object-contain" alt="Selected product photo preview"><p id="productImagePreviewCaption" class="text-xs px-3 py-2 text-center text-slate-500 dark:text-slate-400" aria-live="polite">Checking image…</p></div>
   <p class="mini">Cloud photo uploads require an authorized account and the Supabase Storage bucket <b>product-images</b>. If uploading fails, the error appears above.</p>
 </div><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1" type="submit">💾 Save to Cloud</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetProductForm()">Clear</button></div></form><div class="lg:col-span-3 space-y-3"><div class="dark-card rounded-2xl p-3 flex gap-2"><input class="field flex-1" id="inventorySearch" placeholder="Search products / SKU" oninput="renderInventory()"><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchInventory()">↻ Refresh</button></div><div id="inventoryItems" class="space-y-3"></div></div></div>
 <div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex flex-wrap justify-between items-center gap-2"><h3 class="font-black">📦 Customer Purchase Requests</h3><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchStoreOrders()">↻ Refresh Requests</button></div><p class="mini">Approving a request reserves stock only if enough units remain. Declining or awaiting restock does not reserve stock.</p><div id="storeOrders" class="space-y-3"></div></div>
@@ -581,6 +582,9 @@ const invStatus=(msg,ok=false)=>{const e=$('inventoryCloudStatus');if(e){e.textC
 function productImageSafe(url){try{const u=new URL(String(url||'').trim());return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
 let stagedProductImage=null;
 let activeProductImagePreviewURL='';
+let productImagePreviewVersion=0;
+let productImageInputTimer=null;
+let productImageValid=false;
 let savingStoreProduct=false;
 const PRODUCT_IMAGE_ALLOWED_TYPES=['image/jpeg','image/png','image/webp'];
 const PRODUCT_IMAGE_MAX_BYTES=5*1024*1024;
@@ -589,13 +593,47 @@ function setProductImageStatus(message,kind='neutral'){
   el.textContent=message;
   el.className=kind==='error'?'text-xs font-semibold text-rose-500':kind==='success'?'text-xs font-semibold text-emerald-500':kind==='info'?'text-xs font-semibold text-blue-500':'mini';
 }
-function releaseProductImagePreview(){if(activeProductImagePreviewURL){URL.revokeObjectURL(activeProductImagePreviewURL);activeProductImagePreviewURL=''}}
-function previewProductImage(){
-  const el=$('productImagePreview');if(!el)return;
-  releaseProductImagePreview();
-  const file=stagedProductImage || $('productImageFile').files?.[0];
-  const src=file?(activeProductImagePreviewURL=URL.createObjectURL(file)):productImageSafe($('productImageUrl').value);
-  if(src){el.src=src;el.classList.remove('hidden')}else{el.removeAttribute('src');el.classList.add('hidden')}
+function releaseProductImagePreview(){
+  if(activeProductImagePreviewURL){URL.revokeObjectURL(activeProductImagePreviewURL);activeProductImagePreviewURL=''}
+}
+// Decode the picture in the browser, rather than treating any URL as a working image.
+function verifyImageSource(src,timeout=12000){
+  return new Promise(resolve=>{
+    if(!src)return resolve(false);
+    const check=new Image();let finished=false;
+    const timer=setTimeout(()=>finish(false),timeout);
+    function finish(ok){if(finished)return;finished=true;clearTimeout(timer);check.onload=null;check.onerror=null;resolve(ok)}
+    check.onload=()=>finish(check.naturalWidth>0);
+    check.onerror=()=>finish(false);
+    check.src=src;
+    if(check.complete&&check.naturalWidth>0)finish(true);
+  });
+}
+async function previewProductImage(){
+  const el=$('productImagePreview'),wrapper=$('productImagePreviewContainer'),caption=$('productImagePreviewCaption'),link=$('productImageOpenLink');
+  if(!el||!wrapper)return;
+  const version=++productImagePreviewVersion;
+  clearTimeout(productImageInputTimer);
+  releaseProductImagePreview();productImageValid=false;
+  const file=stagedProductImage||$('productImageFile').files?.[0];
+  const imageLink=productImageSafe($('productImageUrl').value);
+  link.classList.toggle('hidden',!imageLink||!!file);
+  if(imageLink&&!file)link.href=imageLink;else link.removeAttribute('href');
+  const src=file?(activeProductImagePreviewURL=URL.createObjectURL(file)):imageLink;
+  el.removeAttribute('src');
+  if(!src){wrapper.classList.add('hidden');caption.textContent='';return}
+  wrapper.classList.remove('hidden');
+  caption.textContent='Checking image…';
+  el.classList.add('hidden');
+  const ok=await verifyImageSource(src);
+  if(version!==productImagePreviewVersion)return;
+  productImageValid=ok;
+  if(ok){el.src=src;el.classList.remove('hidden');caption.textContent=file?'✓ Image selected — save to upload to Supabase.':'✓ Image link loads in this browser — save to publish.';setProductImageStatus(caption.textContent,'success')}
+  else{
+    el.removeAttribute('src');el.classList.add('hidden');
+    caption.textContent=file?'Image preview failed. Try another JPG, PNG, or WebP file.':'Image could not be loaded. Paste a direct public image URL, or upload the photo instead.';
+    setProductImageStatus(caption.textContent,'error');
+  }
 }
 function stageProductImage(file){
   if(!file)return;
@@ -609,7 +647,7 @@ function stageProductImage(file){
   stagedProductImage=file;
   $('productImageFile').value='';
   $('productImageUrl').value='';
-  previewProductImage();
+  void previewProductImage();
   setProductImageStatus('Ready: '+(file.name||'Pasted image')+' ('+(file.size/1048576).toFixed(2)+' MB). Click Save to Cloud below to upload the photo with your product.','success');
 }
 function onProductImageFileChanged(event){
@@ -619,17 +657,26 @@ function onProductImageFileChanged(event){
 function onProductImageUrlChanged(){
   stagedProductImage=null;$('productImageFile').value='';
   const raw=$('productImageUrl').value.trim();
-  previewProductImage();
-  setProductImageStatus(raw?(productImageSafe(raw)?'Image link ready. Click Save to Cloud to publish it.':'Enter a full http:// or https:// image URL.'): 'Choose a photo or paste a link.',''+(raw&&!productImageSafe(raw)?'error':'neutral'));
+  clearTimeout(productImageInputTimer);
+  productImageValid=false;
+  if(!raw){void previewProductImage();return setProductImageStatus('Choose a photo or paste a link.')}
+  if(!productImageSafe(raw)){
+    void previewProductImage();
+    return setProductImageStatus('Enter a complete direct http:// or https:// image URL.','error');
+  }
+  setProductImageStatus('Checking whether the image link works…','info');
+  productImageInputTimer=setTimeout(()=>{void previewProductImage()},450);
 }
 function applyProductImageUrl(){
   const raw=$('productImageUrl').value.trim();
-  if(!productImageSafe(raw))return setProductImageStatus('Paste a complete http:// or https:// image link first.','error');
-  onProductImageUrlChanged();$('productImagePreview').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(!productImageSafe(raw))return setProductImageStatus('Paste a complete direct http:// or https:// image link first.','error');
+  clearTimeout(productImageInputTimer);
+  void previewProductImage();
+  $('productImagePreviewContainer').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function removeProductImage(){
   stagedProductImage=null;$('productImageFile').value='';$('productImageUrl').value='';
-  previewProductImage();setProductImageStatus('Image removed from the form. Save the product to update the storefront.','info');
+  void previewProductImage();setProductImageStatus('Image removed from the form. Save the product to update the storefront.','info');
 }
 function handleProductImagePaste(event){
   const items=[...(event.clipboardData?.items||[])];
@@ -665,9 +712,9 @@ async function pasteProductImageFromClipboard(){
   zone.focus();
 }
 async function fetchInventory(){if(!isCloudAdmin){invStatus('Sign in with an authorized admin account to load all products.');return}if(!initSupabase()){invStatus('Supabase library unavailable.');return}try{const {data,error}=await sb.from('store_items').select('*').order('created_at',{ascending:false});if(error)throw error;storeProducts=data||[];invStatus('Cloud catalog loaded · '+storeProducts.length+' items',true);renderInventory()}catch(e){invStatus('Catalog unavailable: '+e.message);$('inventoryItems').innerHTML='<p class="mini">Run the provided SQL migration, then refresh.</p>'}}
-function renderInventory(){const q=($('inventorySearch').value||'').toLowerCase(),items=storeProducts.filter(p=>[p.title,p.sku,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('inventoryItems').innerHTML=items.length?items.map(p=>`<div class="dark-card rounded-2xl p-3 flex gap-3 items-center"><img class="h-20 w-20 object-cover rounded-xl bg-slate-900 shrink-0" src="${esc(productImageSafe(p.image_url)||'')}" alt="" onerror="this.style.visibility='hidden'"><div class="flex-1 min-w-0"><b class="text-xs block">${esc(p.title)}</b><p class="mini">${esc(p.category)} · ${esc(p.sku||'No SKU')} · ${money(p.price)}</p><p class="mini">Stock: ${Number(p.stock_quantity)||0} · Reserved: ${Number(p.reserved_quantity)||0} · ${esc(p.status)}</p><div class="flex gap-2 mt-2"><button class="btn bg-blue-600 text-white" onclick="editStoreProduct('${esc(p.id)}')">✏️ Edit</button><button class="btn text-rose-500" onclick="deleteStoreProduct('${esc(p.id)}')">🗑️ Delete</button></div></div></div>`).join(''):'<p class="mini text-center p-8">No products found in cloud inventory.</p>'}
-function editStoreProduct(id){const p=storeProducts.find(x=>x.id===id);if(!p)return;[['productId',p.id],['productTitle',p.title],['productCategory',p.category],['productPrice',p.price],['productSku',p.sku],['productCondition',p.condition],['productStock',p.stock_quantity],['productStatus',p.status],['productDescription',p.description],['productImageUrl',p.image_url]].forEach(([id,v])=>$(id).value=v??'');stagedProductImage=null;$('productImageFile').value='';previewProductImage();setProductImageStatus('Current product image loaded. Choose a new photo, paste a URL, or leave as-is.');$('productTitle').scrollIntoView({behavior:'smooth',block:'center'})}
-function resetProductForm(){stagedProductImage=null;$('productForm').reset();$('productImageFile').value='';$('productId').value='';$('productStock').value='1';previewProductImage();setProductImageStatus('Choose a photo or paste a link. File images upload when you save the product (5 MB maximum).')}
+function renderInventory(){const q=($('inventorySearch').value||'').toLowerCase(),items=storeProducts.filter(p=>[p.title,p.sku,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('inventoryItems').innerHTML=items.length?items.map(p=>`<div class="dark-card rounded-2xl p-3 flex gap-3 items-center"><div class="h-20 w-20 rounded-xl bg-slate-900 shrink-0 flex items-center justify-center overflow-hidden relative"><span class="text-2xl" aria-hidden="true">📷</span>${productImageSafe(p.image_url)?`<img class="absolute inset-0 h-full w-full object-cover" src="${esc(productImageSafe(p.image_url))}" alt="${esc(p.title)}" onerror="this.remove();console.warn('Product image could not load:',this.src)">`:''}</div><div class="flex-1 min-w-0"><b class="text-xs block">${esc(p.title)}</b><p class="mini">${esc(p.category)} · ${esc(p.sku||'No SKU')} · ${money(p.price)}</p><p class="mini">Stock: ${Number(p.stock_quantity)||0} · Reserved: ${Number(p.reserved_quantity)||0} · ${esc(p.status)}</p><div class="flex gap-2 mt-2"><button class="btn bg-blue-600 text-white" onclick="editStoreProduct('${esc(p.id)}')">✏️ Edit</button><button class="btn text-rose-500" onclick="deleteStoreProduct('${esc(p.id)}')">🗑️ Delete</button></div></div></div>`).join(''):'<p class="mini text-center p-8">No products found in cloud inventory.</p>'}
+function editStoreProduct(id){const p=storeProducts.find(x=>x.id===id);if(!p)return;[['productId',p.id],['productTitle',p.title],['productCategory',p.category],['productPrice',p.price],['productSku',p.sku],['productCondition',p.condition],['productStock',p.stock_quantity],['productStatus',p.status],['productDescription',p.description],['productImageUrl',p.image_url]].forEach(([id,v])=>$(id).value=v??'');stagedProductImage=null;$('productImageFile').value='';void previewProductImage();setProductImageStatus('Checking this product’s saved image…','info');$('productTitle').scrollIntoView({behavior:'smooth',block:'center'})}
+function resetProductForm(){stagedProductImage=null;$('productForm').reset();$('productImageFile').value='';$('productId').value='';$('productStock').value='1';void previewProductImage();setProductImageStatus('Choose a photo or paste a link. File images upload when you save the product (5 MB maximum).')}
 async function saveStoreProduct(e){
   e.preventDefault();
   if(savingStoreProduct)return;
@@ -686,6 +733,10 @@ async function saveStoreProduct(e){
   const previousText=saveButton.textContent;
   savingStoreProduct=true;saveButton.disabled=true;saveButton.textContent='⏳ Saving…';
   try{
+    if(!file&&imageUrl){
+      setProductImageStatus('Verifying image link before saving…','info');
+      if(!(await verifyImageSource(imageUrl)))throw new Error('This link does not display an image publicly. Open it in a private browser window to check, or use Choose Photo to upload the file instead.');
+    }
     if(file){
       setProductImageStatus('Uploading photo to Supabase Storage…','info');
       const ext=file.type==='image/jpeg'?'jpg':file.type==='image/webp'?'webp':'png';
@@ -694,7 +745,11 @@ async function saveStoreProduct(e){
       if(uploadError){uploadedPath=null;throw new Error('Image upload failed: '+uploadError.message+'. Check the product-images bucket and Storage admin policies.')}
       imageUrl=sb.storage.from('product-images').getPublicUrl(uploadedPath).data.publicUrl;
       if(!imageUrl)throw new Error('Storage returned no image URL. Check that the product-images bucket is public.');
-      setProductImageStatus('Photo uploaded. Saving product to the catalog…','info');
+      setProductImageStatus('Upload completed. Checking public image access…','info');
+      let loads=await verifyImageSource(imageUrl,10000);
+      if(!loads){await new Promise(resolve=>setTimeout(resolve,800));loads=await verifyImageSource(imageUrl,10000)}
+      if(!loads)throw new Error('Storage accepted the file, but the picture cannot be displayed publicly. In Supabase → Storage, confirm the product-images bucket is PUBLIC, then check the uploaded object and URL.');
+      setProductImageStatus('Photo verified. Saving product to the catalog…','info');
     }else setProductImageStatus('Saving product to Supabase…','info');
     const product={
       id,title:$('productTitle').value.trim(),category:$('productCategory').value,
@@ -705,7 +760,6 @@ async function saveStoreProduct(e){
     };
     const {error}=await sb.from('store_items').upsert(product,{onConflict:'id'});
     if(error){
-      if(uploadedPath){try{await sb.storage.from('product-images').remove([uploadedPath])}catch(_){}}
       throw new Error('Product save failed: '+error.message);
     }
     resetProductForm();
@@ -717,6 +771,7 @@ async function saveStoreProduct(e){
     setProductImageStatus(message,'error');
     toast(message);
     console.error('AJD store product save:',error);
+    if(uploadedPath){try{await sb.storage.from('product-images').remove([uploadedPath])}catch(cleanupError){console.warn('Unable to clean up unsaved product photo:',cleanupError)}}
   }finally{savingStoreProduct=false;saveButton.disabled=false;saveButton.textContent=previousText}
 }
 async function deleteStoreProduct(id){if(!isCloudAdmin)return toast('Admin cloud login required');if(!confirm('Delete this product? Existing purchase requests will retain their item reference.'))return;const {error}=await sb.from('store_items').delete().eq('id',id);if(error)return toast('Delete blocked: '+error.message);toast('Product deleted');await fetchInventory()}
