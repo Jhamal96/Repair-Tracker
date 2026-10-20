@@ -48,11 +48,23 @@ footer{margin-top:50px;border-top:1px solid var(--border);padding:20px;text-alig
 a{color:var(--accent-text);text-decoration:none}
 a:hover{text-decoration:underline}
 @media(max-width:550px){.filters{grid-template-columns:1fr}.hero{padding:26px 18px}}
-</style></head><body>
-<header><div class="wrap"><nav><div class="brand"><div class="logo" aria-label="AJD logo"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="50" cy="50" r="42" stroke-width="6"/><path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><strong>AJD's Wireless Repairs</strong><div class="muted small">Devices • Repairs • Accessories</div></div></div><a href="tel:7869707779" data-shop-tel>☎ <span data-shop-phone>786-970-7779</span></a></nav></div></header>
+
+.install-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.install-actions button{white-space:nowrap}
+#installHelpOverlay .modal{max-width:440px}
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AJD's Wireless Repairs"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" type="image/svg+xml" href="./ajd-app-icon.svg"></head><body>
+<header><div class="wrap"><nav><div class="brand"><div class="logo" aria-label="AJD logo"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="50" cy="50" r="42" stroke-width="6"/><path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><strong>AJD's Wireless Repairs</strong><div class="muted small">Devices • Repairs • Accessories</div></div></div><div class="install-actions"><a href="tel:7869707779" data-shop-tel>☎ <span data-shop-phone>786-970-7779</span></a><button id="installStoreButton" type="button" onclick="installStoreApp()" aria-label="Install AJD's Wireless Repairs app">⬇ Install App</button></div></nav></div></header>
 <main class="wrap"><section class="hero"><div class="gold" style="font-weight:800">WELCOME TO OUR STORE</div><h1>Tech you'll love. Service you can trust.</h1><p class="muted">Browse phones, tablets, computers, and accessories. Send a purchase request and we'll follow up to confirm availability.</p><a href="request.html" class="gold">Need a repair? Request service →</a></section>
 <h2>Shop Our Products</h2><div class="filters"><input id="search" placeholder="Search phones, tablets, accessories..." aria-label="Search products"><select id="category" aria-label="Filter category"><option value="all">All categories</option></select></div><p class="muted small" id="cloudStatus">Loading products from our store…</p><div id="products" class="grid"></div></main>
 <footer>© <span id="year"></span> AJD's Wireless Repairs · <a href="tel:7869707779" data-shop-tel><span data-shop-phone>786-970-7779</span></a><span data-shop-email-container hidden> · <a href="#" data-shop-mailto><span data-shop-email></span></a></span></footer>
+
+<div class="overlay" id="installHelpOverlay" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
+<div class="modal">
+<div class="row"><h2 id="installHelpTitle">Install AJD's Wireless Repairs</h2><button type="button" onclick="closeInstallHelp()" aria-label="Close install instructions">✕</button></div>
+<p id="installHelpText" class="muted small">Use your browser menu and select Install app or Add to Home Screen.</p>
+<p class="muted small">Installing adds a shortcut that opens the storefront. Live products and purchase requests still require an internet connection.</p>
+<button type="button" style="width:100%" onclick="closeInstallHelp()">Got It</button>
+</div></div>
 <div class="overlay" id="overlay"><form class="modal" id="orderForm"><div class="row"><h2>Purchase Request</h2><button type="button" id="close" aria-label="Close">✕</button></div><p id="selectedProduct" class="gold"></p><input id="itemId" type="hidden"><label for="customerName">Your name *</label><input id="customerName" required maxlength="120"><label for="customerPhone">Phone number</label><input id="customerPhone" type="tel" maxlength="35"><label for="customerEmail">Email address *</label><input id="customerEmail" type="email" required maxlength="200"><label for="quantity">Quantity *</label><input id="quantity" type="number" min="1" max="99" value="1" required><label for="notes">Questions or notes</label><textarea id="notes" rows="3" maxlength="1500"></textarea><p class="muted small">A request does not guarantee a reservation or purchase. We will confirm availability.</p><button type="submit" id="sendBtn" style="width:100%">Send Purchase Request</button><p id="formStatus" class="small" role="status"></p></form></div>
 <script>
 'use strict';
@@ -146,4 +158,31 @@ $('orderForm').onsubmit=async e=>{e.preventDefault();const btn=$('sendBtn');btn.
 void refreshShopPhone();
 void refreshShopEmail();
 load();
+</script>
+<script>
+let deferredStoreInstall=null;
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredStoreInstall=event});
+window.addEventListener('appinstalled',()=>{deferredStoreInstall=null;const btn=document.getElementById('installStoreButton');if(btn)btn.hidden=true});
+function closeInstallHelp(){document.getElementById('installHelpOverlay').classList.remove('open')}
+async function installStoreApp(){
+ if(window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone){
+  document.getElementById('installHelpText').textContent='The storefront is already installed on this device.';
+  document.getElementById('installHelpOverlay').classList.add('open');return
+ }
+ if(deferredStoreInstall){
+  const prompt=deferredStoreInstall;deferredStoreInstall=null;
+  try{await prompt.prompt();await prompt.userChoice;return}catch(error){console.warn('Install prompt unavailable',error)}
+ }
+ const iphone=/iPad|iPhone|iPod/.test(navigator.userAgent);
+ const iosSafari=iphone&&/Safari/i.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS/i.test(navigator.userAgent);
+ document.getElementById('installHelpText').textContent=iosSafari?
+  'On iPhone: tap Share in Safari, then Add to Home Screen, then Add.':
+  iphone?'On iPhone: open this page in Safari, tap Share, and choose Add to Home Screen.':
+  'Open your browser menu (⋮ or ⋯), choose Install app or Add to Home Screen, and follow the instructions. If that option is missing, try Chrome or Edge over HTTPS.';
+ document.getElementById('installHelpOverlay').classList.add('open');
+}
+document.getElementById('installHelpOverlay').addEventListener('click',event=>{if(event.target.id==='installHelpOverlay')closeInstallHelp()});
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+ window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(error=>console.warn('Store install support unavailable',error))});
+}
 </script></body></html>
