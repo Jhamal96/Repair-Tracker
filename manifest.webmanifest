@@ -1,0 +1,19 @@
+{
+  "name": "AJD's Wireless Repairs Store",
+  "short_name": "AJD Wireless",
+  "description": "Browse devices, accessories, and repair services from AJD's Wireless Repairs.",
+  "id": "./store.html",
+  "start_url": "./store.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "./ajd-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
