@@ -27,9 +27,9 @@
       {id:'signout',icon:'↪️',label:'Sign Out',description:'Lock your admin dashboard',action:'signout',mainOnly:true}
     ]},
     {name:'CUSTOMER-FACING PAGES',items:[
-      {id:'storefront',icon:'🏪',label:'Public Storefront',description:'View the customer store',url:'./store.html'},
-      {id:'request',icon:'🔧',label:'Request a Repair',description:'Customer service form',url:'./request.html'},
-      {id:'tracking',icon:'📦',label:'Track a Repair',description:'Customer ticket lookup',url:'./track.html'}
+      {id:'storefront',icon:'🏪',label:'Public Storefront',description:'View the customer store',url:'/store'},
+      {id:'request',icon:'🔧',label:'Request a Repair',description:'Customer service form',url:'/request'},
+      {id:'tracking',icon:'📦',label:'Track a Repair',description:'Customer ticket lookup',url:'/track'}
     ]}
   ];
   let drawer,backdrop,toggle,search,chip,previousFocus=null,currentSection=isMain?'repairs':currentPage==='expenses'?'expenses':'plans',lastHandledHash='';
@@ -91,7 +91,7 @@
   }
   function launchLegacy(kind){
     if(!isMain){
-      window.location.href='./index.html#'+kind;
+      window.location.href='/#'+kind;
       return;
     }
     if(document.body.classList.contains('admin-locked'))return;
@@ -115,7 +115,7 @@
     setDrawer(false,false);
     if(item.tab){
       if(isMain)selectedTab(item.tab);
-      else window.location.href='./index.html#'+item.tab;
+      else window.location.href='/#'+item.tab;
     }else if(item.url){
       window.location.href=item.url;
     }else if(item.action){
