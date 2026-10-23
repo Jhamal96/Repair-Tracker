@@ -10,7 +10,7 @@ body:not(.admin-locked) #adminLoginGate{display:none!important}
 #adminLoginGate .auth-card{width:min(100%,420px);border-radius:24px;padding:28px;box-shadow:0 18px 70px #0002}
 #adminLoginGate .field{font-size:15px;min-height:44px}
 #adminLoginGate button{min-height:42px}
-#adminInstallHelp .modal-inner{max-width:460px}</style><link rel="manifest" href="./admin.webmanifest"><link rel="apple-touch-icon" href="./admin-icon-192.png"><link rel="icon" sizes="192x192" type="image/png" href="./admin-icon-192.png"></head>
+#adminInstallHelp .modal-inner{max-width:460px}html.ajd-installed [data-admin-install-button]{display:none!important}</style><script>try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||navigator.userAgent.includes('AJD-Android-App'))document.documentElement.classList.add('ajd-installed')}catch(e){}</script><link rel="manifest" href="./admin.webmanifest"><link rel="apple-touch-icon" href="./admin-icon-192.png"><link rel="icon" sizes="192x192" type="image/png" href="./admin-icon-192.png"></head>
 <body class="admin-locked bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased">
 <section id="adminLoginGate" aria-labelledby="adminGateTitle">
 <div class="auth-card dark-card blue-glow space-y-5">
@@ -873,7 +873,8 @@ window.addEventListener('DOMContentLoaded',async()=>{applyTheme();$('footerYear'
 </script><script>
 let adminInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();adminInstallPrompt=e});
-window.addEventListener('appinstalled',()=>{adminInstallPrompt=null;document.querySelectorAll('[data-admin-install-button]').forEach(btn=>{btn.textContent='✓ App Installed';btn.disabled=true})});
+window.addEventListener('appinstalled',()=>{adminInstallPrompt=null;document.documentElement.classList.add('ajd-installed')});
+if(window.matchMedia){try{window.matchMedia('(display-mode: standalone)').addEventListener('change',e=>document.documentElement.classList.toggle('ajd-installed',e.matches||navigator.standalone===true||navigator.userAgent.includes('AJD-Android-App')))}catch(e){}}
 function closeAdminInstallHelp(){document.getElementById('adminInstallHelp').classList.add('hidden')}
 function showAdminInstallHelp(message){document.getElementById('adminInstallHelpText').textContent=message;document.getElementById('adminInstallHelp').classList.remove('hidden')}
 async function installAdminApp(){
