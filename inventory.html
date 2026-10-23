@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="Secure parts and accessories inventory management for AJD's Wireless Repairs.">
+<title>Inventory Tracker | AJD's Wireless Repairs</title>
+<link rel="icon" href="/admin-icon-192.png" type="image/png">
+<link rel="stylesheet" href="/business-finance.css">
+<link rel="stylesheet" href="/ajd-admin-menu.css">
+<link rel="stylesheet" href="/ajd-premium-admin.css">
+<link rel="stylesheet" href="/ajd-inventory.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="/ajd-admin-menu.js" defer></script>
+<script src="/ajd-inventory.js" defer></script>
+</head>
+<body data-page="parts">
+<header>
+ <div class="wrap top">
+  <div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Inventory Tracker · Admin Only</div></div></div>
+  <nav class="nav" aria-label="Admin pages">
+    <a href="/">⌂ Dashboard</a>
+    <a href="/inventory" aria-current="page">📦 Inventory</a>
+    <a href="/#inventory">🛍️ Store Management</a>
+    <a href="/expenses">💼 Expenses</a>
+    <a href="/planned-purchases">🛒 Planned Purchases</a>
+  </nav>
+ </div>
+</header>
+<main class="wrap">
+ <section id="accessBlock" class="panel" role="status">
+  <div class="inv-access-emoji" aria-hidden="true">🔒</div>
+  <h1>Private Inventory</h1>
+  <p id="accessMessage">Verifying your administrator session…</p>
+  <a class="button" href="/">Sign In to the Admin Dashboard</a>
+ </section>
+ <div id="appContent" hidden>
+  <section class="inv-hero" aria-labelledby="invPageTitle">
+   <div class="inv-hero-text">
+    <span class="inv-kicker"><span class="inv-kicker-dot"></span> AJD BUSINESS OPERATIONS</span>
+    <h1 id="invPageTitle">Every part.<br><span>Every accessory.</span><br>Accounted for.</h1>
+    <p>Organize your repair parts and accessories, track what's on the shelf, and list the right items for your customers—with your private costs kept private.</p>
+    <div class="inv-hero-buttons">
+     <button type="button" id="heroNewButton"><span aria-hidden="true">＋</span> Add Inventory Item</button>
+     <a class="inv-hero-secondary" href="/store" target="_blank" rel="noopener noreferrer">↗ View Customer Store</a>
+    </div>
+   </div>
+   <div class="inv-hero-art" aria-hidden="true">
+    <div class="inv-art-orbit"></div>
+    <div class="inv-art-main"><span>▣</span><strong>STOCK</strong><small>SYNCED WITH YOUR SHOP</small></div>
+    <span class="inv-art-chip inv-art-chip-one">📦 Inventory</span>
+    <span class="inv-art-chip inv-art-chip-two">✓ Storefront</span>
+   </div>
+  </section>
+
+  <section class="inv-stats" aria-label="Inventory overview">
+   <div class="panel inv-stat"><span class="inv-stat-icon">📦</span><p>Inventory Items</p><strong id="invSkuTotal">0</strong><small>Active parts &amp; accessories</small></div>
+   <div class="panel inv-stat"><span class="inv-stat-icon">🔢</span><p>Units on Hand</p><strong id="invUnitTotal">0</strong><small>Across active items</small></div>
+   <div class="panel inv-stat inv-alert"><span class="inv-stat-icon">⚠️</span><p>Low / Out of Stock</p><strong id="invLowStock">0</strong><small>At or below reorder level</small></div>
+   <div class="panel inv-stat"><span class="inv-stat-icon">💰</span><p>Inventory Cost Value</p><strong id="invStockValue">$0.00</strong><small>Private purchase costs</small></div>
+   <div class="panel inv-stat"><span class="inv-stat-icon">🛍️</span><p>On Storefront</p><strong id="invLiveCount">0</strong><small>Visible customer listings</small></div>
+  </section>
+
+  <section class="inv-toolbar panel" aria-label="Inventory filters">
+   <div class="inv-toolbar-top"><div>
+     <h2>Stockroom</h2><p>Search, organize and manage your inventory.</p>
+    </div>
+    <div class="inv-toolbar-actions">
+     <button type="button" class="secondary" id="refreshButton">↻ Refresh</button>
+     <button type="button" class="secondary" id="exportButton">↓ Export CSV</button>
+     <button type="button" id="newButton">＋ Add Item</button>
+    </div>
+   </div>
+   <div class="inv-filters">
+    <label><span class="inv-sr-only">Search inventory</span><input id="search" type="search" placeholder="Search name, SKU, brand, compatibility…" autocomplete="off"></label>
+    <label><span class="inv-sr-only">Filter category</span><select id="typeFilter"><option value="all">All Categories</option><option>Part</option><option>Accessory</option><option>Tool</option><option>Supply</option><option>Other</option></select></label>
+    <label><span class="inv-sr-only">Filter stock and storefront status</span><select id="statusFilter"><option value="active">Active Inventory</option><option value="low">Low Stock</option><option value="out">Out of Stock</option><option value="live">On Storefront</option><option value="hidden">Storefront Hidden</option><option value="unpublished">Not Published</option><option value="archived">Archived</option><option value="all">All Records</option></select></label>
+    <label><span class="inv-sr-only">Sort inventory</span><select id="sortFilter"><option value="updated">Recently Updated</option><option value="name">Name A–Z</option><option value="quantity-low">Lowest Stock</option><option value="quantity-high">Highest Stock</option><option value="value">Highest Inventory Value</option></select></label>
+   </div>
+  </section>
+
+  <section id="editorPanel" class="panel inv-editor" hidden aria-labelledby="formHeading">
+   <div class="inv-form-head">
+    <div><span class="inv-eyebrow">INVENTORY DETAILS</span><h2 id="formHeading">Add an Inventory Item</h2><p>Your supplier and purchase costs stay private.</p></div>
+    <button type="button" class="secondary" id="cancelButton">✕ Close</button>
+   </div>
+   <form id="editorForm">
+    <input type="hidden" id="editId">
+    <div class="inv-form-grid">
+     <label class="inv-wide">Item Name *<input id="itemName" maxlength="240" placeholder="iPhone 15 Pro OLED Screen / MagSafe Charger" required></label>
+     <label>Inventory Category *<select id="itemType" required><option value="Part">🧰 Repair Part</option><option value="Accessory">🔌 Accessory</option><option value="Tool">🔧 Tool</option><option value="Supply">📦 Supply</option><option value="Other">Other</option></select></label>
+     <label>Brand / Manufacturer<input id="brand" maxlength="100" placeholder="Apple, Samsung, Anker, iFixit"></label>
+     <label>SKU / Part Number<input id="sku" maxlength="100" placeholder="SCREEN-IP15P-OLED"></label>
+     <label>Compatible Device<input id="compatibleDevice" maxlength="240" placeholder="iPhone 15 Pro, Galaxy S24"></label>
+     <label id="quantityLabel">Opening Quantity *<input id="quantity" type="number" min="0" max="1000000" step="1" required value="0"></label>
+     <label>Reorder Alert at<input id="reorderPoint" type="number" min="0" max="1000000" step="1" required value="2"></label>
+     <label>Unit Purchase Cost ($) — Private<input id="unitCost" type="number" min="0" max="999999999.99" step="0.01" required value="0"></label>
+     <label>Storefront Selling Price ($)<input id="salePrice" type="number" min="0" max="999999999.99" step="0.01" required value="0"></label>
+     <label>Condition<select id="condition"><option>New - Factory Sealed</option><option>New - Open Box</option><option>Like New</option><option>Pre-Owned - Excellent</option><option>Pre-Owned - Good</option><option>Pre-Owned - Fair</option><option>Refurbished - Grade A</option><option>Refurbished - Grade B</option><option>Refurbished - Grade C</option><option>For Parts / Not Working</option></select></label>
+     <label>Storage Bin / Location<input id="storageLocation" maxlength="120" placeholder="Cabinet A / Shelf 2 / Bin 04"></label>
+     <label>Supplier — Private<input id="supplier" maxlength="160" placeholder="Supplier or wholesale shop"></label>
+     <label>Supplier Website — Private<input id="supplierUrl" type="url" maxlength="2000" placeholder="https://supplier.example/item"></label>
+     <label class="inv-wide">Customer-Facing Description<textarea id="publicDescription" maxlength="2500" rows="2" placeholder="What will customers see? Describe compatibility, specifications, package contents, etc."></textarea></label>
+     <label class="inv-wide">Internal Notes — Private<textarea id="notes" maxlength="2500" rows="2" placeholder="Supplier costs, shelf notes, special ordering details…"></textarea></label>
+     <div class="inv-wide inv-image-field">
+      <div><strong>📸 Product Photo (optional)</strong><p>Choose a JPG, PNG or WebP photo (up to 5 MB), or enter a public image URL.</p></div>
+      <div class="inv-image-inputs">
+       <label>Image URL<input id="imageUrl" type="url" maxlength="2000" placeholder="https://example.com/image.jpg"></label>
+       <label class="inv-photo-file">Choose Photo <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+       <div id="imagePreviewWrap" class="inv-image-preview" hidden><img id="imagePreview" alt="Selected product image preview"></div>
+      </div>
+     </div>
+     <label class="inv-wide inv-publish-check"><input id="publishAfterSave" type="checkbox"><span><strong>Publish to Customer Storefront after saving</strong><small>Creates or updates a storefront listing using your selling price and stock. Supplier, cost and internal notes stay private.</small></span></label>
+    </div>
+    <p id="editorHint" class="sub">Stock changes after creation should be entered with Adjust Stock to keep an accurate history.</p>
+    <div class="inv-form-actions"><button type="button" class="secondary" id="cancelBottom">Cancel</button><button type="submit" id="saveButton">💾 Save Inventory Item</button></div>
+   </form>
+  </section>
+
+  <p id="message" class="inv-message" role="status" aria-live="polite" hidden></p>
+  <p id="loading" class="sub inv-loading" role="status" aria-live="polite"></p>
+  <div class="inv-results-title"><h2>Inventory Items <span id="entryCount"></span></h2><p id="filterSummary">Current stock and storefront status</p></div>
+  <section id="inventoryGrid" class="inv-items-grid" aria-live="polite"><div class="inv-empty">Loading your secure inventory…</div></section>
+ </div>
+</main>
+
+<div id="adjustOverlay" class="inv-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="adjustTitle">
+ <div class="inv-dialog panel"><div class="inv-dialog-head"><h2 id="adjustTitle">Adjust Inventory Stock</h2><button type="button" class="secondary" id="closeAdjust" aria-label="Close adjust stock">✕</button></div>
+  <p id="adjustItemName" class="sub"></p>
+  <form id="adjustForm">
+   <input id="adjustItemId" type="hidden">
+   <div class="inv-adjust-tabs"><label><input type="radio" name="adjustDirection" value="add" checked> ＋ Add Stock</label><label><input type="radio" name="adjustDirection" value="remove"> − Use / Remove</label></div>
+   <label>Number of Units *<input id="adjustQuantity" type="number" min="1" max="1000000" step="1" required placeholder="1"></label>
+   <label>Reason for Change *<select id="adjustReason" required><option value="">Select a reason</option><option>New supplier delivery</option><option>Restocked / Returned</option><option>Used on a repair</option><option>Sold in-store</option><option>Damaged / Defective</option><option>Lost / Inventory correction</option><option>Other adjustment</option></select></label>
+   <label>Details (optional)<input id="adjustDetails" maxlength="120" placeholder="e.g. Repair ticket #, invoice, customer note"></label>
+   <p class="sub">Adjustments are saved to your stock history. Published products update automatically; stock cannot fall below customer reservations.</p>
+   <button id="adjustSaveButton" type="submit">Save Stock Adjustment</button>
+  </form>
+ </div>
+</div>
+
+<div id="historyOverlay" class="inv-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+ <div class="inv-dialog panel"><div class="inv-dialog-head"><h2 id="historyTitle">Stock History</h2><button type="button" class="secondary" id="closeHistory" aria-label="Close stock history">✕</button></div>
+  <p id="historyItemName" class="sub"></p>
+  <div id="historyList" class="inv-history-list">Loading…</div>
+ </div>
+</div>
+
+<footer>© <span id="year"></span> AJD's Wireless Repairs · Secure Inventory · Supabase</footer>
+</body>
+</html>
