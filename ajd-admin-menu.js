@@ -4,7 +4,7 @@
   const isMain=Boolean(document.getElementById('tabBtnRepairs'));
   const currentPage=document.body.dataset.page||'';
   const PAGE_TABS=new Set(['repairs','history','invoices','store','inventory']);
-  const LABELS={repairs:'Repairs',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',expenses:'Business Expenses',plans:'Planned Purchases'};
+  const LABELS={repairs:'Repairs',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',parts:'Inventory Tracker',expenses:'Business Expenses',plans:'Planned Purchases'};
   const sections=[
     {name:'REPAIR WORKSPACE',items:[
       {id:'repairs',icon:'💻',label:'Repairs',description:'Active repair tickets',tab:'repairs'},
@@ -13,6 +13,7 @@
       {id:'store',icon:'📥',label:'Customer Requests',description:'New inquiries and orders',tab:'store'}
     ]},
     {name:'BUSINESS & INVENTORY',items:[
+      {id:'parts',icon:'📦',label:'Inventory Tracker',description:'Parts, accessories & stock alerts',url:'/inventory'},
       {id:'inventory',icon:'🛍️',label:'Store Management',description:'Products, prices and stock',tab:'inventory'},
       {id:'expenses',icon:'💼',label:'Business Expenses',description:'Track spending and export',url:'./expenses.html'},
       {id:'plans',icon:'🛒',label:'Planned Purchases',description:'Shopping wish list and budget',url:'./planned-purchases.html'}
@@ -32,7 +33,7 @@
       {id:'tracking',icon:'📦',label:'Track a Repair',description:'Customer ticket lookup',url:'/track'}
     ]}
   ];
-  let drawer,backdrop,toggle,search,chip,previousFocus=null,currentSection=isMain?'repairs':currentPage==='expenses'?'expenses':'plans',lastHandledHash='';
+  let drawer,backdrop,toggle,search,chip,previousFocus=null,currentSection=isMain?'repairs':currentPage==='expenses'?'expenses':currentPage==='parts'?'parts':'plans',lastHandledHash='';
   const $=id=>document.getElementById(id);
   function make(tag,cls,text){
     const n=document.createElement(tag);
