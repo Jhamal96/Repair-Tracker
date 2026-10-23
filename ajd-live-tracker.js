@@ -47,7 +47,7 @@ function showUpdateNotice(oldStatus,newStatus,amountOnly=false){
   $('changeNoticeText').textContent='Your repair information has changed. The latest figures are displayed below.';
  }else{
   $('changeNoticeTitle').textContent='Your repair status has changed!';
-  $('changeNoticeText').textContent='Your repair moved from '+STAGES[stageIndex(oldStatus)]?.label+' to '+STAGES[stageIndex(newStatus)]?.label+'.';
+  $('changeNoticeText').textContent='Your repair moved from '+(STAGES[stageIndex(oldStatus)]?.label||'an earlier stage')+' to '+(STAGES[stageIndex(newStatus)]?.label||'a new stage')+'.';
  }
  box.hidden=false;
 }
@@ -93,6 +93,9 @@ function scheduleNext(){
 function resetSession(showPrompt=true){
  version++;
  stopTimer();
+ busy=false;
+ $('trackLookupButton').disabled=false;
+ $('refreshStatusButton').disabled=false;
  activeCredentials=null;currentJob=null;lastSignature='';errorsInARow=0;lastCheckedTime=0;
  $('liveTrackerBar').hidden=true;
  hideUpdateNotice();
@@ -202,7 +205,7 @@ async function loadTrackedJob(kind='automatic'){
   }
   const offline=!navigator.onLine;
   setConnection(offline?'offline':'offline',offline?'You are offline':'Connection interrupted',
-   currentJob?'Last verified status is shown. We will try again when connected.':'Unable to check right now. Use Refresh now to retry.');
+   currentJob?(offline?'Last verified status shown. Waiting for your connection.':'Last verified status shown. Retrying automatically.'):'Unable to check right now. Use Refresh now to retry.');
   console.warn('AJD secure tracking temporarily unavailable:',error.message);
  }finally{
   if(startedVersion===version){busy=false;$('trackLookupButton').disabled=false;$('refreshStatusButton').disabled=false;updateLiveToggle();scheduleNext();}
