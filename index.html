@@ -62,7 +62,7 @@ body:not(.admin-locked) #adminLoginGate{display:none!important}
 <div class="ajd-catalog-step-heading"><span class="ajd-catalog-number">1</span> Device type &amp; manufacturer</div>
 <div class="ajd-catalog-grid">
 <label class="lbl" for="productCategory">Category *<select class="field" id="productCategory" required><option value="Phones">📱 Phones</option><option value="Tablets">Tablets</option><option value="Smartwatches">Smartwatches</option><option value="Laptops">Laptops</option><option value="Accessories">Accessories</option><option value="Parts">Parts</option><option value="Other">Other</option></select></label>
-<label class="lbl" for="productBrand">Brand / manufacturer<select class="field" id="productBrand"><option value="">Choose a brand</option></select></label>
+<label class="lbl" for="productBrand">Brand / manufacturer<select class="field" id="productBrand"><option value="">Choose a brand</option></select></label><div class="ajd-catalog-wide" id="productCustomBrandWrap" hidden><label class="lbl" for="productCustomBrand">Brand not listed? Enter manufacturer<input class="field" id="productCustomBrand" maxlength="85" placeholder="e.g. BLU, Alcatel, Oukitel, Ulefone"></label></div>
 <p class="ajd-catalog-help ajd-catalog-wide" id="productCatalogHelp">Apple iPhone, Samsung Galaxy, Google Pixel, Motorola, and more.</p>
 </div></div>
 <div class="ajd-catalog-block">
@@ -880,8 +880,10 @@ async function saveStoreProduct(e){
       if(!loads)throw new Error('Storage accepted the file, but the picture cannot be displayed publicly. In Supabase → Storage, confirm the product-images bucket is PUBLIC, then check the uploaded object and URL.');
       setProductImageStatus('Photo verified. Saving product to the catalog…','info');
     }else setProductImageStatus('Saving product to Supabase…','info');
+    const deviceDetails=window.AJDDeviceCatalog?.getData()||{};
     const product={
       id,title:$('productTitle').value.trim(),category:$('productCategory').value,
+      brand:deviceDetails.brand||'',device_family:deviceDetails.series||'',model:deviceDetails.model||'',capacity:deviceDetails.capacity||'',color:deviceDetails.color||'',
       price:Math.ceil(Math.max(0,num($('productPrice').value))*100)/100,
       sku:$('productSku').value.trim(),condition:(window.AJDDeviceCatalog?.readCondition()??$('productCondition').value).trim(),
       stock_quantity:Math.max(0,Math.floor(num($('productStock').value))),
