@@ -100,10 +100,10 @@ function save(bytes,name){
 function appendKV(rows,key,value){rows.push({type:'line',text:key+': '+String(value??'')})}
 function receipt(job,payment,config={}){
  const num=String(job?.invoice_number||'').trim();
- if(!num)throw Error('This repair needs a permanent invoice number. Sync the ticket to Supabase first.');
+ const draft=!num;
  const p=payment||{};
- const rows=[{type:'title',text:"AJD'S WIRELESS REPAIRS"},{type:'center',text:config.phone||''},{type:'center',text:config.email||''},{type:'rule'},{type:'heading',text:'CUSTOMER INVOICE / RECEIPT'}];
- appendKV(rows,'INVOICE',num);
+ const rows=[{type:'title',text:"AJD'S WIRELESS REPAIRS"},{type:'center',text:config.phone||''},{type:'center',text:config.email||''},{type:'rule'},{type:'heading',text:draft?'DRAFT RECEIPT - NOT OFFICIAL':'CUSTOMER INVOICE / RECEIPT'}];
+ appendKV(rows,'INVOICE',num||'AWAITING CLOUD SYNC');
  appendKV(rows,'DATE',displayDate(job.created_at));
  appendKV(rows,'CUSTOMER',job.customer_name||'Customer');
  if(job.customer_phone)appendKV(rows,'PHONE',job.customer_phone);
@@ -120,8 +120,10 @@ function receipt(job,payment,config={}){
  if(Number(p.required)>0)appendKV(rows,'Required Deposit',MONEY(p.required));
  appendKV(rows,'Paid to Date',MONEY(p.paid));
  appendKV(rows,'Balance Due',MONEY(p.balance));
- rows.push({type:'rule'},{type:'center',text:Number(p.balance)<=0?'PAID IN FULL':Number(p.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE'},{type:'gap'},{type:'center',text:'THANK YOU FOR CHOOSING AJD!'},{type:'center',text:'repair.ajdapp.org/track'},{type:'small',text:'Use invoice '+num+' and verified phone/email.'});
- return save(pdfBytes(rows),'AJD-Receipt-'+num+'.pdf');
+ rows.push({type:'rule'},{type:'center',text:Number(p.balance)<=0?'PAID IN FULL':Number(p.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE'},{type:'gap'},{type:'center',text:'THANK YOU FOR CHOOSING AJD!'});
+ if(draft){rows.push({type:'heading',text:'DRAFT - NOT OFFICIAL'},{type:'small',text:'Sync this repair to Supabase for a permanent invoice number.'});}
+ else rows.push({type:'center',text:'repair.ajdapp.org/track'},{type:'small',text:'Use invoice '+num+' and verified phone/email.'});
+ return save(pdfBytes(rows),'AJD-'+(draft?'DRAFT-'+String(job.id||'Receipt').slice(0,32):'Receipt-'+num)+'.pdf');
 }
 function status(job){
  if(!job?.invoice_number&&!job?.id)throw Error('Verify your repair ticket before exporting.');
