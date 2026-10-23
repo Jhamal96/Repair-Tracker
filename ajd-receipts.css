@@ -58,3 +58,21 @@
  #invoicePrintSheet .receipt-section{break-inside:avoid}
  a[href]:after{content:none!important}
 }
+
+/* Separate working print and downloaded-PDF actions; keep all controls accessible on mobile */
+#invoiceModal .ajd-receipt-toolbar {align-items:flex-start}
+#invoiceModal .ajd-receipt-buttons {gap:7px}
+#invoiceModal .ajd-receipt-buttons .btn {min-height:43px;padding:9px 12px;white-space:nowrap;font-weight:900;font-size:11px;line-height:1.3}
+#invoiceModal #receiptPdfButton {background:linear-gradient(110deg,#059669,#047857)!important;color:#fff!important;border-color:#059669!important}
+#invoiceModal #receiptPdfButton:hover {filter:brightness(1.1)}
+#invoiceModal .ajd-receipt-help {background:rgba(59,130,246,.08);padding:9px 12px;border-radius:10px}
+@media(max-width:550px){
+ #invoiceModal .ajd-receipt-toolbar{display:block}
+ #invoiceModal .ajd-receipt-buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+ #invoiceModal .ajd-receipt-buttons .btn{width:100%;white-space:normal;min-height:44px}
+ #invoiceModal #receiptPrintViewButton{grid-column:1/-1}
+}
+@media print{
+ #invoiceModal #receiptPdfButton,
+ #invoiceModal #receiptPrintViewButton {display:none!important}
+}
