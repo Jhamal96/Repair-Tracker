@@ -98,7 +98,12 @@ function render(){
  const os=selected;
  install.classList.toggle("hidden",!(pwaPrompt && os==="android"));
  more.href=releases;
- if(os==="ios"){
+ if(os==="web"){
+   title.textContent="Use AJD’s Wireless Repairs on this device";
+   desc.textContent="Your platform was not recognized. The secure admin dashboard is available in your browser.";
+   primary.href=ROOT;primary.textContent="Open web dashboard ↗";more.classList.add("hidden");
+   help.textContent="For Windows, Mac, Android or iOS, select a platform above to see the correct installer or Home Screen instructions.";
+ }else if(os==="ios"){
    title.textContent="Add AJD’s Wireless Repairs to your iPhone or iPad";
    desc.textContent="The web app works on iOS through Safari — no Android APK is needed.";
    primary.href=ROOT;primary.textContent="Open in Safari ↗";more.classList.add("hidden");
