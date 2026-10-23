@@ -89,7 +89,7 @@ function getPlatform(){
 const names={windows:"Windows PC",mac:"Mac computer",android:"Android phone or tablet",ios:"iPhone or iPad",other:"Other device"};
 const icons={windows:"🪟",mac:"🍎",android:"🤖",ios:"📱",other:"🌎"};
 const detected=getPlatform();
-let selected=detected==="other"?"ios":detected;
+let selected=detected==="other"?"web":detected;
 document.getElementById("device-name").textContent=names[detected];
 document.getElementById("device-icon").textContent=icons[detected];
 function render(){
