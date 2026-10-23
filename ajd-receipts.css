@@ -1,0 +1,60 @@
+/* AJD Wireless Repairs — compact invoice cards and 80mm customer receipts */
+.ajd-invoice-list{display:grid;gap:11px}
+.ajd-invoice-entry{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;min-height:87px;padding:15px 17px;text-align:left;border:1px solid #d8e4f4;border-radius:18px;background:linear-gradient(125deg,#fff,#f8fbff);color:#0f172a;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.dark .ajd-invoice-entry{background:linear-gradient(135deg,#0d1c30,#12233a);border-color:#2c405d;color:#f8fafc}
+.ajd-invoice-entry:hover{transform:translateY(-2px);border-color:rgba(59,130,246,.55);box-shadow:0 12px 30px rgba(37,99,235,.08)}
+.ajd-invoice-entry:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.ajd-invoice-row-label{min-width:0;flex:1}
+.ajd-invoice-no{display:inline-flex;align-items:center;gap:7px;color:#2563eb;font-size:12px;font-weight:900;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.dark .ajd-invoice-no{color:#93c5fd}
+.ajd-invoice-name{display:block;font-size:14px;font-weight:900;margin-top:5px;overflow-wrap:anywhere}
+.ajd-invoice-description{display:block;color:#64748b;font-size:11px;margin-top:6px;line-height:1.5}
+.dark .ajd-invoice-description{color:#94a3b8}
+.ajd-invoice-open{white-space:nowrap;display:inline-flex;align-items:center;gap:7px;padding:11px 13px;background:#2563eb;color:#fff;border-radius:11px;font-size:12px;font-weight:900;box-shadow:0 6px 16px rgba(37,99,235,.2)}
+.ajd-invoice-pending{color:#d97706}
+.dark .ajd-invoice-pending{color:#fbbf24}
+#invoiceModal .modal-inner{max-width:470px;max-height:94dvh;overflow-y:auto;padding:17px;border-radius:24px;background:linear-gradient(155deg,#fff,#f4f8ff);border:1px solid #dbe5f3;box-shadow:0 24px 80px #0005}
+.dark #invoiceModal .modal-inner{background:linear-gradient(145deg,#102038,#0b172a);border-color:#354a66}
+#invoiceModal .ajd-receipt-toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+#invoiceModal .ajd-receipt-toolbar-title{font-size:14px;font-weight:900;letter-spacing:-.2px}
+#invoiceModal .ajd-receipt-toolbar-note{font-size:10px;color:#64748b;margin-top:2px}
+.dark #invoiceModal .ajd-receipt-toolbar-note{color:#a1b6d3}
+#invoiceModal .ajd-receipt-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+#invoiceModal .ajd-receipt-buttons button{min-height:40px}
+#invoiceModal button:disabled{opacity:.5;cursor:not-allowed}
+#invoiceModal .ajd-receipt-help{margin-top:11px;text-align:center;font-size:11px;line-height:1.6;color:#64748b}
+.dark #invoiceModal .ajd-receipt-help{color:#b0c2dc}
+#invoiceModal #invoicePrintSheet{--paper:#fff;background:#fff!important;color:#000!important;font-family:'Courier New',Consolas,monospace;font-size:11px;line-height:1.45;text-align:left;width:100%;max-width:320px;margin:0 auto;padding:18px 14px 20px;border:1px dashed #ced8e4;border-radius:4px;box-shadow:0 12px 34px rgba(2,6,23,.1);overflow-wrap:anywhere}
+#invoicePrintSheet *{box-sizing:border-box;color:#000!important}
+#invoicePrintSheet .receipt-brand{text-align:center;margin-bottom:12px}
+#invoicePrintSheet .receipt-brand-icon{width:42px;height:42px;display:grid;place-items:center;margin:0 auto 7px;border:3px solid #111;border-radius:13px;font:900 14px system-ui,sans-serif}
+#invoicePrintSheet .receipt-brand h2{font-size:15px;line-height:1.14;margin:0 0 6px;font-weight:900;letter-spacing:-.35px}
+#invoicePrintSheet .receipt-brand p{margin:3px 0;font-size:10px}
+#invoicePrintSheet .receipt-title{text-align:center;font-weight:900;font-size:12px;letter-spacing:2px;padding:9px 0;border-top:1px dashed #222;border-bottom:1px dashed #222;margin:10px 0}
+#invoicePrintSheet .receipt-metadata{display:grid;grid-template-columns:auto 1fr;gap:5px 9px;font-size:10px;margin:11px 0}
+#invoicePrintSheet .receipt-metadata dt{font-weight:900;white-space:nowrap}
+#invoicePrintSheet .receipt-metadata dd{margin:0;min-width:0;overflow-wrap:anywhere}
+#invoicePrintSheet .receipt-number{font-size:15px;font-weight:900;letter-spacing:.2px}
+#invoicePrintSheet .receipt-section{border-top:1px dashed #444;margin-top:12px;padding-top:10px}
+#invoicePrintSheet .receipt-section h3{font-size:10px;font-weight:900;letter-spacing:1.1px;margin:0 0 7px}
+#invoicePrintSheet .receipt-item{display:flex;justify-content:space-between;gap:8px;margin:5px 0;font-size:10px}
+#invoicePrintSheet .receipt-item .receipt-right{white-space:nowrap;text-align:right;font-weight:900}
+#invoicePrintSheet .receipt-grand-total{border-top:2px solid #111;padding-top:8px;margin-top:9px;font-size:13px;font-weight:900}
+#invoicePrintSheet .receipt-balance{font-weight:900;margin-top:7px;font-size:12px}
+#invoicePrintSheet .receipt-chip{display:block;text-align:center;padding:8px 5px;margin:12px 0;border:1px solid #222;font-weight:900;letter-spacing:1px;font-size:11px}
+#invoicePrintSheet .receipt-footer{text-align:center;border-top:1px dashed #444;margin-top:14px;padding-top:13px;font-size:10px;line-height:1.6}
+#invoicePrintSheet .receipt-draft-warning{font-size:10px;font-weight:900;text-align:center;padding:9px;border:2px solid #000;margin:10px 0}
+@media(max-width:530px){.ajd-invoice-entry{padding:13px;gap:8px}.ajd-invoice-open{font-size:11px;padding:9px}.ajd-invoice-description{font-size:10px}#invoiceModal .modal-inner{padding:12px}}
+@media print{
+ @page{size:80mm auto;margin:4mm}
+ html,body{background:#fff!important;color:#000!important;width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important}
+ body > *:not(#invoiceModal){display:none!important}
+ #invoiceModal{display:block!important;visibility:visible!important;position:static!important;inset:auto!important;height:auto!important;width:100%!important;min-height:0!important;padding:0!important;margin:0!important;background:#fff!important;overflow:visible!important}
+ #invoiceModal *{visibility:visible!important}
+ #invoiceModal .modal-inner{position:static!important;display:block!important;width:100%!important;max-width:100%!important;max-height:none!important;overflow:visible!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
+ #invoiceModal .no-print{display:none!important}
+ #invoiceModal #invoicePrintSheet{display:block!important;width:72mm!important;max-width:72mm!important;margin:0 auto!important;padding:0!important;min-height:0!important;border:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;color:#000!important;font-size:10px!important}
+ #invoicePrintSheet .receipt-brand-icon{box-shadow:none!important}
+ #invoicePrintSheet .receipt-section{break-inside:avoid}
+ a[href]:after{content:none!important}
+}
