@@ -1,7 +1,7 @@
 # AJD's Wireless Repairs — Android APK
 
 The Android application wraps the **private admin dashboard** at:
-https://repair.jhamal16.workers.dev/index.html
+https://repair.ajdapp.org/
 
 It requires your existing **Supabase admin login**. It also opens the separate
 Business Expenses and Planned Purchases pages from the main dashboard.
