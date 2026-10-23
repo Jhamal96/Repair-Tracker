@@ -135,8 +135,8 @@ function render(job){
     <div class="ajd-ticket-info"><small>Device</small><strong>${escapeHtml(job.make_model||'Your device')}</strong></div>
    </div>
    <section class="ajd-track-progress" aria-label="Repair progress">
-    <div class="ajd-track-progress-head"><strong>Repair journey</strong><span>${progress}% · ${escapeHtml(current?.label||'Status unavailable')}</span></div>
-    <div class="ajd-track-progress-bar" role="progressbar" aria-label="Repair progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}">
+    <div class="ajd-track-progress-head"><strong>Repair journey</strong><span>${index>=0?`Stage ${index+1} of ${STAGES.length} · `:""}${escapeHtml(current?.label||'Status unavailable')}</span></div>
+    <div class="ajd-track-progress-bar" role="progressbar" aria-label="Repair workflow milestones" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-valuetext="${index>=0?`Stage ${index+1} of ${STAGES.length}: ${escapeHtml(current.label)}`:'Unknown status'}">
      <div class="ajd-track-progress-fill" style="width:${progress}%"></div>
     </div>
     <div class="ajd-stage-timeline">${markup}</div>
