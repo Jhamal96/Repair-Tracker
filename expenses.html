@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="./admin-icon-192.png" type="image/png"><link rel="stylesheet" href="./business-finance.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./business-finance.js" defer></script>
-<link rel="stylesheet" href="./ajd-admin-menu.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="expenses">
+<link rel="stylesheet" href="./ajd-admin-menu.css"><link rel="stylesheet" href="./ajd-premium-admin.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="expenses">
 <header><div class="wrap top">
 <div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Business Expenses · Admin Only</div></div></div>
 <nav class="nav" aria-label="Admin pages">
@@ -16,8 +16,8 @@
 <main class="wrap">
 <section id="accessBlock" class="panel" role="status"><h1>🔒 Admin Account Required</h1><p id="accessMessage">Verifying your Supabase administrator session…</p><a class="button" href="./index.html">Sign in on Main Dashboard</a></section>
 <div id="appContent" hidden>
-<h1 class="page-title">Business Expenses</h1>
-<p class="lead">Track what the business has actually spent. Filter by month or category, review totals, and export records for bookkeeping. Your entries sync directly to your secure Supabase project.</p>
+<section class="ajd-finance-hero" aria-label="Business Expenses overview"><div class="ajd-finance-hero-copy"><span class="ajd-finance-kicker">AJD BUSINESS TOOLS · TRACK YOUR SPENDING</span><h1>Know where every dollar goes.</h1><p>Organize business expenses, monitor your monthly spending, and export records for easy bookkeeping. Everything stays inside your admin-only workspace.</p><button type="button" onclick="document.getElementById('newButton').click()">+ Add Expense ↗</button></div><div class="ajd-finance-symbol" aria-hidden="true">💼</div></section>
+
 <div class="stats">
 <div class="panel stat accent"><p>Selected Month Total</p><strong id="statOne">$0.00</strong></div>
 <div class="panel stat good"><p>Filtered Total</p><strong id="statTwo">$0.00</strong></div>

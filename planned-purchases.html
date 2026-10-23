@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="./admin-icon-192.png" type="image/png"><link rel="stylesheet" href="./business-finance.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./business-finance.js" defer></script>
-<link rel="stylesheet" href="./ajd-admin-menu.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="plans">
+<link rel="stylesheet" href="./ajd-admin-menu.css"><link rel="stylesheet" href="./ajd-premium-admin.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="plans">
 <header><div class="wrap top">
 <div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Planned Purchases · Admin Only</div></div></div>
 <nav class="nav" aria-label="Admin pages">
@@ -16,8 +16,8 @@
 <main class="wrap">
 <section id="accessBlock" class="panel" role="status"><h1>🔒 Admin Account Required</h1><p id="accessMessage">Verifying your Supabase administrator session…</p><a class="button" href="./index.html">Sign in on Main Dashboard</a></section>
 <div id="appContent" hidden>
-<h1 class="page-title">Planned Purchases</h1>
-<p class="lead">Plan what you want to buy for the business, set priorities, and turn purchases into actual expenses once paid. Your entries sync directly to your secure Supabase project.</p>
+<section class="ajd-finance-hero" aria-label="Planned Purchases overview"><div class="ajd-finance-hero-copy"><span class="ajd-finance-kicker">AJD BUSINESS TOOLS · PLAN YOUR NEXT MOVE</span><h1>Plan today. Buy smarter.</h1><p>Keep your wish list, tools, parts, and supply purchases organized. Compare estimated costs and turn a completed purchase into an expense.</p><button type="button" onclick="document.getElementById('newButton').click()">+ Add Planned Purchase ↗</button></div><div class="ajd-finance-symbol" aria-hidden="true">🛒</div></section>
+
 <div class="stats">
 <div class="panel stat accent"><p>Still Planned / Ordered</p><strong id="statOne">$0.00</strong></div>
 <div class="panel stat good"><p>Purchased (estimated)</p><strong id="statTwo">$0.00</strong></div>
