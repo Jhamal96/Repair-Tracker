@@ -302,6 +302,11 @@ function generateTitle(){
  if(data.color && !out.toLowerCase().includes(data.color.toLowerCase()))out+=' · '+data.color;
  return out;
 }
+function clearGeneratedTitle(){
+ const title=$('productTitle');
+ if(title&&lastAutoTitle&&title.value===lastAutoTitle)title.value='';
+ lastAutoTitle='';
+}
 function fillTitle(force=false){
  const title=$('productTitle'),next=generateTitle();
  if(!title)return;
@@ -317,6 +322,7 @@ function fillTitle(force=false){
 }
 function brandChanged(){
  if(isUpdating)return;
+ clearGeneratedTitle();
  const cat=$('productCategory').value, brand=$('productBrand').value;
  const families=DEVICES[cat]?.[brand]||{};
  const all=unique(Object.keys(families).concat(GENERIC_FAMILIES[cat]||[]));
@@ -327,6 +333,7 @@ function brandChanged(){
 }
 function seriesChanged(){
  if(isUpdating)return;
+ clearGeneratedTitle();
  const cat=$('productCategory').value,brand=$('productBrand').value,series=$('productSeries').value;
  const models=unique(DEVICES[cat]?.[brand]?.[series]||[]);
  const picker=$('productModelPicker');
@@ -339,6 +346,7 @@ function seriesChanged(){
 }
 function categoryChanged(){
  if(isUpdating)return;
+ clearGeneratedTitle();
  const category=$('productCategory').value;
  const brands=unique((EXTRA_BRANDS[category]||[]).concat(Object.keys(DEVICES[category]||{})));
  replaceOptions('productBrand',[...brands.map(b=>[b,b]),[OTHER,'Other / Unlisted Brand']],'Choose manufacturer / brand');
@@ -358,6 +366,7 @@ function updateHelp(){
 }
 function productModelChanged(){
  if(isUpdating)return;
+ clearGeneratedTitle();
  const picker=$('productModelPicker'),custom=picker.value===SELECT_CUSTOM;
  $('productCustomModelWrap').hidden=!custom;
  $('productCustomModel').required=custom;
