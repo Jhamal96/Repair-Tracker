@@ -25,7 +25,7 @@ const DEVICES={
     },
     Samsung:{
       'Galaxy S':[
-        ...numeric(20,26).flatMap(n=>['Galaxy S'+n,'Galaxy S'+n+'+','Galaxy S'+n+' Ultra',...(n===21||n===23||n===24||n===26?['Galaxy S'+n+' FE']:[])]),
+        ...numeric(20,26).flatMap(n=>['Galaxy S'+n,'Galaxy S'+n+'+','Galaxy S'+n+' Ultra',...(['21','23','24','26'].includes(n)?['Galaxy S'+n+' FE']:[])]),
         'Galaxy S10e','Galaxy S10','Galaxy S10+','Galaxy S10 5G','Galaxy S9','Galaxy S9+','Galaxy S8','Galaxy S8+'
       ],
       'Galaxy Z Fold':numeric(2,7).map(n=>'Galaxy Z Fold'+n).concat(['Galaxy Fold','Galaxy Z Fold Special Edition']),
@@ -35,7 +35,7 @@ const DEVICES={
       'Galaxy M':named('Galaxy',['M13','M14','M15','M16','M23','M33','M34','M35','M36','M52','M53','M54','M55'])
     },
     Google:{
-      'Pixel':numeric(3,10).flatMap(n=>['Pixel '+n,...(n>=6?['Pixel '+n+' Pro']:[]),...(n===9||n===10?['Pixel '+n+' Pro XL']:[]),...(n>=6?['Pixel '+n+'a']:[])]).concat(['Pixel','Pixel XL','Pixel 2','Pixel 2 XL','Pixel 3a','Pixel 3a XL','Pixel 4a','Pixel 4a 5G','Pixel 5a']),
+      'Pixel':numeric(3,10).flatMap(n=>['Pixel '+n,...(n>=6?['Pixel '+n+' Pro']:[]),...((n==='9'||n==='10')?['Pixel '+n+' Pro XL']:[]),...(n>=6?['Pixel '+n+'a']:[])]).concat(['Pixel','Pixel XL','Pixel 2','Pixel 2 XL','Pixel 3a','Pixel 3a XL','Pixel 4a','Pixel 4a 5G','Pixel 5a']),
       'Pixel Fold': ['Pixel Fold','Pixel 9 Pro Fold','Pixel 10 Pro Fold']
     },
     Motorola:{
