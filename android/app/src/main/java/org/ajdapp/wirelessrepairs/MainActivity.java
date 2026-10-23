@@ -21,15 +21,20 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.util.Base64;
+import java.io.OutputStream;
+import java.io.IOException;
 
 public class MainActivity extends Activity {
     private static final String HOME_URL = "https://repair.ajdapp.org/";
     private static final String TRUSTED_HOST = "repair.ajdapp.org";
     private static final int FILE_CHOOSE_REQUEST = 1011;
+    private static final int PDF_SAVE_REQUEST = 1012;
 
     private WebView webView;
     private ProgressBar progressBar;
     private ValueCallback<Uri[]> pendingFileChooser;
+    private String pendingPdfBase64;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,14 +152,48 @@ public class MainActivity extends Activity {
 
     // This bridge only opens Android's standard print preview for the currently
     // loaded HTTPS AJD dashboard. No data is sent to a separate print service.
+    private boolean isTrustedPage() {
+        if (webView == null || webView.getUrl() == null) return false;
+        Uri page = Uri.parse(webView.getUrl());
+        return "https".equalsIgnoreCase(page.getScheme())
+                && TRUSTED_HOST.equalsIgnoreCase(page.getHost());
+    }
+
     private class ReceiptPrintBridge {
+        @JavascriptInterface
+        public void savePdf(String base64, String requestedName) {
+            // Android WebView does not support blob URL downloads reliably.
+            // Ask Android where to save a client-generated PDF using Storage Access Framework.
+            if (base64 == null || base64.length() > 6_000_000 || base64.isEmpty()) return;
+            final String safeName = (requestedName == null ? "AJD-Receipt.pdf" : requestedName)
+                    .replaceAll("[^A-Za-z0-9_.-]", "_");
+            runOnUiThread(() -> {
+                if (!isTrustedPage()) return;
+                if (pendingPdfBase64 != null) {
+                    Toast.makeText(MainActivity.this,
+                            "Complete or cancel the current PDF save first.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                pendingPdfBase64 = base64;
+                Intent picker = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                picker.addCategory(Intent.CATEGORY_OPENABLE);
+                picker.setType("application/pdf");
+                picker.putExtra(Intent.EXTRA_TITLE,
+                        safeName.isEmpty() ? "AJD-Receipt.pdf" : safeName);
+                try {
+                    startActivityForResult(picker, PDF_SAVE_REQUEST);
+                } catch (ActivityNotFoundException error) {
+                    pendingPdfBase64 = null;
+                    Toast.makeText(MainActivity.this,
+                            "No app is available to save PDFs.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
         @JavascriptInterface
         public void printReceipt() {
             runOnUiThread(() -> {
-                if (webView == null || webView.getUrl() == null) return;
-                Uri page = Uri.parse(webView.getUrl());
-                if (!"https".equalsIgnoreCase(page.getScheme())
-                        || !TRUSTED_HOST.equalsIgnoreCase(page.getHost())) return;
+                if (!isTrustedPage()) return;
                 PrintManager manager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
                 if (manager == null) {
                     Toast.makeText(MainActivity.this,
@@ -179,6 +218,24 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PDF_SAVE_REQUEST) {
+            final String encoded = pendingPdfBase64;
+            pendingPdfBase64 = null;
+            if (resultCode == RESULT_OK && data != null && data.getData() != null
+                    && encoded != null) {
+                try (OutputStream stream = getContentResolver().openOutputStream(data.getData())) {
+                    if (stream == null) throw new IOException("Cannot write to that location.");
+                    byte[] pdf = Base64.decode(encoded, Base64.DEFAULT);
+                    stream.write(pdf);
+                    stream.flush();
+                    Toast.makeText(this, "AJD PDF saved successfully.", Toast.LENGTH_LONG).show();
+                } catch (Exception error) {
+                    Toast.makeText(this,
+                            "Unable to save PDF: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+            return;
+        }
         if (requestCode == FILE_CHOOSE_REQUEST && pendingFileChooser != null) {
             pendingFileChooser.onReceiveValue(
                     WebChromeClient.FileChooserParams.parseResult(resultCode, data));
@@ -215,6 +272,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        pendingPdfBase64 = null;
         if (pendingFileChooser != null) {
             pendingFileChooser.onReceiveValue(null);
             pendingFileChooser = null;
