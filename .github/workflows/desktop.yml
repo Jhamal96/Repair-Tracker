@@ -1,0 +1,84 @@
+name: Build AJD Wireless Repairs desktop installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ajd-repair-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  installers:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: dist:win
+            artifact: repair-desktop-windows
+          - os: macos-latest
+            target: dist:mac
+            artifact: repair-desktop-macos
+    steps:
+      - name: Checkout website and desktop source
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+      - name: Create installer
+        working-directory: desktop
+        run: npm run ${{ matrix.target }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Upload unsigned test installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/*.dmg
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish Windows and Mac releases
+    needs: installers
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: repair-desktop-*
+          merge-multiple: true
+          path: dist
+      - name: Publish latest test release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ls -lh dist/
+          if gh release view desktop-latest >/dev/null 2>&1; then
+            gh release upload desktop-latest dist/*.exe dist/*.dmg --clobber
+          else
+            gh release create desktop-latest dist/*.exe dist/*.dmg \
+              --target "$GITHUB_SHA" \
+              --title "AJD's Wireless Repairs — Windows & macOS" \
+              --notes "Private admin app. Unsigned test installers for Windows x64 and macOS universal (Apple Silicon/Intel). Authorized Supabase administrator login remains required. This GitHub repository is private and downloading its release assets requires repository access." \
+              --prerelease
+          fi
