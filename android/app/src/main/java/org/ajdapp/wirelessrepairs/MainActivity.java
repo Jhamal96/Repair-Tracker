@@ -19,8 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-    private static final String HOME_URL = "https://repair.jhamal16.workers.dev/index.html";
-    private static final String TRUSTED_HOST = "repair.jhamal16.workers.dev";
+    private static final String HOME_URL = "https://repair.ajdapp.org/";
+    private static final String TRUSTED_HOST = "repair.ajdapp.org";
     private static final int FILE_CHOOSE_REQUEST = 1011;
 
     private WebView webView;
