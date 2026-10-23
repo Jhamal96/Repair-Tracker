@@ -79,14 +79,14 @@
   </header>
 <nav class="ajd-site-nav no-print" aria-label="Customer site navigation"><span class="ajd-nav-kicker">AJD • SERVICE HUB</span><div class="ajd-site-nav-links"><a href="/store">⌂ Store</a><a href="/request">✦ Repair Request</a><a href="/track" aria-current="page">▣ Track Repair</a></div></nav>
 
-  <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5"><section class="ajd-track-hero no-print" aria-labelledby="ajdTrackTitle"><span class="ajd-hero-badge">AJD REPAIR TRACKER</span><h2 id="ajdTrackTitle">Your device. Your updates.<br><span style="color:#67e8f9">All in one place.</span></h2><p>Already dropped off your device? Enter your repair ticket and the phone number or email provided at check-in to view progress securely.</p><div class="ajd-trust-list"><span>✓ Private ticket lookup</span><span>✓ Current repair stage</span></div></section>
+  <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5"><section class="ajd-track-hero no-print" aria-labelledby="ajdTrackTitle"><span class="ajd-hero-badge">AJD REPAIR TRACKER</span><h2 id="ajdTrackTitle">Your device. Your updates.<br><span style="color:#67e8f9">All in one place.</span></h2><p>Already dropped off your device? Enter your invoice number or original repair ticket plus the phone number or email provided at check-in to view progress securely.</p><div class="ajd-trust-list"><span>✓ Private ticket lookup</span><span>✓ Current repair stage</span></div></section>
 
     <!-- Search Card Bar -->
     <div class="dark-card p-4 sm:p-5 rounded-3xl shadow-lg no-print space-y-3 border border-slate-800">
       <label class="block text-xs font-extrabold uppercase tracking-wider text-brand-400">🔍 Search Your Repair Status</label>
       <div class="flex gap-2">
         <div class="relative flex-1">
-          <input type="text" id="trackerSearchInput" placeholder="Enter ticket ID (e.g. AJ7K3M)" autocomplete="off" maxlength="80" class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
+          <input type="text" id="trackerSearchInput" placeholder="Invoice # AJD-00001 or repair ticket ID" autocomplete="off" maxlength="80" class="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
           <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
         <button type="button" onclick="performCustomerSearch()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-extrabold text-xs rounded-2xl shadow transition active:scale-95 cursor-pointer shrink-0">
@@ -95,14 +95,14 @@
       </div>
       <label for="trackerContactInput" class="block text-xs font-extrabold tracking-wide text-brand-400">Verify your phone number or email</label>
       <input type="text" id="trackerContactInput" placeholder="Phone number or email used at check-in" autocomplete="off" maxlength="254" class="w-full px-4 py-2.5 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 text-white placeholder-slate-500 font-medium" onkeydown="if(event.key==='Enter'){performCustomerSearch();}">
-      <p class="text-[11px] text-slate-400 font-medium">For privacy, enter the ticket ID and the same phone number or email given at check-in. Name-only searches are unavailable.</p>
+      <p class="text-[11px] text-slate-400 font-medium">For privacy, enter your invoice number or ticket ID and the same phone number or email given at check-in. Name-only searches are unavailable.</p>
     </div>
 
     <!-- Active Job or Results Container -->
     <div id="trackerContent" class="dark-card p-5 sm:p-8 rounded-3xl shadow-2xl printable-card space-y-6">
       <div class="text-center py-12 space-y-3">
         <svg class="animate-spin w-8 h-8 text-brand-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <p class="text-xs font-bold text-slate-400">Enter your ticket number and contact information above to see repair progress.</p>
+        <p class="text-xs font-bold text-slate-400">Enter your invoice or ticket number and contact information above to see repair progress.</p>
       </div>
     </div>
 
@@ -147,7 +147,7 @@
       const stage = status === 'picked_up' ? 'Picked Up' : pickup ? 'Ready for Pickup' : status === 'in-progress' ? 'In Repair' : 'Checked In';
       $('trackerContent').innerHTML = `
         <div class="text-center space-y-2 border-b border-slate-800 pb-6"><h2 class="text-xl font-black text-white">AJD's Wireless Repairs</h2><p class="text-xs text-slate-400">Device Repair Progress</p></div>
-        <div class="flex flex-wrap justify-between items-center gap-2 text-xs"><div><span class="text-slate-400">Ticket:</span> <b class="text-blue-400">${escapeHtml(job.id)}</b></div><div><span class="text-slate-400">Device:</span> <b>${escapeHtml(job.make_model || 'Device')}</b></div></div>
+        <div class="flex flex-wrap justify-between items-center gap-2 text-xs"><div><span class="text-slate-400">Invoice / Ticket:</span> <b class="text-blue-400">${escapeHtml(job.invoice_number || job.id)}</b></div><div><span class="text-slate-400">Device:</span> <b>${escapeHtml(job.make_model || 'Device')}</b></div></div>
         <div class="space-y-3"><p class="font-extrabold text-blue-400 text-sm">${escapeHtml(stage)}</p><div class="h-3 rounded-full bg-slate-800 overflow-hidden"><div class="h-full bg-blue-600 rounded-full" style="width:${progress}%"></div></div><div class="grid grid-cols-3 text-[11px] font-semibold text-slate-400 text-center"><span>Checked In</span><span>In Repair</span><span>${status === 'picked_up' ? 'Picked Up' : 'Ready for Pickup'}</span></div></div>
         <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
           <div class="flex justify-between"><span>Total Repair Charge</span><b>${dollars(total)}</b></div>
@@ -162,7 +162,7 @@
       const ticket = $('trackerSearchInput').value.trim();
       const contact = $('trackerContactInput').value.trim();
       if (!ticket || !contact) {
-        if (!silent) showMessage('Verification needed', 'Please enter your ticket number and full phone number or email address.');
+        if (!silent) showMessage('Verification needed', 'Please enter an invoice or ticket number and your full phone number or email address.');
         return;
       }
       if (!supabaseClient) {
@@ -174,7 +174,7 @@
         const {data, error} = await supabaseClient.rpc('ajd_public_track_repair', {p_ticket: ticket, p_contact: contact});
         if (error) throw error;
         if (!data) {
-          if (!silent) showMessage('Repair not found', 'We could not verify this ticket and contact combination. Check the details or contact the shop.');
+          if (!silent) showMessage('Repair not found', 'We could not verify this invoice/ticket and contact combination. Check the details or contact the shop.');
           return;
         }
         render(data);
@@ -214,7 +214,7 @@
     }
     $('footerYear').textContent = new Date().getFullYear();
     $('trackerSearchInput').value = new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('track') || '';
-    showMessage('Track Your Device Repair', 'Enter your ticket number and verified phone or email above to check your repair progress.');
+    showMessage('Track Your Device Repair', 'Enter your invoice or ticket number and verified phone or email above to check your repair progress.');
     void refreshContact();
     window.addEventListener('focus', () => void refreshContact());
     window.addEventListener('storage', e => {if (e.key === 'ajd_shop_phone' || e.key === 'ajd_shop_email') void refreshContact();});
