@@ -54,7 +54,7 @@
   </style>
   <link rel="stylesheet" href="./ajd-public-refresh.css">
   <link rel="stylesheet" href="/ajd-live-tracker.css">
-  <script src="/ajd-live-tracker.js" defer></script>
+  <script src="/ajd-pdf-tools.js" defer></script><script src="/ajd-live-tracker.js" defer></script>
 </head>
 <body class="ajd-public ajd-public-track bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
@@ -74,9 +74,14 @@
         </div>
       </div>
 
-      <button type="button" id="printReceiptButton" disabled class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition transform active:scale-95 cursor-pointer flex items-center space-x-1.5">
-        <span>Print Status</span>
+      <div class="ajd-track-export-buttons">
+      <button type="button" id="printReceiptButton" disabled class="ajd-track-export-btn ajd-track-export-print" title="Print a verified repair status summary">
+        🖨 Print
       </button>
+      <button type="button" id="downloadStatusPdfButton" disabled class="ajd-track-export-btn ajd-track-export-pdf" title="Download verified status as a PDF">
+        ⬇ PDF
+      </button>
+      </div>
     </div>
   </header>
 <nav class="ajd-site-nav no-print" aria-label="Customer site navigation"><span class="ajd-nav-kicker">AJD • SERVICE HUB</span><div class="ajd-site-nav-links"><a href="/store">⌂ Store</a><a href="/request">✦ Repair Request</a><a href="/track" aria-current="page">▣ Track Repair</a></div></nav>
