@@ -46,7 +46,7 @@
 #invoicePrintSheet .receipt-draft-warning{font-size:10px;font-weight:900;text-align:center;padding:9px;border:2px solid #000;margin:10px 0}
 @media(max-width:530px){.ajd-invoice-entry{padding:13px;gap:8px}.ajd-invoice-open{font-size:11px;padding:9px}.ajd-invoice-description{font-size:10px}#invoiceModal .modal-inner{padding:12px}}
 @media print{
- @page{size:80mm auto;margin:4mm}
+ @page{size:80mm 200mm;margin:4mm}
  html,body{background:#fff!important;color:#000!important;width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important}
  body > *:not(#invoiceModal){display:none!important}
  #invoiceModal{display:block!important;visibility:visible!important;position:static!important;inset:auto!important;height:auto!important;width:100%!important;min-height:0!important;padding:0!important;margin:0!important;background:#fff!important;overflow:visible!important}
