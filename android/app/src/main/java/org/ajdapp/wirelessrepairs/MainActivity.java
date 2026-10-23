@@ -3,11 +3,15 @@ package org.ajdapp.wirelessrepairs;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.Context;
+import android.print.PrintAttributes;
+import android.print.PrintManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -62,6 +66,9 @@ public class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUserAgentString(settings.getUserAgentString() + " AJD-Android-App");
 
+        // Keep printing inside the native app: Android WebView doesn't always
+        // support JavaScript window.print() like Chrome does.
+        webView.addJavascriptInterface(new ReceiptPrintBridge(), "AJDNativePrint");
         WebView.setWebContentsDebuggingEnabled(false);
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false);
@@ -135,6 +142,33 @@ public class MainActivity extends Activity {
             webView.restoreState(savedInstanceState);
         } else {
             webView.loadUrl(HOME_URL);
+        }
+    }
+
+    // This bridge only opens Android's standard print preview for the currently
+    // loaded HTTPS AJD dashboard. No data is sent to a separate print service.
+    private class ReceiptPrintBridge {
+        @JavascriptInterface
+        public void printReceipt() {
+            runOnUiThread(() -> {
+                if (webView == null || webView.getUrl() == null) return;
+                Uri page = Uri.parse(webView.getUrl());
+                if (!"https".equalsIgnoreCase(page.getScheme())
+                        || !TRUSTED_HOST.equalsIgnoreCase(page.getHost())) return;
+                PrintManager manager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                if (manager == null) {
+                    Toast.makeText(MainActivity.this,
+                            "Android printing is unavailable on this device.",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                PrintAttributes attributes = new PrintAttributes.Builder()
+                        .setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME)
+                        .build();
+                manager.print("AJD Wireless Repairs Receipt",
+                        webView.createPrintDocumentAdapter("AJD Receipt"),
+                        attributes);
+            });
         }
     }
 
