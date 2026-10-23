@@ -139,3 +139,21 @@ body[data-page] #accessBlock h1{letter-spacing:-.5px;}
  body:not([data-page]) #invoiceModal .dark-card{background:#fff!important;border-color:transparent!important;box-shadow:none!important}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body:not([data-page]) .btn,body[data-page] button{transition:none!important}}
+
+/* Repair check-in quick action — compact list until Add New Repair is clicked */
+.ajd-repair-toolbar{position:relative;overflow:hidden;border-color:rgba(96,165,250,.22)!important;background-image:radial-gradient(circle at 94% 0%,rgba(37,99,235,.08),transparent 56%)!important;box-shadow:0 9px 28px rgba(2,6,23,.04)}
+html.dark .ajd-repair-toolbar{background-image:radial-gradient(circle at 92% 0%,rgba(37,99,235,.13),transparent 60%)!important}
+.ajd-repair-toolbar-kicker{font-size:10px;font-weight:900;letter-spacing:1.65px;color:#2563eb;margin:0 0 6px}
+html.dark .ajd-repair-toolbar-kicker{color:#7dd3fc}
+.ajd-add-repair-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(147,197,253,.3)!important;background:linear-gradient(115deg,#2563eb,#1243a8)!important;box-shadow:0 10px 25px rgba(37,99,235,.2);font-size:13px!important;font-weight:900!important;letter-spacing:-.1px;min-height:51px;padding:13px 18px!important;white-space:nowrap;transition:transform .18s,box-shadow .18s,background .18s}
+.ajd-add-repair-btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(37,99,235,.27)!important}
+.ajd-add-repair-btn:focus-visible,.ajd-intake-close:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+.ajd-add-repair-btn>span:first-child{font-size:20px;font-weight:500;line-height:1}
+.ajd-add-repair-arrow{font-size:16px;opacity:.75}
+.ajd-add-repair-btn.ajd-add-repair-btn-active{background:linear-gradient(115deg,#334155,#1e293b)!important;border-color:rgba(148,163,184,.35)!important;box-shadow:0 9px 25px rgba(15,23,42,.16)}
+#viewRepairs #intakePanel{scroll-margin-top:110px;min-width:0}
+#viewRepairs #intakePanel.hidden{display:none!important}
+#viewRepairs #repairListPanel{min-width:0}
+#viewRepairs #intakePanel .ajd-intake-close{white-space:nowrap;font-size:11px}
+@media(max-width:640px){.ajd-repair-toolbar{padding:17px!important}.ajd-add-repair-btn{width:100%;min-height:52px}.ajd-repair-toolbar h2{font-size:18px}#viewRepairs #intakePanel{padding:16px!important}}
+@media(prefers-reduced-motion:reduce){.ajd-add-repair-btn{transition:none!important}}
