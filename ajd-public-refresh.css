@@ -78,7 +78,7 @@ body.ajd-public-store .photo,body.ajd-public-store .placeholder { height:225px; 
 body.ajd-public-store .photo { transition:transform .4s; }
 body.ajd-public-store .card:hover .photo { transform:scale(1.045); }
 body.ajd-public-store .card { isolation:isolate; }
-body.ajd-public-store .card>.photo { position:relative;z-index:-1; }
+body.ajd-public-store .card>.photo { position:relative;z-index:0; }
 body.ajd-public-store .placeholder { background:radial-gradient(circle at 50% 50%,rgba(59,130,246,.2),transparent 65%),linear-gradient(135deg,var(--surface-deep),var(--surface-raised));font-size:58px; }
 body.ajd-public-store .cardbody { padding:19px;gap:11px; }
 body.ajd-public-store .cardbody h3 { font-size:16px;letter-spacing:-.4px; }
