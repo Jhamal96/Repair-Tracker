@@ -755,7 +755,7 @@ function fillCheckinFromOnlineRequest(id){
  $('intakePhone').value=r.customer_phone||'';
  $('intakeDevice').value=r.make_model||'';
  $('intakeIssue').value=r.issue||'';
- window.scrollTo({top:0,behavior:'smooth'});
+ $('intakePanel').scrollIntoView({behavior:'smooth',block:'start'});
  toast('Review this request and pricing, then register a new AJ ticket.');
 }
 async function updateRequest(req,changes){if(!isCloudAdmin){toast('Admin cloud login required to approve or decline requests');return false}try{const {data,error}=await sb.from('purchase_requests').update(changes).eq('id',req.id).select('id');if(error)throw error;if(!data?.length)throw Error('Request not present in cloud');Object.assign(req,changes);localStorage.setItem('ajd_purchase_requests',JSON.stringify(purchaseRequests));renderPurchaseRequests();return true}catch(e){setCloudMessage('Request update failed: '+e.message,true);toast('Approval was not saved to cloud');return false}}
