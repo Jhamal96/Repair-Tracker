@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Business Expenses | AJD's Wireless Repairs</title>
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="./admin-icon-192.png" type="image/png"><link rel="stylesheet" href="./business-finance.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./business-finance.js" defer></script>
+</head><body data-page="expenses">
+<header><div class="wrap top">
+<div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Business Expenses · Admin Only</div></div></div>
+<nav class="nav" aria-label="Admin pages">
+<a href="./index.html">⌂ Dashboard</a>
+<a href="./expenses.html" aria-current="page">💼 Expenses</a>
+<a href="./planned-purchases.html">🛒 Planned Purchases</a>
+</nav></div></header>
+<main class="wrap">
+<section id="accessBlock" class="panel" role="status"><h1>🔒 Admin Account Required</h1><p id="accessMessage">Verifying your Supabase administrator session…</p><a class="button" href="./index.html">Sign in on Main Dashboard</a></section>
+<div id="appContent" hidden>
+<h1 class="page-title">Business Expenses</h1>
+<p class="lead">Track what the business has actually spent. Filter by month or category, review totals, and export records for bookkeeping. Your entries sync directly to your secure Supabase project.</p>
+<div class="stats">
+<div class="panel stat accent"><p>Selected Month Total</p><strong id="statOne">$0.00</strong></div>
+<div class="panel stat good"><p>Filtered Total</p><strong id="statTwo">$0.00</strong></div>
+<div class="panel stat"><p>Visible Records</p><strong id="statThree">0</strong></div>
+</div>
+<div class="actions"><div class="filters">
+<input id="search" type="search" placeholder="Search expenses…" aria-label="Search business expenses">
+<input id="monthFilter" type="month" aria-label="Filter by month">
+<select id="statusFilter" aria-label="Filter category"><option value="">All categories</option></select>
+<button type="button" class="secondary" id="clearFilters">Clear</button>
+</div><div class="filters"><button type="button" class="secondary" id="exportButton">↓ Export CSV</button><button type="button" id="newButton">+ Add Expense</button></div></div>
+<div id="editorPanel" class="panel form-area" hidden>
+<div class="form-head"><h2 id="formHeading">Add Expense</h2><button type="button" class="secondary" id="cancelButton">✕ Close</button></div>
+<form id="editorForm"><input id="editId" type="hidden"><div class="form-grid">
+<label>Expense Date<input id="expenseDate" type="date" required></label>
+<label>Description<input id="description" placeholder="e.g. OLED replacement screen" maxlength="240" required></label>
+<label>Category<select id="category" required></select></label>
+<label>Amount ($)<input id="amount" type="number" min="0" step="0.01" placeholder="0.00" required></label>
+<label>Vendor / Store<input id="vendor" maxlength="180" placeholder="e.g. Parts Supplier"></label>
+<label>Payment Method<select id="paymentMethod"><option>Other</option><option>Cash</option><option>Debit Card</option><option>Credit Card</option><option>Bank Transfer</option><option>Zelle</option><option>Apple Pay</option><option>PayPal</option></select></label>
+<label class="check full"><input id="taxDeductible" type="checkbox"> Mark as potentially tax-deductible (review with your accountant)</label>
+<label class="full">Notes<textarea id="notes" maxlength="2500" placeholder="Internal notes (optional)"></textarea></label>
+</div><div class="form-buttons"><button type="submit" id="saveButton">Save to Cloud</button></div></form>
+</div>
+<p id="message" class="message" role="status" aria-live="polite" hidden></p><p id="loading" class="sub" role="status" aria-live="polite"></p>
+<div class="panel tablewrap"><table class="data"><thead><tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Payment</th><th scope="col">Tax flag</th><th scope="col">Actions</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody></table></div>
+<p class="sub" id="entryCount" style="margin-top:12px"></p>
+<p class="sub">Tax-deductibility is an internal bookkeeping flag, not tax advice. Export CSV to use your records with your accountant.</p>
+</div>
+</main><footer>© <span id="year"></span> AJD's Wireless Repairs · Secured with Supabase</footer></body></html>
