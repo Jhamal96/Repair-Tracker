@@ -39,6 +39,7 @@ function showInitial(title,description,emoji='🔍'){
  '<div class="ajd-track-empty-icon" aria-hidden="true">'+escapeHtml(emoji)+'</div>'+
  '<h2>'+escapeHtml(title)+'</h2><p>'+escapeHtml(description)+'</p></div>';
  $('printReceiptButton').disabled=true;
+ $('downloadStatusPdfButton').disabled=true;
 }
 function showUpdateNotice(oldStatus,newStatus,amountOnly=false){
  const box=$('statusChangeNotice');
@@ -100,6 +101,7 @@ function resetSession(showPrompt=true){
  $('liveTrackerBar').hidden=true;
  hideUpdateNotice();
  $('printReceiptButton').disabled=true;
+ $('downloadStatusPdfButton').disabled=true;
  if(showPrompt)showInitial('Search for your repair','Enter your invoice or repair ticket and verify your phone number or email above.','🔎');
 }
 function signature(job){
@@ -156,6 +158,7 @@ function render(job){
    </div>
   </div>`;
  $('printReceiptButton').disabled=false;
+ $('downloadStatusPdfButton').disabled=false;
 }
 function handleValidResponse(data,kind){
  const old=currentJob;
@@ -246,7 +249,27 @@ function toggleAutomatic(){
   stopTimer();updateConnectionAfterSuccess();
  }
 }
-function handlePrint(){if(currentJob)window.print()}
+function handlePrint(){
+ if(!currentJob)return;
+ try{
+   if(window.AJDNativePrint?.printReceipt)window.AJDNativePrint.printReceipt();
+   else if(typeof window.print==='function')window.print();
+   else throw new Error('This browser has no print dialog.');
+ }catch(e){
+   console.warn('AJD status printing failed:',e);
+   window.alert('Printing is unavailable here. Choose the PDF button, then print the saved document.');
+ }
+}
+function downloadStatusPDF(){
+ if(!currentJob)return;
+ try{
+   if(!window.AJDPdfTools?.status)throw new Error('PDF generator is not available yet. Refresh the page.');
+   window.AJDPdfTools.status(currentJob);
+ }catch(e){
+   console.warn('AJD status PDF failed:',e);
+   window.alert('Unable to download the status PDF: '+e.message);
+ }
+}
 function setShopContact(phone,email){
  const p=String(phone||'').trim(),e=String(email||'').trim();
  if(p){
@@ -275,6 +298,7 @@ function init(){
  const params=new URLSearchParams(location.search);
  $('trackerSearchInput').value=params.get('id')||params.get('track')||'';
  $('printReceiptButton').addEventListener('click',handlePrint);
+ $('downloadStatusPdfButton').addEventListener('click',downloadStatusPDF);
  $('trackLookupForm').addEventListener('submit',e=>{e.preventDefault();performCustomerSearch()});
  $('refreshStatusButton').addEventListener('click',refreshNow);
  $('toggleLiveButton').addEventListener('click',toggleAutomatic);
