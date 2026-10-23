@@ -1,0 +1,28 @@
+/* AJD Store Management • guided inventory editor */
+#productForm.ajd-store-form { border:1px solid rgba(96,165,250,.25);box-shadow:0 16px 45px rgba(2,6,23,.07);overflow:hidden; }
+.ajd-catalog-intro { background:linear-gradient(125deg,rgba(37,99,235,.12),rgba(34,211,238,.04));border:1px solid rgba(96,165,250,.22);border-radius:17px;padding:14px;margin:0 0 12px; }
+.ajd-catalog-intro h4 { font-size:14px;font-weight:900;letter-spacing:-.25px; }
+.ajd-catalog-intro p {font-size:11px;line-height:1.7;margin-top:5px;color:#64748b}
+html.dark .ajd-catalog-intro p{color:#9bb3d2}
+.ajd-catalog-number {display:inline-grid;place-items:center;width:24px;height:24px;border-radius:9px;background:#2563eb;color:#fff;font-weight:900;font-size:10px;margin-right:7px;box-shadow:0 5px 12px rgba(37,99,235,.2)}
+.ajd-catalog-block{border:1px solid rgba(96,165,250,.17);padding:15px;border-radius:17px;background:rgba(219,234,254,.16);margin-bottom:13px}
+html.dark .ajd-catalog-block{background:rgba(37,99,235,.05)}
+.ajd-catalog-step-heading{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:#1d4ed8;font-size:12px;font-weight:900;letter-spacing:-.1px}
+html.dark .ajd-catalog-step-heading{color:#93c5fd}
+.ajd-catalog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;align-items:end}
+.ajd-catalog-grid label{min-width:0}
+.ajd-catalog-grid .field{width:100%;font-size:13px;min-height:47px}
+.ajd-catalog-wide{grid-column:1/-1}
+.ajd-catalog-help{font-size:11px;line-height:1.6;color:#64748b;margin:2px 0}
+html.dark .ajd-catalog-help{color:#94a3b8}
+#productModelMessage{margin-top:0}
+#productCustomModelWrap[hidden],#productConditionCustomWrap[hidden]{display:none!important}
+#productForm .ajd-catalog-preview{margin-top:10px;display:flex;align-items:flex-start;gap:10px;border:1px dashed rgba(59,130,246,.35);border-radius:12px;padding:10px 12px;background:rgba(37,99,235,.05)}
+.ajd-catalog-preview span:first-child{font-size:18px}
+.ajd-catalog-preview div{font-size:11px;line-height:1.6;color:#64748b}
+html.dark .ajd-catalog-preview div{color:#9fb9dc}
+.ajd-condition-info{font-size:11px;line-height:1.6;color:#64748b;margin-top:5px}
+html.dark .ajd-condition-info{color:#9cb2ca}
+#productForm .field:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.16)}
+#productForm .ajd-catalog-label{margin:3px 0 8px}
+@media(max-width:680px){.ajd-catalog-grid{grid-template-columns:1fr}.ajd-catalog-wide{grid-column:1}.ajd-catalog-block{padding:12px}#productForm.ajd-store-form{padding:15px}}
