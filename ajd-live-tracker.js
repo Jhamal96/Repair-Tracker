@@ -103,7 +103,7 @@ function resetSession(showPrompt=true){
  if(showPrompt)showInitial('Search for your repair','Enter your invoice or repair ticket and verify your phone number or email above.','🔎');
 }
 function signature(job){
- return [job.status,job.amount,job.deposit_amount,job.payment_status,job.updated_at,job.picked_up_at,job.make_model,job.invoice_number].map(v=>String(v??'')).join('|');
+ return [job.status,job.amount,job.deposit_amount,job.payment_status,job.picked_up_at,job.make_model,job.invoice_number].map(v=>String(v??'')).join('|');
 }
 function render(job){
  const s=String(job.status||'pending');
@@ -161,14 +161,15 @@ function handleValidResponse(data,kind){
  const old=currentJob;
  const newSig=signature(data);
  const changed=Boolean(old&&lastSignature!==newSig);
+ const timestampChanged=Boolean(old&&old.updated_at!==data.updated_at);
  const stageChanged=Boolean(old&&old.status!==data.status);
  currentJob=data;
  lastSignature=newSig;
  lastCheckedTime=Date.now();errorsInARow=0;
- if(!old||changed){
+ if(!old||changed||timestampChanged){
   render(data);
   if(changed)showUpdateNotice(old.status,data.status,!stageChanged);
-  else hideUpdateNotice();
+  else if(!old)hideUpdateNotice();
  }
  updateConnectionAfterSuccess();
  if(kind==='verify')$('trackerContent').scrollIntoView({behavior:'smooth',block:'start'});
