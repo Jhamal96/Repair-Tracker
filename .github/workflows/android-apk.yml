@@ -1,0 +1,67 @@
+name: Build AJD Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  android-apk:
+    name: Build and publish Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android API 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Build debug APK
+        working-directory: android
+        run: gradle --no-daemon --stacktrace assembleDebug
+
+      - name: Give APK a readable name
+        run: |
+          mkdir -p dist
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist/AJD-Wireless-Repairs-Admin.apk
+
+      - name: Attach APK to workflow run
+        uses: actions/upload-artifact@v4
+        with:
+          name: AJD-Wireless-Repairs-Admin-APK
+          path: dist/AJD-Wireless-Repairs-Admin.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish easily accessible GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view android-latest > /dev/null 2>&1; then
+            gh release upload android-latest dist/AJD-Wireless-Repairs-Admin.apk --clobber
+          else
+            gh release create android-latest dist/AJD-Wireless-Repairs-Admin.apk \
+              --title "AJD's Wireless Repairs - Android APK" \
+              --notes "Install the Android admin app. Requires internet and an approved Supabase login." \
+              --latest
+          fi
