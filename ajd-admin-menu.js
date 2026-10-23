@@ -22,6 +22,7 @@
       {id:'links',icon:'🔗',label:'Manage Links',description:'Edit important site links',action:'links'},
       {id:'sync',icon:'☁️',label:'Cloud Synchronization',description:'Back up and sync with Supabase',action:'sync'},
       {id:'settings',icon:'⚙️',label:'Settings',description:'Business details, labor, theme',action:'settings'},
+      {id:'downloads',icon:'⬇️',label:'Download App',description:'Windows, Mac, Android, iPhone & iPad',url:'/download'},
       {id:'account',icon:'👤',label:'Account Settings',description:'Email and password security',action:'account'},
       {id:'install',icon:'📲',label:'Install Admin App',description:'Put the app on your home screen',action:'install',installedOnly:true},
       {id:'backup',icon:'⬇️',label:'Export Backup',description:'Save a local copy of your data',action:'backup',mainOnly:true},
