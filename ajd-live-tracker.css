@@ -108,3 +108,13 @@ body.ajd-public-track { background:
  .ajd-stage-circle{border-color:#111!important;background:#eee!important}
 }
 @media(prefers-reduced-motion:reduce){.ajd-live-dot{animation:none}.ajd-status-change-alert{animation:none}.ajd-track-progress-fill{transition:none}}
+
+/* Download PDF independently of the browser print dialog */
+body.ajd-public-track .ajd-track-export-buttons{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+body.ajd-public-track .ajd-track-export-btn{min-height:37px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(147,197,253,.28);background:linear-gradient(115deg,#2563eb,#1d4ed8);color:#fff;border-radius:11px;padding:8px 11px;font-size:11px;font-weight:900;cursor:pointer}
+body.ajd-public-track .ajd-track-export-pdf{background:linear-gradient(115deg,#059669,#047857)}
+body.ajd-public-track .ajd-track-export-btn:disabled{opacity:.45;cursor:not-allowed}
+body.ajd-public-track .ajd-track-export-btn:hover:not(:disabled){filter:brightness(1.12)}
+body.ajd-public-track .ajd-track-export-btn:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+@media(max-width:440px){body.ajd-public-track header .max-w-2xl{gap:7px}body.ajd-public-track .ajd-track-export-buttons{flex-direction:column}body.ajd-public-track .ajd-track-export-btn{font-size:10px;min-height:30px;padding:5px 8px;min-width:60px}}
+@media print{body.ajd-public-track .ajd-track-export-buttons{display:none!important}}
