@@ -1,0 +1,9 @@
+# Prevent Android source, build tools, and GitHub metadata from being served as public Worker assets.
+android/**
+.github/**
+ANDROID-APK-README.md
+wrangler.jsonc
+*.md
+*.gradle
+.gitignore
+.assetsignore
