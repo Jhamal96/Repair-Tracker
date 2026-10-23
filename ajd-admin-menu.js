@@ -48,6 +48,7 @@
   function isDrawerOpen(){return document.body.classList.contains('ajd-menu-open')}
   function setDrawer(open,restoreFocus=true){
     if(!drawer)return;
+    if(open&&isMain&&document.body.classList.contains('admin-locked'))return;
     if(open){
       previousFocus=document.activeElement;
       closeLegacyPanels();
