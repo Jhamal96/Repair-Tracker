@@ -18,14 +18,14 @@ const DEVICES={
           const variantsByYear={'17':['','Air','Pro','Pro Max'],'16':['','Plus','Pro','Pro Max','16e'],'15':['','Plus','Pro','Pro Max'],'14':['','Plus','Pro','Pro Max'],'13':['','mini','Pro','Pro Max'],'12':['','mini','Pro','Pro Max'],'11':['','Pro','Pro Max']};
           return variantsByYear[year].map(v=>v==='16e'?'iPhone 16e':'iPhone '+year+(v?' '+v:''));
         }),
-        'iPhone XS Max','iPhone XS','iPhone XR','iPhone X','iPhone 8 Plus','iPhone 8','iPhone 7 Plus','iPhone 7',
+        'iPhone 18 Pro','iPhone 18 Pro Max','iPhone Duo','iPhone Air','iPhone 17e','iPhone XS Max','iPhone XS','iPhone XR','iPhone X','iPhone 8 Plus','iPhone 8','iPhone 7 Plus','iPhone 7',
         'iPhone 6s Plus','iPhone 6s','iPhone 6 Plus','iPhone 6','iPhone 5s','iPhone 5c','iPhone 5',
         'iPhone SE (3rd generation)','iPhone SE (2nd generation)','iPhone SE (1st generation)'
       ]
     },
     Samsung:{
       'Galaxy S':[
-        ...numeric(20,26).flatMap(n=>['Galaxy S'+n,'Galaxy S'+n+'+','Galaxy S'+n+' Ultra',...(n===21||n===23||n===24?['Galaxy S'+n+' FE']:[])]),
+        ...numeric(20,26).flatMap(n=>['Galaxy S'+n,'Galaxy S'+n+'+','Galaxy S'+n+' Ultra',...(n===21||n===23||n===24||n===26?['Galaxy S'+n+' FE']:[])]),
         'Galaxy S10e','Galaxy S10','Galaxy S10+','Galaxy S10 5G','Galaxy S9','Galaxy S9+','Galaxy S8','Galaxy S8+'
       ],
       'Galaxy Z Fold':numeric(2,7).map(n=>'Galaxy Z Fold'+n).concat(['Galaxy Fold','Galaxy Z Fold Special Edition']),
@@ -136,12 +136,12 @@ const DEVICES={
   },
   Smartwatches:{
     Apple:{
-      'Apple Watch Series':numeric(1,11).map(n=>'Apple Watch Series '+n),
-      'Apple Watch Ultra':['Apple Watch Ultra','Apple Watch Ultra 2','Apple Watch Ultra 3'],
+      'Apple Watch Series':numeric(1,12).map(n=>'Apple Watch Series '+n),
+      'Apple Watch Ultra':['Apple Watch Ultra','Apple Watch Ultra 2','Apple Watch Ultra 3','Apple Watch Ultra 4'],
       'Apple Watch SE':['Apple Watch SE (1st generation)','Apple Watch SE (2nd generation)','Apple Watch SE (3rd generation)']
     },
     Samsung:{
-      'Galaxy Watch':['Galaxy Watch','Galaxy Watch Active','Galaxy Watch Active2','Galaxy Watch3',...numeric(4,8).flatMap(n=>['Galaxy Watch'+n,'Galaxy Watch'+n+' Classic']), 'Galaxy Watch FE','Galaxy Watch Ultra'],
+      'Galaxy Watch':['Galaxy Watch','Galaxy Watch Active','Galaxy Watch Active2','Galaxy Watch3',...numeric(4,9).flatMap(n=>['Galaxy Watch'+n,'Galaxy Watch'+n+' Classic']), 'Galaxy Watch FE','Galaxy Watch Ultra'],
       'Galaxy Fit':['Galaxy Fit2','Galaxy Fit3']
     },
     Google:{'Pixel Watch':['Pixel Watch','Pixel Watch 2','Pixel Watch 3','Pixel Watch 4']},
@@ -197,9 +197,9 @@ const DEVICES={
     Microsoft:{'Surface':['Surface Studio','Surface Studio 2','Surface Studio 2+']}
   },
   'Audio & Headphones':{
-    Apple:{'AirPods':['AirPods (1st generation)','AirPods (2nd generation)','AirPods (3rd generation)','AirPods 4','AirPods Pro (1st generation)','AirPods Pro (2nd generation)','AirPods Pro 3','AirPods Max']},
+    Apple:{'AirPods':['AirPods (1st generation)','AirPods (2nd generation)','AirPods (3rd generation)','AirPods 4','AirPods 5','AirPods Pro (1st generation)','AirPods Pro (2nd generation)','AirPods Pro 3','AirPods Max']},
     Beats:{'Beats':['Beats Studio Pro','Beats Solo 4','Beats Studio Buds','Beats Studio Buds+','Beats Fit Pro','Beats Powerbeats Pro']},
-    Samsung:{'Galaxy Buds':['Galaxy Buds','Galaxy Buds+','Galaxy Buds2','Galaxy Buds2 Pro','Galaxy Buds3','Galaxy Buds3 Pro','Galaxy Buds FE']},
+    Samsung:{'Galaxy Buds':['Galaxy Buds','Galaxy Buds+','Galaxy Buds2','Galaxy Buds2 Pro','Galaxy Buds3','Galaxy Buds3 Pro','Galaxy Buds4','Galaxy Buds4 Pro','Galaxy Buds FE']},
     Sony:{'Sony':['Sony WH-1000XM4','Sony WH-1000XM5','Sony WH-1000XM6','Sony WF-1000XM4','Sony WF-1000XM5','Sony LinkBuds']},
     Bose:{'Bose':['Bose QuietComfort Headphones','Bose QuietComfort Ultra Headphones','Bose QuietComfort Earbuds','Bose QuietComfort Ultra Earbuds','Bose SoundLink']},
     JBL:{'JBL':['JBL Tune 510BT','JBL Tune 720BT','JBL Live 660NC','JBL Live Pro 2','JBL Tour Pro 2','JBL Charge 5','JBL Flip 6']},
@@ -258,6 +258,7 @@ const $=pick;
 const SELECT_CUSTOM='__custom__';
 let lastAutoTitle='';
 let isUpdating=false;
+let catalogModelOptions=[];
 function fieldOption(value,label){const option=document.createElement('option');option.value=value;option.textContent=label??value;return option}
 function replaceOptions(id,choices,placeholder){
  const el=$(id);if(!el)return;
@@ -282,7 +283,8 @@ function selectWithLegacy(id,value){
 function cleanName(value){return String(value||'').trim().replace(/\s+/g,' ')}
 function getData(){
  const category=$('productCategory')?.value||'';
- const brand=$('productBrand')?.value||'';
+ const selectedBrand=$('productBrand')?.value||'';
+ const brand=selectedBrand===OTHER?cleanName($('productCustomBrand')?.value):selectedBrand;
  const series=$('productSeries')?.value||'';
  const choice=$('productModelPicker')?.value||'';
  const custom=cleanName($('productCustomModel')?.value);
@@ -295,7 +297,7 @@ function generateTitle(){
  const data=getData();
  if(!data.model)return '';
  let out=data.model;
- if(data.brand && data.brand!==OTHER && !out.toLowerCase().startsWith(data.brand.toLowerCase()) && !(['Apple'].includes(data.brand)&&(out.startsWith('iPhone')||out.startsWith('iPad')||out.startsWith('MacBook')||out.startsWith('iMac')||out.startsWith('Mac ')||out.startsWith('AirPods')||out.startsWith('Apple Watch')))){
+ if(data.brand && !out.toLowerCase().startsWith(data.brand.toLowerCase()) && !(['Apple'].includes(data.brand)&&(out.startsWith('iPhone')||out.startsWith('iPad')||out.startsWith('MacBook')||out.startsWith('iMac')||out.startsWith('Mac ')||out.startsWith('AirPods')||out.startsWith('Apple Watch')))){
    out=data.brand+' '+out;
  }
  if(data.capacity && !out.toLowerCase().includes(data.capacity.toLowerCase()))out+=' · '+data.capacity;
@@ -324,6 +326,10 @@ function brandChanged(){
  if(isUpdating)return;
  clearGeneratedTitle();
  const cat=$('productCategory').value, brand=$('productBrand').value;
+ const custom=brand===OTHER;
+ $('productCustomBrandWrap').hidden=!custom;
+ $('productCustomBrand').required=custom;
+ if(!custom)$('productCustomBrand').value='';
  const families=DEVICES[cat]?.[brand]||{};
  const all=unique(Object.keys(families).concat(GENERIC_FAMILIES[cat]||[]));
  replaceOptions('productSeries',all,'Select family / series');
@@ -336,12 +342,10 @@ function seriesChanged(){
  clearGeneratedTitle();
  const cat=$('productCategory').value,brand=$('productBrand').value,series=$('productSeries').value;
  const models=unique(DEVICES[cat]?.[brand]?.[series]||[]);
- const picker=$('productModelPicker');
- const options=[['','Select a model or choose custom'],...models.map(x=>[x,x]),[SELECT_CUSTOM,'✏️ Model not listed? Type your own']];
- const frag=document.createDocumentFragment();
- for(const pair of options)frag.append(fieldOption(pair[0],pair[1]));
- picker.replaceChildren(frag);
- picker.value='';
+ catalogModelOptions=models;
+ $('productModelSearch').value='';
+ updateModelOptions('');
+ if(!models.length && brand){$('productModelPicker').value=SELECT_CUSTOM;}
  productModelChanged();
 }
 function categoryChanged(){
@@ -350,6 +354,10 @@ function categoryChanged(){
  const category=$('productCategory').value;
  const brands=unique((EXTRA_BRANDS[category]||[]).concat(Object.keys(DEVICES[category]||{})));
  replaceOptions('productBrand',[...brands.map(b=>[b,b]),[OTHER,'Other / Unlisted Brand']],'Choose manufacturer / brand');
+ $('productCustomBrand').value='';
+ $('productCustomBrandWrap').hidden=true;
+ $('productCustomBrand').required=false;
+ catalogModelOptions=[];
  replaceOptions('productSeries',[],'Choose a brand first');
  replaceOptions('productModelPicker',[[SELECT_CUSTOM,'✏️ Model not listed? Type your own']],'Select a model');
  $('productCustomModel').value='';
@@ -375,27 +383,25 @@ function productModelChanged(){
  fillTitle();
 }
 function capacityChanged(){fillTitle()}
-function searchModels(){
- const filter=$('productModelSearch').value.trim().toLowerCase();
+function updateModelOptions(filter){
  const picker=$('productModelPicker');
- let count=0;
- for(const opt of picker.options){
-   if(!opt.value||opt.value===SELECT_CUSTOM){opt.hidden=false;continue}
-   const matches=opt.textContent.toLowerCase().includes(filter);
-   opt.hidden=!matches;
-   if(matches)count++;
- }
- if(filter && !count){
-   $('productModelMessage').textContent='No matching presets. Choose “Model not listed?” and type your model.';
- }else{
-   $('productModelMessage').textContent=count+' available models'+(filter?' matching your search':'')+'.';
- }
+ const selected=picker.value;
+ const matching=catalogModelOptions.filter(v=>v.toLowerCase().includes(filter.toLowerCase()));
+ const shown=selected && selected!==SELECT_CUSTOM && !matching.includes(selected)?[selected,...matching]:matching;
+ const frag=document.createDocumentFragment();
+ frag.append(fieldOption('','Select a model or choose custom'));
+ for(const item of shown)frag.append(fieldOption(item,item));
+ frag.append(fieldOption(SELECT_CUSTOM,'✏️ Model not listed? Type your own'));
+ picker.replaceChildren(frag);
+ if(selected && (selected===SELECT_CUSTOM || shown.includes(selected)))picker.value=selected;
+ $('productModelMessage').textContent=matching.length?matching.length+' available model(s)'+(filter?' matching your search':'')+'.':'No preset models match. Select “Model not listed?” and type it yourself.';
 }
+function searchModels(){updateModelOptions($('productModelSearch').value.trim())}
 function conditionChanged(){
  const show=$('productCondition').value==='Other / Custom';
  $('productConditionCustomWrap').hidden=!show;
  $('productConditionCustom').required=show;
- if(show)$('productConditionCustom').focus();
+ if(show && document.activeElement===$('productCondition'))$('productConditionCustom').focus();
 }
 function readCondition(){
  const value=$('productCondition').value;
@@ -403,6 +409,9 @@ function readCondition(){
  return value;
 }
 function validate(){
+ if($('productBrand').value===OTHER&&!cleanName($('productCustomBrand').value)){
+   $('productCustomBrand').focus();return 'Enter the brand or manufacturer name.';
+ }
  if($('productModelPicker')?.value===SELECT_CUSTOM&&!cleanName($('productCustomModel').value)){
    $('productCustomModel').focus();return 'Please enter your custom model name.';
  }
@@ -412,14 +421,28 @@ function validate(){
  return '';
 }
 function loadProduct(p){
- isUpdating=true;
  lastAutoTitle='';
  const cat=String(p.category||'Phones');
  selectWithLegacy('productCategory',cat);
- isUpdating=false;
  categoryChanged();
- // Device metadata is not stored in dedicated columns, so don't guess/overwrite old titles.
- // Allow the admin to choose exact brand/model if they want to revise the saved item name.
+ const brand=cleanName(p.brand);
+ if(brand){
+   const known=Array.from($('productBrand').options).some(opt=>opt.value===brand);
+   $('productBrand').value=known?brand:OTHER;
+   if(!known)$('productCustomBrand').value=brand;
+   brandChanged();
+ }
+ const family=cleanName(p.device_family);
+ if(family){selectWithLegacy('productSeries',family);seriesChanged()}
+ const model=cleanName(p.model);
+ if(model){
+   const preset=Array.from($('productModelPicker').options).some(opt=>opt.value===model);
+   $('productModelPicker').value=preset?model:SELECT_CUSTOM;
+   if(!preset)$('productCustomModel').value=model;
+   productModelChanged();
+ }
+ $('productCapacity').value=p.capacity||'';
+ $('productColor').value=p.color||'';
  const condition=String(p.condition||'');
  if(condition){
    const known=CONDITIONS.some(pair=>pair[0]===condition);
@@ -429,7 +452,7 @@ function loadProduct(p){
      $('productConditionCustom').value=condition;
    }
  }else $('productCondition').value='';
- conditionChanged();
+ conditionChanged(false);
  $('productTitle').value=p.title||'';
  lastAutoTitle='';
  updateHelp();
@@ -443,6 +466,7 @@ function reset(){
  $('productCapacity').value='';
  $('productColor').value='';
  $('productCustomModel').value='';
+ $('productCustomBrand').value='';
  $('productConditionCustom').value='';
  $('productCondition').value='';
  isUpdating=false;
@@ -465,6 +489,7 @@ function initialize(){
  cond.replaceChildren(condFrag);
  cat.addEventListener('change',categoryChanged);
  $('productBrand').addEventListener('change',brandChanged);
+ $('productCustomBrand').addEventListener('input',fillTitle);
  $('productSeries').addEventListener('change',seriesChanged);
  $('productModelPicker').addEventListener('change',productModelChanged);
  $('productCustomModel').addEventListener('input',fillTitle);
