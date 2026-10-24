@@ -1,0 +1,21 @@
+/* Shared AJD's Wireless Repairs logo. Consistent on light and dark pages. */
+img.ajd-brand-mark{
+  display:block!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  width:40px;
+  height:40px;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:#070f20!important;
+  box-shadow:none!important;
+  flex-shrink:0!important;
+  vertical-align:middle;
+}
+img.ajd-brand-mark.logo{width:52px;height:52px;border-radius:14px!important}
+img.ajd-brand-mark.brand-icon{width:46px;height:46px;border-radius:12px!important}
+@media(max-width:680px){
+  body.ajd-public-store img.ajd-brand-mark.logo{width:42px;height:42px;border-radius:11px!important}
+}
