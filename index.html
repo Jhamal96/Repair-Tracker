@@ -119,7 +119,7 @@ body:not(.admin-locked) #adminLoginGate{display:none!important}
   <div id="productImagePreviewContainer" class="hidden rounded-xl overflow-hidden border border-slate-700/20 bg-slate-100 dark:bg-slate-950"><img id="productImagePreview" class="h-44 w-full object-contain" alt="Selected product photo preview"><p id="productImagePreviewCaption" class="text-xs px-3 py-2 text-center text-slate-500 dark:text-slate-400" aria-live="polite">Checking image…</p></div>
   <p class="mini">Cloud photo uploads require an authorized account and the Supabase Storage bucket <b>product-images</b>. If uploading fails, the error appears above.</p>
 </div><div class="flex gap-2"><button class="btn bg-blue-600 text-white flex-1" type="submit">💾 Save to Cloud</button><button class="btn bg-slate-200 dark:bg-slate-800" type="button" onclick="resetProductForm()">Clear</button></div></form><div class="lg:col-span-2 space-y-3"><div class="dark-card rounded-2xl p-3 flex gap-2"><input class="field flex-1" id="inventorySearch" placeholder="Search products / SKU" oninput="renderInventory()"><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchInventory()">↻ Refresh</button></div><div id="inventoryItems" class="space-y-3"></div></div></div>
-<div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex flex-wrap justify-between items-center gap-2"><h3 class="font-black">📦 Customer Purchase Requests</h3><button class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchStoreOrders()">↻ Refresh Requests</button></div><p class="mini">Approving a request reserves stock only if enough units remain. Declining or awaiting restock does not reserve stock.</p><div id="storeOrders" class="space-y-3"></div></div>
+<div class="dark-card p-5 rounded-3xl space-y-3"><div class="flex flex-wrap justify-between items-center gap-2"><h3 class="font-black">📦 Customer Purchase Requests</h3><button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="fetchStoreOrders()">↻ Refresh Requests</button></div><p class="mini">Choose Approve, Await Restock, or Decline to update a request. Add a shop note directly on the request if needed. Approving reserves available stock; the other statuses do not.</p><div id="storeOrders" class="space-y-3" aria-live="polite" aria-label="Customer purchase requests"></div></div>
 </section></main>
 <footer class="max-w-7xl mx-auto px-4 pb-7 pt-3 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800"><span>© <span id="footerYear"></span> AJD's Wireless Repairs</span> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-tel href="tel:7869707779"><span data-shop-phone>(786) 970-7779</span></a><span data-shop-email-container hidden> <span aria-hidden="true"> · </span><a class="font-semibold text-blue-600 dark:text-blue-400 hover:underline" data-shop-mailto href="#"><span data-shop-email></span></a></span></footer>
 <div id="adminInstallHelp" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="adminInstallHelpTitle" onclick="if(event.target===this)closeAdminInstallHelp()"><div class="modal-inner dark-card rounded-3xl p-6 shadow-2xl space-y-4"><div class="flex items-center justify-between gap-3"><h2 id="adminInstallHelpTitle" class="text-lg font-black">⬇ Install Admin Dashboard</h2><button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="closeAdminInstallHelp()">✕</button></div><p id="adminInstallHelpText" class="text-sm text-slate-600 dark:text-slate-300"></p><p class="mini">The installed dashboard still requires an approved admin login. Customer and repair data are not cached offline.</p><button type="button" class="btn bg-blue-600 text-white w-full" onclick="closeAdminInstallHelp()">Got It</button></div></div><div id="invoiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="invoiceModalTitle" onclick="handleBackdropClick(event,'invoiceModal')"><div class="modal-inner dark-card rounded-3xl shadow-2xl"><div class="ajd-receipt-toolbar no-print"><div><h3 id="invoiceModalTitle" class="ajd-receipt-toolbar-title">🧾 Printable Customer Receipt</h3><p class="ajd-receipt-toolbar-note">AJD's Wireless Repairs · 80mm thermal / Save as PDF</p></div><div class="ajd-receipt-buttons"><button id="receiptPrintButton" type="button" class="btn bg-blue-600 text-white" onclick="window.AJDReceipts?.print()">🖨 Print Receipt</button><button id="receiptPdfButton" type="button" class="btn bg-emerald-600 text-white" onclick="window.AJDReceipts?.downloadPDF()">⬇ Download PDF</button><button id="receiptPrintViewButton" type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="window.AJDReceipts?.printView()" title="Open a printable view if your browser blocks printing">↗ Print View</button><button type="button" class="btn bg-slate-200 dark:bg-slate-800" onclick="closeInvoiceModal()" aria-label="Close receipt preview">✕</button></div></div><div id="invoicePrintSheet" class="thermal-paper" role="document" aria-label="Customer invoice receipt"></div><p id="receiptReadyMessage" class="ajd-receipt-help no-print" role="status" aria-live="polite"></p></div></div>
@@ -1000,9 +1000,139 @@ async function saveStoreProduct(e){
   }finally{savingStoreProduct=false;saveButton.disabled=false;saveButton.textContent=previousText}
 }
 async function deleteStoreProduct(id){if(!isCloudAdmin)return toast('Admin cloud login required');if(!confirm('Delete this product? Existing purchase requests will retain their item reference.'))return;const {error}=await sb.from('store_items').delete().eq('id',id);if(error)return toast('Delete blocked: '+error.message);toast('Product deleted');await fetchInventory()}
-async function fetchStoreOrders(){if(!isCloudAdmin){$('storeOrders').innerHTML='<p class="mini">Admin login required to view customer requests.</p>';return}if(!initSupabase())return;const {data,error}=await sb.from('store_purchase_requests').select('*').order('created_at',{ascending:false});if(error){$('storeOrders').innerHTML=`<p class="mini">Cannot load purchase requests: ${esc(error.message)}</p>`;return}storeOrders=data||[];renderStoreOrders()}
-function renderStoreOrders(){$('storeOrders').innerHTML=storeOrders.length?storeOrders.map(o=>`<div class="dark-card rounded-2xl p-4 space-y-2 text-xs"><div class="flex flex-wrap justify-between gap-2"><div><b>${esc(o.customer_name)}</b><p class="text-blue-500 font-bold">${esc(o.item_title)} · Qty ${Number(o.quantity)||1}</p><p class="mini">${esc(o.customer_email||'')} · ${esc(o.customer_phone||'')}</p></div><b>${esc(o.status)}</b></div>${o.notes?`<p>${esc(o.notes)}</p>`:''}${o.shop_note?`<p class="text-blue-500">Shop note: ${esc(o.shop_note)}</p>`:''}<div class="flex gap-2 flex-wrap"><button class="btn bg-emerald-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','approved')">Approve</button><button class="btn bg-amber-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','awaiting_restock')">Await Restock</button><button class="btn bg-rose-600 text-white" onclick="setStoreOrderStatus('${esc(o.id)}','declined')">Decline</button></div></div>`).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>'}
-async function setStoreOrderStatus(id,status){if(!isCloudAdmin)return toast('Admin cloud login required');const note=prompt('Optional note for this request:','');if(note===null)return;const {error}=await sb.rpc('admin_update_store_request',{p_request_id:id,p_status:status,p_note:note});if(error)return toast('Cloud update blocked: '+error.message);toast('Request updated');await Promise.all([fetchStoreOrders(),fetchInventory()])}
+const storeOrderUpdating=new Set();
+const storeOrderStatusLabels={
+ pending:'Pending',
+ approved:'Approved · Stock Reserved',
+ awaiting_restock:'Awaiting Restock',
+ declined:'Declined'
+};
+const storeOrderStatusColors={
+ pending:'ajd-order-pending',
+ approved:'ajd-order-approved',
+ awaiting_restock:'ajd-order-restock',
+ declined:'ajd-order-declined'
+};
+async function fetchStoreOrders(){
+ const list=$('storeOrders');
+ if(!isCloudAdmin){
+   list.innerHTML='<p class="mini">Admin login required to view customer purchase requests.</p>';
+   return false;
+ }
+ if(!initSupabase()){
+   list.innerHTML='<p class="mini">Supabase is unavailable. Check your connection and refresh the requests.</p>';
+   return false;
+ }
+ const {data,error}=await sb.from('store_purchase_requests')
+   .select('*').order('created_at',{ascending:false});
+ if(error){
+   list.innerHTML='<p class="mini text-rose-500">Cannot load customer purchase requests: '+esc(error.message)+'</p>';
+   return false;
+ }
+ storeOrders=data||[];
+ renderStoreOrders();
+ return true;
+}
+function renderStoreOrders(){
+ const root=$('storeOrders');
+ root.innerHTML=storeOrders.length?storeOrders.map(o=>{
+   const status=String(o.status||'pending');
+   const statusLabel=storeOrderStatusLabels[status]||status;
+   const statusColor=storeOrderStatusColors[status]||'ajd-order-pending';
+   const quantity=Number(o.quantity)||1;
+   const id=esc(o.id);
+   const product=esc(o.item_title);
+   const name=esc(o.customer_name);
+   const note=esc(o.shop_note||'');
+   const pending=storeOrderUpdating.has(o.id);
+   const date=o.created_at?new Date(o.created_at).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+   return '<article class="ajd-store-request-card dark-card rounded-2xl p-4 space-y-3 text-xs" data-request-id="'+id+'">'+
+    '<div class="flex flex-wrap justify-between gap-2">'+
+      '<div class="min-w-0 flex-1"><strong class="text-sm">'+name+'</strong>'+
+        '<p class="text-blue-500 font-bold mt-1">'+product+' · Qty '+quantity+'</p>'+
+        '<p class="mini mt-1">'+esc(o.customer_email||'')+' · '+esc(o.customer_phone||'')+'</p>'+
+        (date?'<p class="mini mt-1">Requested '+esc(date)+'</p>':'')+
+      '</div><span class="ajd-order-status '+statusColor+'">'+esc(statusLabel)+'</span>'+
+    '</div>'+
+    (o.notes?'<p class="ajd-order-customer-note">'+esc(o.notes)+'</p>':'')+
+    '<label class="ajd-order-note-label" for="storeRequestNote-'+id+'">Shop note (optional)</label>'+
+    '<textarea id="storeRequestNote-'+id+'" class="field ajd-order-note-input" rows="2" maxlength="2000" data-store-order-note placeholder="Add a message or note for this request…">'+note+'</textarea>'+
+    '<div class="ajd-order-actions" role="group" aria-label="Update request status for '+name+'">'+
+      '<button type="button" class="btn bg-emerald-600 text-white" data-store-order-action="approved" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">✓</span> Approve</button>'+
+      '<button type="button" class="btn bg-amber-600 text-white" data-store-order-action="awaiting_restock" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">↻</span> Await Restock</button>'+
+      '<button type="button" class="btn bg-rose-600 text-white" data-store-order-action="declined" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">✕</span> Decline</button>'+
+    '</div>'+
+    '<p class="ajd-order-feedback mini" data-store-order-feedback role="status" aria-live="polite"></p>'+
+   '</article>';
+ }).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>';
+}
+function setStoreOrderFeedback(card,message,isError=false){
+ const feedback=card?.querySelector('[data-store-order-feedback]');
+ if(feedback){feedback.textContent=message;feedback.className='ajd-order-feedback mini '+(isError?'ajd-order-feedback-error':'ajd-order-feedback-success')}
+}
+async function setStoreOrderStatus(id,status){
+ const request=storeOrders.find(o=>o.id===id);
+ const card=[...$('storeOrders').querySelectorAll('[data-request-id]')]
+   .find(node=>node.getAttribute('data-request-id')===id);
+ if(!request||!['approved','awaiting_restock','declined'].includes(status)){
+   setStoreOrderFeedback(card,'Request is unavailable. Refresh the list and try again.',true);
+   return false;
+ }
+ if(storeOrderUpdating.has(id))return false;
+ if(!isCloudAdmin||!initSupabase()){
+   setStoreOrderFeedback(card,'Administrator session required. Sign in again and retry.',true);
+   return false;
+ }
+ const textarea=card?.querySelector('[data-store-order-note]');
+ const note=(textarea?.value||'').trim().slice(0,2000);
+ const buttons=card?[...card.querySelectorAll('[data-store-order-action]')]:[];
+ storeOrderUpdating.add(id);
+ buttons.forEach(button=>{button.disabled=true;button.setAttribute('aria-busy','true')});
+ setStoreOrderFeedback(card,'Saving '+(storeOrderStatusLabels[status]||status).toLowerCase()+' securely…');
+ try{
+   const {error}=await sb.rpc('admin_update_store_request',{
+     p_request_id:id,p_status:status,p_note:note
+   });
+   if(error)throw error;
+   request.status=status;
+   request.shop_note=note;
+   // Update the status in place without clearing the response message or textbox.
+   if(card){
+     const badge=card.querySelector('.ajd-order-status');
+     if(badge){
+       badge.textContent=storeOrderStatusLabels[status];
+       badge.className='ajd-order-status '+storeOrderStatusColors[status];
+     }
+   }
+   setStoreOrderFeedback(card,'✓ Saved: '+storeOrderStatusLabels[status]+'. '+(status==='approved'?'Available stock was reserved.':'No stock is reserved for this status.'));
+   toast('Purchase request '+(storeOrderStatusLabels[status]||status).toLowerCase()+' · Saved');
+   // Refresh the catalog and request list after a successful save. One failing
+   // refresh must never convert a successful update into a false save error.
+   const results=await Promise.allSettled([fetchInventory(),fetchStoreOrders()]);
+   for(const result of results){
+     if(result.status==='rejected')console.warn('AJD request update saved; refresh failed:',result.reason);
+   }
+   return true;
+ }catch(error){
+   const explanation=error?.message||'Unexpected server error';
+   setStoreOrderFeedback(card,'Could not save this decision: '+explanation+'. Please retry.',true);
+   setCloudMessage('Purchase request decision was not saved: '+explanation,true);
+   toast('Update failed: '+explanation);
+   return false;
+ }finally{
+   storeOrderUpdating.delete(id);
+   buttons.forEach(button=>{button.disabled=false;button.removeAttribute('aria-busy')});
+ }
+}
+// Delegated listeners work after list refreshes and do not depend on inline
+// JavaScript attributes or browser-native prompt dialogs.
+$('storeOrders').addEventListener('click',event=>{
+ const action=event.target.closest('button[data-store-order-action]');
+ if(!action||!$('storeOrders').contains(action))return;
+ const id=action.dataset.storeOrderId,status=action.dataset.storeOrderAction;
+ if(!id||!status)return;
+ void setStoreOrderStatus(id,status);
+});
 
 window.addEventListener('storage',e=>{if(e.key==='ajd_repairs_backup'){repairs=read(e.key,[]).map(norm);renderRepairs()}if(e.key==='ajd_purchase_requests'){purchaseRequests=read(e.key,[]);renderPurchaseRequests()}if(e.key==='ajd_shop_phone'){shopPhone=e.newValue||'(786) 970-7779';syncShopPhone()}if(e.key===SHOP_EMAIL_KEY){shopEmail=e.newValue||'';renderShopEmail()}if(e.key===SHOP_EMAIL_PENDING_KEY){updateCloudUI();if(e.newValue===null)void fetchShopEmailCloud()}if(e.key===LINK_KEY){managedLinks=read(LINK_KEY,DEFAULT_LINKS);renderLinks()}if(e.key===PENDING_REPAIRS_KEY){pendingRepairs=read(PENDING_REPAIRS_KEY,[]);updateCloudUI()}});
 window.addEventListener('DOMContentLoaded',async()=>{applyTheme();$('footerYear').textContent=new Date().getFullYear();syncShopPhone();renderShopEmail();if(localStorage.getItem(SHOP_PHONE_PENDING_KEY))phoneStatus('Phone change pending cloud upload; sign in as admin to publish it.');if(localStorage.getItem(SHOP_EMAIL_PENDING_KEY)!==null)emailStatus('Email change pending cloud upload; sign in as admin to publish it.');renderLaborPresets();for(const prefix of ['intake','edit']){initPercentButtons(prefix,'Discount',[0,5,10,15,20,25,50]);initPercentButtons(prefix,'Deposit',[0,10,20,25,30,50,75,100]);addPartRow(prefix)}renderLinks();updateCloudUI();await refreshCloudAccess();if(!isCloudAdmin)await fetchShopEmailCloud();renderRepairs();renderPurchaseRequests()});
