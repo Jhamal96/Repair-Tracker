@@ -37,5 +37,17 @@ jobs:
           git add ajd-logo-32.png admin-icon-192.png admin-icon-512.png
           if ! git diff --cached --quiet; then
             git commit -m "Update PWA and favicon PNGs from new AJD blue-A logo"
-            git push origin "HEAD:main"
+            # Other pages may be updated while this workflow renders icons.
+            # Rebase our generated binary-only commit before pushing to avoid
+            # rejecting a valid refresh of the new AJD logo.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin "HEAD:main"; then
+                exit 0
+              fi
+              sleep 2
+            done
+            echo "Unable to publish regenerated icon files after three attempts" >&2
+            exit 1
           fi
