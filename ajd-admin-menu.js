@@ -146,10 +146,12 @@
     else if(['links','settings','sync','account'].includes(hash))launchLegacy(hash);
   }
   function inject(){
-    const host=isMain?
-      document.querySelector('header .max-w-7xl > div:first-child > div:first-child'):
-      document.querySelector('header .brand');
-    if(!host)return;
+    // The menu lives at the start of the actual header row, outside the brand.
+    // This keeps it flush-left on both the dashboard and secondary admin pages.
+    const headerRow=isMain?
+      document.querySelector('header .max-w-7xl'):
+      document.querySelector('header .top');
+    if(!headerRow)return;
     setInstalled();
     toggle=make('button','ajd-menu-button');
     toggle.id='ajdMenuToggle';
@@ -161,15 +163,17 @@
     hamburger.setAttribute('aria-hidden','true');
     hamburger.append(make('i'),make('i'),make('i'));
     toggle.append(hamburger,make('span','ajd-menu-text-label','Menu'));
-    host.prepend(toggle);
+    headerRow.prepend(toggle);
     const right=isMain?
-      document.querySelector('header .max-w-7xl > div:nth-child(2)'):
-      document.querySelector('header .top');
+      document.querySelector('header .max-w-7xl > div:nth-of-type(2)'):
+      headerRow;
     chip=make('div');
     chip.id='ajdActiveChip';
     chip.setAttribute('aria-label','Current admin section');
     chip.append(make('span','ajd-active-dot'),make('span','',LABELS[currentSection]||'Admin Dashboard'));
-    if(right)right.prepend(chip);
+    // On secondary pages the header itself is a flex row; append the chip
+    // after the brand instead of accidentally putting it before the menu.
+    if(right){if(isMain)right.prepend(chip);else right.append(chip);}
     backdrop=make('div');backdrop.id='ajdMenuBackdrop';backdrop.setAttribute('aria-hidden','true');
     drawer=make('aside');
     drawer.id='ajdMenuDrawer';
