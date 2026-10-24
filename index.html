@@ -5,13 +5,17 @@
 <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{500:'#3b82f6',600:'#2563eb'}}}}}</script>
 <style>*{-webkit-tap-highlight-color:transparent}body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden}.dark-card{background:#fff;border:1px solid #e2e8f0}.dark .dark-card{background:#0f172a;border-color:#1e293b}.blue-glow{box-shadow:0 0 20px -5px rgba(37,99,235,.35)}.field{width:100%;padding:9px 12px;font-size:12px;border-radius:12px;background:#f8fafc;border:1px solid #cbd5e1;color:#0f172a;outline:none}.dark .field{background:#020617;border-color:#1e293b;color:white}.lbl{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:#475569}.dark .lbl{color:#cbd5e1}.btn{border-radius:12px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}.pct{border:1px solid #47556955;border-radius:9px;padding:5px 8px;font-size:11px;font-weight:800;background:#e2e8f0;color:#1e293b}.dark .pct{background:#1e293b;color:#e2e8f0}.pct.active{background:#2563eb!important;color:white!important;border-color:#2563eb}.thermal-paper{font-family:'Courier New',monospace;background:#fff!important;color:#000!important;width:100%;max-width:320px;margin:auto;padding:16px;border:1px dashed #ccc}.thermal-paper *{color:#000!important}.modal{position:fixed;inset:0;z-index:100;background:#000b;display:flex;align-items:center;justify-content:center;padding:12px}.modal.hidden{display:none}.modal-inner{width:100%;max-width:540px;max-height:92vh;overflow-y:auto}.mini{font-size:11px;color:#64748b}.dark .mini{color:#94a3b8}@media print{@page{margin:5mm;size:80mm auto}body *{visibility:hidden!important}#invoiceModal,#invoiceModal *{visibility:visible!important}#invoiceModal{position:absolute!important;inset:0!important;width:100%!important;height:auto!important;background:white!important;padding:0!important}#invoiceModal .modal-inner{background:white!important;border:0!important;box-shadow:none!important;max-height:none!important;padding:0!important}#invoicePrintSheet{border:0!important;width:72mm!important;max-width:72mm!important;padding:0!important}.no-print{display:none!important}}
 body.admin-locked > header,body.admin-locked > main,body.admin-locked > footer{display:none!important}
+body.admin-auth-checking #adminLoginGate form,body.admin-auth-checking #adminGateSignOut,body.admin-auth-checking #adminGatePending,body.admin-auth-checking #adminLoginGate [data-admin-install-button]{display:none!important}
+body.admin-auth-checking #adminLoginGate .auth-card:after{content:"";display:block;width:32px;height:32px;border:3px solid rgba(37,99,235,.2);border-top-color:#3b82f6;border-radius:50%;margin:16px auto 0;animation:ajdAuthSpin .85s linear infinite}
+@keyframes ajdAuthSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){body.admin-auth-checking #adminLoginGate .auth-card:after{animation:none}}
 #adminLoginGate{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
 body:not(.admin-locked) #adminLoginGate{display:none!important}
 #adminLoginGate .auth-card{width:min(100%,420px);border-radius:24px;padding:28px;box-shadow:0 18px 70px #0002}
 #adminLoginGate .field{font-size:15px;min-height:44px}
 #adminLoginGate button{min-height:42px}
 #adminInstallHelp .modal-inner{max-width:460px}html.ajd-installed [data-admin-install-button]{display:none!important}</style><script>try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||navigator.userAgent.includes('AJD-Android-App'))document.documentElement.classList.add('ajd-installed')}catch(e){}</script><link rel="manifest" href="./admin.webmanifest"><link rel="apple-touch-icon" href="./admin-icon-192.png"><link rel="icon" sizes="192x192" type="image/png" href="./admin-icon-192.png"><link rel="stylesheet" href="./ajd-admin-menu.css"><link rel="stylesheet" href="./ajd-premium-admin.css"><link rel="stylesheet" href="./ajd-store-device-catalog.css"><link rel="stylesheet" href="./ajd-receipts.css"><script src="./ajd-pdf-tools.js" defer></script><script src="./ajd-receipts.js" defer></script><script src="./ajd-admin-menu.js" defer></script><script src="./ajd-store-device-catalog.js" defer></script></head>
-<body data-active-tab="repairs" class="admin-locked bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased">
+<body data-active-tab="repairs" class="admin-locked admin-auth-checking bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 min-h-screen antialiased">
 <section id="adminLoginGate" aria-labelledby="adminGateTitle">
 <div class="auth-card dark-card blue-glow space-y-5">
 <div class="text-center space-y-2"><div class="mx-auto h-14 w-14 rounded-2xl bg-blue-600/15 text-blue-500 border border-blue-500/40 grid place-items-center font-black text-xl">AJD</div><h1 id="adminGateTitle" class="text-xl font-black">AJD's Wireless Repairs</h1><p class="mini">Private Admin Dashboard · Authorized Accounts Only</p></div>
@@ -201,6 +205,7 @@ function initSupabase(){if(!sb&&window.supabase?.createClient){try{
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   // PASSWORD_RECOVERY is emitted after Supabase consumes a valid recovery URL.
   sb.auth.onAuthStateChange((event,session)=>{
+    if(event==='SIGNED_OUT'){isCloudAdmin=false;adminGateUser=null;updateAdminLoginGate()}
     if(event==='PASSWORD_RECOVERY')setTimeout(()=>openAccountSettings('recovery'),0);
     if(event==='SIGNED_OUT'||event==='USER_UPDATED'||event==='SIGNED_IN')setTimeout(()=>renderCloudAccountIdentity(session?.user||null),0);
   });
@@ -228,6 +233,7 @@ async function saveJob(job){job=norm(job);const i=repairs.findIndex(x=>x.id===jo
 let adminGateUser=null;
 function updateAdminLoginGate(){
  const gate=$('adminLoginGate');if(!gate)return;
+ document.body.classList.remove('admin-auth-checking');
  const allowed=Boolean(isCloudAdmin&&adminGateUser);
  document.body.classList.toggle('admin-locked',!allowed);
  gate.setAttribute('aria-hidden',String(allowed));
@@ -276,9 +282,29 @@ async function gateSendReset(){
  try{const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;$('adminGateStatus').textContent='If the email is registered, a password-reset link has been requested.'}
  catch(err){$('adminGateStatus').textContent='Reset failed: '+err.message}
 }
-async function refreshCloudAccess(){adminGateUser=null;const client=initSupabase();if(!client){setCloudMessage('Supabase library could not load. Check your internet connection and reload.',true);cloudIndicator(false);updateAdminLoginGate();return}try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;adminGateUser=session?.user||null;const email=session?.user?.email||'';if(!session){isCloudAdmin=false;$('cloudAuthStatus').textContent='Not signed in. Cloud writing is disabled.';if($('cloudSignupForm').classList.contains('hidden'))$('cloudLoginForm').classList.remove('hidden');$('cloudLogoutButton').classList.add('hidden');$('cloudAccountIdBox').classList.add('hidden');$('openAccountSettingsButton').classList.add('hidden');renderCloudAccountIdentity(null);setCloudMessage('Not signed in: repairs are saved to this browser only. Use Cloud Login to enable protected synchronization.',true);cloudIndicator(false);renderInventoryIfNeeded();return}
-const result=await client.rpc('ajd_is_admin');if(result.error)throw result.error;isCloudAdmin=result.data===true;$('cloudAuthStatus').textContent=isCloudAdmin?'Signed in as '+email+' (authorized admin)':'Signed in as '+email+' — account is not yet listed in ajd_admin_users.';$('cloudLoginForm').classList.add('hidden');$('cloudSignupForm').classList.add('hidden');$('cloudLogoutButton').classList.remove('hidden');$('openAccountSettingsButton').classList.remove('hidden');renderCloudAccountIdentity(session.user);$('cloudAccountId').textContent=session.user.id;$('cloudAccountIdBox').classList.toggle('hidden',isCloudAdmin);if(!isCloudAdmin){setCloudMessage('Access denied: ask the project owner to add this Auth user ID to ajd_admin_users.',true);cloudIndicator(false);return}setCloudMessage('Admin session verified. Checking repairs, links, and inventory…');await Promise.all([fetchCloud(),fetchRequests(),fetchOnlineRepairRequests(),fetchLinksCloud(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();if(pendingRepairs.length===0&&managedLinksPending.length===0&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&cloudReady&&!lastCloudError)setCloudMessage('Authorized Supabase read verified. No repair or link changes are waiting to upload.');}
-catch(e){isCloudAdmin=false;cloudIndicator(false);setCloudMessage('Supabase connection/authorization error: '+e.message,true);$('cloudAuthStatus').textContent=e.message;console.warn('Supabase auth/connect failure',e)}finally{updateCloudUI();updateAdminLoginGate()}}
+async function refreshCloudAccess(){const client=initSupabase();if(!client){setCloudMessage('Supabase library could not load. Check your internet connection and reload.',true);cloudIndicator(false);updateAdminLoginGate();return}try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;adminGateUser=session?.user||null;const email=session?.user?.email||'';if(!session){isCloudAdmin=false;$('cloudAuthStatus').textContent='Not signed in. Cloud writing is disabled.';if($('cloudSignupForm').classList.contains('hidden'))$('cloudLoginForm').classList.remove('hidden');$('cloudLogoutButton').classList.add('hidden');$('cloudAccountIdBox').classList.add('hidden');$('openAccountSettingsButton').classList.add('hidden');renderCloudAccountIdentity(null);setCloudMessage('Not signed in: repairs are saved to this browser only. Use Cloud Login to enable protected synchronization.',true);cloudIndicator(false);renderInventoryIfNeeded();return}
+const result=await client.rpc('ajd_is_admin');if(result.error)throw result.error;isCloudAdmin=result.data===true;$('cloudAuthStatus').textContent=isCloudAdmin?'Signed in as '+email+' (authorized admin)':'Signed in as '+email+' — account is not yet listed in ajd_admin_users.';$('cloudLoginForm').classList.add('hidden');$('cloudSignupForm').classList.add('hidden');$('cloudLogoutButton').classList.remove('hidden');$('openAccountSettingsButton').classList.remove('hidden');renderCloudAccountIdentity(session.user);$('cloudAccountId').textContent=session.user.id;$('cloudAccountIdBox').classList.toggle('hidden',isCloudAdmin);if(!isCloudAdmin){setCloudMessage('Access denied: ask the project owner to add this Auth user ID to ajd_admin_users.',true);cloudIndicator(false);return}
+ // Authorization is established: reveal the workspace before slow inventory and repair fetches.
+ updateAdminLoginGate();
+ setCloudMessage('Admin session verified. Checking repairs, links, and inventory…');
+ try{
+  await Promise.all([fetchCloud(),fetchRequests(),fetchOnlineRepairRequests(),fetchLinksCloud(),fetchInventory(),fetchStoreOrders(),fetchShopPhoneCloud(),fetchShopEmailCloud()]);
+  await syncPendingRepairs();await syncManagedLinks();await syncShopPhoneCloud();await syncShopEmailCloud();
+  if(pendingRepairs.length===0&&managedLinksPending.length===0&&!localStorage.getItem(SHOP_PHONE_PENDING_KEY)&&localStorage.getItem(SHOP_EMAIL_PENDING_KEY)===null&&cloudReady&&!lastCloudError)setCloudMessage('Authorized Supabase read verified. No repair or link changes are waiting to upload.');
+ }catch(syncError){
+  // A temporary fetch failure must not take an already verified admin back to sign-in.
+  setCloudMessage('Signed in successfully. Some cloud data could not refresh: '+syncError.message,true);
+  console.warn('AJD dashboard cloud sync partial failure:',syncError);
+ }
+}
+catch(e){
+ if(!isCloudAdmin)cloudIndicator(false);
+ setCloudMessage('Supabase session/connection check failed: '+e.message,true);
+ $('cloudAuthStatus').textContent=e.message;
+ console.warn('Supabase auth/connect failure',e);
+ // Preserve an already verified view on a transient fetch error; Supabase RLS still
+ // protects all subsequent reads and writes. Only SIGNED_OUT explicitly removes access.
+}finally{updateCloudUI();updateAdminLoginGate()}}
 function renderInventoryIfNeeded(){invStatus('Sign in as an admin to load and edit full inventory.');$('storeOrders').innerHTML='<p class="mini">Sign in as an admin to see customer requests.</p>'}
 async function signInAdmin(e){e.preventDefault();if(!initSupabase())return toast('Supabase library unavailable');const email=$('cloudLoginEmail').value.trim(),password=$('cloudLoginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('cloudLoginPassword').value='';if(error){setCloudMessage('Sign-in failed: '+error.message,true);toast('Cloud sign-in failed');return}await refreshCloudAccess();if(isCloudAdmin){$('settingsDropdownMenu').classList.add('hidden');toast('Signed in — cloud administrator verified')}}
 function toggleCloudSignup(show){
