@@ -34,7 +34,7 @@ const message=(value,error=false)=>{
 };
 let client=null,admin=false,checking=null;
 function access(title,details,signIn=false,retry=false){
- admin=false;$('accessBlock').hidden=false;$('appContent').hidden=true;
+ admin=false;document.body.classList.remove('ajd-tools-verified');$('accessBlock').hidden=false;$('appContent').hidden=true;
  $('accessTitle').textContent=title;$('accessDescription').textContent=details;
  $('accessLogin').hidden=!signIn;$('accessRetry').hidden=!retry;
  $('accessLoading').hidden=signIn||retry;
@@ -53,6 +53,7 @@ async function verify(){
    if(permission)throw permission;
    if(approved!==true){access('Administrator Access Required','This Supabase account does not have permission to manage AJD records.',true,false);return}
    admin=true;window.AJDTools.user=data.session.user;
+   document.body.classList.add('ajd-tools-verified');
    $('accessBlock').hidden=true;$('appContent').hidden=false;
    message('');
    document.dispatchEvent(new CustomEvent('ajd-admin-ready'));
