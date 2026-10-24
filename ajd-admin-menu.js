@@ -4,7 +4,7 @@
   const isMain=Boolean(document.getElementById('tabBtnRepairs'));
   const currentPage=document.body.dataset.page||'';
   const PAGE_TABS=new Set(['repairs','history','invoices','store','inventory']);
-  const LABELS={repairs:'Repairs',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',parts:'Inventory Tracker',expenses:'Business Expenses',plans:'Planned Purchases'};
+  const LABELS={repairs:'Repairs',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',parts:'Inventory Tracker',expenses:'Business Expenses',plans:'Planned Purchases',links:'Manage Links',editor:'Link Editor',sync:'Cloud Synchronization',settings:'Settings'};
   const sections=[
     {name:'REPAIR WORKSPACE',items:[
       {id:'repairs',icon:'💻',label:'Repairs',description:'Active repair tickets',tab:'repairs'},
@@ -19,11 +19,12 @@
       {id:'plans',icon:'🛒',label:'Planned Purchases',description:'Shopping wish list and budget',url:'/planned-purchases'}
     ]},
     {name:'ADMIN & SETTINGS',items:[
-      {id:'links',icon:'🔗',label:'Manage Links',description:'Edit important site links',action:'links'},
-      {id:'sync',icon:'☁️',label:'Cloud Synchronization',description:'Back up and sync with Supabase',action:'sync'},
-      {id:'settings',icon:'⚙️',label:'Settings',description:'Business details, labor, theme',action:'settings'},
+      {id:'links',icon:'🔗',label:'Manage Links',description:'View, organize & remove shortcuts',url:'/links'},
+      {id:'editor',icon:'✎',label:'Link Editor',description:'Add or edit a shortcut',url:'/link-editor'},
+      {id:'sync',icon:'☁️',label:'Cloud Synchronization',description:'Monitor & publish pending updates',url:'/cloud-sync'},
+      {id:'settings',icon:'⚙️',label:'Settings',description:'Business contact, labor, theme',url:'/settings'},
       {id:'downloads',icon:'⬇️',label:'Download App',description:'Windows, Mac, Android, iPhone & iPad',url:'/download'},
-      {id:'account',icon:'👤',label:'Account Settings',description:'Email and password security',action:'account'},
+      {id:'account',icon:'👤',label:'Account Settings',description:'Email and password security',url:'/settings#account'},
       {id:'install',icon:'📲',label:'Install Admin App',description:'Put the app on your home screen',action:'install',installedOnly:true},
       {id:'backup',icon:'⬇️',label:'Export Backup',description:'Save a local copy of your data',action:'backup',mainOnly:true},
       {id:'signout',icon:'↪️',label:'Sign Out',description:'Lock your admin dashboard',action:'signout',mainOnly:true}
@@ -34,7 +35,7 @@
       {id:'tracking',icon:'📦',label:'Track a Repair',description:'Customer ticket lookup',url:'/track'}
     ]}
   ];
-  let drawer,backdrop,toggle,search,chip,previousFocus=null,currentSection=isMain?'repairs':currentPage==='expenses'?'expenses':currentPage==='parts'?'parts':'plans',lastHandledHash='';
+  let drawer,backdrop,toggle,search,chip,quickPanel,quickButton,previousFocus=null,currentSection=isMain?'repairs':(LABELS[currentPage]?currentPage:'plans'),lastHandledHash='';
   const $=id=>document.getElementById(id);
   function make(tag,cls,text){
     const n=document.createElement(tag);
@@ -98,13 +99,8 @@
     }
     if(document.body.classList.contains('admin-locked'))return;
     closeLegacyPanels();
-    if(kind==='links'||kind==='settings'){
-      const panel=$(kind==='links'?'navLinksDropdownMenu':'settingsDropdownMenu');
-      if(panel){panel.classList.remove('hidden');if(kind==='settings')panel.scrollTop=0;}
-    }else if(kind==='sync'){
-      if(typeof window.openCloudSettings==='function')window.openCloudSettings();
-    }else if(kind==='account'){
-      if(typeof window.openAccountSettings==='function')window.openAccountSettings();
+    if(['links','settings','sync','account'].includes(kind)){
+      window.location.href=({links:'/links',settings:'/settings',sync:'/cloud-sync',account:'/settings#account'})[kind];
     }else if(kind==='install'){
       if(typeof window.installAdminApp==='function')window.installAdminApp();
     }else if(kind==='backup'){
@@ -174,6 +170,93 @@
     // On secondary pages the header itself is a flex row; append the chip
     // after the brand instead of accidentally putting it before the menu.
     if(right){if(isMain)right.prepend(chip);else right.append(chip);}
+    // Replace cramped dropdown controls with a dedicated quick-links icon in
+    // the far-right header position. Keep legacy DOM only for old data handlers.
+    if(isMain){
+      for(const id of ['navLinksDropdownMenu','settingsDropdownMenu']){
+        const legacy=$(id)?.parentElement;
+        if(legacy)legacy.classList.add('ajd-legacy-control-hidden');
+      }
+    }
+    const quickTarget=isMain?right:headerRow;
+    const settingsLink=make('a','ajd-settings-shortcut','⚙');
+    settingsLink.href='/settings';
+    settingsLink.setAttribute('aria-label','Open Settings page');
+    settingsLink.title='Settings';
+    quickTarget?.appendChild(settingsLink);
+    const quickWrap=make('div','ajd-quick-links-wrap');
+    quickWrap.id='ajdQuickLinks';
+    quickButton=make('button','ajd-quick-links-button');
+    quickButton.id='ajdQuickLinksButton';
+    quickButton.type='button';
+    quickButton.setAttribute('aria-label','Open saved quick links');
+    quickButton.setAttribute('aria-controls','ajdQuickLinksPanel');
+    quickButton.setAttribute('aria-expanded','false');
+    quickButton.title='Quick Links';
+    const quickSVG=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    quickSVG.setAttribute('viewBox','0 0 24 24');quickSVG.setAttribute('width','21');quickSVG.setAttribute('height','21');
+    quickSVG.setAttribute('fill','none');quickSVG.setAttribute('stroke','currentColor');
+    quickSVG.setAttribute('stroke-width','2.25');quickSVG.setAttribute('stroke-linecap','round');quickSVG.setAttribute('stroke-linejoin','round');
+    quickSVG.setAttribute('aria-hidden','true');
+    const quickPath=document.createElementNS('http://www.w3.org/2000/svg','path');
+    quickPath.setAttribute('d','M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 1 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 1 0 7.07 7.07l1.71-1.71');
+    quickSVG.appendChild(quickPath);quickButton.appendChild(quickSVG);
+    quickPanel=make('div','ajd-quick-links-panel');
+    quickPanel.id='ajdQuickLinksPanel';quickPanel.hidden=true;
+    quickPanel.setAttribute('role','region');quickPanel.setAttribute('aria-label','Your saved quick links');
+    const safeQuickUrl=value=>{
+      const raw=String(value||'').trim();
+      if(!raw||raw.startsWith('//')||/[\u0000-\u001f\u007f]/.test(raw))return '';
+      if(/^\/(?!\/)[a-z0-9_./?&=%+#-]*$/i.test(raw))return raw;
+      try{
+        const u=new URL(raw);
+        if(['https:','http:'].includes(u.protocol))return u.href;
+        if(u.protocol==='tel:'||u.protocol==='mailto:')return raw;
+      }catch(_){}
+      return '';
+    };
+    const drawQuickLinks=()=>{
+      quickPanel.replaceChildren();
+      const heading=make('div','ajd-quick-links-header','🔗 Quick Links');quickPanel.appendChild(heading);
+      let saved=[];
+      try{const parsed=JSON.parse(localStorage.getItem('ajd_managed_links_v1')||'[]');if(Array.isArray(parsed))saved=parsed}catch(_){}
+      if(!saved.length)saved=[
+        {label:'Customer Storefront',url:'/store',icon:'🏪'},
+        {label:'Repair Tracking',url:'/track',icon:'📦'},
+        {label:'Request Repair',url:'/request',icon:'🔧'}
+      ];
+      let shown=0;
+      for(const link of saved){
+        const href=safeQuickUrl(link.url);
+        if(!href)continue;
+        const a=make('a','ajd-quick-links-item');
+        a.href=href;a.target=href.startsWith('tel:')||href.startsWith('mailto:')?'_self':'_blank';
+        if(a.target==='_blank')a.rel='noopener noreferrer';
+        a.append(make('span','ajd-quick-icon',link.icon||'🔗'),make('span','',link.label||href));
+        quickPanel.append(a);shown++;
+      }
+      if(!shown)quickPanel.appendChild(make('p','ajd-quick-links-empty','No saved quick links yet.'));
+      const actions=make('div','ajd-quick-links-actions');
+      const manage=make('a','','Manage Links');manage.href='/links';
+      const create=make('a','','＋ Add Link');create.href='/link-editor';
+      actions.append(manage,create);quickPanel.append(actions);
+    };
+    const toggleQuick=visible=>{
+      quickPanel.hidden=!visible;
+      quickButton.setAttribute('aria-expanded',String(visible));
+      if(visible){drawQuickLinks();if(isDrawerOpen())setDrawer(false,false);}
+    };
+    quickButton.addEventListener('click',event=>{
+      event.stopPropagation();toggleQuick(quickPanel.hidden);
+    });
+    document.addEventListener('click',event=>{
+      if(!quickWrap.contains(event.target)&&!quickPanel.hidden)toggleQuick(false);
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&!quickPanel.hidden){toggleQuick(false);quickButton.focus();event.stopPropagation();}
+    });
+    quickWrap.append(quickButton,quickPanel);
+    quickTarget?.appendChild(quickWrap);
     backdrop=make('div');backdrop.id='ajdMenuBackdrop';backdrop.setAttribute('aria-hidden','true');
     drawer=make('aside');
     drawer.id='ajdMenuDrawer';
