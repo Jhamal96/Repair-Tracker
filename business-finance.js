@@ -8,7 +8,23 @@ const expensePage=page==='expenses';
 const tableName=expensePage?'business_expenses':'planned_purchases';
 const $=id=>document.getElementById(id);
 const currency=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
-let client=null,items=[],authorized=false,busy=false;
+let client=null,items=[],authorized=false,busy=false,checkingAuth=null;
+const pdfs=expensePage?window.AJDExpensePDFs:null;
+function setAccessView(title,message,offerLogin=false){
+ const box=$('accessBlock');if(!box)return;
+ $('accessTitle').textContent=title;
+ $('accessMessage').textContent=message;
+ const link=$('accessSignInLink');if(link)link.hidden=!offerLogin;
+ box.hidden=false;$('appContent').hidden=true;
+}
+function checkingSession(){
+ setAccessView('🔄 Restoring your session…','Checking your saved administrator session. You should not need to sign in again when changing pages.',false);
+}
+function deniedSession(message,login=true){
+ authorized=false;
+ setAccessView(login?'🔒 Administrator Sign-In Required':'⚠️ Session verification unavailable',message,login);
+}
+
 const categories=expensePage?['Parts','Tools','Inventory','Supplies','Equipment','Shipping','Software','Marketing','Rent','Utilities','Travel','Vehicle','Meals','Other']:['Parts','Tools','Inventory','Equipment','Supplies','Software','Office','Marketing','Other'];
 function el(tag,text,className){
  const node=document.createElement(tag);
@@ -34,7 +50,7 @@ function makeActions(row){
  }
  return group;
 }
-function showEmpty(message){$('rows').replaceChildren();const tr=el('tr');const cell=el('td',message,'empty');cell.colSpan=expensePage?7:7;tr.appendChild(cell);$('rows').appendChild(tr)}
+function showEmpty(message){$('rows').replaceChildren();const tr=el('tr');const cell=el('td',message,'empty');cell.colSpan=expensePage?8:7;tr.appendChild(cell);$('rows').appendChild(tr)}
 function makeCell(tr,content){const td=el('td');if(content instanceof Node)td.appendChild(content);else td.textContent=String(content??'');tr.appendChild(td);return td}
 function filtered(){
  const q=$('search').value.trim().toLowerCase();
@@ -56,7 +72,7 @@ function render(){
    makeCell(tr,row.expense_date||'');
    const summary=el('div',row.description);if(row.vendor)summary.appendChild(el('small',row.vendor));makeCell(tr,summary);
    makeCell(tr,row.category);makeCell(tr,el('span',currency(row.amount),'amount'));
-   makeCell(tr,row.payment_method||'—');makeCell(tr,row.tax_deductible?'Yes':'No');makeCell(tr,makeActions(row));
+   makeCell(tr,row.payment_method||'—');makeCell(tr,row.tax_deductible?'Yes':'No');makeCell(tr,pdfs?.renderRow(row)||'—');makeCell(tr,makeActions(row));
   }else{
    const item=el('div',row.item_name);if(row.vendor)item.appendChild(el('small',row.vendor));makeCell(tr,item);
    makeCell(tr,row.category);makeCell(tr,el('span',currency(row.estimated_price),'amount'));
@@ -99,6 +115,7 @@ function openEditor(record){
   $('paymentMethod').value=record?.payment_method||'Other';
   $('taxDeductible').checked=Boolean(record?.tax_deductible);
   $('notes').value=record?.notes||'';
+  pdfs?.editorRecord(record?.id||'');
  }else{
   $('itemName').value=record?.item_name||'';
   $('category').value=record?.category||'Equipment';
@@ -115,7 +132,7 @@ function openEditor(record){
  $('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});
  (expensePage?$('description'):$('itemName')).focus();
 }
-function closeEditor(){$('editorPanel').hidden=true;$('editorForm').reset();$('editId').value=''}
+function closeEditor(){$('editorPanel').hidden=true;$('editorForm').reset();$('editId').value='';pdfs?.closeEditor()}
 function readPayload(){
  if(expensePage){
   const amount=Number($('amount').value);
@@ -131,21 +148,54 @@ function readPayload(){
 }
 async function save(event){
  event.preventDefault();if(!authorized||busy)return;
+ let savedId='';
  try{
   const payload=readPayload();busy=true;$('saveButton').disabled=true;setLoading('Saving to Supabase…');
   const id=$('editId').value;
   const query=id?client.from(tableName).update(payload).eq('id',id):client.from(tableName).insert(payload);
-  const {error}=await query;
+  const {data,error}=await query.select('id').single();
   if(error)throw error;
-  closeEditor();await load();
-  showMessage('Saved successfully to the secure business database.');
- }catch(err){showMessage('Could not save: '+err.message,true)}
+  savedId=data?.id||id;
+  if(!savedId)throw Error('No saved expense ID was returned.');
+  if(expensePage&&pdfs){
+    // The expense record must exist before private storage policies allow uploading.
+    $('editId').value=savedId;
+    pdfs.editorRecord(savedId);
+    setLoading('Uploading and linking selected PDF receipts…');
+    const result=await pdfs.uploadPending(savedId);
+    if(result.failed.length){
+      await load();
+      showMessage('Expense saved, but '+result.failed.length+' PDF(s) could not upload: '+result.failed.join(' ')+'. Retry the remaining files.',true);
+      return;
+    }
+    closeEditor();await load();
+    showMessage(result.uploaded
+      ?'Expense saved with '+result.uploaded+' private PDF attachment(s). You can view them in the Receipts column.'
+      :'Expense saved successfully to the secure business database.');
+  }else{
+    closeEditor();await load();
+    showMessage('Saved successfully to the secure business database.');
+  }
+ }catch(err){
+  if(savedId){$('editId').value=savedId;pdfs?.editorRecord(savedId)}
+  showMessage((savedId?'Expense saved, but attachment handling failed: ':'Could not save: ')+err.message,true)
+ }
  finally{busy=false;$('saveButton').disabled=false;setLoading('')}
 }
 async function removeItem(record){
  if(!authorized||busy)return;
  if(!confirm('Delete this '+(expensePage?'expense':'planned purchase')+'? This cannot be undone.'))return;
- try{busy=true;setLoading('Deleting…');const {error}=await client.from(tableName).delete().eq('id',record.id);if(error)throw error;await load();showMessage('Entry deleted.')}catch(err){showMessage('Could not delete: '+err.message,true)}
+ try{
+  busy=true;setLoading('Deleting…');
+  const {error}=await client.from(tableName).delete().eq('id',record.id);
+  if(error)throw error;
+  let cleanupError='';
+  if(expensePage&&pdfs){
+   try{await pdfs.cleanDeletedExpense(record.id)}catch(e){cleanupError=e.message}
+  }
+  await load();
+  showMessage(cleanupError?'Expense deleted; some private PDF files could not be cleaned up automatically: '+cleanupError:'Entry deleted.',Boolean(cleanupError));
+ }catch(err){showMessage('Could not delete: '+err.message,true)}
  finally{busy=false;setLoading('')}
 }
 async function convertToExpense(record){
@@ -174,7 +224,15 @@ function downloadCSV(){
 async function load(){
  if(!authorized)return;
  setLoading('Loading secure cloud records…');
- try{const {data,error}=await client.from(tableName).select('*').order(expensePage?'expense_date':'created_at',{ascending:false}).limit(2000);if(error)throw error;items=data||[];render()}
+ try{
+  const {data,error}=await client.from(tableName).select('*').order(expensePage?'expense_date':'created_at',{ascending:false}).limit(2000);
+  if(error)throw error;
+  items=data||[];
+  if(expensePage&&pdfs){
+    try{await pdfs.refresh()}catch(error){showMessage('Expenses loaded, but the PDF attachment list is unavailable: '+error.message,true)}
+  }
+  render();
+ }
  catch(err){showMessage('Cloud read failed: '+err.message,true);showEmpty('Unable to load data from Supabase.')}
  finally{setLoading('')}
 }
@@ -195,18 +253,46 @@ async function start(){
  $('exportButton').addEventListener('click',downloadCSV);
  $('clearFilters').addEventListener('click',()=>{$('search').value='';$('statusFilter').value='';if(expensePage)$('monthFilter').value='';render()});
  try{
-  if(!window.supabase?.createClient)throw Error('Supabase library could not load. Check your connection.');
+  checkingSession();
+  if(!window.supabase?.createClient)throw Error('Supabase library could not load. Check your connection and reload.');
   client=window.supabase.createClient(URL_SUPABASE,KEY_SUPABASE);
-  const {data:{session},error:authError}=await client.auth.getSession();
-  if(authError)throw authError;
-  if(!session)throw Error('Sign in to the main dashboard first.');
-  const {data:isAdmin,error}=await client.rpc('ajd_is_admin');
-  if(error)throw error;
-  if(isAdmin!==true)throw Error('Your account is not approved as an administrator.');
-  authorized=true;
-  $('accessBlock').hidden=true;$('appContent').hidden=false;
-  await load();
- }catch(err){$('accessMessage').textContent=err.message;$('accessBlock').hidden=false;$('appContent').hidden=true}
+  if(expensePage){
+    if(!pdfs)throw Error('PDF attachment tools did not load. Refresh the page.');
+    pdfs.init(client);
+    pdfs.requestEdit=openEditor;
+    pdfs.notifyChange=render;
+  }
+  client.auth.onAuthStateChange((event,session)=>{
+    if(event==='SIGNED_OUT'){
+      deniedSession('Your account has signed out. Please sign in again on the dashboard.');
+      items=[];if(expensePage)pdfs?.closeEditor();
+    }else if(event==='SIGNED_IN'&&!authorized){
+      setTimeout(()=>{void verifyAdminSession()},0);
+    }
+  });
+  await verifyAdminSession();
+ }catch(err){deniedSession(err.message,false)}
+}
+async function verifyAdminSession(){
+ if(checkingAuth)return checkingAuth;
+ checkingAuth=(async()=>{
+  if(!authorized)checkingSession();
+  try{
+   const {data:{session},error:authError}=await client.auth.getSession();
+   if(authError)throw authError;
+   if(!session){deniedSession('Your Supabase session is not active on this website. Sign in once to access all admin pages.');return}
+   const {data:isAdmin,error}=await client.rpc('ajd_is_admin');
+   if(error)throw error;
+   if(isAdmin!==true){deniedSession('This account is signed in, but it is not authorized to access AJD admin records.');return}
+   authorized=true;
+   $('accessBlock').hidden=true;$('appContent').hidden=false;
+   await load();
+  }catch(err){
+    if(!authorized)deniedSession('We could not verify your saved session: '+err.message+'. Try refreshing once; your records are safe.',false);
+    else showMessage('Unable to refresh secure data: '+err.message,true);
+  }
+ })().finally(()=>{checkingAuth=null});
+ return checkingAuth;
 }
 document.addEventListener('DOMContentLoaded',start);
 })();
