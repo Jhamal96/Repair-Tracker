@@ -164,3 +164,48 @@ body[data-page] header .brand .sub{overflow-wrap:anywhere}
     text-overflow:ellipsis;
   }
 }
+
+/* Exact centering for the drawer close X across every admin page.
+   The generic button padding from business-finance.css must not offset it. */
+#ajdMenuDrawer .ajd-drawer-close{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  box-sizing:border-box!important;
+  position:relative;
+  display:grid!important;
+  place-items:center!important;
+  justify-content:center!important;
+  align-items:center!important;
+  flex:0 0 38px!important;
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  padding:0!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  margin-right:0!important;
+  margin-left:auto!important;
+  line-height:0!important;
+  text-indent:0!important;
+  vertical-align:middle!important;
+}
+#ajdMenuDrawer .ajd-drawer-close svg{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  flex:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible;
+  transform:none!important;
+  pointer-events:none;
+}
+#ajdMenuDrawer .ajd-drawer-close:hover{
+  background:rgba(148,163,184,.20);
+  border-color:rgba(148,163,184,.4);
+}
+#ajdMenuDrawer .ajd-drawer-close:focus-visible{
+  outline:3px solid #93c5fd;
+  outline-offset:3px;
+}
