@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+<title>AJD’s Wireless Repairs • Welcome</title>
+<style>
+:root{color-scheme:dark;--base:#111c28;--panel:#1c2f40;--ink:#edf4fa;--muted:#b5c5d5;--accent:#71b6cb;--accent2:#efb57b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;min-height:100dvh;background:var(--base);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 14% 13%,var(--accent) 0%,transparent 31%),radial-gradient(circle at 89% 94%,var(--accent2) 0%,transparent 27%);opacity:.12;pointer-events:none}
+body:after{content:"";position:fixed;left:-180px;bottom:-210px;width:390px;height:390px;border:1px solid var(--accent);opacity:.18;border-radius:50%;pointer-events:none}
+main{max-width:740px;min-height:100vh;margin:0 auto;padding:35px 30px 28px;display:flex;flex-direction:column;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{display:flex;align-items:center;gap:13px;font-weight:830;letter-spacing:-.035em;font-size:17px}.brand img{width:45px;height:45px;border-radius:12px}.kicker{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);font-weight:850}
+button{cursor:pointer;font:inherit}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:4px}.plain{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:13px;padding:10px 12px}
+.splash{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:13px;transition:opacity .3s}.splash img{width:140px;height:140px;border-radius:31px;box-shadow:0 17px 49px #0002;animation:enter .65s both}.splash h1{font-size:clamp(32px,5vw,48px);line-height:1.12;letter-spacing:-.06em;margin:9px 0 0}.splash p{color:var(--muted);margin:0}.splash .bar{width:140px;height:4px;background:var(--panel);border-radius:10px;margin-top:31px;overflow:hidden}.splash .bar i{display:block;width:40%;height:100%;background:var(--accent);border-radius:12px;animation:load 1.05s infinite}
+.wizard{display:none;flex:1;flex-direction:column}.wizard.open{display:flex}.wizard .slides{flex:1;display:grid;place-items:center}.slide{text-align:center;max-width:600px}.slide[hidden]{display:none}.step-count{font-size:12px;color:var(--muted);font-weight:850;letter-spacing:.2em}
+.illustration{height:210px;display:flex;align-items:center;justify-content:center;margin:22px auto 17px}.circle-art{width:174px;height:174px;border-radius:23px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--accent);box-shadow:0 22px 60px #0002;position:relative}.circle-art:after{content:"";position:absolute;width:210px;height:210px;border:1px solid var(--accent2);border-radius:50%;opacity:.37}.circle-art img{width:120px;height:120px;border-radius:30px}.illustration-icon{font-size:78px;line-height:1;color:var(--accent);font-weight:600}
+.slide h2{font-size:clamp(32px,4vw,45px);line-height:1.12;letter-spacing:-.055em;margin:14px 0 16px}.slide p{color:var(--muted);font-size:17px;max-width:490px;margin:auto}
+.footer{margin:0 auto;max-width:560px;width:100%}.dots{display:flex;justify-content:center;gap:9px;margin:20px}.dots span{width:9px;height:9px;border-radius:9px;background:var(--accent2);opacity:.28;transition:.2s}.dots span.active{width:27px;opacity:1;background:var(--accent)}.actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.primary{border:0;background:var(--accent);color:#102131;border-radius:14px;font-weight:850;padding:15px 23px;min-width:172px}.primary:hover{filter:brightness(1.07)}.secondary{border:1px solid var(--accent2);color:var(--ink);background:transparent;padding:13px 20px;border-radius:13px;font-weight:750}.pref{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:12px;margin:22px auto 0}.pref input{accent-color:var(--accent)}.close{display:none}
+@keyframes load{from{transform:translateX(-150%)}to{transform:translateX(350%)}}@keyframes enter{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@media(max-width:590px){main{padding:20px}.illustration{height:178px}.slide h2{font-size:30px}.slide p{font-size:15px}.primary{min-width:150px}.splash img{width:112px;height:112px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style></head>
+<body><main>
+<div class="top"><div class="brand"><img src="./icon.png" alt=""><span>AJD’s Wireless Repairs</span></div><button id="skip" type="button" class="plain close">Skip introduction ↗</button></div>
+<section id="splash" class="splash" aria-live="polite"><img src="./icon.png" alt=""><h1>AJD’s Wireless Repairs</h1><p>Your shop, under control.</p><div class="bar" role="progressbar" aria-label="Starting the app"><i></i></div></section>
+<section id="wizard" class="wizard" aria-label="Welcome introduction"><div class="slides"><article class="slide" data-step="0" ><span class="step-count">01 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-0"><img src="./icon.png" alt=""></div></div><h2>Welcome to the workbench</h2><p>Your repair business tools, right at your fingertips.</p></article>
+<article class="slide" data-step="1" hidden><span class="step-count">02 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-1"><span class="illustration-icon">◫</span></div></div><h2>Keep every job moving</h2><p>Track repair statuses, customer receipts, and parts in one organized workspace.</p></article>
+<article class="slide" data-step="2" hidden><span class="step-count">03 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-2"><span class="illustration-icon">✓</span></div></div><h2>Stay ready for the next repair</h2><p>Use inventory, store tools, and business records to keep things running smoothly.</p></article></div><div class="footer"><div class="dots" aria-label="Introduction progress"><span class="active"></span><span></span><span></span></div><div class="actions"><button id="back" type="button" class="secondary" disabled>Back</button><button id="next" type="button" class="primary">Next →</button></div><label class="pref"><input type="checkbox" id="remember" checked> Don't show this introduction again</label></div></section>
+</main>
+<script>
+(function(){
+"use strict";
+let step=0,first=new URLSearchParams(location.search).get("first")==="1";
+const splash=document.getElementById("splash"),wizard=document.getElementById("wizard");
+function launch(){if(window.ajdIntro?.finish)window.ajdIntro.finish(document.getElementById("remember").checked);}
+function render(){document.querySelectorAll(".slide").forEach((x,i)=>x.hidden=i!==step);document.querySelectorAll(".dots span").forEach((x,i)=>x.classList.toggle("active",i===step));document.getElementById("back").disabled=step===0;document.getElementById("next").textContent=step===2?"Get started →":"Next →";}
+document.getElementById("skip").addEventListener("click",launch);
+document.getElementById("back").addEventListener("click",()=>{if(step>0)step--;render();});
+document.getElementById("next").addEventListener("click",()=>{if(step===2){launch();return;}step++;render();});
+setTimeout(()=>{if(first){splash.style.display="none";wizard.classList.add("open");document.getElementById("skip").classList.remove("close");render();}else{launch();}},950);
+})();
+</script></body></html>
