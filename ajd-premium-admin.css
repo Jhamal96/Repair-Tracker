@@ -254,3 +254,18 @@ html.dark .ajd-repair-toolbar-kicker{color:#7dd3fc}
   #storeOrders .ajd-order-actions .btn{flex:1 1 auto;padding:11px 12px!important}
   #storeOrders .ajd-order-status{white-space:normal}
 }
+
+/* Grouped shopping-cart purchase requests — full item list for admins */
+#storeOrders .ajd-admin-cart-items{margin-top:9px;padding:13px;border:1px solid rgba(59,130,246,.23);
+ background:rgba(37,99,235,.055);border-radius:13px;display:grid;gap:10px}
+#storeOrders .ajd-admin-cart-items>strong{font-size:12px;line-height:1.4;color:#60a5fa}
+#storeOrders .ajd-admin-cart-lines{display:grid;gap:7px}
+#storeOrders .ajd-admin-cart-line{display:flex;justify-content:space-between;gap:12px;align-items:center;
+ font-size:12px;padding:7px 0;border-bottom:1px solid rgba(100,116,139,.17);line-height:1.5}
+#storeOrders .ajd-admin-cart-line>span{min-width:0;overflow-wrap:anywhere}
+#storeOrders .ajd-admin-cart-line>span>b{white-space:nowrap;color:#60a5fa}
+#storeOrders .ajd-admin-cart-line>strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+#storeOrders .ajd-admin-cart-total{display:flex;justify-content:space-between;gap:12px;
+ align-items:center;font-size:12px;font-weight:900;color:#60a5fa}
+#storeOrders .ajd-admin-cart-total b{font-size:15px;font-variant-numeric:tabular-nums}
+@media(max-width:540px){#storeOrders .ajd-admin-cart-line{align-items:flex-start}}
