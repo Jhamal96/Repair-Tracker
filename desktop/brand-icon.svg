@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100" role="img" aria-label="AJD's Wireless Repairs logo">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 46 45" role="img" aria-label="AJD's Wireless Repairs logo">
   <title>AJD's Wireless Repairs</title>
-  <rect width="100" height="100" rx="8" fill="#070F20"/>
-  <circle cx="50" cy="50" r="44.5" fill="#0C1635" stroke="#1A3470" stroke-width="2"/>
-  <circle cx="50" cy="50" r="27" fill="none" stroke="#559FFE" stroke-width="3.1"/>
-  <path d="M30 68h12M36 68L50 28M42 53h18M38 28c4-3 9-2 12 0M50 28c8 20 16 33 26 42" fill="none" stroke="#559FFE" stroke-width="4.2" stroke-linecap="square" stroke-linejoin="round"/>
+  <rect width="46" height="45" fill="#070F20"/>
+  <circle cx="22.5" cy="21.5" r="20.3" fill="#0C1635" stroke="#1A3470" stroke-width="0.8"/>
+  <circle cx="22.5" cy="21.5" r="12.3" fill="none" stroke="#559FFE" stroke-width="1.6"/>
+  <path d="M15 28h4.5M18.3 28L23.2 15.5M19.5 23h7.5M18.2 16.1Q21 14 23.2 15.5M23.2 15.5C25.4 20.3 28 26.2 32.2 29" fill="none" stroke="#559FFE" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
