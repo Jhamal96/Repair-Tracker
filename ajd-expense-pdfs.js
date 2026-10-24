@@ -88,7 +88,7 @@ function readFileInput(){
 async function uploadPending(expenseId){
  if(!client)throw Error('Secure account connection required');
  if(!draftFiles.length)return {uploaded:0,failed:[]};
- const files=draftFiles.slice(),failures=[],uploadedIds=[];
+ const files=draftFiles.slice(),failures=[],remaining=[],uploadedIds=[];
  for(const file of files){
   let path='';
   try{
@@ -107,11 +107,13 @@ async function uploadPending(expenseId){
    uploadedIds.push(data.id);
   }catch(err){
    failures.push(escapeText(file.name)+': '+err.message);
+   remaining.push(file);
   }
  }
- draftFiles=[];
  if($('expensePdfUpload'))$('expensePdfUpload').value='';
- setDrafts([]);
+ // Keep only failed files in the editor so the admin can safely retry.
+ // Successfully uploaded files are not uploaded a second time.
+ setDrafts(remaining);
  await refresh();
  return {uploaded:uploadedIds.length,failed:failures};
 }
