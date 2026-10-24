@@ -1031,7 +1031,25 @@ async function fetchStoreOrders(){
    list.innerHTML='<p class="mini text-rose-500">Cannot load customer purchase requests: '+esc(error.message)+'</p>';
    return false;
  }
- storeOrders=data||[];
+ const requests=data||[];
+ // Pull cart lines only for authorized admin users. Existing single-item
+ // purchase requests have no associated lines and remain unchanged.
+ const ids=requests.map(item=>item.id);
+ const grouped=new Map();
+ for(let i=0;i<ids.length;i+=100){
+   const {data:lines,error:linesError}=await sb.from('store_purchase_request_items')
+     .select('request_id,item_id,item_title,item_price,quantity')
+     .in('request_id',ids.slice(i,i+100));
+   if(linesError){
+     list.innerHTML='<p class="mini text-rose-500">Unable to load full request item details: '+esc(linesError.message)+'</p>';
+     return false;
+   }
+   for(const line of lines||[]){
+     if(!grouped.has(line.request_id))grouped.set(line.request_id,[]);
+     grouped.get(line.request_id).push(line);
+   }
+ }
+ storeOrders=requests.map(o=>({...o,cart_lines:grouped.get(o.id)||[]}));
  renderStoreOrders();
  return true;
 }
@@ -1044,6 +1062,16 @@ function renderStoreOrders(){
    const quantity=Number(o.quantity)||1;
    const id=esc(o.id);
    const product=esc(o.item_title);
+   const lines=Array.isArray(o.cart_lines)?o.cart_lines:[];
+   const cartSum=lines.reduce((sum,line)=>sum+Number(line.item_price||0)*Number(line.quantity||0),0);
+   const itemDetails=lines.length?
+     '<div class="ajd-admin-cart-items"><strong>🛒 '+lines.length+' selected product'+(lines.length===1?'':'s')+' · '+quantity+' unit'+(quantity===1?'':'s')+'</strong>'+
+       '<div class="ajd-admin-cart-lines">'+lines.map(line=>
+         '<div class="ajd-admin-cart-line"><span>'+esc(line.item_title)+' <b>×'+Number(line.quantity)+'</b></span>'+
+         '<strong>'+new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(line.item_price)*Number(line.quantity))+'</strong></div>'
+       ).join('')+'</div>'+
+       '<div class="ajd-admin-cart-total"><span>Requested Item Subtotal</span><b>'+new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cartSum)+'</b></div></div>'
+     : '<p class="text-blue-500 font-bold mt-1">'+product+' · Qty '+quantity+'</p>';
    const name=esc(o.customer_name);
    const note=esc(o.shop_note||'');
    const pending=storeOrderUpdating.has(o.id);
@@ -1051,7 +1079,7 @@ function renderStoreOrders(){
    return '<article class="ajd-store-request-card dark-card rounded-2xl p-4 space-y-3 text-xs" data-request-id="'+id+'">'+
     '<div class="flex flex-wrap justify-between gap-2">'+
       '<div class="min-w-0 flex-1"><strong class="text-sm">'+name+'</strong>'+
-        '<p class="text-blue-500 font-bold mt-1">'+product+' · Qty '+quantity+'</p>'+
+        itemDetails+
         '<p class="mini mt-1">'+esc(o.customer_email||'')+' · '+esc(o.customer_phone||'')+'</p>'+
         (date?'<p class="mini mt-1">Requested '+esc(date)+'</p>':'')+
       '</div><span class="ajd-order-status '+statusColor+'">'+esc(statusLabel)+'</span>'+
