@@ -15,6 +15,7 @@ function setAccessView(title,message,offerLogin=false){
  $('accessTitle').textContent=title;
  $('accessMessage').textContent=message;
  const link=$('accessSignInLink');if(link)link.hidden=!offerLogin;
+ const retry=$('accessRetryButton');if(retry)retry.hidden=!title.startsWith('⚠️');
  box.hidden=false;$('appContent').hidden=true;
 }
 function checkingSession(){
@@ -241,6 +242,7 @@ async function start(){
  const dark=theme==='dark'||(theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
  document.documentElement.classList.toggle('dark',dark);
  $('year').textContent=new Date().getFullYear();
+ $('accessRetryButton')?.addEventListener('click',()=>{void verifyAdminSession()});
  optionList('category',categories);
  optionList('statusFilter',expensePage?categories:['planned','ordered','purchased','canceled']);
  if(expensePage)$('monthFilter').value=new Date().toLocaleDateString('en-CA').slice(0,7);
