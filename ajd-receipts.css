@@ -76,3 +76,7 @@
  #invoiceModal #receiptPdfButton,
  #invoiceModal #receiptPrintViewButton {display:none!important}
 }
+
+/* AJD navy logo in customer receipt previews and 80mm print layout */
+#invoicePrintSheet .receipt-brand-icon{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;overflow:hidden}
+#invoicePrintSheet .receipt-brand-icon img{display:block;width:42px;height:42px;max-width:100%;max-height:100%;object-fit:contain;margin:0 auto;border:0}
