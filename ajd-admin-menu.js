@@ -185,7 +185,7 @@
     const head=make('div','ajd-drawer-head');
     const brand=make('div','ajd-drawer-brand');
     const logo=make('img','ajd-drawer-logo');
-    logo.src='/ajd-logo.svg?v=20261024-logo1';
+    logo.src='/ajd-logo.svg?v=20261024-logo2';
     logo.alt="AJD's Wireless Repairs logo";
     logo.width=45;logo.height=45;logo.decoding='async';
     const brandCopy=make('div');
