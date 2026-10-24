@@ -209,3 +209,19 @@ body[data-page] header .brand .sub{overflow-wrap:anywhere}
   outline:3px solid #93c5fd;
   outline-offset:3px;
 }
+
+
+/* Shared AJD blue monogram in the navigation drawer */
+#ajdMenuDrawer img.ajd-drawer-logo{
+  display:block!important;
+  width:45px!important;
+  height:45px!important;
+  flex:0 0 45px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:13px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:#070f20!important;
+  box-shadow:none!important;
+}
