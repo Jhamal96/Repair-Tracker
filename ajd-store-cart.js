@@ -105,7 +105,8 @@ function render(){
  const submit=$('cartSendBtn');
  submit.disabled=pending||sent||!cart.size||!stockValid;
  if(!sent)submit.textContent=pending?'Sending your request…':'Send Request for '+cart.size+' Product'+(cart.size===1?'':'s');
- $('cartCheckoutFields').hidden=!cart.size&&!sent;
+ $('cartCheckoutFields').hidden=!cart.size||sent;
+ $('cartCheckoutForm').hidden=!cart.size||sent;
  $('cartCheckoutSummary').hidden=!cart.size;
  if(!stockValid&&cart.size&&!pending&&!sent)setMessage('Some items are out of stock or exceed available quantities. Update your selections before submitting.',true);
 }
