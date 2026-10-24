@@ -225,3 +225,55 @@ body[data-page] header .brand .sub{overflow-wrap:anywhere}
   background:#070f20!important;
   box-shadow:none!important;
 }
+
+/* Dedicated admin pages: persistent top-right Links + Settings quick access */
+body:not([data-page]) header .ajd-legacy-control-hidden{display:none!important}
+#ajdQuickLinks{position:relative;flex:0 0 auto;order:6;z-index:150;line-height:1}
+#ajdQuickLinksButton,.ajd-settings-shortcut{
+  width:43px!important;height:43px!important;min-width:43px!important;min-height:43px!important;
+  display:grid!important;place-items:center!important;justify-content:center!important;align-items:center!important;
+  box-sizing:border-box!important;padding:0!important;margin:0!important;
+  color:#2563eb!important;border:1px solid rgba(59,130,246,.26)!important;
+  background:rgba(59,130,246,.075)!important;border-radius:13px!important;
+  line-height:1!important;text-decoration:none!important;
+  cursor:pointer;font-size:20px;font-weight:700;
+  transition:background .16s,border-color .16s,transform .16s;
+}
+html.dark #ajdQuickLinksButton,html.dark .ajd-settings-shortcut{color:#93c5fd!important;background:rgba(59,130,246,.12)!important;border-color:rgba(147,197,253,.27)!important}
+#ajdQuickLinksButton:hover,.ajd-settings-shortcut:hover{background:rgba(59,130,246,.18)!important;border-color:#60a5fa!important;transform:translateY(-1px)}
+#ajdQuickLinksButton:focus-visible,.ajd-settings-shortcut:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+#ajdQuickLinksButton svg{display:block!important;margin:auto!important;padding:0!important;width:21px!important;height:21px!important;flex:none!important}
+.ajd-settings-shortcut{order:5;flex:0 0 auto}
+.ajd-quick-links-panel{
+  position:absolute;z-index:190;top:calc(100% + 11px);right:0;
+  width:min(320px,calc(100vw - 24px));max-height:min(70vh,530px);overflow-y:auto;
+  background:#fff;color:#10223b;border:1px solid #dbe5f4;border-radius:17px;
+  padding:11px;box-shadow:0 26px 55px rgba(2,6,23,.23);
+  display:grid;gap:5px;text-align:left;line-height:1.5;
+}
+html.dark .ajd-quick-links-panel{background:#111f34;color:#f8fafc;border-color:#32455f}
+html.ultra-dark .ajd-quick-links-panel{background:#090a0e;border-color:#292c37}
+.ajd-quick-links-panel[hidden]{display:none!important}
+.ajd-quick-links-header{font-size:12px;font-weight:900;letter-spacing:.2px;padding:8px 9px 12px;border-bottom:1px solid rgba(148,163,184,.25);margin-bottom:6px}
+.ajd-quick-links-item{
+  display:flex!important;align-items:center!important;gap:10px;
+  padding:10px 11px!important;border-radius:10px;text-align:left;font-size:12px!important;
+  font-weight:750!important;min-width:0;line-height:1.35;color:inherit!important;
+  text-decoration:none!important;
+}
+.ajd-quick-links-item:hover{background:rgba(59,130,246,.13)!important}
+.ajd-quick-links-item>span:last-child{overflow-wrap:anywhere;min-width:0}
+.ajd-quick-icon{width:34px;height:34px;flex:0 0 34px;border-radius:10px;display:grid;place-items:center!important;font-size:17px;background:rgba(59,130,246,.1)}
+.ajd-quick-links-empty{font-size:12px;padding:10px;color:#94a3b8}
+.ajd-quick-links-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding-top:11px;border-top:1px solid rgba(148,163,184,.25);margin-top:7px}
+.ajd-quick-links-actions a{display:grid!important;place-items:center;min-height:38px;padding:7px 9px;border-radius:10px;background:rgba(59,130,246,.12);color:#2563eb!important;font-size:11px!important;font-weight:900!important;text-decoration:none!important;text-align:center}
+html.dark .ajd-quick-links-actions a{color:#93c5fd!important}
+.ajd-quick-links-actions a:hover{background:rgba(59,130,246,.22)}
+body[data-page] header .top>.ajd-settings-shortcut{order:4;margin-left:0}
+body[data-page] header .top>#ajdQuickLinks{order:5}
+body:not([data-page]) header .max-w-7xl>div:nth-of-type(2){min-width:0}
+@media(max-width:640px){
+ #ajdQuickLinksButton,.ajd-settings-shortcut{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}
+ body[data-page] header .top{gap:8px}
+ body:not([data-page]) header .max-w-7xl>div:nth-of-type(2){gap:5px!important}
+}
