@@ -10,6 +10,7 @@ const $=id=>document.getElementById(id);
 const currency=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
 let client=null,items=[],authorized=false,busy=false,checkingAuth=null;
 const pdfs=expensePage?window.AJDExpensePDFs:null;
+const overall=expensePage?window.AJDExpenseOverview:null;
 function setAccessView(title,message,offerLogin=false){
  const box=$('accessBlock');if(!box)return;
  $('accessTitle').textContent=title;
@@ -233,6 +234,7 @@ async function load(){
     try{await pdfs.refresh()}catch(error){showMessage('Expenses loaded, but the PDF attachment list is unavailable: '+error.message,true)}
   }
   render();
+  if(expensePage&&overall)await overall.refresh();
  }
  catch(err){showMessage('Cloud read failed: '+err.message,true);showEmpty('Unable to load data from Supabase.')}
  finally{setLoading('')}
@@ -263,6 +265,8 @@ async function start(){
     pdfs.init(client);
     pdfs.requestEdit=openEditor;
     pdfs.notifyChange=render;
+    if(!overall)throw Error('Overall spending dashboard did not load. Refresh the page.');
+    overall.init(client);
   }
   client.auth.onAuthStateChange((event,session)=>{
     if(event==='SIGNED_OUT'){
