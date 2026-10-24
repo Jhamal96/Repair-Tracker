@@ -130,19 +130,74 @@ async function refresh(){
  }
  status();
 }
+async function pullCloudCopies(){
+ // Match the original dashboard's offline-first merge: confirmed cloud records
+ // take priority, but local-only tickets and still-queued edits are NEVER discarded.
+ let pulledRepairs=0,pulledLinks=0,pulledRequests=0;
+ const issues=[];
+ try{
+  const {data,error}=await T.client.from('repairs').select('*').order('created_at',{ascending:false}).limit(3000);
+  if(error)throw error;
+  const remote=data||[],local=read(LOCAL_REPAIRS,[]),map=new Map(remote.map(job=>[String(job.id),job]));
+  const pending=queued(REPAIR_KEY),queuedIds=new Set(pending.map(op=>op.id));
+  const oldList=Array.isArray(local)?local:[];
+  for(const job of oldList){
+   if(!map.has(String(job.id))&&!queuedIds.has(String(job.id)))map.set(String(job.id),job);
+  }
+  for(const op of pending){
+   if(op.kind==='delete')map.delete(String(op.id));
+   else if(op.job)map.set(String(op.id),op.job);
+  }
+  const merged=[...map.values()].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  save(LOCAL_REPAIRS,merged);
+  pulledRepairs=remote.length;
+ }catch(error){issues.push('Repair refresh: '+error.message)}
+ try{
+  const {data,error}=await T.client.from('admin_links').select('id,label,url,icon,position').order('position',{ascending:true}).limit(3000);
+  if(error)throw error;
+  const remote=(data||[]).filter(row=>row.id!=='__initialized__'&&T.safeUrl(row.url));
+  const pending=queued(LINK_QUEUE),map=new Map(remote.map(item=>[item.id,{id:item.id,label:item.label,url:item.url,icon:item.icon||''}]));
+  for(const op of pending){
+   if(op.kind==='delete')map.delete(op.id);
+   else if(op.item)map.set(op.id,op.item);
+  }
+  const cloudInitialized=(data||[]).some(x=>x.id==='__initialized__');
+  // Avoid erasing local defaults when the shared link table was never initialized.
+  if(remote.length||cloudInitialized||pending.length){save(LINKS,[...map.values()]);pulledLinks=remote.length}
+ }catch(error){issues.push('Link refresh: '+error.message)}
+ try{
+  const {data,error}=await T.client.from('purchase_requests').select('*').order('created_at',{ascending:false}).limit(3000);
+  if(error)throw error;
+  const remote=(data||[]).map(x=>({
+   id:x.id,customerName:x.customer_name??x.customerName??'Customer',
+   customerPhone:x.customer_phone??x.customerPhone??'',customerEmail:x.customer_email??'',
+   itemTitle:x.item_title??x.itemTitle??'Repair Service',notes:x.notes??'',
+   shop_note:x.shop_note??'',status:x.status??'pending',created_at:x.created_at
+  }));
+  const raw=read('ajd_purchase_requests',[]),local=Array.isArray(raw)?raw:[];
+  const map=new Map(remote.map(x=>[x.id,x]));
+  for(const x of local)if(!map.has(x.id))map.set(x.id,x);
+  save('ajd_purchase_requests',[...map.values()]);
+  pulledRequests=remote.length;
+ }catch(error){issues.push('Customer request refresh: '+error.message)}
+ return {pulledRepairs,pulledLinks,pulledRequests,issues};
+}
 async function syncAll(){
  if(running||!T.admin)return;
  running=true;$('syncNowButton').disabled=true;$('syncNowButton').textContent='☁️ Synchronizing…';
  message('Publishing queued changes securely to Supabase…');
  try{
   const repairs=await pushRepairs(),links=await pushLinks(),contacts=await pushContacts();
-  const errors=[repairs.error,links.error,...contacts.errors].filter(Boolean);
+  const pulled=await pullCloudCopies();
+  const errors=[repairs.error,links.error,...contacts.errors,...pulled.issues].filter(Boolean);
   const summary=[
    'Repair changes: '+repairs.count,
    'Links: '+links.count,
-   'Contact updates: '+contacts.count
+   'Contact updates: '+contacts.count,
+   'Cloud repairs refreshed: '+pulled.pulledRepairs,
+   'Cloud links refreshed: '+pulled.pulledLinks
   ];
-  message(summary.join(' · ')+(errors.length?' · Pending errors: '+errors.join('; '):' · Synchronization complete.'),Boolean(errors.length));
+  message(summary.join(' · ')+(errors.length?' · Attention: '+errors.join('; '):' · Synchronization complete.'),Boolean(errors.length));
   await refresh();
  }catch(error){message('Cloud sync interrupted: '+error.message,true)}
  finally{running=false;$('syncNowButton').disabled=false;$('syncNowButton').textContent='☁️ Sync Now'}
