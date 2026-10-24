@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <title>Settings | AJD's Wireless Repairs</title>
+ <meta name="theme-color" content="#0b1425">
+ <link rel="icon" type="image/png" href="/admin-icon-192.png?v=20261024-logo2">
+ <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-logo.css?v=20261024-logo2">
+ <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const dark=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+ <script src="/ajd-admin-tools.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-settings-page.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-admin-menu.js?v=20261024-tools1" defer></script>
+</head>
+<body class="ajd-tools" data-page="settings">
+<header class="ajd-tools-header"><div class="wrap top">
+ <div class="brand">
+  <img src="/ajd-logo.svg?v=20261024-logo2" alt="AJD's Wireless Repairs logo" width="47" height="47">
+  <div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Settings · Protected Admin Workspace</div></div>
+ </div>
+ <nav class="header-nav" aria-label="Administration"><a href="/">⌂ Dashboard</a><a href="/links">🔗 Links</a><a href="/link-editor">＋ Link Editor</a><a href="/cloud-sync">☁️ Cloud Sync</a><a href="/settings" aria-current="page">⚙️ Settings</a></nav>
+</div></header>
+<main class="wrap tools-main">
+ <section id="accessBlock" class="panel" role="status" aria-live="polite">
+  <span id="accessLoading" class="tools-loading-ring" aria-hidden="true"></span>
+  <h2 id="accessTitle">Restoring your secure session…</h2>
+  <p id="accessDescription">Checking your saved Supabase administrator sign-in.</p>
+  <div class="tools-actions"><a id="accessLogin" class="tools-button primary" href="/" hidden>Sign In on Dashboard</a><button id="accessRetry" type="button" class="tools-button" hidden>↻ Retry Verification</button></div>
+ </section>
+ <div id="appContent" class="tools-stack" hidden>
+  <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · SETTINGS</p><h1>Set up your shop, your way.</h1><p>Business contacts, appearance, labor prices, secure account settings, and backups are now in one dedicated place.</p></div><span class="tools-hero-icon" aria-hidden="true">⚙️</span></section>
+  <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
+  
+<div class="tools-grid">
+ <section class="panel tools-stack"><div><h2>📞 Business Contact Details</h2><p>Published to your customer pages when an authorized administrator saves.</p></div>
+  <form id="settingsContactForm" class="tools-stack">
+   <label class="tools-label">Shop Phone<input id="settingPhone" class="field" required type="tel" autocomplete="tel" maxlength="40" placeholder="(786) 734-1852"></label>
+   <label class="tools-label">Business Email<input id="settingEmail" class="field" type="email" autocomplete="email" maxlength="254" placeholder="contact@example.com"></label>
+   <button id="saveContacts" class="tools-button primary" type="submit">✓ Save Business Contact</button>
+  </form>
+ </section>
+ <section class="panel tools-stack"><div><h2>🎨 Appearance</h2><p>Choose the display mode for AJD admin tools on this device.</p></div>
+  <label class="tools-label">Color Mode<select id="themeMode" class="field"><option value="system">📱 Follow System</option><option value="light">☀️ Light</option><option value="dark">🌙 Dark</option><option value="ultra-dark">⬛ Ultra Dark</option></select></label>
+  <div class="tools-tip">Appearance is remembered locally. System mode follows your device’s light/dark appearance automatically.</div>
+  <div class="tools-actions"><a href="/cloud-sync" class="tools-button">☁️ Cloud Synchronization ↗</a><a href="/download" class="tools-button">⬇ Download AJD App ↗</a></div>
+ </section>
+</div>
+<div class="tools-grid">
+ <section class="panel tools-stack"><div><h2>🛠 Labor Price Manager</h2><p>These prices feed the labor presets used when checking in repairs on this device.</p></div>
+  <div id="laborList" class="tools-stack"></div>
+  <form id="laborForm" class="tools-stack"><div class="form-grid">
+   <label class="tools-label">Service Name<input id="laborName" class="field" required maxlength="90" placeholder="Example: Screen Replacement"></label>
+   <label class="tools-label">Labor Charge ($)<input id="laborPrice" class="field" type="number" required min="0" step=".01" max="100000" placeholder="60.00"></label>
+  </div><button class="tools-button primary" type="submit">＋ Add / Update Labor</button></form>
+ </section>
+ <section class="panel tools-stack"><div><h2>🗃️ Export & Import Backup</h2><p>Keep a local JSON copy of repairs, service presets and customer requests.</p></div>
+  <button id="backupExport" type="button" class="tools-button primary">⬇ Export JSON Backup</button>
+  <label class="tools-label">Import a previous AJD backup<input id="backupImport" class="field" type="file" accept=".json,application/json"></label>
+  <div class="tools-tip">Import merges records on this device; it does not automatically overwrite your Supabase records. Keep backups private—they contain customer information.</div>
+ </section>
+</div>
+<section class="panel tools-stack" id="account">
+ <div class="row"><div><h2>👤 Secure Account Settings</h2><p id="accountEmailDisplay">Checking administrator…</p></div><button id="toolsSignOut" type="button" class="tools-button danger">↪ Sign Out</button></div>
+ <div class="tools-grid">
+  <form id="accountEmailForm" class="tools-stack"><h3>Change Login Email</h3><p>Changing the login email may require confirmation in your inbox.</p><label class="tools-label">New Login Email<input id="newAccountEmail" class="field" type="email" required maxlength="254" autocomplete="email"></label><button class="tools-button" type="submit">Save New Login Email</button></form>
+  <form id="accountPasswordForm" class="tools-stack"><h3>Change Login Password</h3><label class="tools-label">Current Password<input id="currentAccountPassword" class="field" type="password" required autocomplete="current-password"></label><label class="tools-label">New Password<input id="newAccountPassword" class="field" type="password" required minlength="8" autocomplete="new-password"></label><label class="tools-label">Confirm New Password<input id="confirmAccountPassword" class="field" type="password" required minlength="8" autocomplete="new-password"></label><button class="tools-button primary" type="submit">Update Password</button></form>
+ </div>
+</section>
+ </div>
+</main>
+<footer><div class="wrap">© <span id="year">2026</span> AJD's Wireless Repairs · <a href="/">Dashboard</a> · <a href="/links">Manage Links</a> · <a href="/settings">Settings</a></div></footer>
+</body></html>
