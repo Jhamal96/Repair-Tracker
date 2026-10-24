@@ -15,7 +15,7 @@ function find(id){return records.filter(a=>a.expense_id===id)}
 function count(id){return find(id).length}
 function validate(file){
  if(!file)throw Error('Choose a PDF document.');
- if(!file.name.toLowerCase().endsWith('.pdf')||file.type&&file.type!=='application/pdf')throw Error(file.name+': only PDF files are supported.');
+ if(!file.name.toLowerCase().endsWith('.pdf')||!['','application/pdf','application/octet-stream','application/x-pdf'].includes(file.type||''))throw Error(file.name+': only PDF files are supported.');
  if(file.size<5||file.size>MAX_BYTES)throw Error(file.name+': PDF must be 15 MB or smaller.');
 }
 async function validatePDFHeader(file){
@@ -174,7 +174,12 @@ async function downloadFile(att){
   if(error||!blob)throw error||Error('Download unavailable.');
   // Installed Android WebView cannot download blob: links reliably; use its
   // native Save PDF bridge for documents up to the supported native size.
-  if(window.AJDNativePrint?.savePdf&&blob.size<=4000000){
+  if(window.AJDNativePrint?.savePdf&&blob.size>4000000){
+   await viewFile(att);
+   $('expensePdfPreviewHelp').textContent='This large PDF is ready to open. Tap Open PDF in New Tab to save it from your Android browser.';
+   return;
+  }
+  if(window.AJDNativePrint?.savePdf){
    const buffer=new Uint8Array(await blob.arrayBuffer());
    let binary='';
    for(let i=0;i<buffer.length;i+=16384)binary+=String.fromCharCode(...buffer.subarray(i,i+16384));
