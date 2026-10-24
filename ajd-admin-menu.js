@@ -184,7 +184,10 @@
     drawer.tabIndex=-1;
     const head=make('div','ajd-drawer-head');
     const brand=make('div','ajd-drawer-brand');
-    const logo=make('span','ajd-drawer-logo','AJD');
+    const logo=make('img','ajd-drawer-logo');
+    logo.src='/ajd-logo.svg?v=20261024-logo1';
+    logo.alt="AJD's Wireless Repairs logo";
+    logo.width=45;logo.height=45;logo.decoding='async';
     const brandCopy=make('div');
     brandCopy.append(make('strong','',"AJD's Wireless Repairs"),make('p','','Admin Command Center'));
     const close=make('button','ajd-drawer-close');
