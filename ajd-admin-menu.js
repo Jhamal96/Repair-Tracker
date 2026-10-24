@@ -15,8 +15,8 @@
     {name:'BUSINESS & INVENTORY',items:[
       {id:'parts',icon:'📦',label:'Inventory Tracker',description:'Parts, accessories & stock alerts',url:'/inventory'},
       {id:'inventory',icon:'🛍️',label:'Store Management',description:'Products, prices and stock',tab:'inventory'},
-      {id:'expenses',icon:'💼',label:'Business Expenses',description:'Track spending and export',url:'./expenses.html'},
-      {id:'plans',icon:'🛒',label:'Planned Purchases',description:'Shopping wish list and budget',url:'./planned-purchases.html'}
+      {id:'expenses',icon:'💼',label:'Business Expenses',description:'Track spending and export',url:'/expenses'},
+      {id:'plans',icon:'🛒',label:'Planned Purchases',description:'Shopping wish list and budget',url:'/planned-purchases'}
     ]},
     {name:'ADMIN & SETTINGS',items:[
       {id:'links',icon:'🔗',label:'Manage Links',description:'Edit important site links',action:'links'},
