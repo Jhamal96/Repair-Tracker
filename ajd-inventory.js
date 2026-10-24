@@ -14,9 +14,17 @@ function message(msg,error=false){
 }
 function clearMessage(){$('message').hidden=true}
 function status(msg){$('loading').textContent=msg||''}
-function lock(reason){
+function lock(reason,login=true){
  admin=false;records=[];store=new Map();$('appContent').hidden=true;$('accessBlock').hidden=false;
+ $('accessTitle').textContent=login?'Private Inventory · Sign In Required':'Session verification unavailable';
  $('accessMessage').textContent=reason||'Sign in to the admin dashboard first.';
+ $('accessSignInLink').hidden=!login;
+}
+function checkingSession(){
+ $('accessTitle').textContent='Restoring your session…';
+ $('accessMessage').textContent='Checking your saved administrator session. No need to sign in again when switching pages.';
+ $('accessSignInLink').hidden=true;
+ $('accessBlock').hidden=false;
 }
 function safeUrl(s){
  if(!String(s||'').trim())return '';
@@ -319,6 +327,24 @@ async function load(){
  }catch(err){$('inventoryGrid').replaceChildren(dom('div','Could not load inventory: '+err.message,'inv-empty'));message('Inventory connection error: '+err.message,true)}
  finally{status('')}
 }
+let verifyingAdmin=null;
+async function verifyAdmin(){
+ if(verifyingAdmin)return verifyingAdmin;
+ verifyingAdmin=(async()=>{
+  if(!admin)checkingSession();
+  try{
+   const {data,error}=await sb.auth.getSession();
+   if(error)throw error;
+   if(!data?.session){lock('No active session found. Sign in to the main dashboard once to access every admin page.');return}
+   const {data:approved,error:authError}=await sb.rpc('ajd_is_admin');
+   if(authError)throw authError;
+   if(approved!==true){lock('Your account is not approved for inventory access.');return}
+   admin=true;$('accessBlock').hidden=true;$('appContent').hidden=false;
+   await load();
+  }catch(err){if(!admin)lock('Could not restore your session: '+err.message+'. Refresh once to retry.',false);else message('Could not refresh inventory: '+err.message,true)}
+ })().finally(()=>{verifyingAdmin=null});
+ return verifyingAdmin;
+}
 async function init(){
  $('year').textContent=new Date().getFullYear();
  $('newButton').addEventListener('click',()=>openEditor(null));$('heroNewButton').addEventListener('click',()=>openEditor(null));
@@ -337,17 +363,15 @@ async function init(){
  $('historyOverlay').addEventListener('click',e=>{if(e.target===$('historyOverlay'))closeHistory()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('adjustOverlay').hidden)closeAdjust();if(!$('historyOverlay').hidden)closeHistory()}});
  try{
+  checkingSession();
   if(!window.supabase?.createClient)throw Error('Supabase could not load. Check your connection.');
   sb=window.supabase.createClient(URL_SUPABASE,KEY_SUPABASE);
-  const {data,error}=await sb.auth.getUser();if(error)throw error;
-  if(!data?.user)throw Error('Sign in to the main admin dashboard first.');
-  const {data:approved,error:authError}=await sb.rpc('ajd_is_admin');
-  if(authError)throw authError;
-  if(approved!==true)throw Error('This account is not approved as an administrator.');
-  admin=true;$('accessBlock').hidden=true;$('appContent').hidden=false;
-  sb.auth.onAuthStateChange((_event,session)=>{if(!session)lock('Signed out. Sign in again on the main admin page.')});
-  await load();
- }catch(err){lock(err.message)}
+  sb.auth.onAuthStateChange((event,session)=>{
+   if(event==='SIGNED_OUT')lock('Signed out. Please sign in on the dashboard.');
+   else if(event==='SIGNED_IN'&&!admin)setTimeout(()=>{void verifyAdmin()},0);
+  });
+  await verifyAdmin();
+ }catch(err){lock('Unable to verify your saved session: '+err.message+'. Refresh the page to retry.',false)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
