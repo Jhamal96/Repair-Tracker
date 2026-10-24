@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <title>Link Editor | AJD's Wireless Repairs</title>
+ <meta name="theme-color" content="#0b1425">
+ <link rel="icon" type="image/png" href="/admin-icon-192.png?v=20261024-logo2">
+ <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-logo.css?v=20261024-logo2">
+ <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const dark=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+ <script src="/ajd-admin-tools.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-links-pages.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-admin-menu.js?v=20261024-tools1" defer></script>
+</head>
+<body class="ajd-tools" data-page="editor">
+<header class="ajd-tools-header"><div class="wrap top">
+ <div class="brand">
+  <img src="/ajd-logo.svg?v=20261024-logo2" alt="AJD's Wireless Repairs logo" width="47" height="47">
+  <div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Link Editor · Protected Admin Workspace</div></div>
+ </div>
+ <nav class="header-nav" aria-label="Administration"><a href="/">⌂ Dashboard</a><a href="/links">🔗 Links</a><a href="/link-editor" aria-current="page">＋ Link Editor</a><a href="/cloud-sync">☁️ Cloud Sync</a><a href="/settings">⚙️ Settings</a></nav>
+</div></header>
+<main class="wrap tools-main">
+ <section id="accessBlock" class="panel" role="status" aria-live="polite">
+  <span id="accessLoading" class="tools-loading-ring" aria-hidden="true"></span>
+  <h2 id="accessTitle">Restoring your secure session…</h2>
+  <p id="accessDescription">Checking your saved Supabase administrator sign-in.</p>
+  <div class="tools-actions"><a id="accessLogin" class="tools-button primary" href="/" hidden>Sign In on Dashboard</a><button id="accessRetry" type="button" class="tools-button" hidden>↻ Retry Verification</button></div>
+ </section>
+ <div id="appContent" class="tools-stack" hidden>
+  <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · LINK EDITOR</p><h1>Make your links your own.</h1><p>Add a favorite website, customer page, phone shortcut, or change an existing link. Saved links appear in the top-right Links menu.</p></div><span class="tools-hero-icon" aria-hidden="true">✎</span></section>
+  <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
+  
+<section class="panel tools-stack">
+ <div class="row"><div><h2 id="editorTitle">Add New Link</h2><p>Use a website address, local page such as /store, telephone number, or email shortcut.</p></div><a href="/links" class="tools-button">← All Links</a></div>
+ <form id="linkEditorForm" class="tools-stack">
+  <input id="editLinkId" type="hidden">
+  <div class="form-grid">
+   <label class="tools-label">Link Name *<input id="editLinkName" class="field" required maxlength="100" placeholder="Example: Customer Storefront" autocomplete="off"></label>
+   <label class="tools-label">Emoji or Symbol (optional)<input id="editLinkIcon" class="field" maxlength="8" placeholder="🔗" autocomplete="off"></label>
+   <label class="tools-label full">Web Address / Local Page *<input id="editLinkUrl" class="field" required maxlength="2048" placeholder="https://example.com or /store" spellcheck="false" autocapitalize="off" autocomplete="url"></label>
+  </div>
+  <div class="tools-tip">Examples: <strong>/store</strong> for your shop, <strong>/track</strong> for tracking, <strong>tel:7869707779</strong> to call, or a complete <strong>https://</strong> link. Unsafe links are not accepted.</div>
+  <div class="tools-actions"><button id="saveLinkButton" class="tools-button primary" type="submit">✓ Save Link</button><a id="cancelEdit" href="/links" class="tools-button">Cancel</a></div>
+ </form>
+</section>
+ </div>
+</main>
+<footer><div class="wrap">© <span id="year">2026</span> AJD's Wireless Repairs · <a href="/">Dashboard</a> · <a href="/links">Manage Links</a> · <a href="/settings">Settings</a></div></footer>
+</body></html>
