@@ -6,14 +6,26 @@
   "start_url": "/store",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#2563eb",
+  "background_color": "#070F20",
+  "theme_color": "#0C1635",
   "icons": [
     {
-      "src": "/ajd-app-icon.svg",
+      "src": "/admin-icon-192.png?v=20261024-logo1",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/admin-icon-512.png?v=20261024-logo1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ajd-app-icon.svg?v=20261024-logo1",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
