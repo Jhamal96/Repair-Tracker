@@ -4,7 +4,7 @@
 <title>Business Expenses | AJD's Wireless Repairs</title>
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="./admin-icon-192.png" type="image/png"><link rel="stylesheet" href="./business-finance.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./business-finance.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./ajd-expense-pdfs.js" defer></script><script src="./business-finance.js" defer></script>
 <link rel="stylesheet" href="./ajd-admin-menu.css"><link rel="stylesheet" href="./ajd-premium-admin.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="expenses">
 <header><div class="wrap top">
 <div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Business Expenses · Admin Only</div></div></div>
@@ -15,7 +15,7 @@
 <a href="/planned-purchases">🛒 Planned Purchases</a>
 </nav></div></header>
 <main class="wrap">
-<section id="accessBlock" class="panel" role="status"><h1>🔒 Admin Account Required</h1><p id="accessMessage">Verifying your Supabase administrator session…</p><a class="button" href="/">Sign in on Main Dashboard</a></section>
+<section id="accessBlock" class="panel" role="status"><h1 id="accessTitle">🔄 Restoring your session…</h1><p id="accessMessage">Checking your saved administrator sign-in securely.</p><a id="accessSignInLink" class="button" href="/" hidden>Sign in on Main Dashboard</a></section>
 <div id="appContent" hidden>
 <section class="ajd-finance-hero" aria-label="Business Expenses overview"><div class="ajd-finance-hero-copy"><span class="ajd-finance-kicker">AJD BUSINESS TOOLS · TRACK YOUR SPENDING</span><h1>Know where every dollar goes.</h1><p>Organize business expenses, monitor your monthly spending, and export records for easy bookkeeping. Everything stays inside your admin-only workspace.</p><button type="button" onclick="document.getElementById('newButton').click()">+ Add Expense ↗</button></div><div class="ajd-finance-symbol" aria-hidden="true">💼</div></section>
 
@@ -41,11 +41,29 @@
 <label>Payment Method<select id="paymentMethod"><option>Other</option><option>Cash</option><option>Debit Card</option><option>Credit Card</option><option>Bank Transfer</option><option>Zelle</option><option>Apple Pay</option><option>PayPal</option></select></label>
 <label class="check full"><input id="taxDeductible" type="checkbox"> Mark as potentially tax-deductible (review with your accountant)</label>
 <label class="full">Notes<textarea id="notes" maxlength="2500" placeholder="Internal notes (optional)"></textarea></label>
+<div class="full expense-pdf-input-panel">
+  <div class="expense-pdf-head"><div><h3>📄 Receipt &amp; Invoice PDFs</h3><p>Attach supplier invoices, purchase receipts, or expense documentation. Files stay private to authorized admins.</p></div><span class="expense-pdf-private">🔐 Private</span></div>
+  <label for="expensePdfUpload">Upload PDF files (optional)
+    <input type="file" id="expensePdfUpload" name="expensePdfs" accept=".pdf,application/pdf" multiple>
+  </label>
+  <p class="sub">PDF files only, up to 15 MB each. Select multiple files to attach together; changes are uploaded when you save the expense.</p>
+  <div id="expensePdfPending" class="expense-pdf-pending"><p class="sub">No PDFs selected yet.</p></div>
+  <div class="expense-pdf-existing"><h4>Saved Documents</h4><div id="expensePdfSaved"></div></div>
+</div>
 </div><div class="form-buttons"><button type="submit" id="saveButton">Save to Cloud</button></div></form>
 </div>
 <p id="message" class="message" role="status" aria-live="polite" hidden></p><p id="loading" class="sub" role="status" aria-live="polite"></p>
-<div class="panel tablewrap"><table class="data"><thead><tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Payment</th><th scope="col">Tax flag</th><th scope="col">Actions</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody></table></div>
+<div class="panel tablewrap"><table class="data"><thead><tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Payment</th><th scope="col">Tax flag</th><th scope="col">Receipts</th><th scope="col">Actions</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody></table></div>
 <p class="sub" id="entryCount" style="margin-top:12px"></p>
 <p class="sub">Tax-deductibility is an internal bookkeeping flag, not tax advice. Export CSV to use your records with your accountant.</p>
 </div>
-</main><footer>© <span id="year"></span> AJD's Wireless Repairs · Secured with Supabase</footer></body></html>
+</main>
+<div id="expensePdfModal" class="expense-pdf-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="expensePdfModalTitle">
+ <section class="expense-pdf-dialog panel">
+  <div class="expense-pdf-dialog-title"><div><p class="expense-pdf-kicker">PRIVATE EXPENSE DOCUMENTS</p><h2 id="expensePdfModalTitle">PDF Receipts</h2></div><button type="button" class="secondary" id="closeExpensePdfModal" aria-label="Close PDF viewer">✕ Close</button></div>
+  <div id="expensePdfLibrary" class="expense-pdf-library"></div>
+  <div class="expense-pdf-preview-controls"><p id="expensePdfPreviewHelp" class="sub">Choose View to preview an attached PDF.</p><a id="expensePdfOpenTab" href="#" target="_blank" rel="noopener noreferrer" hidden>↗ Open PDF in New Tab</a></div>
+  <iframe id="expensePdfFrame" title="Private expense PDF preview" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+ </section>
+</div>
+<footer>© <span id="year"></span> AJD's Wireless Repairs · Secured with Supabase</footer></body></html>
