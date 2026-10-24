@@ -75,3 +75,10 @@ body.ajd-cart-open{overflow:hidden}
 }
 @media(max-width:410px){.ajd-cart-header>span:nth-child(2){display:none}.cart-panel-header h2{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.ajd-cart-header{transition:none}}
+
+/* Undo the global sticky header rule inside the cart dialog. */
+#cartOverlay .cart-panel-header{position:static!important;top:auto!important;
+ z-index:auto!important;background:transparent!important;border:0!important;
+ backdrop-filter:none!important;padding:0!important}
+#cartCheckoutForm[hidden]{display:none!important}
+#cartOverlay .cart-panel{isolation:isolate}
