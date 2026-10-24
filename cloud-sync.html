@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <title>Cloud Synchronization | AJD's Wireless Repairs</title>
+ <meta name="theme-color" content="#0b1425">
+ <link rel="icon" type="image/png" href="/admin-icon-192.png?v=20261024-logo2">
+ <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261024-tools1">
+ <link rel="stylesheet" href="/ajd-logo.css?v=20261024-logo2">
+ <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const dark=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+ <script src="/ajd-admin-tools.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-cloud-sync-page.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-admin-menu.js?v=20261024-tools1" defer></script>
+</head>
+<body class="ajd-tools" data-page="sync">
+<header class="ajd-tools-header"><div class="wrap top">
+ <div class="brand">
+  <img src="/ajd-logo.svg?v=20261024-logo2" alt="AJD's Wireless Repairs logo" width="47" height="47">
+  <div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Cloud Synchronization · Protected Admin Workspace</div></div>
+ </div>
+ <nav class="header-nav" aria-label="Administration"><a href="/">⌂ Dashboard</a><a href="/links">🔗 Links</a><a href="/link-editor">＋ Link Editor</a><a href="/cloud-sync" aria-current="page">☁️ Cloud Sync</a><a href="/settings">⚙️ Settings</a></nav>
+</div></header>
+<main class="wrap tools-main">
+ <section id="accessBlock" class="panel" role="status" aria-live="polite">
+  <span id="accessLoading" class="tools-loading-ring" aria-hidden="true"></span>
+  <h2 id="accessTitle">Restoring your secure session…</h2>
+  <p id="accessDescription">Checking your saved Supabase administrator sign-in.</p>
+  <div class="tools-actions"><a id="accessLogin" class="tools-button primary" href="/" hidden>Sign In on Dashboard</a><button id="accessRetry" type="button" class="tools-button" hidden>↻ Retry Verification</button></div>
+ </section>
+ <div id="appContent" class="tools-stack" hidden>
+  <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · CLOUD SYNCHRONIZATION</p><h1>Keep your workspace connected.</h1><p>Review outstanding changes, publish queued updates and verify the cloud records behind AJD's Wireless Repairs.</p></div><span class="tools-hero-icon" aria-hidden="true">☁️</span></section>
+  <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
+  
+<section class="panel tools-stack">
+ <div class="row"><div><h2 id="syncStatusHeading">Checking pending changes…</h2><p>Local changes stay on your device until Supabase confirms their upload.</p></div><div class="tools-actions"><button id="refreshSyncButton" type="button" class="tools-button">↻ Refresh Status</button><button id="syncNowButton" type="button" class="tools-button primary">☁️ Sync Now</button></div></div>
+ <div class="tools-summary">
+  <div class="tools-stat"><span>QUEUED REPAIRS</span><strong id="repairsPendingCount">—</strong><small>Saved repair operations awaiting sync</small></div>
+  <div class="tools-stat"><span>QUEUED LINKS</span><strong id="linksPendingCount">—</strong><small>New, edited, or removed shortcuts</small></div>
+  <div class="tools-stat"><span>CONTACT CHANGES</span><strong id="contactsPendingCount">—</strong><small>Phone / business email waiting</small></div>
+  <div class="tools-stat"><span>CLOUD REPAIRS</span><strong id="cloudRepairCount">—</strong><small>Confirmed database records</small></div>
+ </div>
+ <div class="tools-tip"><strong>What Sync Now does:</strong> It uploads queued repair tickets, links and shop contact changes from this device. It does not delete or replace cloud records merely because they are missing from the local backup.</div>
+</section>
+<div class="tools-grid">
+ <section class="panel tools-stack"><h2>☁️ Cloud Database</h2><div class="sync-list">
+  <div class="sync-entry"><div><strong>Managed Links</strong><br><small>Admin-only shared shortcuts</small></div><b id="cloudLinkCount">—</b></div>
+  <div class="sync-entry"><div><strong>Purchase Requests</strong><br><small>Customer orders received</small></div><b id="cloudRequestCount">—</b></div>
+ </div><div class="tools-actions"><a class="tools-button" href="/links">Manage Links ↗</a><a class="tools-button" href="/">Repair Dashboard ↗</a></div></section>
+ <section class="panel tools-stack"><h2>📞 Published Shop Contact</h2><div class="sync-list">
+  <div class="sync-entry"><div><strong>Phone</strong><br><small>Public business telephone</small></div><b id="cloudPhoneValue">Loading…</b></div>
+  <div class="sync-entry"><div><strong>Email</strong><br><small>Public business email</small></div><b id="cloudEmailValue">Loading…</b></div>
+ </div><a class="tools-button" href="/settings">Edit Business Settings ↗</a></section>
+</div>
+<section class="panel tools-stack"><h2>Backup and safety</h2><p>For local-only tickets that are not already queued, use the main Dashboard’s existing Upload Local-Only Tickets option after reviewing them. This page will not automatically overwrite or upload unknown records.</p><div class="tools-actions"><a href="/settings" class="tools-button">⬇ Backups & Settings</a><a href="/" class="tools-button">← Back to Dashboard</a></div></section>
+ </div>
+</main>
+<footer><div class="wrap">© <span id="year">2026</span> AJD's Wireless Repairs · <a href="/">Dashboard</a> · <a href="/links">Manage Links</a> · <a href="/settings">Settings</a></div></footer>
+</body></html>
