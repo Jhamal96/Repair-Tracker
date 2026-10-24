@@ -35,7 +35,7 @@ function open(job,payment,config={}){
  const parts=work.length?'<section class="receipt-section"><h3>SERVICE / PARTS DESCRIPTION</h3>'+work.slice(0,10).map(t=>'<div class="receipt-item"><span>'+escapeHTML(t)+'</span></div>').join('')+'</section>':'';
  const html=`
   <header class="receipt-brand">
-    <div class="receipt-brand-icon" aria-hidden="true"><img src="/ajd-logo.svg?v=20261024-logo1" alt="" width="42" height="42"></div>
+    <div class="receipt-brand-icon" aria-hidden="true"><img src="/ajd-logo.svg?v=20261024-logo2" alt="" width="42" height="42"></div>
     <h2>AJD'S WIRELESS REPAIRS</h2>
     ${phone?`<p>Tel: ${escapeHTML(phone)}</p>`:''}
     ${email?`<p>${escapeHTML(email)}</p>`:''}
