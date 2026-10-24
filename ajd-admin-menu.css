@@ -74,7 +74,7 @@ html.ajd-installed #ajdMenuDrawer [data-ajd-install]{display:none!important}
 }
 #ajdMenuToggle .ajd-hamburger{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
   flex-direction:column;
   flex:0 0 20px;
