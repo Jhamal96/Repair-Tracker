@@ -5,22 +5,27 @@
   "description": "AJD's Wireless Repairs Admin Desktop — Secure Repair Tracker & Store Manager",
   "main": "main.cjs",
   "scripts": {
-    "start": "electron .",
-    "dist:win": "electron-builder --win nsis --x64",
-    "dist:mac": "electron-builder --mac dmg --universal"
+    "start": "npm run prepare:icons && electron .",
+    "dist:win": "npm run prepare:icons && electron-builder --win nsis --x64",
+    "dist:mac": "npm run prepare:icons && electron-builder --mac dmg --universal",
+    "prepare:icons": "node prepare-assets.cjs"
   },
   "devDependencies": {
     "electron": "^34.5.8",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "sharp": "^0.33.5"
   },
   "build": {
     "appId": "org.ajdapp.wirelessrepairs",
     "productName": "AJD's Wireless Repairs",
     "asar": true,
     "files": [
-      "main.cjs"
+      "main.cjs",
+      "preload.cjs",
+      "intro.html",
+      "icon.png"
     ],
-    "icon": "../admin-icon-512.png",
+    "icon": "icon.png",
     "directories": {
       "output": "dist"
     },
