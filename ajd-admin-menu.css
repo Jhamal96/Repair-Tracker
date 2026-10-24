@@ -14,8 +14,8 @@ body.ajd-menu-open .ajd-hamburger i:last-child{transform:translateY(-7px) rotate
 #ajdActiveChip .ajd-active-dot{width:7px;height:7px;border-radius:50%;background:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.18)}
 body:not([data-page]) header nav,body[data-page] header nav.nav,body:not([data-page]) header [data-admin-install-button],body:not([data-page]) header div.relative>button[onclick*="Dropdown"]{display:none!important}
 body:not([data-page]) header>.max-w-7xl{flex-direction:row!important;flex-wrap:nowrap!important;gap:12px}
-body:not([data-page]) header>.max-w-7xl>div:first-child{width:auto!important;min-width:0}
-body:not([data-page]) header>.max-w-7xl>div:nth-child(2){flex-wrap:nowrap;justify-content:flex-end;gap:4px}
+body:not([data-page]) header>.max-w-7xl>div:first-of-type{width:auto!important;min-width:0;flex:1 1 auto!important}
+body:not([data-page]) header>.max-w-7xl>div:nth-of-type(2){flex:0 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-end;gap:4px}
 body:not([data-page]) header h1{line-height:1.18}
 body:not([data-page]) header #navLinksDropdownMenu,body:not([data-page]) header #settingsDropdownMenu{position:fixed!important;top:72px!important;right:12px!important;left:auto!important;z-index:220!important;max-height:calc(100dvh - 86px)!important;overscroll-behavior:contain}
 body:not([data-page]) header #settingsDropdownMenu{width:min(360px,calc(100vw - 24px))!important}
@@ -57,5 +57,110 @@ body.ajd-menu-open #ajdMenuDrawer{transform:translateX(0);visibility:visible}
 .ajd-drawer-secure::before{content:"";height:7px;width:7px;background:#34d399;border-radius:50%}
 html.ajd-installed #ajdMenuDrawer [data-ajd-install]{display:none!important}
 @media(max-width:760px){body:not([data-page]) header [data-shop-tel]{display:none!important}body:not([data-page]) header h1{font-size:13px!important}body:not([data-page]) header h1+ p{font-size:9px!important}#ajdActiveChip{font-size:11px;padding:8px 9px}#ajdMenuToggle{padding:8px 10px;min-height:41px}.ajd-menu-text-label{display:none}body[data-page] .brand-name{font-size:14px!important}body[data-page] .top{flex-direction:row;flex-wrap:nowrap!important;align-items:center}body[data-page] .brand{min-width:0}}
-@media(max-width:450px){body:not([data-page]) header .max-w-7xl>div:first-child>div:first-child{gap:7px!important}body:not([data-page]) header .bg-blue-600\/10{display:none!important}#ajdActiveChip{max-width:125px;overflow:hidden;text-overflow:ellipsis}body:not([data-page]) header h1{font-size:12px!important}#ajdMenuToggle{gap:7px}}
+@media(max-width:450px){body:not([data-page]) header .max-w-7xl>div:first-of-type>div:first-child{gap:7px!important}body:not([data-page]) header .bg-blue-600\/10{display:none!important}#ajdActiveChip{max-width:125px;overflow:hidden;text-overflow:ellipsis}body:not([data-page]) header h1{font-size:12px!important}#ajdMenuToggle{gap:7px}}
 @media(prefers-reduced-motion:reduce){#ajdMenuBackdrop,#ajdMenuDrawer,.ajd-menu-item,#ajdMenuToggle,.ajd-hamburger i{transition:none!important}}
+
+/* Header navigation layout: hamburger first, logo and title next, context chip last. */
+#ajdMenuToggle{
+  order:-1;
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center;
+  min-width:47px;
+  margin:0;
+  line-height:1;
+}
+#ajdMenuToggle .ajd-hamburger{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  flex-direction:column;
+  flex:0 0 20px;
+  margin:0;
+}
+#ajdMenuToggle .ajd-menu-text-label{line-height:1.15}
+body:not([data-page]) header>.max-w-7xl{
+  justify-content:flex-start!important;
+  align-items:center!important;
+}
+body:not([data-page]) header>.max-w-7xl>div:first-of-type{min-width:0;flex:1 1 auto!important}
+body[data-page] header .top{
+  display:flex!important;
+  flex-direction:row!important;
+  justify-content:flex-start!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:11px;
+}
+body[data-page] header .top>.brand{
+  order:0;
+  flex:1 1 auto;
+  width:auto;
+  min-width:0;
+}
+body[data-page] header .top>#ajdActiveChip{
+  order:2;
+  flex:0 1 auto;
+  margin-left:auto;
+  min-width:0;
+}
+body[data-page] header .top>.brand>div:last-child{min-width:0}
+body[data-page] header .brand-name,
+body[data-page] header .brand .sub{overflow-wrap:anywhere}
+/* Center the visual glyphs in all drawer actions. */
+.ajd-menu-icon,
+.ajd-drawer-logo,
+.ajd-drawer-close,
+.ajd-drawer-search>span{
+  display:grid!important;
+  place-items:center!important;
+  text-align:center;
+  line-height:1!important;
+  vertical-align:middle;
+}
+.ajd-menu-icon{
+  flex:0 0 38px;
+  width:38px;
+  height:38px;
+  padding:0!important;
+  font-size:18px;
+}
+.ajd-menu-item{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start;
+}
+.ajd-menu-chevron{
+  display:grid;
+  place-items:center;
+  width:20px;
+  height:25px;
+  flex:0 0 20px;
+  padding:0!important;
+  line-height:1;
+}
+@media(max-width:760px){
+  #ajdMenuToggle{min-width:43px;padding:8px 10px}
+  body[data-page] header .top{gap:9px}
+  body[data-page] header .brand{gap:9px}
+  body[data-page] header #ajdActiveChip{max-width:145px}
+  body[data-page] header #ajdActiveChip span:last-child{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+}
+@media(max-width:520px){
+  body[data-page] header #ajdActiveChip{display:none!important}
+  body[data-page] header .brand-icon{width:40px;height:40px}
+}
+@media(max-width:380px){
+  body:not([data-page]) header #ajdActiveChip{max-width:85px;min-width:0}
+  body:not([data-page]) header #ajdActiveChip span:last-child{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+}
