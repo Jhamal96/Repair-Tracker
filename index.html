@@ -1106,12 +1106,11 @@ async function setStoreOrderStatus(id,status){
    }
    setStoreOrderFeedback(card,'✓ Saved: '+storeOrderStatusLabels[status]+'. '+(status==='approved'?'Available stock was reserved.':'No stock is reserved for this status.'));
    toast('Purchase request '+(storeOrderStatusLabels[status]||status).toLowerCase()+' · Saved');
-   // Refresh the catalog and request list after a successful save. One failing
-   // refresh must never convert a successful update into a false save error.
-   const results=await Promise.allSettled([fetchInventory(),fetchStoreOrders()]);
-   for(const result of results){
-     if(result.status==='rejected')console.warn('AJD request update saved; refresh failed:',result.reason);
-   }
+   // Refresh stock without rebuilding the request card: rebuilding it here
+   // erased the visible Saved message and made working buttons look inert.
+   // This request's local status and note were already updated above.
+   try{await fetchInventory()}
+   catch(refreshError){console.warn('AJD request was saved but stock refresh failed:',refreshError)}
    return true;
  }catch(error){
    const explanation=error?.message||'Unexpected server error';
