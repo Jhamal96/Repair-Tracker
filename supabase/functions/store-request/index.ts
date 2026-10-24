@@ -10,6 +10,7 @@ const ALLOWED_ORIGINS = new Set([
 
 type RequestBody = {
   item_id?: unknown;
+  items?: unknown;
   customer_name?: unknown;
   customer_phone?: unknown;
   customer_email?: unknown;
@@ -109,7 +110,31 @@ Deno.serve(async (request: Request) => {
   if (typeof body.website === "string" && body.website.trim()) {
     return response({ error: "We could not verify this request." }, 400, origin);
   }
-  if (!validUuid(body.item_id)) {
+  const cartMode = Array.isArray(body.items);
+  let cartItems: Array<{item_id:string;quantity:number}> = [];
+  if (cartMode) {
+    const lines = body.items as unknown[];
+    if (lines.length < 1 || lines.length > 12) {
+      return response({ error: "Choose between 1 and 12 different products." }, 422, origin);
+    }
+    const seen = new Set<string>();
+    for (const line of lines) {
+      if (!line || typeof line !== "object" || Array.isArray(line)) {
+        return response({ error: "One or more cart items are invalid." }, 422, origin);
+      }
+      const item = line as Record<string,unknown>;
+      if (!validUuid(item.item_id) || !Number.isInteger(item.quantity)
+          || (item.quantity as number) < 1 || (item.quantity as number) > 99
+          || seen.has((item.item_id as string).toLowerCase())) {
+        return response({ error: "Check your selected items and quantities." }, 422, origin);
+      }
+      seen.add((item.item_id as string).toLowerCase());
+      cartItems.push({item_id:item.item_id as string,quantity:item.quantity as number});
+    }
+    if (cartItems.reduce((sum,item)=>sum+item.quantity,0)>99) {
+      return response({ error: "Cart quantity cannot exceed 99 units." }, 422, origin);
+    }
+  } else if (!validUuid(body.item_id)) {
     return response({ error: "Please select an available product." }, 422, origin);
   }
   if (!validName(body.customer_name)) {
@@ -121,7 +146,7 @@ Deno.serve(async (request: Request) => {
   if (!validEmail(body.customer_email)) {
     return response({ error: "A valid email address is required." }, 422, origin);
   }
-  if (!Number.isInteger(body.quantity) || (body.quantity as number) < 1 || (body.quantity as number) > 99) {
+  if (!cartMode && (!Number.isInteger(body.quantity) || (body.quantity as number) < 1 || (body.quantity as number) > 99)) {
     return response({ error: "Enter a quantity between 1 and 99." }, 422, origin);
   }
   if (typeof body.notes !== "string" || body.notes.length > 1500) {
@@ -136,7 +161,9 @@ Deno.serve(async (request: Request) => {
   }
   try {
     const rpc = await fetch(
-      url + "/rest/v1/rpc/ajd_submit_store_purchase",
+      url + (cartMode
+        ? "/rest/v1/rpc/ajd_submit_store_cart"
+        : "/rest/v1/rpc/ajd_submit_store_purchase"),
       {
         method: "POST",
         headers: {
@@ -145,7 +172,13 @@ Deno.serve(async (request: Request) => {
           "apikey": secret,
           "authorization": "Bearer " + secret
         },
-        body: JSON.stringify({
+        body: JSON.stringify(cartMode ? {
+          p_items:cartItems,
+          p_customer_name: body.customer_name.trim(),
+          p_customer_phone: body.customer_phone.trim(),
+          p_customer_email: body.customer_email.trim().toLowerCase(),
+          p_notes: body.notes.trim()
+        } : {
           p_item_id: body.item_id,
           p_customer_name: body.customer_name.trim(),
           p_customer_phone: body.customer_phone.trim(),
@@ -164,7 +197,9 @@ Deno.serve(async (request: Request) => {
       const safeErrors = [
         "full name", "phone number", "email address", "quantity",
         "currently unavailable", "stock available", "recent requests",
-        "Check the quantity", "Choose an available product"
+        "Check the quantity", "Choose an available product",
+        "selected products", "cart", "product", "Cart quantity",
+        "Each product", "Choose between"
       ];
       const friendly = safeErrors.some(fragment => errText.includes(fragment))
         ? errText
@@ -181,7 +216,9 @@ Deno.serve(async (request: Request) => {
     return response({
       ok: true,
       request_id: requestId,
-      message: "Your purchase request was received. We will contact you to confirm availability."
+      message: cartMode
+        ? "Your cart request was received. We will confirm availability for all selected products."
+        : "Your purchase request was received. We will contact you to confirm availability."
     }, 201, origin);
   } catch (err) {
     console.error("AJD store purchase endpoint fetch failed:", err instanceof Error ? err.name : "unknown");
