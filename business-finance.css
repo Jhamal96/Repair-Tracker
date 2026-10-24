@@ -12,3 +12,47 @@ label{display:grid;gap:6px;font-size:12px;font-weight:800;color:var(--muted)}lab
 .tablewrap{overflow:auto}.data{width:100%;border-collapse:collapse;min-width:730px}.data th,.data td{padding:13px 14px;border-bottom:1px solid var(--border);text-align:left;font-size:13px;vertical-align:top}.data th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:900;background:var(--panel2)}.data tr:last-child td{border:0}.data td small{display:block;color:var(--muted);margin-top:4px;font-size:11px;max-width:260px;overflow-wrap:anywhere}.table-actions{display:flex;gap:6px;flex-wrap:wrap}.table-actions button{padding:7px 9px;font-size:11px}.amount{font-weight:900;font-variant-numeric:tabular-nums}.pill{padding:5px 8px;border-radius:999px;font-size:11px;background:var(--panel2);border:1px solid var(--border);font-weight:800;white-space:nowrap}.pill.high{color:var(--danger)}.pill.purchased{color:var(--good)}.empty{text-align:center;padding:44px 15px;color:var(--muted);font-size:13px}.soft{color:var(--muted)}footer{border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px;padding:24px;margin-top:35px}#accessBlock{padding:35px;text-align:center}#accessBlock[hidden],#appContent[hidden]{display:none}
 @media(max-width:800px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{gap:8px}.stat{padding:13px}.top{align-items:flex-start}.nav{width:100%}.nav a{flex:1;text-align:center}}
 @media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}.form-grid{grid-template-columns:1fr}.actions{align-items:stretch}.filters{width:100%}.filters input{width:100%;flex:1 0 100%}.filters select{flex:1}.nav a{font-size:11px;padding:9px 6px}}
+
+/* Authentication session restoration: show checking state, not a misleading sign-in prompt. */
+#accessSignInLink[hidden]{display:none!important}
+#accessBlock .ajd-session-spinner{width:38px;height:38px;display:block;margin:0 auto 12px;border-radius:100%;border:3px solid rgba(37,99,235,.18);border-top-color:var(--accent2);animation:ajd-session-rotate .9s linear infinite}
+@keyframes ajd-session-rotate{to{transform:rotate(360deg)}}
+/* Business Expenses PDF receipts */
+.expense-pdf-input-panel{padding:17px 18px;border:1px solid rgba(37,99,235,.24);background:linear-gradient(125deg,rgba(37,99,235,.07),transparent);border-radius:16px;min-width:0}
+.expense-pdf-head{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.expense-pdf-head h3{font-size:15px;font-weight:900;letter-spacing:-.2px;margin:0}
+.expense-pdf-head p{font-size:11px;line-height:1.65;color:var(--muted);margin:6px 0}
+.expense-pdf-private{border-radius:20px;padding:6px 10px;color:var(--good);font-size:11px;font-weight:900;border:1px solid rgba(16,185,129,.25);background:rgba(16,185,129,.07)}
+#expensePdfUpload{width:100%;cursor:pointer;min-height:49px;padding:11px}
+.expense-pdf-input-panel>.sub{font-size:11px;line-height:1.6;margin:7px 0 12px}
+.expense-pdf-pending{display:grid;gap:6px;margin:10px 0 15px}
+.expense-pdf-pending-row,.expense-pdf-saved-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--panel)}
+.expense-pdf-pending-row span,.expense-pdf-saved-row span:first-child{font-size:12px;font-weight:800;overflow-wrap:anywhere}
+.expense-pdf-pending-row small{font-size:11px;color:var(--muted);white-space:nowrap}
+.expense-pdf-existing{border-top:1px solid var(--border);padding-top:12px}
+.expense-pdf-existing h4{font-size:12px;font-weight:900;margin:0 0 10px}
+#expensePdfSaved{display:grid;gap:8px}
+.expense-pdf-inline-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.expense-pdf-inline-actions button{padding:8px 10px;font-size:11px}
+.expense-pdf-count,.expense-pdf-empty{padding:8px 10px;font-size:11px;white-space:nowrap}
+.expense-pdf-count{color:var(--good);border:1px solid rgba(16,185,129,.24);background:rgba(16,185,129,.08)}
+.expense-pdf-empty{color:var(--accent2);border:1px solid rgba(59,130,246,.24);background:rgba(37,99,235,.08)}
+.expense-pdf-overlay{position:fixed;z-index:2000;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(2,6,23,.84);backdrop-filter:blur(7px);overflow:auto}
+.expense-pdf-overlay[hidden]{display:none!important}
+.expense-pdf-dialog{width:min(100%,950px);max-height:92dvh;overflow:auto;min-height:160px;padding:20px}
+.expense-pdf-dialog-title{display:flex;align-items:start;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.expense-pdf-dialog-title h2{margin:4px 0 0;font-size:19px;font-weight:900;overflow-wrap:anywhere}
+.expense-pdf-kicker{font-weight:900;font-size:10px;letter-spacing:1.4px;color:var(--accent2);margin:0}
+.expense-pdf-library{display:grid;gap:9px;padding:14px 0}
+.expense-pdf-library-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--panel2)}
+.expense-pdf-library-name{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
+.expense-pdf-library-name strong{font-size:12px}
+.expense-pdf-library-name small{font-size:10px;color:var(--muted)}
+.expense-pdf-preview-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 10px}
+.expense-pdf-preview-controls p{font-size:11px;line-height:1.55;margin:0}
+.expense-pdf-preview-controls a{border-radius:10px;border:1px solid var(--border);padding:8px 10px;color:var(--accent2);text-decoration:none;font-size:12px;font-weight:900}
+.expense-pdf-preview-controls a[hidden]{display:none!important}
+#expensePdfFrame{display:block;width:100%;height:min(60dvh,680px);border:1px solid var(--border);border-radius:12px;background:white}
+#expensePdfFrame[hidden]{display:none!important}
+@media(max-width:630px){.expense-pdf-overlay{padding:9px}.expense-pdf-dialog{padding:13px}.expense-pdf-dialog-title h2{font-size:16px}.expense-pdf-library-row{align-items:start;flex-direction:column}.expense-pdf-inline-actions{width:100%}.expense-pdf-inline-actions button{flex:1}.expense-pdf-input-panel{padding:13px}}
+@media(prefers-reduced-motion:reduce){#accessBlock .ajd-session-spinner{animation:none}}
