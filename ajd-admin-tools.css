@@ -85,3 +85,11 @@ body.ajd-tools .tools-loading-ring{width:36px;height:36px;margin:0 auto 14px;bor
 @media(max-width:650px){body.ajd-tools .tools-grid{grid-template-columns:1fr}body.ajd-tools .form-grid{grid-template-columns:1fr}body.ajd-tools .tools-hero{padding:18px}body.ajd-tools .tools-hero-icon{display:none}body.ajd-tools .panel{padding:17px}body.ajd-tools .link-record{grid-template-columns:39px minmax(0,1fr);gap:9px}body.ajd-tools .link-record .tools-actions{grid-column:1/-1;justify-content:stretch}body.ajd-tools .link-record .tools-actions .tools-button{flex:1}body.ajd-tools .tools-main{padding-top:20px}body.ajd-tools header .top{min-height:68px}}
 @media(prefers-reduced-motion:reduce){body.ajd-tools .tools-loading-ring{animation:none}body.ajd-tools .tools-button{transition:none}}
 @media print{body.ajd-tools header,body.ajd-tools .header-nav,body.ajd-tools #ajdMenuToggle{display:none!important}body.ajd-tools .panel{box-shadow:none!important}body.ajd-tools .tools-button{display:none!important}}
+
+/* Do not expose admin navigation or shortcut metadata until role verification. */
+body.ajd-tools:not(.ajd-tools-verified) header .header-nav,
+body.ajd-tools:not(.ajd-tools-verified) header #ajdMenuToggle,
+body.ajd-tools:not(.ajd-tools-verified) header .ajd-settings-shortcut,
+body.ajd-tools:not(.ajd-tools-verified) header #ajdQuickLinks,
+body.ajd-tools:not(.ajd-tools-verified) #ajdMenuDrawer,
+body.ajd-tools:not(.ajd-tools-verified) #ajdMenuBackdrop{display:none!important}
