@@ -4,7 +4,7 @@
 <title>Business Expenses | AJD's Wireless Repairs</title>
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="./admin-icon-192.png" type="image/png"><link rel="stylesheet" href="./business-finance.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./ajd-expense-pdfs.js?v=20261024-pdf2" defer></script><script src="./business-finance.js?v=20261024-pdf2" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./ajd-expense-pdfs.js?v=20261024-pdf2" defer></script><script src="./ajd-expense-overview.js?v=20261024-overall1" defer></script><script src="./business-finance.js?v=20261024-overall1" defer></script>
 <link rel="stylesheet" href="./ajd-admin-menu.css"><link rel="stylesheet" href="./ajd-premium-admin.css"><script src="./ajd-admin-menu.js" defer></script></head><body data-page="expenses">
 <header><div class="wrap top">
 <div class="brand"><span class="brand-icon">AJD</span><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">Business Expenses · Admin Only</div></div></div>
@@ -19,7 +19,8 @@
 <div id="appContent" hidden>
 <section class="ajd-finance-hero" aria-label="Business Expenses overview"><div class="ajd-finance-hero-copy"><span class="ajd-finance-kicker">AJD BUSINESS TOOLS · TRACK YOUR SPENDING</span><h1>Know where every dollar goes.</h1><p>Organize business expenses, monitor your monthly spending, and export records for easy bookkeeping. Everything stays inside your admin-only workspace.</p><button type="button" onclick="document.getElementById('newButton').click()">+ Add Expense ↗</button></div><div class="ajd-finance-symbol" aria-hidden="true">💼</div></section>
 
-<div class="stats">
+<div class="stats expense-stats">
+<div class="panel stat expense-all-time-card" aria-label="Overall expenses across all dates"><div class="expense-all-time-head"><p>💰 Total Expenses · All Time</p><span>ALL RECORDS</span></div><strong id="allTimeStat">Loading…</strong><small id="allTimeRecords">Across every saved expense</small></div>
 <div class="panel stat accent"><p>Selected Month Total</p><strong id="statOne">$0.00</strong></div>
 <div class="panel stat good"><p>Filtered Total</p><strong id="statTwo">$0.00</strong></div>
 <div class="panel stat"><p>Visible Records</p><strong id="statThree">0</strong></div>
@@ -29,7 +30,25 @@
 <input id="monthFilter" type="month" aria-label="Filter by month">
 <select id="statusFilter" aria-label="Filter category"><option value="">All categories</option></select>
 <button type="button" class="secondary" id="clearFilters">Clear</button>
-</div><div class="filters"><button type="button" class="secondary" id="exportButton">↓ Export CSV</button><button type="button" id="newButton">+ Add Expense</button></div></div>
+</div><div class="filters"><button type="button" class="secondary expense-overview-toggle" id="overviewToggle" aria-expanded="false" aria-controls="expenseOverallPanel">📊 View Overall Expenses</button><button type="button" class="secondary" id="exportButton">↓ Export CSV</button><button type="button" id="newButton">+ Add Expense</button></div></div>
+<section id="expenseOverallPanel" class="panel expense-overview" aria-label="Overall business expense breakdown" hidden>
+ <div class="expense-overview-header">
+  <div><p class="expense-overview-kicker">COMPLETE BUSINESS SPENDING</p><h2 id="overviewScopeTitle">Lifetime Spending Breakdown</h2><p>All saved business expense records, independent of search and month filters below.</p></div>
+  <div class="expense-overview-header-actions"><label for="overviewYearFilter">Time Period<select id="overviewYearFilter"><option value="">All Years · Lifetime</option></select></label><button type="button" id="overviewClose" class="secondary">✕ Close</button></div>
+ </div>
+ <p id="overviewStatus" class="expense-overview-status" aria-live="polite" hidden></p>
+ <div class="expense-overview-metrics">
+  <div class="expense-overview-metric primary"><span>Selected Period Total</span><strong id="overviewPeriodTotal">—</strong><small id="overviewPeriodCount">All recorded expenses</small></div>
+  <div class="expense-overview-metric"><span>This Year</span><strong id="overviewThisYear">—</strong><small>Current calendar year</small></div>
+  <div class="expense-overview-metric"><span>This Month</span><strong id="overviewThisMonth">—</strong><small>Current calendar month</small></div>
+  <div class="expense-overview-metric"><span>Lifetime Transactions</span><strong id="overviewLifetimeRecords">—</strong><small>Every saved expense</small></div>
+ </div>
+ <div class="expense-overview-grid">
+  <section class="expense-overview-breakdown"><div class="expense-overview-section-head"><div><h3>Category Breakdown</h3><p>Where your spending goes</p></div><span id="overviewCategoryTotal">—</span></div><div id="overviewCategoryBars" class="expense-overview-bar-list"><p class="expense-overview-empty">No expenses recorded yet.</p></div></section>
+  <section class="expense-overview-breakdown"><div class="expense-overview-section-head"><div><h3>Monthly Spending</h3><p>Expenses grouped by month</p></div><span id="overviewMonthTotal">—</span></div><div id="overviewMonthBars" class="expense-overview-bar-list"><p class="expense-overview-empty">No expenses recorded yet.</p></div></section>
+ </div>
+ <p class="expense-overview-footnote">Lifetime and breakdown totals include all saved records in Supabase. The expense table below still follows its own date, category and search filters. Planned purchases are excluded until recorded as actual expenses.</p>
+</section>
 <div id="editorPanel" class="panel form-area" hidden>
 <div class="form-head"><h2 id="formHeading">Add Expense</h2><button type="button" class="secondary" id="cancelButton">✕ Close</button></div>
 <form id="editorForm"><input id="editId" type="hidden"><div class="form-grid">
