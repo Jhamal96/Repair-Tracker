@@ -19,11 +19,13 @@ function lock(reason,login=true){
  $('accessTitle').textContent=login?'Private Inventory · Sign In Required':'Session verification unavailable';
  $('accessMessage').textContent=reason||'Sign in to the admin dashboard first.';
  $('accessSignInLink').hidden=!login;
+ $('accessRetryButton').hidden=login;
 }
 function checkingSession(){
  $('accessTitle').textContent='Restoring your session…';
  $('accessMessage').textContent='Checking your saved administrator session. No need to sign in again when switching pages.';
  $('accessSignInLink').hidden=true;
+ $('accessRetryButton').hidden=true;
  $('accessBlock').hidden=false;
 }
 function safeUrl(s){
@@ -347,6 +349,7 @@ async function verifyAdmin(){
 }
 async function init(){
  $('year').textContent=new Date().getFullYear();
+ $('accessRetryButton').addEventListener('click',()=>{void verifyAdmin()});
  $('newButton').addEventListener('click',()=>openEditor(null));$('heroNewButton').addEventListener('click',()=>openEditor(null));
  $('cancelButton').addEventListener('click',closeEditor);$('cancelBottom').addEventListener('click',closeEditor);
  $('refreshButton').addEventListener('click',load);$('exportButton').addEventListener('click',exportCSV);
