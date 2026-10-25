@@ -114,7 +114,12 @@
   const stats=node('div','ajd-health-stats');stats.append(node('span','ajd-health-queue'),node('span','ajd-health-time'));
   const actions=node('div','ajd-health-actions'),probe=node('button','','Check Connection'),open=node('a','','Open Cloud Sync →');probe.type='button';probe.dataset.healthCheck='';probe.addEventListener('click',()=>{void check()});open.href='/cloud-sync';actions.append(probe,open);
   panel.append(top,detail,stats,actions);mountPoint.append(button,panel);host.append(mountPoint);
-  button.addEventListener('click',event=>{event.stopPropagation();const show=panel.hidden;closePanel();if(show){panel.hidden=false;button.setAttribute('aria-expanded','true');render()}});
+  button.addEventListener('click',event=>{
+   event.stopPropagation();const show=panel.hidden;closePanel();
+   const links=document.getElementById('ajdQuickLinksPanel');if(links)links.hidden=true;
+   document.getElementById('ajdQuickLinksButton')?.setAttribute('aria-expanded','false');
+   if(show){panel.hidden=false;button.setAttribute('aria-expanded','true');render()}
+  });
   document.addEventListener('click',event=>{if(!mountPoint.contains(event.target))closePanel()});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){closePanel();button.focus()}});
   render();

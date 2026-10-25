@@ -238,6 +238,7 @@
       if(visible){drawQuickLinks();if(isDrawerOpen())setDrawer(false,false);}
     };
     quickButton.addEventListener('click',event=>{
+      window.AJDCloudHealth?.closePanel();
       event.stopPropagation();toggleQuick(quickPanel.hidden);
     });
     document.addEventListener('click',event=>{
