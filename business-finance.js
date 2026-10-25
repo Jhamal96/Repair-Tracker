@@ -23,7 +23,7 @@ function checkingSession(){
  setAccessView('🔄 Restoring your session…','Checking your saved administrator session. You should not need to sign in again when changing pages.',false);
 }
 function deniedSession(message,login=true){
- authorized=false;
+ authorized=false;window.AJDCloudHealth?.setAccess(false);
  setAccessView(login?'🔒 Administrator Sign-In Required':'⚠️ Session verification unavailable',message,login);
 }
 
@@ -259,7 +259,7 @@ async function start(){
  try{
   checkingSession();
   if(!window.supabase?.createClient)throw Error('Supabase library could not load. Check your connection and reload.');
-  client=window.supabase.createClient(URL_SUPABASE,KEY_SUPABASE);
+  client=(window.AJDCloudHealth?.createClient||window.supabase.createClient)(URL_SUPABASE,KEY_SUPABASE);
   if(expensePage){
     if(!pdfs)throw Error('PDF attachment tools did not load. Refresh the page.');
     pdfs.init(client);
@@ -290,7 +290,7 @@ async function verifyAdminSession(){
    const {data:isAdmin,error}=await client.rpc('ajd_is_admin');
    if(error)throw error;
    if(isAdmin!==true){deniedSession('This account is signed in, but it is not authorized to access AJD admin records.');return}
-   authorized=true;
+   authorized=true;window.AJDCloudHealth?.setAccess(true);
    $('accessBlock').hidden=true;$('appContent').hidden=false;
    await load();
   }catch(err){

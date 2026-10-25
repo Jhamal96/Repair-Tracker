@@ -12,6 +12,8 @@ let returnFocus=null;
 let current=null;
 let currentPayment=null;
 let currentConfig={};
+const androidApp=()=>navigator.userAgent.includes('AJD-Android-App');
+function receiptMessage(message){const info=$('receiptReadyMessage');if(info)info.textContent=message}
 function summaryLine(label,value,cls){
  return '<div class="receipt-item '+(cls||'')+'"><span>'+escapeHTML(label)+'</span><span class="receipt-right">'+escapeHTML(value)+'</span></div>';
 }
@@ -85,10 +87,17 @@ function close(){
 }
 function print(){
  if(!current)return;
- // Direct call from the click handler is important for iOS Safari and popup policies.
+ // Android printing must go through the native print service; WebView's
+ // window.print() can silently do nothing.
  try{
-   if(window.AJDNativePrint?.printReceipt){
+   if(window.AJDNativePrint?.printHtml){
+     window.AJDNativePrint.printHtml(printDocument(false),'AJD-Receipt-'+(invoiceNo(current)||'Draft'));
+     receiptMessage('Preparing Android print preview. Choose a printer or Save as PDF when it opens.');
+   }else if(window.AJDNativePrint?.printReceipt){
      window.AJDNativePrint.printReceipt();
+     receiptMessage('Opening Android print preview. Choose a printer or Save as PDF.');
+   }else if(androidApp()){
+     receiptMessage('This installed app needs the receipt-printing update. Open Menu → Download App and install the latest Android APK.');
    }else if(typeof window.print==='function'){
      window.print();
    }else{
@@ -103,40 +112,45 @@ function print(){
 function downloadPDF(){
  if(!current)return;
  try{
+   if(androidApp()&&!window.AJDNativePrint?.savePdf){print();return}
    if(!window.AJDPdfTools?.receipt)throw new Error('PDF generator did not load. Refresh the page and try again.');
-   window.AJDPdfTools.receipt(current,currentPayment,currentConfig);
+   const result=window.AJDPdfTools.receipt(current,currentPayment,currentConfig);
    const info=$('receiptReadyMessage');
-   if(info)info.textContent='Your '+(invoiceNo(current)?'receipt':'draft receipt')+' PDF is being saved. Check Downloads or the Android file picker.';
+   if(info)info.textContent=result?.kind==='android'?'Choose where to save your receipt in the Android file picker.':'Your '+(invoiceNo(current)?'receipt':'draft receipt')+' PDF download has started.';
  }catch(err){
    console.warn('Receipt PDF generation failed:',err);
    const info=$('receiptReadyMessage');if(info)info.textContent='Could not generate the PDF: '+err.message;
  }
 }
-function printView(){
- if(!current)return;
- // Opens an isolated printable page when an installed browser blocks its print dialog.
+function printDocument(controls=false){
+ if(!current)return '';
  const sheet=$('invoicePrintSheet');
- if(!sheet)return;
- const popup=window.open('','_blank');
- if(!popup){
-   $('receiptReadyMessage').textContent='The new print window was blocked. Allow pop-ups or choose Download PDF.';
-   return;
- }
- const printable='<html><head><meta name="viewport" content="width=device-width, initial-scale=1">'+
+ if(!sheet)return '';
+ return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+ '<base href="https://repair.ajdapp.org/">'+
  '<title>AJD Receipt</title>'+
- '<style>@page{size:80mm 200mm;margin:4mm}body{margin:0;padding:14px;background:white;color:black;font:11px/1.5 Courier New,monospace;}'+
+ '<style>@page{margin:4mm}*{box-sizing:border-box}body{margin:0;padding:14px;background:white;color:black;font:11px/1.5 Courier New,monospace;}'+
  '.paper{width:72mm;max-width:100%;margin:0 auto}h2{text-align:center;font:900 15px system-ui}'+
  '.receipt-brand,.receipt-footer{text-align:center}.receipt-brand-icon{margin:0 auto;text-align:center;font-weight:900}'+
+ '.receipt-brand-icon img{display:block;margin:0 auto;width:42px;height:42px}.receipt-brand p{margin:4px 0}'+
  '.receipt-title{text-align:center;font-weight:900;margin:12px 0;border-block:1px dashed;padding:8px 0}'+
- '.receipt-metadata{display:grid;grid-template-columns:auto 1fr;gap:5px 9px}.receipt-metadata dd{margin:0;overflow-wrap:anywhere}'+
+ '.receipt-metadata{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 9px}.receipt-metadata dd{margin:0;overflow-wrap:anywhere}'+
  '.receipt-section{border-top:1px dashed;margin-top:12px;padding-top:10px}.receipt-item{display:flex;justify-content:space-between;gap:8px;margin:5px 0}'+
  '.receipt-item .receipt-right{white-space:nowrap;font-weight:900}.receipt-grand-total,.receipt-balance{font-weight:900}'+
  '.receipt-chip,.receipt-draft-warning{text-align:center;font-weight:900;border:1px solid;margin:12px 0;padding:8px}'+
  '.receipt-footer{border-top:1px dashed;padding-top:12px;margin-top:12px}'+
  '.controls{text-align:center;padding:15px}.controls button{padding:10px 22px;font:700 14px system-ui}'+
  '@media print{body{padding:0}.controls{display:none}.paper{width:72mm}}</style></head><body>'+
- '<div class="controls"><button onclick="window.print()">🖨 Print Receipt / Save as PDF</button></div>'+
+ (controls?'<div class="controls"><button onclick="window.print()">🖨 Print Receipt / Save as PDF</button></div>':'')+
  '<main class="paper">'+sheet.innerHTML+'</main></body></html>';
+}
+function printView(){
+ if(!current)return;
+ // The APK blocks popup windows; its Print View uses Android's print preview.
+ if(androidApp()||window.AJDNativePrint?.printHtml||window.AJDNativePrint?.printReceipt){print();return}
+ const popup=window.open('','_blank');
+ if(!popup){receiptMessage('The new print window was blocked. Allow pop-ups or choose Download PDF.');return}
+ const printable=printDocument(true);
  popup.document.open();popup.document.write(printable);popup.document.close();
  popup.focus();
 }
@@ -146,5 +160,6 @@ function copyNumber(){
  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).catch(()=>{});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('invoiceModal')?.classList.contains('hidden'))close()});
-window.AJDReceipts={open,close,print,downloadPDF,printView,copyNumber,invoiceNo};
+window.addEventListener('ajd-receipt-native-status',event=>{if(current&&typeof event.detail?.message==='string')receiptMessage(event.detail.message)});
+window.AJDReceipts={open,close,print,downloadPDF,printView,printDocument,copyNumber,invoiceNo};
 })();

@@ -36,7 +36,7 @@
       {id:'tracking',icon:'📦',label:'Track a Repair',description:'Customer ticket lookup',url:'/track'}
     ]}
   ];
-  let drawer,backdrop,toggle,search,chip,quickPanel,quickButton,previousFocus=null,currentSection=isMain?'repairs':(LABELS[currentPage]?currentPage:'plans'),lastHandledHash='';
+  let drawer,backdrop,toggle,search,contextText,quickPanel,quickButton,previousFocus=null,currentSection=isMain?'repairs':(LABELS[currentPage]?currentPage:'plans'),lastHandledHash='';
   const $=id=>document.getElementById(id);
   function make(tag,cls,text){
     const n=document.createElement(tag);
@@ -55,6 +55,7 @@
     if(open&&isMain&&document.body.classList.contains('admin-locked'))return;
     if(open){
       previousFocus=document.activeElement;
+      window.AJDCloudHealth?.closePanel();
       closeLegacyPanels();
       document.body.classList.add('ajd-menu-open');
       drawer.setAttribute('aria-hidden','false');
@@ -82,9 +83,7 @@
       if(match)item.setAttribute('aria-current','page');
       else item.removeAttribute('aria-current');
     });
-    if(chip){
-      chip.querySelector('span:last-child').textContent=LABELS[currentSection]||'Admin Dashboard';
-    }
+    if(contextText)contextText.textContent=LABELS[currentSection]||'Admin Dashboard';
   }
   function selectedTab(tab){
     if(!PAGE_TABS.has(tab)||!isMain)return;
@@ -149,6 +148,7 @@
       document.querySelector('header .max-w-7xl'):
       document.querySelector('header .top');
     if(!headerRow)return;
+    headerRow.closest('header').classList.add('ajd-compact-header');
     setInstalled();
     toggle=make('button','ajd-menu-button');
     toggle.id='ajdMenuToggle';
@@ -161,16 +161,10 @@
     hamburger.append(make('i'),make('i'),make('i'));
     toggle.append(hamburger,make('span','ajd-menu-text-label','Menu'));
     headerRow.prepend(toggle);
-    const right=isMain?
-      document.querySelector('header .max-w-7xl > div:nth-of-type(2)'):
-      headerRow;
-    chip=make('div');
-    chip.id='ajdActiveChip';
-    chip.setAttribute('aria-label','Current admin section');
-    chip.append(make('span','ajd-active-dot'),make('span','',LABELS[currentSection]||'Admin Dashboard'));
-    // On secondary pages the header itself is a flex row; append the chip
-    // after the brand instead of accidentally putting it before the menu.
-    if(right){if(isMain)right.prepend(chip);else right.append(chip);}
+    const right=isMain?document.querySelector('header .max-w-7xl > div:nth-of-type(2)'):make('div');
+    right.classList.add('ajd-header-actions');
+    if(!isMain)headerRow.append(right);
+    contextText=isMain?headerRow.querySelector('h1 + p'):headerRow.querySelector('.brand .sub');
     // Replace cramped dropdown controls with a dedicated quick-links icon in
     // the far-right header position. Keep legacy DOM only for old data handlers.
     if(isMain){
@@ -179,12 +173,8 @@
         if(legacy)legacy.classList.add('ajd-legacy-control-hidden');
       }
     }
-    const quickTarget=isMain?right:headerRow;
-    const settingsLink=make('a','ajd-settings-shortcut','⚙');
-    settingsLink.href='/settings';
-    settingsLink.setAttribute('aria-label','Open Settings page');
-    settingsLink.title='Settings';
-    quickTarget?.appendChild(settingsLink);
+    const quickTarget=right;
+    window.AJDCloudHealth?.mount(quickTarget);
     const quickWrap=make('div','ajd-quick-links-wrap');
     quickWrap.id='ajdQuickLinks';
     quickButton=make('button','ajd-quick-links-button');

@@ -15,7 +15,7 @@ function message(msg,error=false){
 function clearMessage(){$('message').hidden=true}
 function status(msg){$('loading').textContent=msg||''}
 function lock(reason,login=true){
- admin=false;records=[];store=new Map();$('appContent').hidden=true;$('accessBlock').hidden=false;
+ admin=false;window.AJDCloudHealth?.setAccess(false);records=[];store=new Map();$('appContent').hidden=true;$('accessBlock').hidden=false;
  $('accessTitle').textContent=login?'Private Inventory · Sign In Required':'Session verification unavailable';
  $('accessMessage').textContent=reason||'Sign in to the admin dashboard first.';
  $('accessSignInLink').hidden=!login;
@@ -341,7 +341,7 @@ async function verifyAdmin(){
    const {data:approved,error:authError}=await sb.rpc('ajd_is_admin');
    if(authError)throw authError;
    if(approved!==true){lock('Your account is not approved for inventory access.');return}
-   admin=true;$('accessBlock').hidden=true;$('appContent').hidden=false;
+   admin=true;window.AJDCloudHealth?.setAccess(true);$('accessBlock').hidden=true;$('appContent').hidden=false;
    await load();
   }catch(err){if(!admin)lock('Could not restore your session: '+err.message+'. Refresh once to retry.',false);else message('Could not refresh inventory: '+err.message,true)}
  })().finally(()=>{verifyingAdmin=null});
@@ -368,7 +368,7 @@ async function init(){
  try{
   checkingSession();
   if(!window.supabase?.createClient)throw Error('Supabase could not load. Check your connection.');
-  sb=window.supabase.createClient(URL_SUPABASE,KEY_SUPABASE);
+  sb=(window.AJDCloudHealth?.createClient||window.supabase.createClient)(URL_SUPABASE,KEY_SUPABASE);
   sb.auth.onAuthStateChange((event,session)=>{
    if(event==='SIGNED_OUT')lock('Signed out. Please sign in on the dashboard.');
    else if(event==='SIGNED_IN'&&!admin)setTimeout(()=>{void verifyAdmin()},0);

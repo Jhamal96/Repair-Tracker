@@ -277,3 +277,68 @@ body:not([data-page]) header .max-w-7xl>div:nth-of-type(2){min-width:0}
  body[data-page] header .top{gap:8px}
  body:not([data-page]) header .max-w-7xl>div:nth-of-type(2){gap:5px!important}
 }
+
+/* A quiet header: navigation, shop identity, cloud health and saved links. */
+.ajd-compact-header{padding-top:0!important;padding-bottom:0!important}
+.ajd-compact-header .header-nav,.ajd-compact-header #cloudStatusIndicator,.ajd-compact-header [data-shop-tel]{display:none!important}
+.ajd-compact-header #ajdMenuToggle{width:42px;min-width:42px;height:42px;min-height:42px;padding:10px!important;border-radius:13px;box-shadow:none}
+.ajd-compact-header .ajd-menu-text-label{display:none!important}
+.ajd-compact-header .ajd-header-actions{display:flex!important;align-items:center;justify-content:flex-end;flex:0 0 auto!important;gap:9px!important;order:2;min-width:0;margin-left:auto}
+.ajd-compact-header .brand img,.ajd-compact-header .ajd-brand-mark{width:36px!important;height:36px!important;flex:none;object-fit:contain}
+.ajd-compact-header .brand-name,.ajd-compact-header h1{font-size:15px!important;line-height:1.25!important;letter-spacing:-.25px}
+.ajd-compact-header .brand .sub,.ajd-compact-header h1+p{font-size:10px!important;line-height:1.4!important;letter-spacing:0;font-weight:600!important}
+.ajd-compact-header .top,.ajd-compact-header>.max-w-7xl{gap:13px!important;min-height:66px;padding-top:8px;padding-bottom:8px}
+.ajd-compact-header #ajdQuickLinksButton{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;border-radius:12px}
+.ajd-compact-header .ajd-health-wrap{position:relative;flex:none}
+.ajd-health-button{--health-color:#64748b;--health-bg:#f1f5f9;--health-border:#dbe3ed;appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;min-width:105px;padding:8px 11px;border:1px solid var(--health-border);border-radius:12px;background:var(--health-bg);color:var(--health-color);font:800 11px/1.3 system-ui,sans-serif;white-space:nowrap;cursor:pointer;box-sizing:border-box}
+.ajd-health-button svg{width:18px;height:18px;flex:none}
+.ajd-health-button .ajd-health-dot{height:5px;width:5px;flex:none;border-radius:50%;background:currentColor}
+.ajd-health-button:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.ajd-health-button[data-state=healthy]{--health-color:#047857;--health-bg:#ecfdf5;--health-border:#bbebd4}
+.ajd-health-button[data-state=syncing],.ajd-health-button[data-state=checking]{--health-color:#1d4ed8;--health-bg:#eff6ff;--health-border:#bfdbfe}
+.ajd-health-button[data-state=attention],.ajd-health-button[data-state=offline]{--health-color:#92400e;--health-bg:#fffbeb;--health-border:#fcdca2}
+.ajd-health-button[data-state=critical]{--health-color:#be123c;--health-bg:#fff1f2;--health-border:#fecdd3}
+html.dark .ajd-health-button{--health-color:#a1b1ca;--health-bg:#132033;--health-border:#2b3c54}
+html.dark .ajd-health-button[data-state=healthy]{--health-color:#6ee7b7;--health-bg:#0c2a23;--health-border:#195341}
+html.dark .ajd-health-button[data-state=syncing],html.dark .ajd-health-button[data-state=checking]{--health-color:#93c5fd;--health-bg:#122544;--health-border:#25497b}
+html.dark .ajd-health-button[data-state=attention],html.dark .ajd-health-button[data-state=offline]{--health-color:#fcd34d;--health-bg:#30250f;--health-border:#695027}
+html.dark .ajd-health-button[data-state=critical]{--health-color:#fda4af;--health-bg:#381523;--health-border:#713044}
+html.ultra-dark .ajd-health-button{background:#080b10}
+.ajd-health-button[data-state=syncing] .ajd-health-dot{animation:ajd-health-pulse 1.2s ease-in-out infinite}
+@keyframes ajd-health-pulse{50%{opacity:.3}}
+.ajd-health-panel{position:absolute;z-index:230;right:0;top:calc(100% + 12px);width:min(350px,calc(100vw - 28px));padding:19px;border:1px solid #dbe4ef;border-radius:18px;background:#fff;color:#10223b;box-shadow:0 18px 65px #0b14252b;font:12px/1.65 system-ui,sans-serif;white-space:normal}
+.ajd-health-panel[hidden]{display:none!important}
+.ajd-health-panel-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ajd-health-panel-top strong{font-size:15px;font-weight:900}
+.ajd-health-state{font-size:11px;font-weight:900}
+.ajd-health-panel[data-state=healthy] .ajd-health-state,[data-cloud-health-heading][data-state=healthy]{color:#047857}
+.ajd-health-panel[data-state=critical] .ajd-health-state,[data-cloud-health-heading][data-state=critical]{color:#be123c}
+.ajd-health-panel[data-state=attention] .ajd-health-state,.ajd-health-panel[data-state=offline] .ajd-health-state{color:#92400e}
+.ajd-health-detail{margin:12px 0;color:#64748b;font-size:12px;line-height:1.75}
+.ajd-health-stats{display:grid;gap:3px;padding:11px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:11px}
+.ajd-health-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ajd-health-actions button,.ajd-health-actions a{flex:1;display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:8px 10px;border:1px solid #dbe4ef;border-radius:10px;color:#1d4ed8;background:#eff6ff;font:800 11px/1.5 system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.ajd-health-actions button:disabled{opacity:.5;cursor:default}
+html.dark .ajd-health-panel{background:#122037;border-color:#29405d;color:#f1f6ff}
+html.dark .ajd-health-detail,html.dark .ajd-health-stats{color:#a1b1ca;border-color:#29405d}
+html.dark .ajd-health-actions button,html.dark .ajd-health-actions a{background:#0b1729;border-color:#29405d;color:#93c5fd}
+html.dark .ajd-health-panel[data-state=healthy] .ajd-health-state,html.dark [data-cloud-health-heading][data-state=healthy]{color:#6ee7b7}
+html.dark .ajd-health-panel[data-state=critical] .ajd-health-state,html.dark [data-cloud-health-heading][data-state=critical]{color:#fda4af}
+html.dark .ajd-health-panel[data-state=attention] .ajd-health-state,html.dark .ajd-health-panel[data-state=offline] .ajd-health-state{color:#fcd34d}
+html.ultra-dark .ajd-health-panel{background:#090b10;border-color:#262a32}
+@media(max-width:600px){
+ .ajd-compact-header .top,.ajd-compact-header>.max-w-7xl{gap:9px!important;min-height:62px}
+ .ajd-compact-header .brand img,.ajd-compact-header .ajd-brand-mark{width:31px!important;height:31px!important}
+ .ajd-compact-header .brand-name,.ajd-compact-header h1{font-size:12px!important;overflow-wrap:normal!important}
+ .ajd-compact-header .brand .sub,.ajd-compact-header h1+p{font-size:9px!important}
+ .ajd-compact-header .brand{gap:8px!important}
+ .ajd-compact-header .ajd-header-actions{gap:6px!important}
+ .ajd-health-button{min-width:96px;padding:8px;gap:5px;font-size:10px}
+ .ajd-health-button svg{width:16px;height:16px}
+ .ajd-health-panel{position:fixed;top:83px;right:14px}
+}
+@media(max-width:370px){
+ .ajd-compact-header .brand img,.ajd-compact-header .ajd-brand-mark{display:none!important}
+ .ajd-compact-header .brand .sub,.ajd-compact-header h1+p{max-width:125px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media(prefers-reduced-motion:reduce){.ajd-health-button .ajd-health-dot{animation:none!important}}

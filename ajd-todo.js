@@ -72,8 +72,8 @@
    setText('todoSyncStatus',busy?'Saving your change…':loading?'Refreshing your list…':errorText?'Could not sync. Your last loaded list is shown.':loaded?'Saved securely · '+tasks.length+' task'+(tasks.length===1?'':'s'):'Loading your tasks…');
   }
   if(isMain&&dialog){
-   const counts=$('ajdTodoQuickCount');counts.textContent=loaded?String(open.length):'…';
-   $('ajdTodoQuick').setAttribute('aria-label',loaded?'Open to-do list, '+open.length+' open tasks':'Open to-do list');
+   const menuCount=document.querySelector('[data-ajd-id="todo"] .ajd-menu-chevron');
+   if(menuCount)menuCount.textContent=loaded?String(open.length):'›';
    setText('todoPopupSummary',loaded?(open.length?open.length+' open task'+(open.length===1?'':'s')+' for your shop'+(open.filter(overdue).length?' · '+open.filter(overdue).length+' overdue':'')+'. Check off anything you finish.':'You’re all caught up. Keep your next shop reminder here.'):'Let’s check what’s on your list.');
    setText('todoPopupLoading',busy?'Saving…':loading?'Refreshing securely…':'');
    renderList($('todoPopupList'),open,true);
@@ -154,13 +154,6 @@
   const note=node('p','This reminder returns whenever you open the dashboard or come back to Repairs.','todo-popup-note');body.append(feedback,retry,progress,list,note);
   const foot=node('div',undefined,'todo-popup-footer');const manage=node('a','＋ Add / Edit Tasks');manage.href='/todo';const done=node('button','Continue to Dashboard');done.id='todoPopupContinue';done.type='button';done.addEventListener('click',closePopup);foot.append(manage,done);dialog.append(head,summary,body,foot);document.body.append(dialog);
   dialog.addEventListener('close',()=>{if(returnFocus?.isConnected&&!document.body.classList.contains('admin-locked'))returnFocus.focus({preventScroll:true})});
-  const header=document.querySelector('header .max-w-7xl > div:nth-of-type(2)');
-  if(header){
-   const quick=node('button',undefined,'todo-quick-button');quick.id='ajdTodoQuick';quick.type='button';quick.title='To-do List';quick.setAttribute('aria-label','Open to-do list');quick.setAttribute('aria-haspopup','dialog');
-   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','2');svg.setAttribute('aria-hidden','true');
-   const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M9 6h11M9 12h11M9 18h11M3 5l1 1 2-2M3 11l1 1 2-2M3 17l1 1 2-2');svg.append(path);
-   const count=node('span','…','todo-quick-count');count.id='ajdTodoQuickCount';quick.append(svg,count);quick.addEventListener('click',()=>requestPopup());header.insertBefore(quick,$('ajdQuickLinks'));
-  }
  }
  function closePopup(){if(dialog?.open)dialog.close()}
  function maybeShowPopup(){

@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-<head>
+<head><script src="/ajd-cloud-health.js?v=20261025-header1" defer></script>
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
  <title>Cloud Synchronization | AJD's Wireless Repairs</title>
  <meta name="theme-color" content="#0b1425">
  <link rel="icon" type="image/png" href="/admin-icon-192.png?v=20261024-logo2">
  <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools2">
- <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261024-tools2">
+ <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261025-header1">
  <link rel="stylesheet" href="/ajd-logo.css?v=20261024-logo2">
  <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const dark=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
- <script src="/ajd-admin-tools.js?v=20261024-tools2" defer></script>
- <script src="/ajd-cloud-sync-page.js?v=20261024-tools2" defer></script>
- <script src="/ajd-admin-menu.js?v=20261024-todo1" defer></script>
+ <script src="/ajd-admin-tools.js?v=20261025-header1" defer></script>
+ <script src="/ajd-cloud-sync-page.js?v=20261025-header1" defer></script>
+ <script src="/ajd-admin-menu.js?v=20261025-header1" defer></script>
 </head>
 <body class="ajd-tools" data-page="sync">
 <header class="ajd-tools-header"><div class="wrap top">
@@ -31,6 +31,7 @@
  </section>
  <div id="appContent" class="tools-stack" hidden>
   <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · CLOUD SYNCHRONIZATION</p><h1>Keep your workspace connected.</h1><p>Review outstanding changes, publish queued updates and verify the cloud records behind AJD's Wireless Repairs.</p></div><span class="tools-hero-icon" aria-hidden="true">☁️</span></section>
+<section class="panel tools-stack" aria-label="Live cloud health"><h2 data-cloud-health-heading>Cloud Sync · Checking</h2><p data-cloud-health-detail>Waiting for a successful administrator connection check.</p><div class="tools-tip">Healthy: recent requests succeeded and your upload queues are clear. Syncing: cloud requests are running. Attention: uploads are waiting or the connection needs a check. Critical: a cloud request failed. Offline / Not syncing: this device is offline or you need to sign in.</div></section>
   <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
   
 <section class="panel tools-stack">
