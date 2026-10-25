@@ -1,0 +1,60 @@
+/* AJD's Wireless Repairs: private task editor and dashboard reminder. */
+.todo-layout{display:grid;grid-template-columns:minmax(270px,.75fr) minmax(0,1.4fr);gap:20px;align-items:start}
+.todo-editor{position:sticky;top:110px}
+body.ajd-tools .todo-eyebrow{color:var(--ajd-link);font-size:9px;font-weight:900;letter-spacing:1.1px;margin:0 0 8px}
+.todo-editor-tip{margin-top:20px}
+.todo-filters{display:grid;grid-template-columns:minmax(0,1fr) 155px;gap:10px}
+.todo-list{display:grid;gap:10px}
+.todo-task{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--todo-border,var(--ajd-border,#dbe4ef));border-radius:14px;padding:16px;background:var(--todo-elev,var(--ajd-elev,#f8faff));min-width:0}
+.todo-check{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;border:2px solid #8b9bb3;border-radius:8px;background:transparent;margin:0;cursor:pointer;display:grid;place-items:center}
+.todo-check:checked{background:#2563eb;border-color:#2563eb}
+.todo-check:checked:after{content:'✓';color:#fff;font-size:17px;font-weight:900;line-height:1}
+.todo-check:disabled{cursor:wait;opacity:.5}
+.todo-task-copy{flex:1;min-width:0}
+.todo-task-title{font-size:13px;line-height:1.55;font-weight:800;margin:0;overflow-wrap:anywhere;color:inherit}
+.todo-task.is-complete .todo-task-title{text-decoration:line-through;opacity:.6}
+.todo-task-notes{font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0 0;color:var(--todo-muted,var(--ajd-muted,#687a93))}
+.todo-task-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:9px}
+.todo-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:800;line-height:1.5;padding:3px 8px;border:1px solid var(--todo-border,var(--ajd-border,#dbe4ef));border-radius:6px;color:var(--todo-muted,var(--ajd-muted,#687a93))}
+.todo-badge.high,.todo-badge.overdue{color:#be123c;background:#fff1f2;border-color:#fecdd3}
+.todo-badge.done{color:#047857;background:#ecfdf5;border-color:#a7f3d0}
+html.dark .todo-badge.high,html.dark .todo-badge.overdue{color:#fda4af;background:#381523;border-color:#713044}
+html.dark .todo-badge.done{color:#6ee7b7;background:#0c3026;border-color:#18573e}
+.todo-task-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+body.ajd-tools .todo-task-actions .tools-button{min-height:34px;padding:7px 10px;font-size:11px}
+.todo-empty{text-align:center;color:var(--todo-muted,var(--ajd-muted,#687a93));padding:28px 10px;font-size:13px;line-height:1.8;margin:0}
+.todo-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Native dialog uses the top layer so it is never covered by the menu/header. */
+#ajdTodoReminder{--todo-card:#fff;--todo-elev:#f8faff;--todo-text:#10223b;--todo-muted:#687a93;--todo-border:#dbe4ef;color-scheme:light;box-sizing:border-box;width:min(570px,calc(100% - 28px));max-height:calc(100dvh - 40px);padding:0;border:1px solid var(--todo-border);border-radius:24px;background:var(--todo-card);color:var(--todo-text);box-shadow:0 24px 100px #0005;overflow:auto;font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:contain}
+html.dark #ajdTodoReminder{--todo-card:#122037;--todo-elev:#0b1729;--todo-text:#f1f6ff;--todo-muted:#a1b1ca;--todo-border:#29405d;color-scheme:dark}
+html.ultra-dark #ajdTodoReminder{--todo-card:#090b10;--todo-elev:#030407;--todo-border:#262a32}
+#ajdTodoReminder::backdrop{background:rgba(4,10,22,.68);backdrop-filter:blur(5px)}
+#ajdTodoReminder *{box-sizing:border-box}
+.todo-popup-top{display:flex;align-items:center;gap:13px;padding:25px 24px 16px}
+.todo-popup-icon{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:15px;color:#60a5fa;background:rgba(37,99,235,.12);font-size:25px}
+.todo-popup-heading{flex:1;min-width:0}
+.todo-popup-heading p{color:var(--todo-muted);font-size:10px;font-weight:800;letter-spacing:.8px;margin:0 0 4px}
+#ajdTodoReminder h2{font-size:23px;line-height:1.2;letter-spacing:-.5px;font-weight:900;margin:0}
+#ajdTodoReminder button,#ajdTodoReminder a{font:inherit;cursor:pointer}
+.todo-popup-close{border:1px solid var(--todo-border);border-radius:11px;background:var(--todo-elev);color:var(--todo-text);width:38px;height:38px;display:grid;place-items:center;flex:none;font-size:20px}
+.todo-popup-summary{margin:0;padding:0 24px 18px;color:var(--todo-muted);font-size:12px;line-height:1.7}
+.todo-popup-body{padding:0 24px 20px}
+.todo-popup-feedback{color:#be123c;background:#fff1f2;border:1px solid #fecdd3;border-radius:11px;padding:11px 13px;margin:0 0 12px;font-size:12px;line-height:1.6}
+html.dark .todo-popup-feedback{color:#fda4af;background:#381523;border-color:#713044}
+.todo-popup-feedback:empty{display:none}
+.todo-popup-loading{color:var(--todo-muted);font-size:11px;margin:0 0 10px}
+.todo-popup-footer{display:flex;align-items:center;gap:10px;justify-content:space-between;border-top:1px solid var(--todo-border);padding:17px 24px;background:var(--todo-elev)}
+.todo-popup-footer a,.todo-popup-footer button,.todo-popup-retry{border:1px solid var(--todo-border);border-radius:11px;padding:11px 15px;min-height:43px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--todo-text);font-size:12px!important;font-weight:800!important;line-height:1.3;background:var(--todo-card)}
+.todo-popup-footer a{background:#2563eb;border-color:#2563eb;color:#fff}
+#ajdTodoReminder :is(button,a,input):focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+#ajdTodoReminder [hidden]{display:none!important}
+#ajdTodoReminder .todo-empty{padding:22px 10px}
+.todo-popup-note{color:var(--todo-muted);font-size:10px;margin:13px 0 0;line-height:1.6}
+.todo-quick-button{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;gap:5px;min-width:39px;height:39px;border:1px solid rgba(59,130,246,.25);border-radius:12px;background:rgba(37,99,235,.08);color:#2563eb;padding:0 9px;cursor:pointer}
+html.dark .todo-quick-button{color:#93c5fd;background:rgba(37,99,235,.15)}
+.todo-quick-button svg{width:19px;height:19px;flex:none}
+.todo-quick-count{font-size:10px;font-weight:900;min-width:15px;line-height:18px;border-radius:5px;background:#2563eb;color:#fff;padding:0 3px}
+body.admin-locked .todo-quick-button{display:none!important}
+@media(max-width:850px){.todo-layout{grid-template-columns:1fr}.todo-editor{position:static}}
+@media(max-width:520px){.todo-task{gap:10px;padding:13px;flex-wrap:wrap}.todo-task-actions{width:100%;padding-left:34px;justify-content:flex-start}.todo-filters{grid-template-columns:1fr}.todo-popup-top{padding:21px 18px 14px}.todo-popup-summary{padding:0 18px 15px}.todo-popup-body{padding:0 18px 18px}.todo-popup-footer{padding:15px 18px;flex-wrap:wrap}.todo-popup-footer a{flex:1}.todo-popup-heading p{font-size:9px}#ajdTodoReminder h2{font-size:21px}}
+@media print{#ajdTodoReminder,.todo-quick-button{display:none!important}}

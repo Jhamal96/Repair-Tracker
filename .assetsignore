@@ -1,6 +1,7 @@
 # Prevent Android source, build tools, and GitHub metadata from being served as public Worker assets.
 android/**
 .github/**
+supabase/**
 ANDROID-APK-README.md
 wrangler.jsonc
 *.md

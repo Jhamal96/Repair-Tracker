@@ -4,10 +4,11 @@
   const isMain=Boolean(document.getElementById('tabBtnRepairs'));
   const currentPage=document.body.dataset.page||'';
   const PAGE_TABS=new Set(['repairs','history','invoices','store','inventory']);
-  const LABELS={repairs:'Repairs',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',parts:'Inventory Tracker',expenses:'Business Expenses',plans:'Planned Purchases',links:'Manage Links',editor:'Link Editor',sync:'Cloud Synchronization',settings:'Settings'};
+  const LABELS={repairs:'Repairs',todo:'To-do List',history:'Repair History',invoices:'Receipts',store:'Customer Requests',inventory:'Store Management',parts:'Inventory Tracker',expenses:'Business Expenses',plans:'Planned Purchases',links:'Manage Links',editor:'Link Editor',sync:'Cloud Synchronization',settings:'Settings'};
   const sections=[
     {name:'REPAIR WORKSPACE',items:[
       {id:'repairs',icon:'💻',label:'Repairs',description:'Active repair tickets',tab:'repairs'},
+      {id:'todo',icon:'☑',label:'To-do List',description:'Shop reminders, follow-ups & daily tasks',url:'/todo'},
       {id:'history',icon:'🗂️',label:'Repair History',description:'Completed and picked-up jobs',tab:'history'},
       {id:'invoices',icon:'🧾',label:'Receipts',description:'Payments and customer invoices',tab:'invoices'},
       {id:'store',icon:'📥',label:'Customer Requests',description:'New inquiries and orders',tab:'store'}

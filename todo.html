@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <title>To-do List | AJD's Wireless Repairs</title>
+ <meta name="description" content="Your private AJD repair shop to-do list. Add tasks, set priorities and due dates, and keep track of what is done.">
+ <meta name="theme-color" content="#0b1425">
+ <link rel="icon" type="image/png" href="/admin-icon-192.png?v=20261024-logo2">
+ <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools2">
+ <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261024-todo1">
+ <link rel="stylesheet" href="/ajd-logo.css?v=20261024-logo2">
+ <link rel="stylesheet" href="/ajd-todo.css?v=20261024-todo1">
+ <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const d=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+ <script src="/ajd-admin-tools.js?v=20261024-tools2" defer></script>
+ <script src="/ajd-admin-menu.js?v=20261024-todo1" defer></script>
+ <script src="/ajd-todo.js?v=20261024-todo1" defer></script>
+</head>
+<body class="ajd-tools" data-page="todo">
+<header class="ajd-tools-header"><div class="wrap top">
+ <div class="brand"><img src="/ajd-logo.svg?v=20261024-logo2" alt="AJD's Wireless Repairs logo" width="47" height="47"><div><div class="brand-name">AJD's Wireless Repairs</div><div class="sub">To-do List · Protected Admin Workspace</div></div></div>
+ <nav class="header-nav" aria-label="Administration"><a href="/">⌂ Dashboard</a><a href="/todo" aria-current="page">☑ To-do List</a><a href="/inventory">📦 Inventory</a><a href="/settings">⚙ Settings</a></nav>
+</div></header>
+<main class="wrap tools-main">
+ <section id="accessBlock" class="panel" role="status" aria-live="polite">
+  <span id="accessLoading" class="tools-loading-ring" aria-hidden="true"></span><h2 id="accessTitle">Restoring your secure session…</h2><p id="accessDescription">Checking your saved administrator sign-in.</p>
+  <div class="tools-actions"><a id="accessLogin" class="tools-button primary" href="/" hidden>Sign In on Dashboard</a><button id="accessRetry" type="button" class="tools-button" hidden>↻ Retry Verification</button></div>
+ </section>
+ <div id="appContent" class="tools-stack" hidden>
+  <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · TO-DO LIST</p><h1>A little list. A clearer day.</h1><p>Keep repair follow-ups, parts to order, and shop reminders together. Your list pops up each time you open or return to the main dashboard.</p></div><span class="tools-hero-icon" aria-hidden="true">☑</span></section>
+  <section class="tools-summary" aria-label="Task overview">
+   <div class="tools-stat"><span>OPEN TASKS</span><strong id="todoOpenCount">—</strong><small>Still on your list</small></div>
+   <div class="tools-stat"><span>HIGH PRIORITY</span><strong id="todoHighCount">—</strong><small>Open tasks to focus on</small></div>
+   <div class="tools-stat"><span>OVERDUE</span><strong id="todoOverdueCount">—</strong><small>Open tasks past their due date</small></div>
+   <div class="tools-stat"><span>COMPLETED</span><strong id="todoDoneCount">—</strong><small>Checked off and saved</small></div>
+  </section>
+  <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
+  <div class="todo-layout">
+   <section class="panel todo-editor" aria-labelledby="todoFormTitle">
+    <p class="todo-eyebrow">MAKE ROOM FOR WHAT'S NEXT</p><h2 id="todoFormTitle">Add a task</h2><p>Add a quick reminder or include a few details.</p>
+    <form id="todoForm" class="tools-stack">
+     <input type="hidden" id="todoEditId">
+     <label class="tools-label">Task *<input id="todoTitle" class="field" maxlength="240" required placeholder="Order a replacement iPhone screen" autocomplete="off"></label>
+     <label class="tools-label">Details (optional)<textarea id="todoNotes" class="field" maxlength="4000" rows="4" placeholder="Part number, repair ticket, or anything to remember…"></textarea></label>
+     <div class="form-grid"><label class="tools-label">Priority<select id="todoPriority" class="field"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></label><label class="tools-label">Due date (optional)<input id="todoDueDate" class="field" type="date" max="9999-12-31"></label></div>
+     <div class="tools-actions"><button id="todoSave" class="tools-button primary" type="submit" data-todo-write>＋ Add Task</button><button id="todoCancel" class="tools-button" type="button" hidden>Cancel Edit</button></div>
+    </form>
+    <div class="tools-tip todo-editor-tip">Saved to your private shop list and available on your signed-in devices. Completing a task keeps it in the Completed filter.</div>
+   </section>
+   <section class="panel tools-stack" aria-labelledby="todoListTitle">
+    <div class="row"><div><h2 id="todoListTitle">Your to-do list</h2><p id="todoSyncStatus" role="status" aria-live="polite">Loading your tasks…</p></div><button id="todoRefresh" class="tools-button" type="button">↻ Refresh</button></div>
+    <div class="todo-filters"><label class="tools-label"><span class="todo-sr-only">Search tasks</span><input id="todoSearch" class="field" type="search" placeholder="Search your tasks…" autocomplete="off"></label><label class="tools-label"><span class="todo-sr-only">Filter tasks</span><select id="todoFilter" class="field"><option value="open">Open tasks</option><option value="all">All tasks</option><option value="completed">Completed</option><option value="high">High priority</option><option value="overdue">Overdue</option></select></label></div>
+    <div id="todoList" class="todo-list" aria-busy="true"><p class="todo-empty">Loading your private to-do list…</p></div>
+   </section>
+  </div>
+ </div>
+</main>
+<footer><div class="wrap">© <span id="year">2026</span> AJD's Wireless Repairs · <a href="/">Dashboard</a> · <a href="/todo">To-do List</a></div></footer>
+</body>
+</html>
