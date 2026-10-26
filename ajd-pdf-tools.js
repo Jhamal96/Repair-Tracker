@@ -99,11 +99,12 @@ function save(bytes,name){
 }
 function appendKV(rows,key,value){rows.push({type:'line',text:key+': '+String(value??'')})}
 function receipt(job,payment,config={}){
+ if(!(Number(payment?.paid)>0))throw Error('Use Invoice until a deposit or full payment is recorded.');
  const num=String(job?.invoice_number||'').trim();
  const draft=!num;
  const declined=job.status==='declined';
  const p=payment||{};
- const rows=[{type:'title',text:"AJD'S WIRELESS REPAIRS"},{type:'center',text:config.phone||''},{type:'center',text:config.email||''},{type:'rule'},{type:'heading',text:draft?'DRAFT RECEIPT - NOT OFFICIAL':'CUSTOMER INVOICE / RECEIPT'}];
+ const rows=[{type:'title',text:"AJD'S WIRELESS REPAIRS"},{type:'center',text:config.phone||''},{type:'center',text:config.email||''},{type:'rule'},{type:'heading',text:draft?'DRAFT RECEIPT - NOT OFFICIAL':Number(p.balance)>0?'DEPOSIT / PAYMENT RECEIPT':'PAYMENT RECEIPT'}];
  appendKV(rows,'INVOICE',num||'AWAITING CLOUD SYNC');
  if(declined)appendKV(rows,'REPAIR STATUS','Repair Declined');
  appendKV(rows,'DATE',displayDate(job.created_at));
@@ -147,5 +148,5 @@ function status(job){
  rows.push({type:'rule'},{type:'center',text:'Status snapshot - not an official receipt'},{type:'center',text:'repair.ajdapp.org/track'});
  return save(pdfBytes(rows),'AJD-Repair-Status-'+sanitize(job.invoice_number||job.id)+'.pdf');
 }
-window.AJDPdfTools={pdfBytes,receipt,status};
+window.AJDPdfTools={pdfBytes,receipt,status,save};
 })();

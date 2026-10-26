@@ -25,7 +25,7 @@
 #invoiceModal .ajd-receipt-help{margin-top:11px;text-align:center;font-size:11px;line-height:1.6;color:#64748b}
 .dark #invoiceModal .ajd-receipt-help{color:#b0c2dc}
 #invoiceModal #invoicePrintSheet{--paper:#fff;background:#fff!important;color:#000!important;font-family:'Courier New',Consolas,monospace;font-size:11px;line-height:1.45;text-align:left;width:100%;max-width:320px;margin:0 auto;padding:18px 14px 20px;border:1px dashed #ced8e4;border-radius:4px;box-shadow:0 12px 34px rgba(2,6,23,.1);overflow-wrap:anywhere}
-#invoicePrintSheet *{box-sizing:border-box;color:#000!important}
+#invoicePrintSheet.thermal-paper *{box-sizing:border-box;color:#000!important}
 #invoicePrintSheet .receipt-brand{text-align:center;margin-bottom:12px}
 #invoicePrintSheet .receipt-brand-icon{width:42px;height:42px;display:grid;place-items:center;margin:0 auto 7px;border:3px solid #111;border-radius:13px;font:900 14px system-ui,sans-serif}
 #invoicePrintSheet .receipt-brand h2{font-size:15px;line-height:1.14;margin:0 0 6px;font-weight:900;letter-spacing:-.35px}
@@ -80,3 +80,13 @@
 /* AJD navy logo in customer receipt previews and 80mm print layout */
 #invoicePrintSheet .receipt-brand-icon{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;overflow:hidden}
 #invoicePrintSheet .receipt-brand-icon img{display:block;width:42px;height:42px;max-width:100%;max-height:100%;object-fit:contain;margin:0 auto;border:0}
+
+/* Full-page invoices and payment receipts share the same document controls. */
+#invoiceModal[data-document="invoice"] .modal-inner{max-width:850px}
+#invoiceModal[data-document="invoice"] #invoicePrintSheet{max-width:none;padding:38px;border:1px solid #dbe3ed;border-radius:4px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#17243a!important}
+.ajd-invoice-actions{display:flex;flex-wrap:wrap;gap:7px;flex:none}
+.ajd-invoice-actions button{border:0;cursor:pointer}
+.ajd-invoice-actions .ajd-invoice-receipt{background:#e5edf8;color:#19365d;box-shadow:none}
+.ajd-invoice-actions button:disabled{opacity:.5;cursor:not-allowed}
+.dark .ajd-invoice-actions .ajd-invoice-receipt{background:#293e5c;color:#e2edff}
+@media(max-width:550px){#invoiceModal[data-document="invoice"] #invoicePrintSheet{padding:20px 16px}.ajd-invoice-entry{align-items:flex-start;flex-wrap:wrap}.ajd-invoice-actions{width:100%}.ajd-invoice-actions button{flex:1;justify-content:center}#invoiceModal .ajd-receipt-toolbar{position:relative}#invoiceModal .ajd-receipt-toolbar>div:first-child{padding-right:42px}#invoiceModal .ajd-receipt-buttons button:last-child{position:absolute;top:0;right:0;width:34px;min-height:34px;padding:6px}}

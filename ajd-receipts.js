@@ -12,6 +12,7 @@ let returnFocus=null;
 let current=null;
 let currentPayment=null;
 let currentConfig={};
+let currentKind='receipt';
 const androidApp=()=>navigator.userAgent.includes('AJD-Android-App');
 function receiptMessage(message){const info=$('receiptReadyMessage');if(info)info.textContent=message}
 function summaryLine(label,value,cls){
@@ -29,6 +30,24 @@ function open(job,payment,config={}){
  currentConfig=config;
  const num=invoiceNo(job),ready=Boolean(num);
  const r=payment||{total:0,required:0,paid:0,balance:0};
+ currentKind=config.document==='invoice'||!(Number(r.paid)>0)?'invoice':'receipt';
+ const invoice=currentKind==='invoice';
+ $('invoiceModal').dataset.document=currentKind;
+ $('invoiceModalTitle').textContent=invoice?'📄 Customer Invoice':'🧾 Customer Payment Receipt';
+ $('invoiceModal').querySelector('.ajd-receipt-toolbar-note').textContent=invoice?
+  "AJD's Wireless Repairs · Full-page invoice / Printable PDF":
+  "AJD's Wireless Repairs · Payment received / 80mm receipt";
+ $('invoicePrintSheet').className=invoice?'customer-invoice':'thermal-paper';
+ if(invoice){
+  if(!window.AJDInvoices)throw Error('Invoice preview is loading. Refresh and try again.');
+  $('invoicePrintSheet').innerHTML=window.AJDInvoices.html(window.AJDInvoices.model(job,r,config));
+  $('invoicePrintSheet').setAttribute('aria-label',ready?'Invoice '+num:'Draft invoice awaiting cloud sync');
+  $('receiptPrintButton').disabled=false;$('receiptPrintButton').textContent=ready?'🖨 Print Invoice':'🖨 Print Draft Invoice';
+  $('receiptPrintButton').title='Print a full-page customer invoice';
+  $('receiptPdfButton').disabled=false;$('receiptPdfButton').textContent=ready?'⬇ Download Invoice PDF':'⬇ Download Draft PDF';
+  receiptMessage(ready?'Send this invoice to request payment. Download PDF creates a full-page document with the total, payments received, and remaining balance.':'DRAFT: sync this ticket for its permanent invoice number before issuing the official invoice.');
+  $('invoiceModal').classList.remove('hidden');$('receiptPrintButton').focus({preventScroll:true});return;
+ }
  const phone=String(config.phone||'').trim();
  const email=String(config.email||'').trim();
  const declined=job.status==='declined';
@@ -43,7 +62,7 @@ function open(job,payment,config={}){
     ${phone?`<p>Tel: ${escapeHTML(phone)}</p>`:''}
     ${email?`<p>${escapeHTML(email)}</p>`:''}
   </header>
-  <div class="receipt-title">${declined?'REPAIR DECLINED / PAYMENT RECORD':'CUSTOMER INVOICE / RECEIPT'}</div>
+  <div class="receipt-title">${declined?'REPAIR DECLINED / PAYMENT RECORD':Number(r.balance)>0?'DEPOSIT / PAYMENT RECEIPT':'PAYMENT RECEIPT'}</div>
   ${!ready?'<div class="receipt-draft-warning">DRAFT — A PERMANENT INVOICE NUMBER HAS NOT BEEN ASSIGNED.<br>SYNC TO CLOUD BEFORE PRINTING.</div>':''}
   <dl class="receipt-metadata">
     <dt>INVOICE #</dt><dd class="receipt-number">${escapeHTML(num||'PENDING CLOUD SYNC')}</dd>
@@ -76,13 +95,14 @@ function open(job,payment,config={}){
  const saveButton=$('receiptPdfButton');
  if(saveButton){saveButton.disabled=false;saveButton.textContent=ready?'⬇ Download PDF':'⬇ Download Draft PDF'}
  $('receiptReadyMessage').textContent=ready?
-   'Print on 80mm thermal paper, or choose Save as PDF in your browser’s print dialog.':
+   'Payment receipt for the amount recorded as received. Print on 80mm paper, or download the receipt PDF.':
    'This is a clearly marked DRAFT without a permanent invoice number. You can print/download the draft, then sync with Supabase to issue the official receipt.';
  $('invoiceModal').classList.remove('hidden');
  $('receiptPrintButton').focus({preventScroll:true});
 }
 function close(){
  $('invoiceModal').classList.add('hidden');current=null;currentPayment=null;currentConfig={};
+ currentKind='receipt';
  if(returnFocus&&document.contains(returnFocus))returnFocus.focus({preventScroll:true});
  returnFocus=null;
 }
@@ -92,13 +112,22 @@ function print(){
  // window.print() can silently do nothing.
  try{
    if(window.AJDNativePrint?.printHtml){
-     window.AJDNativePrint.printHtml(printDocument(false),'AJD-Receipt-'+(invoiceNo(current)||'Draft'));
+     window.AJDNativePrint.printHtml(printDocument(false),'AJD-'+(currentKind==='invoice'?'Invoice':'Receipt')+'-'+(invoiceNo(current)||'Draft'));
      receiptMessage('Preparing Android print preview. Choose a printer or Save as PDF when it opens.');
    }else if(window.AJDNativePrint?.printReceipt){
      window.AJDNativePrint.printReceipt();
      receiptMessage('Opening Android print preview. Choose a printer or Save as PDF.');
    }else if(androidApp()){
      receiptMessage('This installed app needs the receipt-printing update. Open Menu → Download App and install the latest Android APK.');
+   }else if(currentKind==='invoice'){
+     const frame=document.createElement('iframe');frame.title='Printable customer invoice';
+     frame.style.cssText='position:fixed;left:-10000px;top:0;width:850px;height:1100px;border:0';
+     frame.onload=()=>{
+      try{frame.contentWindow.addEventListener('afterprint',()=>frame.remove(),{once:true});frame.contentWindow.focus();frame.contentWindow.print();setTimeout(()=>frame.remove(),60000)}
+      catch(error){frame.remove();receiptMessage('Could not open print preview. Download the invoice PDF and print the saved file.')}
+     };
+     frame.srcdoc=printDocument(false);document.body.appendChild(frame);
+     receiptMessage('Opening the full-page invoice print dialog. You can also download the invoice PDF.');
    }else if(typeof window.print==='function'){
      window.print();
    }else{
@@ -110,23 +139,29 @@ function print(){
    if(text)text.textContent='Printing is unavailable in this browser. Use Download PDF and print the saved file instead.';
  }
 }
-function downloadPDF(){
+async function downloadPDF(){
  if(!current)return;
+ const job=current,kind=currentKind,button=$('receiptPdfButton');
  try{
    if(androidApp()&&!window.AJDNativePrint?.savePdf){print();return}
    if(!window.AJDPdfTools?.receipt)throw new Error('PDF generator did not load. Refresh the page and try again.');
-   const result=window.AJDPdfTools.receipt(current,currentPayment,currentConfig);
+   button.disabled=true;
+   const result=kind==='invoice'?await window.AJDInvoices.downloadPDF(job,currentPayment,currentConfig):window.AJDPdfTools.receipt(job,currentPayment,currentConfig);
    const info=$('receiptReadyMessage');
-   if(info)info.textContent=result?.kind==='android'?'Choose where to save your receipt in the Android file picker.':'Your '+(invoiceNo(current)?'receipt':'draft receipt')+' PDF download has started.';
+   if(info&&current===job)info.textContent=result?.kind==='android'?'Choose where to save your '+kind+' in the Android file picker.':'Your '+(invoiceNo(job)?kind:'draft '+kind)+' PDF download has started.';
  }catch(err){
    console.warn('Receipt PDF generation failed:',err);
-   const info=$('receiptReadyMessage');if(info)info.textContent='Could not generate the PDF: '+err.message;
- }
+   const info=$('receiptReadyMessage');if(info&&current===job)info.textContent='Could not generate the PDF: '+err.message;
+ }finally{button.disabled=false}
 }
 function printDocument(controls=false){
  if(!current)return '';
  const sheet=$('invoicePrintSheet');
  if(!sheet)return '';
+ if(currentKind==='invoice')return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="https://repair.ajdapp.org/"><title>AJD Invoice</title><style>'+window.AJDInvoices.styles+
+  'body{margin:0;background:#fff;color:#17243a}.controls{text-align:center;padding:15px}.controls button{padding:10px 22px;font:700 14px Arial}@media print{.controls{display:none}}</style></head><body>'+
+  (controls?'<div class="controls"><button onclick="window.print()">Print Invoice / Save as PDF</button></div>':'')+
+  '<main class="customer-invoice">'+sheet.innerHTML+'</main></body></html>';
  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
  '<base href="https://repair.ajdapp.org/">'+
  '<title>AJD Receipt</title>'+
@@ -161,6 +196,6 @@ function copyNumber(){
  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).catch(()=>{});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('invoiceModal')?.classList.contains('hidden'))close()});
-window.addEventListener('ajd-receipt-native-status',event=>{if(current&&typeof event.detail?.message==='string')receiptMessage(event.detail.message)});
+window.addEventListener('ajd-receipt-native-status',event=>{if(current&&typeof event.detail?.message==='string')receiptMessage(currentKind==='invoice'?event.detail.message.replace(/receipt/gi,word=>word[0]==='R'?'Invoice':'invoice'):event.detail.message)});
 window.AJDReceipts={open,close,print,downloadPDF,printView,printDocument,copyNumber,invoiceNo};
 })();
