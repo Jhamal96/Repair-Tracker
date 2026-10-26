@@ -55,13 +55,22 @@ body[data-page="parts"] .wrap{max-width:1240px}
 .inv-image-field{padding:15px;border-radius:16px;background:var(--panel2);border:1px solid var(--border)}
 .inv-image-field strong{font-size:13px}
 .inv-image-field p{font-size:11px;color:var(--muted);margin:4px 0 12px}
-.inv-image-inputs{display:grid;grid-template-columns:minmax(160px,2fr) minmax(120px,1fr) 92px;align-items:end;gap:12px}
+.inv-image-inputs{display:grid;grid-template-columns:minmax(160px,2fr) auto minmax(120px,1fr);align-items:end;gap:12px}
 .inv-image-inputs>label{min-width:0}
 .inv-photo-file{display:grid;place-items:center;text-align:center;min-height:46px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.1);border-radius:11px;color:#2563eb!important;cursor:pointer}
 .dark .inv-photo-file{color:#bfdbfe!important}
 .inv-photo-file input{width:1px;position:absolute;opacity:0;pointer-events:none}
 .inv-image-preview{width:82px;height:82px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--panel)}
 .inv-image-preview img{width:100%;height:100%;object-fit:contain}
+.inv-photo-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.inv-photo-tile{min-width:0;padding:9px;border:1px solid var(--border);border-radius:12px;background:var(--panel)}
+.inv-photo-tile.is-cover{border-color:#3b82f6;box-shadow:0 0 0 1px #3b82f640}
+.inv-photo-tile img{display:block;width:100%;height:120px;object-fit:contain;background:var(--panel2);border-radius:8px}
+.inv-photo-tile small{display:block;margin:7px 0;overflow-wrap:anywhere;font-size:10px;color:var(--muted)}
+.inv-photo-tile .inv-photo-actions{display:flex;flex-wrap:wrap;gap:5px}
+.inv-photo-tile button{padding:7px;font-size:10px;min-height:34px}
+.inv-photo-tile .inv-photo-remove{background:transparent;color:#e11d48;border-color:var(--border)}
+#photoCount{margin:11px 0}
 .inv-publish-check{display:flex!important;gap:12px;align-items:start;padding:15px 16px;border-radius:15px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);cursor:pointer}
 .inv-publish-check input{width:18px;height:18px;flex:none;margin-top:3px;min-height:auto}
 .inv-publish-check strong{display:block;font-size:13px;color:var(--text)}

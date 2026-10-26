@@ -6,7 +6,8 @@ const $=id=>document.getElementById(id);
 const money=x=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);
 const digits=x=>new Intl.NumberFormat('en-US').format(Number(x)||0);
 const table='ajd_parts_inventory';
-let sb=null,records=[],store=new Map(),admin=false,busy=false,photoFile=null,previewBlob='',returnFocus=null;
+let sb=null,records=[],store=new Map(),admin=false,busy=false,photos=[],returnFocus=null;
+const MAX_PHOTOS=10;
 function dom(tag,label,cls){const e=document.createElement(tag);if(label!==undefined&&label!==null)e.textContent=String(label);if(cls)e.className=cls;return e}
 function message(msg,error=false){
  const e=$('message');e.hidden=false;e.textContent=String(msg);e.className='inv-message'+(error?' error':'');
@@ -15,6 +16,7 @@ function message(msg,error=false){
 function clearMessage(){$('message').hidden=true}
 function status(msg){$('loading').textContent=msg||''}
 function lock(reason,login=true){
+ closeEditor(true);
  admin=false;window.AJDCloudHealth?.setAccess(false);records=[];store=new Map();$('appContent').hidden=true;$('accessBlock').hidden=false;
  $('accessTitle').textContent=login?'Private Inventory · Sign In Required':'Session verification unavailable';
  $('accessMessage').textContent=reason||'Sign in to the admin dashboard first.';
@@ -35,16 +37,39 @@ function safeUrl(s){
 function allowedPhoto(file){
  if(!file)return;
  if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('Choose a JPG, PNG or WebP photo.');
+ if(!file.size)throw Error('This photo is empty. Choose another file.');
  if(file.size>5*1024*1024)throw Error('Photos must be 5 MB or smaller.');
 }
-function releasePhoto(){
- if(previewBlob){URL.revokeObjectURL(previewBlob);previewBlob=''}
- $('imagePreviewWrap').hidden=true;$('imagePreview').removeAttribute('src');
+function releasePhotos(){for(const photo of photos)if(photo.preview)URL.revokeObjectURL(photo.preview);photos=[];$('photoList').replaceChildren()}
+function renderPhotos(){
+ const list=$('photoList');list.replaceChildren();$('photoCount').textContent=photos.length+' / '+MAX_PHOTOS+' photos';
+ photos.forEach((photo,index)=>{
+  const tile=dom('div',null,'inv-photo-tile'+(index===0?' is-cover':'')),image=dom('img');
+  image.src=photo.preview||photo.url;image.alt='Product photo '+(index+1);tile.append(image);
+  tile.append(dom('small',(index===0?'Cover photo · ':'Photo '+(index+1)+' · ')+(photo.file?photo.file.name:'Saved image')));
+  const actions=dom('div',null,'inv-photo-actions');
+  if(index>0)actions.append(button('Make Cover','secondary',()=>{if(busy)return;photos.splice(index,1);photos.unshift(photo);renderPhotos()}));
+  actions.append(button('Remove','inv-photo-remove',()=>{if(busy)return;if(photo.preview)URL.revokeObjectURL(photo.preview);photos.splice(index,1);renderPhotos()}));
+  tile.append(actions);list.append(tile);
+ });
 }
-function previewPhoto(){
- releasePhoto();
- const url=photoFile?(previewBlob=URL.createObjectURL(photoFile)):safeUrl($('imageUrl').value);
- if(url){$('imagePreview').src=url;$('imagePreviewWrap').hidden=false}
+function addPhotoUrl(){
+ const raw=$('imageUrl').value.trim();if(!raw)return;
+ const url=safeUrl(raw);if(!url||raw.length>2000||url.length>2000)throw Error('Use a complete public http(s) image URL.');
+ if(photos.some(photo=>photo.url===url)){$('imageUrl').value='';return}
+ if(photos.length>=MAX_PHOTOS)throw Error('You can add up to '+MAX_PHOTOS+' photos. Remove one before adding another.');
+ photos.push({url});$('imageUrl').value='';renderPhotos();
+}
+function addPhotoFiles(files){
+ const next=[];
+ for(const file of files){
+  allowedPhoto(file);const fileKey=[file.name,file.size,file.lastModified].join(':');
+  if(photos.some(photo=>photo.fileKey===fileKey)||next.some(photo=>photo.fileKey===fileKey))continue;
+  next.push({file,fileKey});
+ }
+ if(photos.length+next.length>MAX_PHOTOS)throw Error('You can add up to '+MAX_PHOTOS+' photos. Remove some or choose fewer files.');
+ for(const photo of next){photo.preview=URL.createObjectURL(photo.file);photos.push(photo)}
+ renderPhotos();
 }
 function integer(id){
  const n=Number($(id).value);
@@ -60,9 +85,8 @@ function payloadFor(editing){
  const name=$('itemName').value.trim();
  if(!name||name.length>240)throw Error('Enter an item name.');
  const supplierUrl=$('supplierUrl').value.trim();
- const photoUrl=$('imageUrl').value.trim();
+ addPhotoUrl();
  if(supplierUrl&&!safeUrl(supplierUrl))throw Error('Supplier URL must start with http:// or https://.');
- if(photoUrl&&!safeUrl(photoUrl)&&!photoFile)throw Error('Use a public http(s) photo URL or choose an image file.');
  const p={
    item_name:name,item_type:$('itemType').value,sku:$('sku').value.trim(),
    brand:$('brand').value.trim(),compatible_device:$('compatibleDevice').value.trim(),
@@ -71,7 +95,7 @@ function payloadFor(editing){
    condition:$('condition').value,supplier:$('supplier').value.trim(),
    supplier_url:supplierUrl,storage_location:$('storageLocation').value.trim(),
    public_description:$('publicDescription').value.trim(),notes:$('notes').value.trim(),
-   image_url:photoUrl
+   image_url:photos[0]?.url||'',image_urls:photos.map(photo=>photo.url).filter(Boolean)
  };
  if(!editing)p.quantity=integer('quantity');
  return p
@@ -130,6 +154,7 @@ function renderCard(r){
  const shop=linked(r);
  if(shop)tags.append(pill(shop.status==='hidden'?'Store: Hidden':shop.status==='out_of_stock'?'Store: Out of stock':'Store: Live',shop.status==='hidden'?'is-hidden':'is-live'));
  else tags.append(pill('Private inventory'));
+ const count=window.AJDProductImages.urls(r).length;if(count>1)tags.append(pill('📸 '+count+' photos'));
  name.appendChild(tags);header.append(photo,name);
  const stats=dom('div',null,'inv-item-stats');
  for(const [label,value] of [['On Hand',digits(r.quantity)],['Cost / Unit',money(r.unit_cost)],['Store Price',money(r.sale_price)]]){
@@ -168,7 +193,7 @@ function openEditor(row){
  $('quantity').readOnly=editing;
  $('quantity').value=row?.quantity??0;
  $('editorHint').textContent=editing?'Use Adjust Stock to record deliveries, repairs, sales or losses. Stock history and linked storefront quantity are updated automatically.':'Choose Publish to Customer Storefront if you also want the item listed for customers.';
- const fields={itemName:'item_name',itemType:'item_type',sku:'sku',brand:'brand',compatibleDevice:'compatible_device',reorderPoint:'reorder_point',unitCost:'unit_cost',salePrice:'sale_price',condition:'condition',supplier:'supplier',supplierUrl:'supplier_url',storageLocation:'storage_location',publicDescription:'public_description',imageUrl:'image_url',notes:'notes'};
+ const fields={itemName:'item_name',itemType:'item_type',sku:'sku',brand:'brand',compatibleDevice:'compatible_device',reorderPoint:'reorder_point',unitCost:'unit_cost',salePrice:'sale_price',condition:'condition',supplier:'supplier',supplierUrl:'supplier_url',storageLocation:'storage_location',publicDescription:'public_description',notes:'notes'};
  if(editing){
   for(const [id,key] of Object.entries(fields))$(id).value=row[key]??'';
   if(![...$('condition').options].some(o=>o.value===row.condition)){
@@ -177,15 +202,17 @@ function openEditor(row){
  }
  $('publishAfterSave').checked=false;
  $('publishAfterSave').closest('label').hidden=Boolean(row?.archived);
- photoFile=null;$('imageFile').value='';previewPhoto();
+ releasePhotos();photos=window.AJDProductImages.urls(row).map(url=>({url}));$('imageFile').value='';renderPhotos();
  $('editorPanel').hidden=false;$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});$('itemName').focus();
 }
-function closeEditor(){$('editorPanel').hidden=true;releasePhoto();photoFile=null;$('imageFile').value=''}
-async function uploadPhoto(file,id){
+function closeEditor(force=false){if(busy&&force!==true)return;$('editorPanel').hidden=true;releasePhotos();$('imageFile').value='';$('imageUrl').value=''}
+async function uploadPhoto(photo,id){
+ const file=photo.file;
  allowedPhoto(file);
  const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
- const key='inventory/'+id+'/'+crypto.randomUUID()+'.'+ext;
- const {error}=await sb.storage.from('product-images').upload(key,file,{upsert:false,contentType:file.type,cacheControl:'3600'});
+ const key=photo.uploadKey||(photo.uploadKey='inventory/'+id+'/'+crypto.randomUUID()+'.'+ext);
+ // A retry only replaces this newly staged file at its own unique path.
+ const {error}=await sb.storage.from('product-images').upload(key,file,{upsert:true,contentType:file.type,cacheControl:'3600'});
  if(error)throw Error('Photo upload failed: '+error.message);
  const {data}=sb.storage.from('product-images').getPublicUrl(key);
  if(!data?.publicUrl)throw Error('Unable to retrieve uploaded photo URL.');
@@ -200,8 +227,15 @@ async function save(event){
   if(alsoPublish&&data.sale_price===0&&!confirm('This will publish to the storefront at $0.00. Continue?'))return;
   if(data.sku&&records.some(r=>r.id!==id&&!r.archived&&r.sku.toLowerCase()===data.sku.toLowerCase())&&!confirm('This SKU already exists. Save another item with the same SKU?'))return;
   busy=true;$('saveButton').disabled=true;status('Saving inventory to Supabase…');
+  for(const control of $('editorForm').elements)control.disabled=true;
+  $('cancelButton').disabled=true;
   if(!id)id=crypto.randomUUID();
-  if(photoFile)data.image_url=await uploadPhoto(photoFile,id);
+  for(let index=0;index<photos.length;index++){
+   const photo=photos[index];
+   if(photo.file&&!photo.url){status('Uploading photo '+(index+1)+' of '+photos.length+'…');photo.url=await uploadPhoto(photo,id)}
+  }
+  data.image_urls=photos.map(photo=>photo.url);data.image_url=data.image_urls[0]||'';
+  if(!admin)throw Error('Your administrator session ended. Sign in again before saving.');
   const request=editing?sb.from(table).update(data).eq('id',id):sb.from(table).insert({...data,id});
   const {data:reply,error}=await request.select('id').single();
   if(error)throw error;
@@ -213,10 +247,10 @@ async function save(event){
    if(err)publishError=err.message;
    else published=true;
   }
-  closeEditor();await load();
+  closeEditor(true);await load();
   message(publishError?'Inventory saved privately, but publishing failed: '+publishError:published?'Inventory saved and published to the customer storefront.':'Inventory saved. Linked listings update automatically when you edit stock or price.',Boolean(publishError));
- }catch(err){message('Could not save inventory: '+err.message,true);if(!saved)$('editorPanel').hidden=false}
- finally{busy=false;$('saveButton').disabled=false;status('')}
+ }catch(err){message('Could not save inventory: '+err.message,true);if(!saved&&admin)$('editorPanel').hidden=false}
+ finally{busy=false;for(const control of $('editorForm').elements)control.disabled=false;$('cancelButton').disabled=false;status('')}
 }
 function openAdjust(row){
  if(!admin||busy||row.archived)return;
@@ -355,10 +389,11 @@ async function init(){
  $('refreshButton').addEventListener('click',load);$('exportButton').addEventListener('click',exportCSV);
  $('editorForm').addEventListener('submit',save);
  $('imageFile').addEventListener('change',event=>{
-  const next=event.target.files?.[0]||null;
-  try{allowedPhoto(next);photoFile=next;previewPhoto()}catch(err){photoFile=null;event.target.value='';message(err.message,true)}
+  if(busy)return;
+  try{addPhotoFiles(Array.from(event.target.files||[]))}catch(err){message(err.message,true)}
+  finally{event.target.value=''}
  });
- $('imageUrl').addEventListener('change',()=>{if(!photoFile)previewPhoto()});
+ $('addImageUrl').addEventListener('click',()=>{if(busy)return;try{addPhotoUrl()}catch(err){message(err.message,true)}});
  for(const id of ['search','typeFilter','statusFilter','sortFilter'])$(id).addEventListener(id==='search'?'input':'change',render);
  $('adjustForm').addEventListener('submit',adjust);
  $('closeAdjust').addEventListener('click',closeAdjust);$('closeHistory').addEventListener('click',closeHistory);

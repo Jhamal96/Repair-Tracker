@@ -1,0 +1,13 @@
+.ajd-product-gallery{min-width:0;max-width:100%}
+.ajd-product-gallery .ajd-gallery-stage{position:relative}
+.ajd-product-gallery img.photo{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#eaf0f6}
+.ajd-product-gallery img[hidden],.ajd-product-gallery .placeholder[hidden]{display:none!important}
+.ajd-product-gallery .ajd-gallery-controls{position:absolute;bottom:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
+.ajd-product-gallery .ajd-gallery-controls button{pointer-events:auto;width:36px;min-height:36px;padding:0;border:1px solid #c8d5e3;border-radius:50%;background:#ffffffed;color:#142c4d;font:700 25px/1 Arial;cursor:pointer;box-shadow:0 3px 12px #0002}
+.ajd-gallery-count{padding:5px 10px;border-radius:16px;background:#10243bea;color:#fff;font-size:11px;font-weight:800}
+.ajd-product-gallery .ajd-gallery-thumbs{display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:10px;scrollbar-width:thin;background:#f2f6fb}
+.ajd-product-gallery .ajd-gallery-thumbs button{flex:none;width:43px;height:43px;padding:2px;border:2px solid transparent;border-radius:8px;background:#fff;cursor:pointer}
+.ajd-product-gallery .ajd-gallery-thumbs button[aria-pressed=true]{border-color:#2563eb}
+.ajd-product-gallery .ajd-gallery-thumbs img{display:block;width:100%;height:100%;object-fit:contain;border-radius:4px}
+.ajd-product-gallery button:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+.dark .ajd-product-gallery img.photo{background:#101c2d}.dark .ajd-product-gallery .ajd-gallery-thumbs{background:#101c2d}

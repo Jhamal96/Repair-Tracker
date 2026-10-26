@@ -10,10 +10,11 @@
 <link rel="stylesheet" href="/business-finance.css">
 <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261025-header1">
 <link rel="stylesheet" href="/ajd-premium-admin.css">
-<link rel="stylesheet" href="/ajd-inventory.css">
+<link rel="stylesheet" href="/ajd-inventory.css?v=20261026-photos1">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="/ajd-admin-menu.js?v=20261026-invoice1" defer></script>
-<script src="/ajd-inventory.js?v=20261025-header1" defer></script>
+<script src="/ajd-product-images.js?v=20261026-photos1" defer></script>
+<script src="/ajd-inventory.js?v=20261026-photos1" defer></script>
 <link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1"><script src="/ajd-pricing.js?v=20261026-1" defer></script></head>
 <body data-page="parts">
 <header>
@@ -104,12 +105,14 @@
      <label class="inv-wide">Customer-Facing Description<textarea id="publicDescription" maxlength="2500" rows="2" placeholder="What will customers see? Describe compatibility, specifications, package contents, etc."></textarea></label>
      <label class="inv-wide">Internal Notes — Private<textarea id="notes" maxlength="2500" rows="2" placeholder="Supplier costs, shelf notes, special ordering details…"></textarea></label>
      <div class="inv-wide inv-image-field">
-      <div><strong>📸 Product Photo (optional)</strong><p>Choose a JPG, PNG or WebP photo (up to 5 MB), or enter a public image URL.</p></div>
+      <div><strong>📸 Product Photos (optional)</strong><p>Add up to 10 JPG, PNG or WebP photos, up to 5 MB each. Choose the cover photo and remove any you don't want. Published items show these photos in the customer store.</p></div>
       <div class="inv-image-inputs">
        <label>Image URL<input id="imageUrl" type="url" maxlength="2000" placeholder="https://example.com/image.jpg"></label>
-       <label class="inv-photo-file">Choose Photo <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
-       <div id="imagePreviewWrap" class="inv-image-preview" hidden><img id="imagePreview" alt="Selected product image preview"></div>
+       <button id="addImageUrl" type="button" class="secondary">Add Image URL</button>
+       <label class="inv-photo-file">Choose Photos <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
       </div>
+      <p id="photoCount" role="status" aria-live="polite">0 / 10 photos</p>
+      <div id="photoList" class="inv-photo-list" aria-label="Selected product photos"></div>
      </div>
      <label class="inv-wide inv-publish-check"><input id="publishAfterSave" type="checkbox"><span><strong>Publish to Customer Storefront after saving</strong><small>Creates or updates a storefront listing using your selling price and stock. Supplier, cost and internal notes stay private.</small></span></label>
     </div>
