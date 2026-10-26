@@ -25,6 +25,8 @@ const STAGES=[
  {key:'picked_up',label:'Picked Up',icon:'★',hint:'Pickup recorded.',next:'Your device has been marked picked up. Thank you for choosing AJD’s Wireless Repairs!'}
 ];
 const stageIndex=status=>STAGES.findIndex(s=>s.key===status);
+const declinedStage={key:'declined',label:'Repair Declined',next:'This repair is not proceeding. Contact AJD’s Wireless Repairs if you would like to continue. We can reopen the same repair ticket.'};
+const statusInfo=status=>status==='declined'?declinedStage:STAGES[stageIndex(status)];
 const dollar=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(value)||0);
 function escapeHtml(input){
  return String(input??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -47,9 +49,10 @@ function showUpdateNotice(oldStatus,newStatus,amountOnly=false){
   $('changeNoticeTitle').textContent='Payment or repair details updated';
   $('changeNoticeText').textContent='Your repair information has changed. The latest figures are displayed below.';
  }else{
-  $('changeNoticeTitle').textContent='Your repair status has changed!';
-  $('changeNoticeText').textContent='Your repair moved from '+(STAGES[stageIndex(oldStatus)]?.label||'an earlier stage')+' to '+(STAGES[stageIndex(newStatus)]?.label||'a new stage')+'.';
+  $('changeNoticeTitle').textContent=newStatus==='declined'?'Repair not proceeding':'Your repair status has changed!';
+  $('changeNoticeText').textContent='Your repair changed from '+(statusInfo(oldStatus)?.label||'an earlier stage')+' to '+(statusInfo(newStatus)?.label||'a new stage')+'.';
  }
+ const icon=box.querySelector('span');if(icon)icon.textContent=newStatus==='declined'?'ℹ':'↻';
  box.hidden=false;
 }
 function hideUpdateNotice(){$('statusChangeNotice').hidden=true}
@@ -110,7 +113,7 @@ function signature(job){
 function render(job){
  const s=String(job.status||'pending');
  const index=stageIndex(s);
- const current=index>=0?STAGES[index]:null;
+ const current=statusInfo(s),declined=s==='declined';
  const amount=Number(job.amount)||0;
  const deposit=Number(job.deposit_amount)||0;
  const paid=job.payment_status==='paid_in_full'?amount:job.payment_status==='deposit_paid'?Math.min(amount,deposit):0;
@@ -130,30 +133,31 @@ function render(job){
     <div><span class="ajd-track-card-kicker">YOUR REPAIR STATUS</span>
       <h2>${escapeHtml(current?.label||'Repair Status Available')}</h2>
       <p>Status reported by AJD’s Wireless Repairs.</p></div>
-    <span class="ajd-stage-pill ${completed?'final':''}">${completed?'✓':'●'} ${escapeHtml(current?.label||'Contact the shop')}</span>
+    <span class="ajd-stage-pill ${declined?'declined':completed?'final':''}">${declined?'⊘':completed?'✓':'●'} ${escapeHtml(current?.label||'Contact the shop')}</span>
    </div>
    <div class="ajd-ticket-details">
     <div class="ajd-ticket-info"><small>Invoice / Ticket</small><strong>${escapeHtml(job.invoice_number||job.id||'Not available')}</strong></div>
     <div class="ajd-ticket-info"><small>Device</small><strong>${escapeHtml(job.make_model||'Your device')}</strong></div>
    </div>
-   <section class="ajd-track-progress" aria-label="Repair progress">
+   ${declined?'<section class="ajd-declined-notice"><strong>Repair not proceeding</strong><p>Your repair record is kept so the shop can reopen it if you decide to continue.</p></section>':`<section class="ajd-track-progress" aria-label="Repair progress">
     <div class="ajd-track-progress-head"><strong>Repair journey</strong><span>${index>=0?`Stage ${index+1} of ${STAGES.length} · `:""}${escapeHtml(current?.label||'Status unavailable')}</span></div>
     <div class="ajd-track-progress-bar" role="progressbar" aria-label="Repair workflow milestones" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-valuetext="${index>=0?`Stage ${index+1} of ${STAGES.length}: ${escapeHtml(current.label)}`:'Unknown status'}">
      <div class="ajd-track-progress-fill" style="width:${progress}%"></div>
     </div>
     <div class="ajd-stage-timeline">${markup}</div>
-   </section>
+   </section>`}
    <p class="ajd-track-update-time">◷ Latest team update: <strong>${escapeHtml(dateText(job.updated_at||job.created_at))}</strong>${completed&&job.picked_up_at?' · Pickup: '+escapeHtml(dateText(job.picked_up_at)):''}</p>
    <section class="ajd-track-payment" aria-label="Payment information">
     <h3>PAYMENT OVERVIEW</h3>
-    <div class="ajd-payment-line"><span>Total repair charge</span><strong>${dollar(amount)}</strong></div>
+    <div class="ajd-payment-line"><span>${declined?'Saved repair quote':'Total repair charge'}</span><strong>${dollar(amount)}</strong></div>
     <div class="ajd-payment-line"><span>Deposit requested</span><strong>${dollar(deposit)}</strong></div>
     <div class="ajd-payment-line paid"><span>Paid to date</span><strong>${dollar(paid)}</strong></div>
-    <div class="ajd-payment-line due ${due===0?'settled':''}"><span>Balance due</span><strong>${dollar(due)}</strong></div>
+    <div class="ajd-payment-line due ${due===0?'settled':''}"><span>${declined?'Quoted balance':'Balance due'}</span><strong>${dollar(due)}</strong></div>
+    ${declined?'<p class="ajd-track-update-time">The original quote and recorded payments are shown for reference. Contact the shop before resuming this repair.</p>':''}
    </section>
    <div class="ajd-track-next">
-     <span class="ajd-track-next-icon" aria-hidden="true">${completed?'🎉':s==='completed'?'📦':'🔧'}</span>
-     <div><h3>${completed?'Pickup complete':s==='completed'?'Your device is ready':s==='in-progress'?'Your repair is underway':'What happens next?'}</h3>
+     <span class="ajd-track-next-icon" aria-hidden="true">${declined?'↶':completed?'🎉':s==='completed'?'📦':'🔧'}</span>
+     <div><h3>${declined?'Want to continue?':completed?'Pickup complete':s==='completed'?'Your device is ready':s==='in-progress'?'Your repair is underway':'What happens next?'}</h3>
      <p>${escapeHtml(current?.next||'Please contact AJD’s Wireless Repairs for information about your repair.')}</p></div>
    </div>
   </div>`;

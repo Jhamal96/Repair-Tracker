@@ -101,9 +101,11 @@ function appendKV(rows,key,value){rows.push({type:'line',text:key+': '+String(va
 function receipt(job,payment,config={}){
  const num=String(job?.invoice_number||'').trim();
  const draft=!num;
+ const declined=job.status==='declined';
  const p=payment||{};
  const rows=[{type:'title',text:"AJD'S WIRELESS REPAIRS"},{type:'center',text:config.phone||''},{type:'center',text:config.email||''},{type:'rule'},{type:'heading',text:draft?'DRAFT RECEIPT - NOT OFFICIAL':'CUSTOMER INVOICE / RECEIPT'}];
  appendKV(rows,'INVOICE',num||'AWAITING CLOUD SYNC');
+ if(declined)appendKV(rows,'REPAIR STATUS','Repair Declined');
  appendKV(rows,'DATE',displayDate(job.created_at));
  appendKV(rows,'CUSTOMER',job.customer_name||'Customer');
  if(job.customer_phone)appendKV(rows,'PHONE',job.customer_phone);
@@ -116,18 +118,18 @@ function receipt(job,payment,config={}){
   for(const name of parts.slice(0,12))rows.push({type:'line',text:'- '+name});
  }
  rows.push({type:'rule'},{type:'heading',text:'PAYMENT SUMMARY'});
- appendKV(rows,'Total Repair Charge',MONEY(p.total));
+ appendKV(rows,declined?'Saved Repair Quote':'Total Repair Charge',MONEY(p.total));
  if(Number(p.required)>0)appendKV(rows,'Required Deposit',MONEY(p.required));
  appendKV(rows,'Paid to Date',MONEY(p.paid));
- appendKV(rows,'Balance Due',MONEY(p.balance));
- rows.push({type:'rule'},{type:'center',text:Number(p.balance)<=0?'PAID IN FULL':Number(p.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE'},{type:'gap'},{type:'center',text:'THANK YOU FOR CHOOSING AJD!'});
+ appendKV(rows,declined?'Quoted Balance':'Balance Due',MONEY(p.balance));
+ rows.push({type:'rule'},{type:'center',text:declined?'REPAIR DECLINED':Number(p.balance)<=0?'PAID IN FULL':Number(p.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE'},{type:'gap'},{type:'center',text:'THANK YOU FOR CHOOSING AJD!'});
  if(draft){rows.push({type:'heading',text:'DRAFT - NOT OFFICIAL'},{type:'small',text:'Sync this repair to Supabase for a permanent invoice number.'});}
  else rows.push({type:'center',text:'repair.ajdapp.org/track'},{type:'small',text:'Use invoice '+num+' and verified phone/email.'});
  return save(pdfBytes(rows),'AJD-'+(draft?'DRAFT-'+String(job.id||'Receipt').slice(0,32):'Receipt-'+num)+'.pdf');
 }
 function status(job){
  if(!job?.invoice_number&&!job?.id)throw Error('Verify your repair ticket before exporting.');
- const labels={pending:'Checked In','in-progress':'In Repair',completed:'Ready for Pickup',picked_up:'Picked Up'};
+ const labels={pending:'Checked In','in-progress':'In Repair',completed:'Ready for Pickup',picked_up:'Picked Up',declined:'Repair Declined'};
  const amount=Number(job.amount)||0,deposit=Number(job.deposit_amount)||0;
  const paid=job.payment_status==='paid_in_full'?amount:job.payment_status==='deposit_paid'?Math.min(amount,deposit):0;
  const rows=[
@@ -138,10 +140,10 @@ function status(job){
  appendKV(rows,'Current Stage',labels[job.status]||job.status||'Status unavailable');
  appendKV(rows,'Last Updated',displayDate(job.updated_at||job.created_at));
  rows.push({type:'rule'},{type:'heading',text:'PAYMENT OVERVIEW'});
- appendKV(rows,'Total Repair Charge',MONEY(amount));
+ appendKV(rows,job.status==='declined'?'Saved Repair Quote':'Total Repair Charge',MONEY(amount));
  appendKV(rows,'Deposit Requested',MONEY(deposit));
  appendKV(rows,'Paid To Date',MONEY(paid));
- appendKV(rows,'Balance Due',MONEY(Math.max(0,amount-paid)));
+ appendKV(rows,job.status==='declined'?'Quoted Balance':'Balance Due',MONEY(Math.max(0,amount-paid)));
  rows.push({type:'rule'},{type:'center',text:'Status snapshot - not an official receipt'},{type:'center',text:'repair.ajdapp.org/track'});
  return save(pdfBytes(rows),'AJD-Repair-Status-'+sanitize(job.invoice_number||job.id)+'.pdf');
 }

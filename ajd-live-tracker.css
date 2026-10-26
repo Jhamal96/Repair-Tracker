@@ -118,3 +118,8 @@ body.ajd-public-track .ajd-track-export-btn:hover:not(:disabled){filter:brightne
 body.ajd-public-track .ajd-track-export-btn:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
 @media(max-width:440px){body.ajd-public-track header .max-w-2xl{gap:7px}body.ajd-public-track .ajd-track-export-buttons{flex-direction:column}body.ajd-public-track .ajd-track-export-btn{font-size:10px;min-height:30px;padding:5px 8px;min-width:60px}}
 @media print{body.ajd-public-track .ajd-track-export-buttons{display:none!important}}
+.ajd-stage-pill.declined{color:#fcd34d;background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3)}
+.ajd-declined-notice{padding:16px 18px;border:1px solid rgba(245,158,11,.25);border-radius:16px;background:rgba(245,158,11,.06);margin:18px 0}
+.ajd-declined-notice strong{display:block;font-size:14px;font-weight:900;color:#fbbf24}
+.ajd-declined-notice p{margin:6px 0 0;font-size:12px;line-height:1.75;color:inherit}
+html:not(.dark) .ajd-stage-pill.declined,html:not(.dark) .ajd-declined-notice strong{color:#92400e}

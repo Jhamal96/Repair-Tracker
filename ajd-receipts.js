@@ -31,7 +31,8 @@ function open(job,payment,config={}){
  const r=payment||{total:0,required:0,paid:0,balance:0};
  const phone=String(config.phone||'').trim();
  const email=String(config.email||'').trim();
- const status=(Number(r.balance)<=0&&Number(r.total)>0)?'PAID IN FULL':Number(r.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE';
+ const declined=job.status==='declined';
+ const status=declined?'REPAIR DECLINED':(Number(r.balance)<=0&&Number(r.total)>0)?'PAID IN FULL':Number(r.paid)>0?'PARTIAL PAYMENT':'PAYMENT DUE';
  const work=(Array.isArray(job.parts)?job.parts:[]).map(p=>String(p?.name||'').trim()).filter(Boolean);
  if(!work.length&&job.part_note)work.push(String(job.part_note).trim());
  const parts=work.length?'<section class="receipt-section"><h3>SERVICE / PARTS DESCRIPTION</h3>'+work.slice(0,10).map(t=>'<div class="receipt-item"><span>'+escapeHTML(t)+'</span></div>').join('')+'</section>':'';
@@ -42,7 +43,7 @@ function open(job,payment,config={}){
     ${phone?`<p>Tel: ${escapeHTML(phone)}</p>`:''}
     ${email?`<p>${escapeHTML(email)}</p>`:''}
   </header>
-  <div class="receipt-title">CUSTOMER INVOICE / RECEIPT</div>
+  <div class="receipt-title">${declined?'REPAIR DECLINED / PAYMENT RECORD':'CUSTOMER INVOICE / RECEIPT'}</div>
   ${!ready?'<div class="receipt-draft-warning">DRAFT — A PERMANENT INVOICE NUMBER HAS NOT BEEN ASSIGNED.<br>SYNC TO CLOUD BEFORE PRINTING.</div>':''}
   <dl class="receipt-metadata">
     <dt>INVOICE #</dt><dd class="receipt-number">${escapeHTML(num||'PENDING CLOUD SYNC')}</dd>
@@ -55,10 +56,10 @@ function open(job,payment,config={}){
   ${parts}
   <section class="receipt-section" aria-label="Payment summary">
     <h3>PAYMENT SUMMARY</h3>
-    ${summaryLine('Total Repair Charge',usd(r.total),'receipt-grand-total')}
+    ${summaryLine(declined?'Saved Repair Quote':'Total Repair Charge',usd(r.total),'receipt-grand-total')}
     ${Number(r.required)>0?summaryLine('Required Deposit',usd(r.required)):''}
     ${summaryLine('Paid to Date',usd(r.paid))}
-    ${summaryLine('Balance Due',usd(r.balance),'receipt-balance')}
+    ${summaryLine(declined?'Quoted Balance':'Balance Due',usd(r.balance),'receipt-balance')}
   </section>
   <div class="receipt-chip">${escapeHTML(status)}</div>
   <footer class="receipt-footer">
