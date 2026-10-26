@@ -1,5 +1,7 @@
 .ajd-product-gallery{min-width:0;max-width:100%}
 .ajd-product-gallery .ajd-gallery-stage{position:relative}
+.ajd-product-gallery .ajd-gallery-open{display:block;width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;cursor:pointer}
+.ajd-product-gallery .ajd-gallery-open:focus-visible{outline-offset:-3px}
 .ajd-product-gallery img.photo{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#eaf0f6}
 .ajd-product-gallery img[hidden],.ajd-product-gallery .placeholder[hidden]{display:none!important}
 .ajd-product-gallery .ajd-gallery-controls{position:absolute;bottom:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}

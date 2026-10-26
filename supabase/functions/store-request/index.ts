@@ -143,8 +143,9 @@ Deno.serve(async (request: Request) => {
   if (!validPhone(body.customer_phone)) {
     return response({ error: "A valid phone number is required (7–15 digits)." }, 422, origin);
   }
-  if (!validEmail(body.customer_email)) {
-    return response({ error: "A valid email address is required." }, 422, origin);
+  const email = body.customer_email == null ? "" : body.customer_email;
+  if (typeof email !== "string" || (email.trim() && !validEmail(email))) {
+    return response({ error: "Enter a valid email address or leave it blank." }, 422, origin);
   }
   if (!cartMode && (!Number.isInteger(body.quantity) || (body.quantity as number) < 1 || (body.quantity as number) > 99)) {
     return response({ error: "Enter a quantity between 1 and 99." }, 422, origin);
@@ -176,13 +177,13 @@ Deno.serve(async (request: Request) => {
           p_items:cartItems,
           p_customer_name: body.customer_name.trim(),
           p_customer_phone: body.customer_phone.trim(),
-          p_customer_email: body.customer_email.trim().toLowerCase(),
+          p_customer_email: email.trim().toLowerCase(),
           p_notes: body.notes.trim()
         } : {
           p_item_id: body.item_id,
           p_customer_name: body.customer_name.trim(),
           p_customer_phone: body.customer_phone.trim(),
-          p_customer_email: body.customer_email.trim().toLowerCase(),
+          p_customer_email: email.trim().toLowerCase(),
           p_quantity: body.quantity,
           p_notes: body.notes.trim()
         }),

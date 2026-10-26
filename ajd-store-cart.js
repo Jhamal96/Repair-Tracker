@@ -134,7 +134,7 @@ function contactValid(){
   phone.reportValidity();return false;
  }
  const email=$('cartCustomerEmail');
- if(!email.value.trim()||!email.checkValidity()){email.reportValidity();return false}
+ if(email.value.trim()&&!email.checkValidity()){email.reportValidity();return false}
  return true;
 }
 async function submit(event){

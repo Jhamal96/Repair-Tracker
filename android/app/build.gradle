@@ -7,12 +7,16 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'org.ajdapp.wirelessrepairs'
+        applicationId (project.hasProperty('ajdStore') ? 'org.ajdapp.wirelessrepairs.store' : 'org.ajdapp.wirelessrepairs')
+        manifestPlaceholders = [appLabel: project.hasProperty('ajdStore') ? "AJD's Wireless Repairs Store" : 'AJD Wireless Repairs']
+        buildConfigField 'String', 'HOME_URL', project.hasProperty('ajdStore') ? '"https://repair.ajdapp.org/store"' : '"https://repair.ajdapp.org/"'
         minSdk 24
         targetSdk 35
         versionCode 2
         versionName '1.1.0'
     }
+
+    buildFeatures { buildConfig true }
 
     buildTypes {
         release {

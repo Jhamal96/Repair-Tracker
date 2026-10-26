@@ -7,7 +7,7 @@ function urls(record){
  const source=Array.isArray(record?.image_urls)&&record.image_urls.length?record.image_urls:[record?.image_url];
  return [...new Set(source.map(safeUrl).filter(Boolean))].slice(0,MAX);
 }
-function gallery(record){
+function gallery(record,{onPhotoClick,initialIndex=0}={}){
  const list=urls(record),root=document.createElement('div');root.className='ajd-product-gallery';
  const stage=document.createElement('div');stage.className='ajd-gallery-stage';
  const image=document.createElement('img');image.className='photo';image.loading='lazy';
@@ -21,7 +21,11 @@ function gallery(record){
   buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===selected)));
  }
  image.onerror=()=>{image.hidden=true;fallback.hidden=false;fallback.setAttribute('aria-label','Photo unavailable for '+String(record.title||record.item_name||'product'))};
- fallback.hidden=Boolean(list.length);stage.append(image,fallback);root.append(stage);
+ fallback.hidden=Boolean(list.length);
+ if(typeof onPhotoClick==='function'){
+  const open=document.createElement('button');open.type='button';open.className='ajd-gallery-open';open.setAttribute('aria-label','View '+String(record.title||record.item_name||'product'));open.addEventListener('click',()=>onPhotoClick(selected));open.append(image,fallback);stage.append(open);
+ }else stage.append(image,fallback);
+ root.append(stage);
  if(!list.length){image.hidden=true;fallback.setAttribute('aria-label','No product photo');return root}
  if(list.length>1){
   const controls=document.createElement('div');controls.className='ajd-gallery-controls';
@@ -33,7 +37,7 @@ function gallery(record){
   list.forEach((url,i)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label','View photo '+(i+1));button.addEventListener('click',()=>show(i));const img=document.createElement('img');img.src=url;img.alt='';img.loading='lazy';button.append(img);buttons.push(button);thumbs.append(button)});
   root.append(thumbs);
  }
- show(0);return root;
+ show(Number.isInteger(initialIndex)?Math.max(0,Math.min(list.length-1,initialIndex)):0);return root;
 }
 window.AJDProductImages={MAX,safeUrl,urls,gallery};
 })();

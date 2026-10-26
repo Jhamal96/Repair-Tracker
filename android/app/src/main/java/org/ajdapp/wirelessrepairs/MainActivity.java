@@ -34,7 +34,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class MainActivity extends Activity {
-    private static final String HOME_URL = "https://repair.ajdapp.org/";
+    private static final String HOME_URL = BuildConfig.HOME_URL;
     private static final String TRUSTED_HOST = "repair.ajdapp.org";
     private static final int FILE_CHOOSE_REQUEST = 1011;
     private static final int PDF_SAVE_REQUEST = 1012;
