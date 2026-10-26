@@ -16,10 +16,7 @@ function status(){
  const total=repair+links+phone+email;
  $('syncStatusHeading').textContent=total?total+' pending change'+(total===1?'':'s')+' on this device.':'Your local queues are clear.';
 }
-function payload(job){
- const props=['id','customer_name','customer_phone','make_model','issue','part_note','part_cost','labor_cost','amount','discount','deposit_amount','payment_status','payment_info','status','supplier_links','created_at','picked_up_at','repair_type','parts'];
- return Object.fromEntries(props.filter(x=>job[x]!==undefined).map(x=>[x,job[x]]));
-}
+const payload=(job,insert=false)=>window.AJDRepairSync.payload(job,{insert});
 function assignInvoice(id,number){
  if(!number)return;
  const local=read(LOCAL_REPAIRS,[]);if(!Array.isArray(local))return;
@@ -37,9 +34,9 @@ async function pushRepairs(){
     const {error}=await T.client.from('repairs').delete().eq('id',id);
     if(error)throw error;
    }else if(operation.job&&['insert','update'].includes(operation.kind)){
-    const job=operation.job,details=payload(job);details.id=id;
+    const job={...operation.job,id},details=payload(job);
     if(operation.kind==='insert'){
-     const {data,error}=await T.client.from('repairs').insert(details).select('invoice_number').single();
+     const {data,error}=await T.client.from('repairs').insert(payload(job,true)).select('invoice_number').single();
      if(error?.code==='23505'){
       const {data:existing,error:lookupError}=await T.client.from('repairs').select('customer_name,customer_phone,make_model,invoice_number').eq('id',id).maybeSingle();
       if(lookupError)throw lookupError;
@@ -54,7 +51,7 @@ async function pushRepairs(){
      if(error)throw error;
      if(data?.length)invoice=data[0].invoice_number;
      else{
-      const {data:created,error:insertError}=await T.client.from('repairs').insert(details).select('invoice_number').single();
+      const {data:created,error:insertError}=await T.client.from('repairs').insert(payload(job,true)).select('invoice_number').single();
       if(insertError)throw insertError;invoice=created?.invoice_number;
      }
     }

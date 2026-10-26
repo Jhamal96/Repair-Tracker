@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark"><head><script src="/ajd-cloud-health.js?v=20261025-header1" defer></script><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AJD's Wireless Repairs | Admin Dashboard</title><meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AJD's Wireless Repairs">
 <link rel="icon" type="image/svg+xml" href="/ajd-logo.svg?v=20261024-logo2">
-<script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./ajd-repair-sync.js?v=20261026-sync1"></script>
 <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{500:'#3b82f6',600:'#2563eb'}}}}}</script>
 <style>*{-webkit-tap-highlight-color:transparent}body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden}.dark-card{background:#fff;border:1px solid #e2e8f0}.dark .dark-card{background:#0f172a;border-color:#1e293b}.blue-glow{box-shadow:0 0 20px -5px rgba(37,99,235,.35)}.field{width:100%;padding:9px 12px;font-size:12px;border-radius:12px;background:#f8fafc;border:1px solid #cbd5e1;color:#0f172a;outline:none}.dark .field{background:#020617;border-color:#1e293b;color:white}.lbl{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:#475569}.dark .lbl{color:#cbd5e1}.btn{border-radius:12px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}.pct{border:1px solid #47556955;border-radius:9px;padding:5px 8px;font-size:11px;font-weight:800;background:#e2e8f0;color:#1e293b}.dark .pct{background:#1e293b;color:#e2e8f0}.pct.active{background:#2563eb!important;color:white!important;border-color:#2563eb}.thermal-paper{font-family:'Courier New',monospace;background:#fff!important;color:#000!important;width:100%;max-width:320px;margin:auto;padding:16px;border:1px dashed #ccc}.thermal-paper *{color:#000!important}.modal{position:fixed;inset:0;z-index:100;background:#000b;display:flex;align-items:center;justify-content:center;padding:12px}.modal.hidden{display:none}.modal-inner{width:100%;max-width:540px;max-height:92vh;overflow-y:auto}.mini{font-size:11px;color:#64748b}.dark .mini{color:#94a3b8}@media print{@page{margin:5mm;size:80mm auto}body *{visibility:hidden!important}#invoiceModal,#invoiceModal *{visibility:visible!important}#invoiceModal{position:absolute!important;inset:0!important;width:100%!important;height:auto!important;background:white!important;padding:0!important}#invoiceModal .modal-inner{background:white!important;border:0!important;box-shadow:none!important;max-height:none!important;padding:0!important}#invoicePrintSheet{border:0!important;width:72mm!important;max-width:72mm!important;padding:0!important}.no-print{display:none!important}}
 body.admin-locked > header,body.admin-locked > main,body.admin-locked > footer{display:none!important}
@@ -229,7 +229,7 @@ function rememberInvoiceNumber(ticketId,number){
 function norm(x){const pc=cents(x.part_cost??x.partCost??0),lc=cents(x.labor_cost??x.laborCost??0),discount=cents(x.discount??0);const parts=Array.isArray(x.parts)&&x.parts.length?x.parts.map(p=>({name:String(p.name??''),cost:cents(p.cost)})):[{name:String(x.part_note??x.partNote??''),cost:pc}];const partCost=parts.reduce((s,p)=>s+p.cost,0);return {...x,id:String(x.id||shortId()),customer_name:x.customer_name??x.customerName??'Customer',customer_phone:x.customer_phone??x.customerPhone??'',make_model:x.make_model??x.makeModel??'Device',issue:x.issue??'Repair Service',part_note:x.part_note??x.partNote??'',parts,part_cost:cents(partCost),labor_cost:lc,discount,amount:x.amount===undefined||x.amount===null?ceilDollar(partCost+lc-discount):cents(x.amount),deposit_amount:cents(x.deposit_amount??x.depositAmount??0),payment_status:x.payment_status??x.paymentStatus??'unpaid',status:x.status??'pending',repair_type:x.repair_type??'',created_at:x.created_at??new Date().toISOString(),supplier_links:Array.isArray(x.supplier_links)?x.supplier_links:[]}}
 repairs=repairs.map(norm);
 function shortId(){const chars='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';let id;do{const bytes=new Uint8Array(4);crypto.getRandomValues(bytes);id='AJ'+Array.from(bytes,b=>chars[b%chars.length]).join('')}while(repairs.some(x=>x.id===id));return id}
-function cloudPayload(job){const keys=['id','customer_name','customer_phone','make_model','issue','part_note','part_cost','labor_cost','amount','discount','deposit_amount','payment_status','payment_info','status','supplier_links','created_at','picked_up_at','repair_type','parts'];return Object.fromEntries(keys.filter(k=>job[k]!==undefined).map(k=>[k,job[k]]))}
+function cloudPayload(job,insert=false){return window.AJDRepairSync.payload(job,{insert})}
 async function saveJob(job){job=norm(job);const i=repairs.findIndex(x=>x.id===job.id),isNew=i<0;if(isNew)repairs.unshift(job);else repairs[i]=job;saveLocal();queueRepair({id:job.id,kind:isNew?'insert':'update',job});renderRepairs();renderHistory();renderInvoicesList();if(isCloudAdmin)await syncPendingRepairs();else toast('Saved locally; sign in to sync this repair to Supabase')}
 
 let adminGateUser=null;
@@ -499,7 +499,7 @@ async function syncOneRepair(op){
    if(error)throw error;
    return;
  }
- let payload=cloudPayload(op.job);
+ let payload=cloudPayload({...op.job,id:op.id},op.kind==='insert');
  if(op.kind==='insert'){
    for(let attempt=0;attempt<5;attempt++){
      const {data:created,error}=await sb.from('repairs').insert(payload).select('invoice_number').single();
@@ -519,7 +519,7 @@ async function syncOneRepair(op){
    if(error)throw error;
    if(!data?.length){
      // The ticket exists locally but not in cloud; insert rather than silently losing it.
-     const {data:created,error:insertError}=await sb.from('repairs').insert(payload).select('invoice_number').single();
+     const {data:created,error:insertError}=await sb.from('repairs').insert(cloudPayload({...op.job,id:op.id},true)).select('invoice_number').single();
      if(insertError)throw insertError;
      rememberInvoiceNumber(op.id,created?.invoice_number);
      toast('Restored local ticket '+op.id+' to cloud');
