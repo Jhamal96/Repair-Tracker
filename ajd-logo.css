@@ -1,4 +1,13 @@
 /* Shared AJD's Wireless Repairs logo. Consistent on light and dark pages. */
+.ajd-home-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  border-radius:12px;
+  text-decoration:none;
+}
+.ajd-home-link:focus-visible{outline:3px solid #60a5fa;outline-offset:4px}
 img.ajd-brand-mark{
   display:block!important;
   object-fit:contain!important;
