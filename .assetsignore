@@ -8,3 +8,8 @@ wrangler.jsonc
 *.gradle
 .gitignore
 .assetsignore
+.git/**
+.wrangler/**
+desktop/**
+scripts/**
+tests/**
