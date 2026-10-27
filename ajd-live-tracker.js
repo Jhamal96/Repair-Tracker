@@ -105,7 +105,7 @@ function resetSession(showPrompt=true){
  hideUpdateNotice();
  $('printReceiptButton').disabled=true;
  $('downloadStatusPdfButton').disabled=true;
- if(showPrompt)showInitial('Search for your repair','Enter your invoice or repair ticket and verify your phone number or email above.','🔎');
+ if(showPrompt)showInitial('Search for your repair','Enter your invoice or repair ticket above. Phone number or email is optional.','🔎');
 }
 function signature(job){
  return [job.status,job.amount,job.deposit_amount,job.payment_status,job.picked_up_at,job.make_model,job.invoice_number].map(v=>String(v??'')).join('|');
@@ -201,7 +201,7 @@ async function loadTrackedJob(kind='automatic'){
   if(error)throw error;
   if(!data){
    resetSession(false);
-   showInitial('Repair not found','We could not verify that invoice or ticket with your phone number or email. Check the details or contact the shop.','🔒');
+   showInitial('Repair not found','We could not find a matching repair. Check the details or contact the shop.','🔒');
    return;
   }
   handleValidResponse(data,kind);
@@ -227,9 +227,9 @@ function updateLiveToggle(){
 function performCustomerSearch(){
  const ticket=$('trackerSearchInput').value.trim();
  const contact=$('trackerContactInput').value.trim();
- if(!ticket||contact.length<5){
+ if(!ticket||(contact&&contact.length<5)){
   resetSession(false);
-  showInitial('Verification needed','Enter your full invoice or ticket number and the phone number or email used at check-in.','🔒');
+  showInitial('Verification needed','Enter your full invoice or ticket number . Phone number or email is optional.','🔒');
   return;
  }
  resetSession(false);
@@ -320,7 +320,7 @@ function init(){
   if(activeCredentials&&automatic&&!document.hidden&&lastCheckedTime&&(Date.now()-lastCheckedTime>CHECK_EVERY_MS))void loadTrackedJob('manual');
  });
  window.addEventListener('storage',e=>{if(e.key==='ajd_shop_phone'||e.key==='ajd_shop_email')void refreshContact()});
- showInitial('Track your device repair','Enter your invoice or ticket number and verified contact details to see your live progress.','🔎');
+ showInitial('Track your device repair','Enter your invoice or ticket number to see your live progress.','🔎');
  void refreshContact();
 }
 window.performCustomerSearch=performCustomerSearch;

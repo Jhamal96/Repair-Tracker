@@ -54,7 +54,7 @@
   </style>
   <link rel="stylesheet" href="./ajd-public-refresh.css">
   <link rel="stylesheet" href="/ajd-live-tracker.css?v=20261025-decline1">
-  <script src="/ajd-pdf-tools.js?v=20261025-decline1" defer></script><script src="/ajd-live-tracker.js?v=20261025-decline1" defer></script>
+  <script src="/ajd-pdf-tools.js?v=20261025-decline1" defer></script><script src="/ajd-live-tracker.js?v=20261026-optional1" defer></script>
 <link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1"></head>
 <body class="ajd-public ajd-public-track bg-[#0B0F19] text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white">
 
@@ -81,23 +81,23 @@
   </header>
 <nav class="ajd-site-nav no-print" aria-label="Customer site navigation"><span class="ajd-nav-kicker">AJD • SERVICE HUB</span><div class="ajd-site-nav-links"><a href="/store">⌂ Store</a><a href="/request">✦ Repair Request</a><a href="/track" aria-current="page">▣ Track Repair</a></div></nav>
 
-  <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5"><section class="ajd-track-hero no-print" aria-labelledby="ajdTrackTitle"><span class="ajd-hero-badge">AJD REPAIR TRACKER</span><h2 id="ajdTrackTitle">Your device. Your updates.<br><span style="color:#67e8f9">All in one place.</span></h2><p>Already dropped off your device? Enter your invoice number or original repair ticket plus the phone number or email provided at check-in to view progress securely.</p><div class="ajd-trust-list"><span>✓ Private ticket lookup</span><span>✓ Auto-refresh every 15 seconds</span></div></section>
+  <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5"><section class="ajd-track-hero no-print" aria-labelledby="ajdTrackTitle"><span class="ajd-hero-badge">AJD REPAIR TRACKER</span><h2 id="ajdTrackTitle">Your device. Your updates.<br><span style="color:#67e8f9">All in one place.</span></h2><p>Already dropped off your device? Enter your invoice number or original repair ticket to view progress; your phone number or email is optional.</p><div class="ajd-trust-list"><span>✓ Private ticket lookup</span><span>✓ Auto-refresh every 15 seconds</span></div></section>
 
     <!-- Verify by ticket + contact. Never keep personal credentials in URLs or storage. -->
     <section class="ajd-tracker-form-card dark-card p-4 sm:p-5 no-print" aria-label="Secure repair lookup">
       <div class="ajd-tracker-form-head">
         <span aria-hidden="true">🔎</span>
-        <div><h3>Find your repair</h3><p>Enter your invoice or ticket number and confirm your contact details.</p></div>
+        <div><h3>Find your repair</h3><p>Enter your invoice or ticket number Optional: add your phone number or email.</p></div>
       </div>
       <form id="trackLookupForm" autocomplete="off">
         <label for="trackerSearchInput">INVOICE OR REPAIR TICKET
           <input type="text" id="trackerSearchInput" placeholder="e.g. AJD-00001" maxlength="80" required autocapitalize="characters" spellcheck="false">
         </label>
-        <label for="trackerContactInput">PHONE NUMBER OR EMAIL USED AT CHECK-IN
-          <input type="text" id="trackerContactInput" placeholder="Your phone number or email address" maxlength="254" required autocomplete="off" spellcheck="false">
+        <label for="trackerContactInput">PHONE NUMBER OR EMAIL (OPTIONAL)
+          <input type="text" id="trackerContactInput" placeholder="Your phone number or email address" maxlength="254" autocomplete="off" spellcheck="false">
         </label>
-        <button id="trackLookupButton" type="submit" class="ajd-track-submit">🔒 Verify &amp; Track Live</button>
-        <p class="ajd-track-privacy"><span aria-hidden="true">🛡️</span><span>Your information stays private. Only a matching invoice/ticket and verified phone or email can display repair progress. The tracker checks securely every 15 seconds while this page is active.</span></p>
+        <button id="trackLookupButton" type="submit" class="ajd-track-submit">🔒 Track Live</button>
+        <p class="ajd-track-privacy"><span aria-hidden="true">🛡️</span><span>Your information stays private. Enter the exact invoice or ticket number to display repair progress. Contact details are optional. The tracker checks securely every 15 seconds while this page is active.</span></p>
       </form>
     </section>
 
