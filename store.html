@@ -65,7 +65,55 @@ html:not(.dark) #orderForm .purchase-form-status.is-success{color:#047857}
 #orderForm .ajd-honeypot{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;pointer-events:none!important}
 #orderForm #sendBtn:disabled{cursor:not-allowed;opacity:.65}
 @media(max-width:550px){#orderForm.modal{padding:18px;max-height:94dvh}}
-</style><script>try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||navigator.userAgent.includes('AJD-Android-App'))document.documentElement.classList.add('ajd-installed')}catch(e){}</script><link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AJD's Wireless Repairs"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" sizes="180x180" href="/admin-icon-192.png?v=20261024-logo2"><link rel="stylesheet" href="./ajd-public-refresh.css"><link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1"><link rel="stylesheet" href="/ajd-store-cart.css?v=20261024-cart1"><script src="/ajd-store-cart.js?v=optional-email-20261024-cart1" defer></script></head><body class="ajd-public ajd-public-store">
+</style><script>try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||navigator.userAgent.includes('AJD-Android-App'))document.documentElement.classList.add('ajd-installed')}catch(e){}</script><link rel="manifest" href="./manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="AJD's Wireless Repairs"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" sizes="180x180" href="/admin-icon-192.png?v=20261024-logo2"><link rel="stylesheet" href="./ajd-public-refresh.css"><link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1"><link rel="stylesheet" href="/ajd-store-cart.css?v=20261024-cart1"><script src="/ajd-store-cart.js?v=optional-email-20261024-cart1" defer></script>
+<!-- AJD opening animation: decorative and never blocks the page. -->
+<style>
+:root{--ajd-open-bg:#f1f7fa;--ajd-open-glow:#cde6ef;--ajd-open-accent:#287e9a;--ajd-open-ink:#173648;}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-appearance="light"]){--ajd-open-bg:#111b23;--ajd-open-glow:#287e9a44;--ajd-open-ink:#f2f4f7;}
+}
+:root[data-theme="dark"],:root[data-appearance="dark"],:root.dark{--ajd-open-bg:#111b23;--ajd-open-glow:#287e9a44;--ajd-open-ink:#f2f4f7;}
+:root[data-theme="ultra-dark"],:root[data-theme="ultra"],:root[data-appearance="ultra-dark"],:root.ultra-dark{--ajd-open-bg:#050505;--ajd-open-glow:#287e9a33;--ajd-open-ink:#f5f5f5;}
+.ajd-opening{display:none;}
+html.ajd-opening-enabled .ajd-opening{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 36%,var(--ajd-open-glow),transparent 43%),var(--ajd-open-bg);color:var(--ajd-open-ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;animation:ajd-opening-exit 1.55s ease forwards;}
+.ajd-opening-inner{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:min(90vw,480px);padding:24px;animation:ajd-opening-rise .68s cubic-bezier(.2,.8,.2,1) both;}
+.ajd-opening-art{position:relative;display:grid;place-items:center;width:116px;height:116px;margin-bottom:22px;}
+.ajd-opening-art:before,.ajd-opening-art:after{content:"";position:absolute;inset:4px;border:1px solid var(--ajd-open-accent);border-radius:37%;opacity:.18;animation:ajd-opening-orbit 1.4s ease-out both;}
+.ajd-opening-art:after{inset:-6px;border-radius:42%;opacity:.10;animation-delay:.08s;}
+.ajd-opening-mark{position:relative;display:grid;place-items:center;width:86px;height:86px;border-radius:25px;background:var(--ajd-open-bg);box-shadow:0 14px 36px #0002;overflow:hidden;animation:ajd-opening-mark .8s cubic-bezier(.2,.8,.2,1) both;}
+.ajd-opening-fallback{font-weight:850;font-size:22px;letter-spacing:-.07em;color:var(--ajd-open-accent);}
+.ajd-opening-mark img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--ajd-open-bg);}
+.ajd-opening-mark svg{width:50px;height:50px;stroke:var(--ajd-open-accent);}
+.ajd-opening-name{font-size:clamp(22px,5vw,31px);font-weight:800;line-height:1.12;letter-spacing:-.045em;}
+.ajd-opening-caption{margin-top:9px;opacity:.68;font-size:13px;line-height:1.4;}
+.ajd-opening-dots{display:flex;gap:6px;margin-top:21px;color:var(--ajd-open-accent);}
+.ajd-opening-dots i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.34;animation:ajd-opening-dot .8s ease-in-out infinite alternate;}
+.ajd-opening-dots i:nth-child(2){animation-delay:.13s}.ajd-opening-dots i:nth-child(3){animation-delay:.26s}
+@keyframes ajd-opening-exit{0%,68%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+@keyframes ajd-opening-rise{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ajd-opening-mark{from{opacity:0;transform:scale(.87) rotate(-4deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes ajd-opening-orbit{from{opacity:0;transform:scale(.8) rotate(-12deg)}to{transform:scale(1) rotate(8deg)}}
+@keyframes ajd-opening-dot{to{opacity:1;transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce),print{html.ajd-opening-enabled .ajd-opening{display:none!important;}}
+</style>
+<script>
+(function(){
+  try {
+    if ((window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) || /Electron\//i.test(navigator.userAgent)) return;
+    if (document.referrer && new URL(document.referrer).origin === location.origin) return;
+    document.documentElement.classList.add('ajd-opening-enabled');
+  } catch (_) { /* The page works normally if the optional animation cannot start. */ }
+})();
+</script>
+
+</head><body class="ajd-public ajd-public-store">
+<div class="ajd-opening" aria-hidden="true"><div class="ajd-opening-inner">
+  <div class="ajd-opening-art"><div class="ajd-opening-mark"><span class="ajd-opening-fallback">AJD</span><img src="/ajd-logo.svg" alt="" onerror="this.style.display='none'"></div></div>
+  <div class="ajd-opening-name">AJD&#x27;s Wireless Repairs</div>
+  <div class="ajd-opening-caption">Here for every device.</div>
+  <div class="ajd-opening-dots"><i></i><i></i><i></i></div>
+</div></div>
+
 <header><div class="wrap"><nav><div class="brand"><a class="ajd-home-link" href="/store" aria-label="Back to customer store" title="Back to customer store"><img class="logo ajd-brand-mark" src="/ajd-logo.svg?v=20261024-logo2" width="52" height="52" alt="AJD's Wireless Repairs logo" decoding="async"></a><div><strong>AJD's Wireless Repairs</strong><div class="muted small">Devices • Repairs • Accessories</div></div></div><div class="install-actions"><a href="tel:7869707779" data-shop-tel>☎ <span data-shop-phone>786-970-7779</span></a><button id="cartHeaderButton" class="ajd-cart-header" type="button" aria-label="Open shopping cart"><span aria-hidden="true">🛒</span><span>Cart</span><span id="cartBadge" class="ajd-cart-badge">0</span></button><button id="installStoreButton" type="button" onclick="installStoreApp()" aria-label="Install AJD's Wireless Repairs app">⬇ Install App</button></div></nav></div></header><nav class="ajd-site-nav " aria-label="Customer site navigation"><span class="ajd-nav-kicker">AJD • SERVICE HUB</span><div class="ajd-site-nav-links"><a href="/store" aria-current="page">⌂ Store</a><a href="/request">✦ Repair Request</a><a href="/track">▣ Track Repair</a></div></nav>
 <main class="wrap"><section class="hero" aria-labelledby="ajdStoreHeroTitle"><div class="ajd-hero-copy"><span class="ajd-hero-badge">WELCOME TO OUR TECH STORE</span><h1 id="ajdStoreHeroTitle">Good tech.<br>Great service.<br><span style="color:#67e8f9">That's AJD.</span></h1><p class="muted">Discover phones, tablets, laptops, and everyday accessories. Browse the latest items we have listed, then send a purchase request and we'll follow up to confirm availability.</p><div class="ajd-public-actions"><a class="ajd-primary" href="#shopProducts">Explore Products <span aria-hidden="true">↗</span></a><a class="ajd-secondary" href="/request">Request a Repair →</a></div><div class="ajd-trust-list" aria-label="Shopping features"><span>✓ Product details</span><span>✓ Availability updates</span><span>✓ Request before buying</span></div></div><div class="ajd-device-stage" aria-hidden="true"><div class="ajd-device-orbit"></div><div class="ajd-device-phone"><div class="ajd-device-screen"><span class="ajd-device-icon">✦</span></div></div><div class="ajd-floating-note one"><b>✦</b> Phones &amp; tablets</div><div class="ajd-floating-note two"><b>✓</b> Repairs &amp; accessories</div></div></section>
 <div class="ajd-feature-bar" aria-label="How AJD helps"><div class="ajd-feature"><span class="ajd-feature-icon">📱</span><div><strong>Find your next device</strong><small>Browse available tech and accessories.</small></div></div><div class="ajd-feature"><span class="ajd-feature-icon">🔧</span><div><strong>Need something repaired?</strong><small>Tell us about the issue online.</small></div></div><div class="ajd-feature"><span class="ajd-feature-icon">📦</span><div><strong>Stay in the loop</strong><small>Check progress using your repair ticket.</small></div></div></div><div class="ajd-shop-heading"><h2 id="shopProducts">Explore our collection</h2><p class="muted small">Browse products and request what catches your eye</p></div><div class="filters"><input id="search" placeholder="Search phones, tablets, accessories..." aria-label="Search products"><select id="category" aria-label="Filter category"><option value="all">All categories</option></select><select id="brandFilter" aria-label="Filter by manufacturer"><option value="all">All brands</option></select></div><p class="muted small" id="cloudStatus">Loading products from our store…</p><div id="products" class="grid"></div></main>
@@ -345,3 +393,4 @@ if('serviceWorker' in navigator && (location.protocol==='https:' || location.hos
  window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(error=>console.warn('Store install support unavailable',error))});
 }
 </script></body></html>
+

@@ -18,10 +18,24 @@ button{cursor:pointer;font:inherit}button:focus-visible,input:focus-visible{outl
 @keyframes load{from{transform:translateX(-150%)}to{transform:translateX(350%)}}@keyframes enter{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
 @media(max-width:590px){main{padding:20px}.illustration{height:178px}.slide h2{font-size:30px}.slide p{font-size:15px}.primary{min-width:150px}.splash img{width:112px;height:112px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* A small, branded opening animation for the installed desktop app. */
+.splash .ajd-launch-art{position:relative;display:grid;place-items:center;width:176px;height:176px}
+.splash .ajd-launch-art:before,.splash .ajd-launch-art:after{content:"";position:absolute;inset:3px;border:1px solid var(--accent,var(--primary,#8190c7));border-radius:39%;opacity:.2;animation:ajd-launch-orbit .95s ease-out both}
+.splash .ajd-launch-art:after{inset:-9px;border-radius:44%;opacity:.1;animation-delay:.08s}
+.splash .ajd-launch-art img{position:relative;animation:ajd-launch-logo .8s cubic-bezier(.2,.8,.2,1) both}
+.splash h1{animation:ajd-launch-rise .7s .08s both}
+.splash p,.splash .bar,.splash .progress{animation:ajd-launch-rise .7s .16s both}
+@keyframes ajd-launch-logo{from{opacity:0;transform:scale(.88) rotate(-4deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes ajd-launch-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ajd-launch-orbit{from{transform:scale(.82) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(8deg)}}
+@media(max-height:650px){.splash .ajd-launch-art{width:140px;height:140px}}
+@media(prefers-reduced-motion:reduce){.splash .ajd-launch-art:before,.splash .ajd-launch-art:after,.splash .ajd-launch-art img,.splash h1,.splash p,.splash .bar,.splash .progress{animation:none!important}}
+
 </style></head>
 <body><main>
 <div class="top"><div class="brand"><img src="./icon.png" alt=""><span>AJD’s Wireless Repairs</span></div><button id="skip" type="button" class="plain close">Skip introduction ↗</button></div>
-<section id="splash" class="splash" aria-live="polite"><img src="./icon.png" alt=""><h1>AJD’s Wireless Repairs</h1><p>Your shop, under control.</p><div class="bar" role="progressbar" aria-label="Starting the app"><i></i></div></section>
+<section id="splash" class="splash" aria-live="polite"><div class="ajd-launch-art"><img src="./icon.png" alt=""></div><h1>AJD’s Wireless Repairs</h1><p>Your shop, under control.</p><div class="bar" role="progressbar" aria-label="Starting the app"><i></i></div></section>
 <section id="wizard" class="wizard" aria-label="Welcome introduction"><div class="slides"><article class="slide" data-step="0" ><span class="step-count">01 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-0"><img src="./icon.png" alt=""></div></div><h2>Welcome to the workbench</h2><p>Your repair business tools, right at your fingertips.</p></article>
 <article class="slide" data-step="1" hidden><span class="step-count">02 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-1"><span class="illustration-icon">◫</span></div></div><h2>Keep every job moving</h2><p>Track repair statuses, customer receipts, and parts in one organized workspace.</p></article>
 <article class="slide" data-step="2" hidden><span class="step-count">03 / 03</span><div class="illustration" aria-hidden="true"><div class="circle-art circle-2"><span class="illustration-icon">✓</span></div></div><h2>Stay ready for the next repair</h2><p>Use inventory, store tools, and business records to keep things running smoothly.</p></article></div><div class="footer"><div class="dots" aria-label="Introduction progress"><span class="active"></span><span></span><span></span></div><div class="actions"><button id="back" type="button" class="secondary" disabled>Back</button><button id="next" type="button" class="primary">Next →</button></div><label class="pref"><input type="checkbox" id="remember" checked> Don't show this introduction again</label></div></section>
