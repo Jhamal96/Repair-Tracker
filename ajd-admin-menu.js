@@ -24,6 +24,7 @@
       {id:'editor',icon:'✎',label:'Link Editor',description:'Add or edit a shortcut',url:'/link-editor'},
       {id:'sync',icon:'☁️',label:'Cloud Synchronization',description:'Monitor & publish pending updates',url:'/cloud-sync'},
       {id:'settings',icon:'⚙️',label:'Settings',description:'Business contact, labor, theme',url:'/settings'},
+       {id:'notifications',icon:'🔔',label:'Notifications',description:'Email, SMS, app push and alerts',url:'/settings#notifications'},
       {id:'downloads',icon:'⬇️',label:'Download App',description:'Windows, Mac, Android, iPhone & iPad',url:'/download'},
       {id:'account',icon:'👤',label:'Account Settings',description:'Email and password security',url:'/settings#account'},
       {id:'install',icon:'📲',label:'Install Admin App',description:'Put the app on your home screen',action:'install',installedOnly:true},
