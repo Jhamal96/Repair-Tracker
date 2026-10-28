@@ -8,10 +8,12 @@
  <link rel="stylesheet" href="/ajd-admin-tools.css?v=20261024-tools2">
  <link rel="stylesheet" href="/ajd-admin-menu.css?v=20261025-header1">
  <link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1">
+ <link rel="stylesheet" href="/ajd-notifications.css?v=20261027-notice1">
  <script>try{const m=localStorage.getItem('ajd_theme_preference')||'dark';const dark=m==='dark'||m==='ultra-dark'||(m==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('ultra-dark',m==='ultra-dark')}catch(e){}</script>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
  <script src="/ajd-admin-tools.js?v=20261025-header1" defer></script>
  <script src="/ajd-settings-page.js?v=20261024-tools1" defer></script>
+ <script src="/ajd-notifications.js?v=20261027-notice1" defer></script>
  <script src="/ajd-admin-menu.js?v=20261026-invoice1" defer></script>
 
 <!-- AJD opening animation: decorative and never blocks the page. -->
@@ -80,6 +82,40 @@ html.ajd-opening-enabled .ajd-opening{position:fixed;inset:0;z-index:2147483647;
  <div id="appContent" class="tools-stack" hidden>
   <section class="tools-hero"><div><p class="kicker">AJD ADMIN COMMAND CENTER · SETTINGS</p><h1>Set up your shop, your way.</h1><p>Business contacts, appearance, labor prices, secure account settings, and backups are now in one dedicated place.</p></div><span class="tools-hero-icon" aria-hidden="true">⚙️</span></section>
   <p id="pageFeedback" class="tools-feedback" role="status" aria-live="polite"></p>
+<section id="notifications" class="panel tools-stack" aria-labelledby="notificationHeading">
+  <div class="row"><div><h2 id="notificationHeading">🔔 Admin Notifications</h2><p>Choose what AJD's Wireless Repairs tells you about. This secure inbox works now; external email, SMS and off-site push require provider setup.</p></div><span class="ajd-notice-badge">Setup phase</span></div>
+  <p id="noticeFeedback" role="status" aria-live="polite"></p>
+  <form id="noticeForm" class="tools-stack">
+    <div class="ajd-notice-grid">
+      <div class="ajd-notice-box">
+        <h3>Delivery channels</h3>
+        <label class="ajd-notice-check">Email preference <input id="noticeEmail" type="checkbox"></label>
+        <label class="tools-label">Notification email <input id="noticeEmailAddress" class="field" type="email" maxlength="254" autocomplete="email" placeholder="your@email.com"></label>
+        <label class="ajd-notice-check">Text messages (SMS) <input id="noticeSms" type="checkbox"></label>
+        <label class="tools-label">SMS destination (+country code) <input id="noticePhoneAddress" class="field" type="tel" maxlength="16" autocomplete="tel" placeholder="+13055550100"></label>
+        <label class="ajd-notice-check">App / browser push <input id="noticePush" type="checkbox"></label>
+        <p class="ajd-notice-help"><strong>No paid messages will be sent.</strong> These switches save preferences only. SMS requires an approved provider, billing controls, and opt-in safeguards before activation.</p>
+      </div>
+      <div class="ajd-notice-box">
+        <h3>Notify me when…</h3>
+        <label class="ajd-notice-check">New repair requests <input id="noticeRepair" type="checkbox" checked></label>
+        <label class="ajd-notice-check">Store orders and inquiries <input id="noticeStore" type="checkbox" checked></label>
+        <label class="ajd-notice-check">Payment activity <input id="noticePayments" type="checkbox" checked></label>
+        <label class="ajd-notice-check">Customer messages <input id="noticeMessages" type="checkbox" checked></label>
+        <label class="ajd-notice-check">Repair status changes <input id="noticeStatuses" type="checkbox" checked></label>
+        <p class="ajd-notice-help">Customer message notifications are reserved for the future messaging inbox. Current requests and store notes are covered by their respective intake alerts.</p>
+      </div>
+    </div>
+    <div class="ajd-notice-actions"><button class="tools-button primary" id="noticeSave" type="submit">✓ Save Notification Preferences</button></div>
+  </form>
+  <div class="ajd-notice-box">
+    <h3>📲 Push on this device</h3>
+    <p id="noticeProviderStatus" class="ajd-notice-help">Checking delivery provider configuration…</p>
+    <div class="ajd-notice-actions"><button id="noticeEnrollPush" class="tools-button" type="button" disabled>Enable push on this device</button><button id="noticeRemovePush" class="tools-button danger" type="button" disabled>Remove this device</button></div>
+    <p class="ajd-notice-help">Push requires browser permission, a secure HTTPS installation, configured VAPID keys, and an active delivery worker. Subscribing does not activate paid SMS.</p>
+  </div>
+  <div class="tools-stack"><div class="row"><h3>Notification history</h3><div class="ajd-notice-actions"><span id="noticeUnread" class="ajd-notice-badge">0 unread</span><button id="noticeRefresh" class="tools-button" type="button">↻ Refresh</button></div></div><div id="noticeHistory" class="ajd-notice-history" aria-live="polite"><p class="ajd-notice-help">Loading admin events…</p></div></div>
+</section>
   
 <div class="tools-grid">
  <section class="panel tools-stack"><div><h2>📞 Business Contact Details</h2><p>Published to your customer pages when an authorized administrator saves.</p></div>
