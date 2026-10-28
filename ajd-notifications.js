@@ -25,8 +25,8 @@ function toUI(row){
 function collect(){
  const email=$('noticeEmailAddress').value.trim().toLowerCase();
  const phone=$('noticePhoneAddress').value.trim();
- if(email && (email.length>254||!/^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]+$/.test(email)))throw Error('Enter a valid notification email.');
- if(phone && !/^\\+[1-9][0-9]{7,14}$/.test(phone))throw Error('SMS numbers must use international format, such as +13055550100.');
+ if(email && (email.length>254||!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)))throw Error('Enter a valid notification email.');
+ if(phone && !/^\+[1-9][0-9]{7,14}$/.test(phone))throw Error('SMS numbers must use international format, such as +13055550100.');
  if($('noticeEmail').checked&&!email)throw Error('Enter an email address before enabling email alerts.');
  if($('noticeSms').checked&&!phone)throw Error('Enter a phone number before enabling SMS preferences.');
  const data={user_id:T.user.id,email_enabled:$('noticeEmail').checked,sms_enabled:$('noticeSms').checked,push_enabled:$('noticePush').checked,recipient_email:email,recipient_phone:phone,updated_at:new Date().toISOString()};
