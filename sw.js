@@ -1,5 +1,5 @@
 /* AJD's Wireless Repairs public app shell; private admin dashboard and customer data are never cached. */
-const CACHE_NAME='ajd-store-shell-v5';
+const CACHE_NAME='ajd-store-shell-v6-glass';
 const SHELL=['./store.html','./manifest.webmanifest','./admin.webmanifest','./ajd-app-icon.svg','./ajd-logo.svg','./ajd-logo.css','./ajd-logo-32.png','./admin-icon-192.png','./admin-icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
