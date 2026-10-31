@@ -1,6 +1,6 @@
 // AJD's Wireless Repairs — administrator-only Twilio SMS test.
 // No sending until the owner rotates the exposed token, configures an approved
-// Twilio Messaging Service, and explicitly enables AJD_SMS_LIVE_ENABLED=true.
+// Twilio Messaging Service or owned SMS-capable From number, and explicitly enables AJD_SMS_LIVE_ENABLED=true.
 // Never accept destinations, message text or Twilio credentials from the browser.
 const origins=new Set(['https://repair.ajdapp.org','https://repair.ajdapp.com','https://repair.jhamal16.workers.dev','https://www.ajdapp.org']);
 const cors=(origin:string|null)=>({
@@ -12,8 +12,10 @@ const cors=(origin:string|null)=>({
 const smsReady=()=>{
  const sid=Deno.env.get('AJD_TWILIO_ACCOUNT_SID')||'';
  const token=Deno.env.get('AJD_TWILIO_AUTH_TOKEN')||'';
- const service=Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'';
- return /^AC[0-9a-f]{32}$/i.test(sid)&&token.length>=20&&/^MG[0-9a-f]{32}$/i.test(service)&&
+ const service=(Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'').trim();
+ const from=(Deno.env.get('AJD_TWILIO_FROM_NUMBER')||'').trim();
+ const approvedSender=/^MG[0-9a-f]{32}$/i.test(service)||/^\+[1-9][0-9]{7,14}$/.test(from);
+ return /^AC[0-9a-f]{32}$/i.test(sid)&&token.length>=20&&approvedSender&&
    Deno.env.get('AJD_SMS_LIVE_ENABLED')==='true';
 };
 Deno.serve(async (req:Request)=>{
@@ -57,12 +59,16 @@ Deno.serve(async (req:Request)=>{
   if(!reservation.ok)return respond({error:'SMS test cooldown or daily limit. Wait five minutes between tests; maximum three daily.'},429);
   const sid=Deno.env.get('AJD_TWILIO_ACCOUNT_SID')!;
   const token=Deno.env.get('AJD_TWILIO_AUTH_TOKEN')!;
-  const service=Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')!;
+  const service=(Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'').trim();
+  const from=(Deno.env.get('AJD_TWILIO_FROM_NUMBER')||'').trim();
   const form=new URLSearchParams({
    To:prefs.recipient_phone,
-   MessagingServiceSid:service,
    Body:"AJD's Wireless Repairs: Your administrator SMS test is working. Sign in to your admin dashboard to manage alerts."
   });
+  // Prefer the Messaging Service when provided. Otherwise Twilio accepts a
+  // Twilio-owned, SMS-capable sender in the From parameter.
+  if(/^MG[0-9a-f]{32}$/i.test(service))form.set('MessagingServiceSid',service);
+  else form.set('From',from);
   const result=await fetch('https://api.twilio.com/2010-04-01/Accounts/'+encodeURIComponent(sid)+'/Messages.json',{
    method:'POST',headers:{
      authorization:'Basic '+btoa(sid+':'+token),
@@ -73,7 +79,7 @@ Deno.serve(async (req:Request)=>{
   // Read only the provider's message ID/status; never return the recipient or provider error details.
   const data=await result.json().catch(()=>({}));
   if(!result.ok||!/^SM[0-9a-f]{32}$/i.test(String(data.sid||'')))return respond({
-   error:'Twilio did not accept the test SMS. Check Messaging Service approval and sender configuration.',
+   error:'Twilio did not accept the test SMS. Check Twilio sender ownership, SMS capability, registration and account status.',
    provider_status:result.status
   },502);
   return respond({ok:true,message_sid:data.sid,status:data.status||'queued',
