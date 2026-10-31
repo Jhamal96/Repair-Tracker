@@ -1,0 +1,27 @@
+/* AJD admin create/edit overlays. Reuses existing working repair and inventory forms. */
+body.ajd-entry-lock{overflow:hidden!important}
+#intakePanel.ajd-entry-repair{position:fixed!important;inset:0!important;z-index:140!important;width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;overflow-y:auto!important;overscroll-behavior:contain;display:flex!important;align-items:flex-start!important;justify-content:center!important;padding:clamp(12px,3vh,28px)!important;margin:0!important;border:0!important;border-radius:0!important;background:rgba(5,12,25,.77)!important;box-shadow:none!important;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+#intakePanel.ajd-entry-repair.hidden{display:none!important}
+#intakePanel .ajd-entry-repair-card{background:#fff;color:#0f172a;border:1px solid #dce3ee;border-radius:24px;width:min(100%,720px);padding:clamp(16px,3vw,26px);box-shadow:0 22px 85px #0006;margin:auto 0;max-height:none}
+.dark #intakePanel .ajd-entry-repair-card{background:#0f172a;color:#f8fafc;border-color:#334155}
+.ultra-dark #intakePanel .ajd-entry-repair-card{background:#090909;border-color:#343434}
+#repairsWorkArea #repairListPanel{grid-column:1 / -1!important}
+.ajd-entry-overlay{position:fixed;inset:0;z-index:145;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:clamp(12px,3vh,28px);background:rgba(5,12,25,.77);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);overscroll-behavior:contain}
+.ajd-entry-overlay[hidden]{display:none!important}
+.ajd-entry-overlay.ajd-entry-small{z-index:160}
+.ajd-entry-shell{background:#fff;color:#0f172a;border:1px solid #dce3ee;border-radius:24px;width:min(100%,820px);margin:auto 0;box-shadow:0 22px 85px #0006;overflow:hidden}
+.dark .ajd-entry-shell{background:#0f172a;color:#f8fafc;border-color:#334155}
+.ultra-dark .ajd-entry-shell{background:#090909;border-color:#343434}
+.ajd-entry-small .ajd-entry-shell{max-width:430px}
+.ajd-entry-header{position:sticky;top:0;z-index:1;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid #94a3b83b;background:inherit}
+.ajd-entry-header h2{font-size:1.08rem;font-weight:800;line-height:1.35}
+.ajd-entry-panel{padding:clamp(16px,3vw,22px)}
+#productForm.ajd-entry-product-form{width:100%!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:clamp(14px,3vw,24px)!important;background:transparent!important}
+.ajd-inventory-layout > .ajd-inventory-list-area{grid-column:1 / -1!important}
+.ajd-entry-trigger{white-space:nowrap}
+.ajd-entry-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px}
+.ajd-entry-small .ajd-entry-panel{display:grid;gap:14px}
+.ajd-entry-overlay .field{font-size:max(14px,1rem)}
+.ajd-entry-overlay button:focus-visible,#intakePanel button:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+@media(max-width:640px){#intakePanel.ajd-entry-repair,.ajd-entry-overlay{padding:8px!important}.ajd-entry-shell,#intakePanel .ajd-entry-repair-card{border-radius:17px}.ajd-entry-header{padding:13px 16px}}
+@media(prefers-reduced-motion:no-preference){.ajd-entry-shell,#intakePanel .ajd-entry-repair-card{animation:ajd-entry-in .17s ease-out both}@keyframes ajd-entry-in{from{opacity:.7;transform:translateY(9px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}}
