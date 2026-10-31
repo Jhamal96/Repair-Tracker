@@ -382,6 +382,10 @@ html.ajd-opening-enabled .ajd-opening{position:fixed;inset:0;z-index:2147483647;
   <div class="ajd-notice-box">
     <h3>📲 Push on this device</h3>
     <p id="noticeProviderStatus" class="ajd-notice-help">Checking delivery provider configuration…</p>
+    <div class="ajd-notice-actions">
+      <button id="noticeLiveSmsTest" class="tools-button" type="button" disabled>✉ Send Real SMS Test (Setup Required)</button>
+    </div>
+    <p class="ajd-notice-help">A real SMS test may incur Twilio charges and is available only after an approved sender, rotated credentials, and explicit server-side activation. Limited to 3 attempts per UTC day.</p>
     <div class="ajd-notice-actions"><button id="noticeEnrollPush" class="tools-button" type="button" disabled>Enable push on this device</button><button id="noticeRemovePush" class="tools-button danger" type="button" disabled>Remove this device</button></div>
     <p class="ajd-notice-help">Push requires browser permission, a secure HTTPS installation, configured VAPID keys, and an active delivery worker. Subscribing does not activate paid SMS.</p>
   </div>
