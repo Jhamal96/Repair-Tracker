@@ -124,16 +124,37 @@ async function previewDeviceNotification(){
  }catch(error){report('Device notification preview unavailable: '+error.message,true)}
  finally{button.disabled=false}
 }
+async function sendLiveSmsTest(){
+ const button=$('noticeLiveSmsTest');
+ try{
+  checkClient();
+  if(!backendConfig?.sms_sending_active)throw Error('An approved Twilio sender, rotated credentials and server activation are required.');
+  if(!window.confirm('Send a real test SMS to the phone saved in your admin notification settings? Twilio may charge for this message.'))return;
+  button.disabled=true;
+  report('Requesting your single live SMS test…');
+  const {data,error}=await T.client.functions.invoke('ajd-sms-test',{body:{action:'test_sms'}});
+  if(error){
+   const details=typeof error.context?.json==='function'?await error.context.json().catch(()=>null):null;
+   throw Error(details?.error||error.message||'SMS request failed.');
+  }
+  if(!data?.ok)throw Error(data?.error||'SMS test was not accepted.');
+  report('✓ Twilio accepted the test SMS ('+(data.status||'queued')+'). Carrier delivery is not yet confirmed.');
+ }catch(error){report('SMS test not sent: '+error.message,true)}
+ finally{button.disabled=!backendConfig?.sms_sending_active}
+}
 async function loadProviderStatus(){
  const n=$('noticeProviderStatus');
  try{
   const {data,error}=await T.client.functions.invoke('ajd-notification-config',{method:'GET'});
   if(error)throw error;
   backendConfig=data;
-  n.textContent='Email: '+(data.email_configured?'provider detected':'setup required')+' · SMS: not activated · Push: '+(data.push_configured?'keys available, dispatcher pending':'setup required');
+  n.textContent='Email: '+(data.email_configured?'provider detected':'setup required')+' · SMS: '+(data.sms_sending_active?'test sending enabled (charges may apply)':data.sms_configured?'sender configured; activation required':'sender setup required')+' · Push: '+(data.push_configured?'keys available, dispatcher pending':'setup required');
+  $('noticeLiveSmsTest').disabled=!data.sms_sending_active;
+  $('noticeLiveSmsTest').textContent=data.sms_sending_active?'✉ Send Real SMS Test':'✉ Send Real SMS Test (Setup Required)';
   $('noticeEnrollPush').disabled=!data.vapid_public_key;
  }catch(error){
   backendConfig=null;
+  $('noticeLiveSmsTest').disabled=true;
   n.textContent='External delivery is not configured. Email, SMS and push preferences can be saved without sending messages.';
   $('noticeEnrollPush').disabled=true;
  }
@@ -194,6 +215,7 @@ async function init(){
  $('noticeRefresh').addEventListener('click',()=>void refreshHistory());
  $('noticeTest').addEventListener('click',()=>void sendTestNotification());
  $('noticeDeviceTest').addEventListener('click',()=>void previewDeviceNotification());
+ $('noticeLiveSmsTest').addEventListener('click',()=>void sendLiveSmsTest());
  $('noticeEnrollPush').addEventListener('click',()=>void enrollPush());
  $('noticeRemovePush').addEventListener('click',()=>void removePush());
  try{await loadPreferences();await Promise.all([refreshHistory(),loadProviderStatus(),checkSubscription()]);}
