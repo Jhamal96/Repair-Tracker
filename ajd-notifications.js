@@ -86,6 +86,44 @@ async function refreshHistory(){
   }
  }catch(error){list.replaceChildren(itemText('p','Unable to load notification history. '+error.message,'ajd-notice-help'));report('Notification history unavailable.',true)}
 }
+async function sendTestNotification(){
+ const button=$('noticeTest');
+ try{
+  checkClient();
+  if(button.disabled)return;
+  button.disabled=true;
+  report('Creating a test event in your private admin inbox…');
+  const {data,error}=await T.client.rpc('ajd_send_test_notification');
+  if(error)throw error;
+  if(!data)throw Error('No test event ID was returned.');
+  await refreshHistory();
+  report('✓ Test notification received in your private inbox. No SMS or email was sent.');
+ }catch(error){report('Test notification failed: '+error.message,true)}
+ finally{button.disabled=false}
+}
+async function previewDeviceNotification(){
+ const button=$('noticeDeviceTest');
+ try{
+  checkClient();
+  if(button.disabled)return;
+  if(!('Notification' in window)||!('serviceWorker' in navigator))throw Error('This device/browser does not support notification previews.');
+  button.disabled=true;
+  // Ask within the user click, before awaiting any backend request.
+  const permission=await Notification.requestPermission();
+  if(permission!=='granted')throw Error('Notification permission was not granted.');
+  const worker=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+  if(typeof worker.showNotification!=='function')throw Error('Device notification previews are unavailable here.');
+  await worker.showNotification("AJD's Wireless Repairs — Test",{
+   body:'This is a local test alert. No SMS or email was sent.',
+   icon:'/admin-icon-192.png',
+   badge:'/admin-icon-192.png',
+   tag:'ajd-notification-local-preview',
+   data:{url:'/settings#notifications'}
+  });
+  report('✓ Device test displayed. If you did not see it, check your device notification permissions. No external message was sent.');
+ }catch(error){report('Device notification preview unavailable: '+error.message,true)}
+ finally{button.disabled=false}
+}
 async function loadProviderStatus(){
  const n=$('noticeProviderStatus');
  try{
@@ -154,6 +192,8 @@ async function init(){
  initialized=true;
  $('noticeForm').addEventListener('submit',savePreferences);
  $('noticeRefresh').addEventListener('click',()=>void refreshHistory());
+ $('noticeTest').addEventListener('click',()=>void sendTestNotification());
+ $('noticeDeviceTest').addEventListener('click',()=>void previewDeviceNotification());
  $('noticeEnrollPush').addEventListener('click',()=>void enrollPush());
  $('noticeRemovePush').addEventListener('click',()=>void removePush());
  try{await loadPreferences();await Promise.all([refreshHistory(),loadProviderStatus(),checkSubscription()]);}
