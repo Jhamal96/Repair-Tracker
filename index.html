@@ -1000,7 +1000,8 @@ function setNewRepairFormOpen(visible,options={}){
  trigger.classList.toggle('ajd-add-repair-btn-active',visible);
  if(label)label.textContent=visible?'Close New Repair':'Add New Repair';
  if(visible&&options.focus!==false){
-  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  if(panel.classList.contains('ajd-entry-repair'))panel.scrollTop=0;
+  else panel.scrollIntoView({behavior:'smooth',block:'start'});
   $('intakeName').focus({preventScroll:true});
  }else if(!visible&&options.focus===true)trigger.focus({preventScroll:true});
 }
