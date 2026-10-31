@@ -18,13 +18,19 @@ Deno.serve(async req=>{
   if(!user.ok)return response({error:'Unauthorized'},401);
   const admin=await fetch(url+'/rest/v1/rpc/ajd_is_admin',{method:'POST',headers:{...headers,'content-type':'application/json'},body:'{}',signal:AbortSignal.timeout(6500)});
   if(!admin.ok||(await admin.json())!==true)return response({error:'Admin access required'},403);
+  const sid=Deno.env.get('AJD_TWILIO_ACCOUNT_SID')||'';
+  const service=Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'';
+  const tokenConfigured=Boolean((Deno.env.get('AJD_TWILIO_AUTH_TOKEN')||'').length>=20);
+  const smsProviderReady=/^AC[0-9a-f]{32}$/i.test(sid)&&/^MG[0-9a-f]{32}$/i.test(service)&&tokenConfigured;
+  const smsActive=smsProviderReady&&Deno.env.get('AJD_SMS_LIVE_ENABLED')==='true';
   const vapidPublic=(Deno.env.get('AJD_WEB_PUSH_PUBLIC_KEY')||'').trim();
   const vapidPrivate=Boolean(Deno.env.get('AJD_WEB_PUSH_PRIVATE_KEY'));
   return response({
     service:'ajd-notification-config',
     version:1,
     email_configured:Boolean(Deno.env.get('AJD_RESEND_API_KEY')&&Deno.env.get('AJD_NOTIFICATION_FROM_EMAIL')),
-    sms_configured:false, // Explicitly off. SMS requires separate paid-service activation.
+    sms_configured:smsProviderReady,
+    sms_sending_active:smsActive, // Explicit owner activation only; automatic SMS dispatch is not enabled.
     push_configured:Boolean(vapidPublic&&vapidPrivate),
     vapid_public_key:vapidPublic&&vapidPrivate?vapidPublic:null,
     sending_active:false // Delivery dispatcher intentionally not enabled in this phase.
