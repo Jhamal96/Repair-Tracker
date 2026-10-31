@@ -31,6 +31,35 @@ Open `/settings#notifications` after signing in with an approved AJD admin accou
 
 AJD's existing `ajd_is_admin()` role check is used by the UI and new RLS policies; no service-role key is placed in browser code. Event bodies are deliberately generic, protecting customer details in notifications and on lock screens. The push display in `sw.js` uses a privacy-safe generic message.
 
+## Twilio SMS connection — prepared, disabled by default
+
+**Security notice:** An Auth Token was previously posted in a conversation. Rotate it at [Twilio API keys & tokens](https://console.twilio.com/) before use. Never paste the replacement into ChatGPT, GitHub, browser JavaScript or a public file.
+
+The admin-only `ajd-sms-test` Supabase Edge Function is deployed with JWT verification. It verifies the logged-in user and `ajd_is_admin()`, reads the approved admin's saved SMS preference and E.164 recipient, checks a server-side five-minute cooldown and three-attempt daily cap, then sends only the fixed test text through Twilio's Messaging API. It cannot accept a phone number or message body from the client.
+
+SMS is **OFF** until all of these secrets are configured in [Supabase Edge Function Secrets](https://supabase.com/dashboard/project/vxpufrahrnwmtgltjstd/functions/secrets):
+
+| Secret | Value |
+| --- | --- |
+| `AJD_TWILIO_ACCOUNT_SID` | Twilio Account SID, beginning `AC` |
+| `AJD_TWILIO_AUTH_TOKEN` | Newly rotated Twilio token (never the one shared in chat) |
+| `AJD_TWILIO_MESSAGING_SERVICE_SID` | Twilio Messaging Service SID, beginning `MG`, containing an approved SMS sender |
+| `AJD_SMS_LIVE_ENABLED` | Set to `true` **only** once sender registration, consent, billing and caps have been reviewed |
+
+If `AJD_SMS_LIVE_ENABLED` is absent or not literally `true`, the test function cannot call Twilio. The admin UI indicates SMS readiness via the protected `ajd-notification-config` endpoint; it never reads or displays credentials. The real SMS test button is disabled until ready. Saving the admin's SMS destination and checking SMS preference are required before any send.
+
+A U.S. 10-digit local number requires the appropriate A2P 10DLC registration; a toll-free number needs toll-free verification. Register and obtain approval in Twilio first. On a trial account, recipients may require verification and other sending limits apply.
+
+**Scope:** This phase implements only *manual administrator SMS tests*. No automatic SMS dispatcher, background SMS worker, customer text messaging, or recurring paid traffic is enabled. An administrator must manually press the test button, confirm the potential charge, and use their saved opted-in phone number.
+
+### Deployment and regression checks
+
+- Supabase migration `ajd_sms_test_cooldown` creates a private `ajd_private.ajd_sms_test_limits` table (RLS enabled) and authenticated admin-only `ajd_reserve_sms_test()` function. Anonymous execution is revoked.
+- `ajd-sms-test` and `ajd-notification-config` Edge Functions are deployed with `verify_jwt=true`.
+- `settings.html` and `ajd-notifications.js` implement the disabled-by-default test button and provider status.
+- Do not put the sender account's secrets in repository configuration, checked-in `.env` files, or Cloudflare frontend assets.
+- To suspend future sending, set `AJD_SMS_LIVE_ENABLED=false` and revoke the Twilio credential if compromised.
+
 ## Provider activation (future stage)
 
 1. **Email:** Verify a sending domain with Resend. Store `AJD_RESEND_API_KEY` and `AJD_NOTIFICATION_FROM_EMAIL` as Supabase Edge Function secrets. Implement authenticated, idempotent server-side dispatch (including retries/logging) before switching `sending_active` on.
