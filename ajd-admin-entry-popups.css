@@ -25,3 +25,6 @@ body.ajd-entry-lock{overflow:hidden!important}
 .ajd-entry-overlay button:focus-visible,#intakePanel button:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 @media(max-width:640px){#intakePanel.ajd-entry-repair,.ajd-entry-overlay{padding:8px!important}.ajd-entry-shell,#intakePanel .ajd-entry-repair-card{border-radius:17px}.ajd-entry-header{padding:13px 16px}}
 @media(prefers-reduced-motion:no-preference){.ajd-entry-shell,#intakePanel .ajd-entry-repair-card{animation:ajd-entry-in .17s ease-out both}@keyframes ajd-entry-in{from{opacity:.7;transform:translateY(9px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}}
+
+/* Never leave detached popup forms visible when the admin session expires. */
+body.admin-locked .ajd-entry-overlay,body.admin-locked #intakePanel.ajd-entry-repair{display:none!important}
