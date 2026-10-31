@@ -19,9 +19,11 @@ Deno.serve(async req=>{
   const admin=await fetch(url+'/rest/v1/rpc/ajd_is_admin',{method:'POST',headers:{...headers,'content-type':'application/json'},body:'{}',signal:AbortSignal.timeout(6500)});
   if(!admin.ok||(await admin.json())!==true)return response({error:'Admin access required'},403);
   const sid=Deno.env.get('AJD_TWILIO_ACCOUNT_SID')||'';
-  const service=Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'';
+  const service=(Deno.env.get('AJD_TWILIO_MESSAGING_SERVICE_SID')||'').trim();
+  const from=(Deno.env.get('AJD_TWILIO_FROM_NUMBER')||'').trim();
   const tokenConfigured=Boolean((Deno.env.get('AJD_TWILIO_AUTH_TOKEN')||'').length>=20);
-  const smsProviderReady=/^AC[0-9a-f]{32}$/i.test(sid)&&/^MG[0-9a-f]{32}$/i.test(service)&&tokenConfigured;
+  const senderConfigured=/^MG[0-9a-f]{32}$/i.test(service)||/^\+[1-9][0-9]{7,14}$/.test(from);
+  const smsProviderReady=/^AC[0-9a-f]{32}$/i.test(sid)&&senderConfigured&&tokenConfigured;
   const smsActive=smsProviderReady&&Deno.env.get('AJD_SMS_LIVE_ENABLED')==='true';
   const vapidPublic=(Deno.env.get('AJD_WEB_PUSH_PUBLIC_KEY')||'').trim();
   const vapidPrivate=Boolean(Deno.env.get('AJD_WEB_PUSH_PRIVATE_KEY'));
