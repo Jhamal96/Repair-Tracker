@@ -1,7 +1,7 @@
 (function AJDAdminEntryPopups(){
 'use strict';
 const $=id=>document.getElementById(id);
-const openDialogs=[];
+const focusBeforeDialog=new Map();
 let partContext='intake',returnFocus=null;
 const isLocked=()=>document.body.classList.contains('admin-locked');
 const button=(text,kind='bg-slate-200 dark:bg-slate-800')=>{
@@ -13,9 +13,14 @@ function restore(fallback){lock();if(!activeDialog()){const f=returnFocus&&retur
 function remember(){if(!activeDialog())returnFocus=document.activeElement;}
 function setDialogVisible(id,show){
  const el=$(id);if(!el)return;
+ if(show)focusBeforeDialog.set(id,document.activeElement);
  el.hidden=!show;
  if(show){lock();setTimeout(()=>{const first=el.querySelector('input:not([type=hidden]),textarea,select,button');first?.focus({preventScroll:true})},0)}
- else restore($(id==='ajdProductEntryOverlay'?'addStoreProductButton':'addNewRepairButton'));
+ else {
+  const previous=focusBeforeDialog.get(id);focusBeforeDialog.delete(id);
+  restore($(id==='ajdProductEntryOverlay'?'addStoreProductButton':'addNewRepairButton'));
+  if(previous?.isConnected && typeof previous.focus==='function')previous.focus({preventScroll:true});
+ }
 }
 function createOverlay(id,title,small=false){
  const layer=document.createElement('div');layer.id=id;layer.className='ajd-entry-overlay'+(small?' ajd-entry-small':'');layer.hidden=true;
@@ -125,6 +130,7 @@ function trapTabs(event,dialog){
  const elements=[...dialog.querySelectorAll('button,input,textarea,select,a[href],[tabindex]')].filter(el=>!el.disabled&&el.getClientRects().length&&el.getAttribute('tabindex')!=='-1');
  if(!elements.length)return;
  const first=elements[0],last=elements[elements.length-1];
+ if(!dialog.contains(document.activeElement)){event.preventDefault();first.focus();return}
  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
 }
