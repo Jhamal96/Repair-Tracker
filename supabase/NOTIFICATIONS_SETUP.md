@@ -43,8 +43,11 @@ SMS is **OFF** until all of these secrets are configured in [Supabase Edge Funct
 | --- | --- |
 | `AJD_TWILIO_ACCOUNT_SID` | Twilio Account SID, beginning `AC` |
 | `AJD_TWILIO_AUTH_TOKEN` | Newly rotated Twilio token (never the one shared in chat) |
-| `AJD_TWILIO_MESSAGING_SERVICE_SID` | Twilio Messaging Service SID, beginning `MG`, containing an approved SMS sender |
+| `AJD_TWILIO_MESSAGING_SERVICE_SID` | Optional: Twilio Messaging Service SID beginning `MG`, containing an approved SMS sender. If set, takes precedence over `AJD_TWILIO_FROM_NUMBER`. |
+| `AJD_TWILIO_FROM_NUMBER` | Alternative to a Messaging Service: an SMS-capable Twilio-owned sending number (format `+1...`). Do not use your personal receiving number here unless that number is actually hosted in Twilio. |
 | `AJD_SMS_LIVE_ENABLED` | Set to `true` **only** once sender registration, consent, billing and caps have been reviewed |
+
+Choose **one approved sender**: the Messaging Service SID (`MG…`) *or* a Twilio-owned SMS-capable number in `AJD_TWILIO_FROM_NUMBER`. A number alone does not prove it belongs to the Twilio account or is eligible for U.S. messaging. Check Twilio Console → Phone Numbers → Manage → Active Numbers and confirm the number has SMS enabled and its A2P 10DLC registration/campaign is approved. A Messaging Service may still be preferable for registration and production use.
 
 If `AJD_SMS_LIVE_ENABLED` is absent or not literally `true`, the test function cannot call Twilio. The admin UI indicates SMS readiness via the protected `ajd-notification-config` endpoint; it never reads or displays credentials. The real SMS test button is disabled until ready. Saving the admin's SMS destination and checking SMS preference are required before any send.
 
