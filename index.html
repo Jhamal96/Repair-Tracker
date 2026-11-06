@@ -1486,7 +1486,7 @@ function renderStoreOrders(){
       '<button type="button" class="btn bg-amber-600 text-white" data-store-order-action="awaiting_restock" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">↻</span> Await Restock</button>'+
       '<button type="button" class="btn bg-rose-600 text-white" data-store-order-action="declined" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">✕</span> Decline</button>'+
     '</div>'+
-    (status==='approved'?'<button type="button" class="btn bg-blue-600 text-white" onclick="openPurchaseReceipt(\''+id+'\')">🧾 Create / Share Receipt</button>':'')+
+    (status==='approved'?'<button type="button" class="btn bg-blue-600 text-white" onclick="openPurchaseReceipt(\''+id+'\')">🧾 Create / Edit Invoice</button>':'')+
     '<div>'+ (lines.length?lines:[{item_id:o.item_id,item_title:o.item_title}]).filter(line=>line.item_id).map(line=>'<button type="button" class="btn text-blue-500" onclick="openRequestedProduct(\''+esc(line.item_id)+'\')">↗ '+esc(line.item_title||'View product')+'</button>').join(' ')+'</div>'+
     '<p class="ajd-order-feedback mini" data-store-order-feedback role="status" aria-live="polite"></p>'+
    '</article>';
@@ -1574,19 +1574,38 @@ function renderPurchaseHistory(){
  const declined=storeOrders.filter(o=>o.status==='declined');
  root.innerHTML='<h3 class="font-black">Declined Purchase Requests</h3>'+ (declined.length?declined.map(o=>'<article class="dark-card p-4 rounded-2xl"><strong>'+esc(o.customer_name)+'</strong><p>'+esc(o.item_title)+' · Declined</p><p class="mini">'+esc(new Date(o.created_at).toLocaleString())+'</p><p>'+esc(o.shop_note||'')+'</p></article>').join(''):'<p class="mini">No declined purchases.</p>');
 }
-function openPurchaseReceipt(id){
- const o=storeOrders.find(r=>r.id===id&&r.status==='approved');if(!o)return;
- const lines=o.cart_lines?.length?o.cart_lines:[{item_title:o.item_title,item_price:o.item_price,quantity:o.quantity||1}];
- const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
- const total=lines.reduce((sum,l)=>sum+Number(l.item_price||0)*Number(l.quantity||1),0);
- const text=["AJD's Wireless Repairs",'APPROVED ORDER RECEIPT','Order: '+o.id,'Customer: '+o.customer_name,'Requested: '+new Date(o.created_at).toLocaleString(),...lines.map(l=>l.item_title+' x'+l.quantity+' — '+money(Number(l.item_price||0)*Number(l.quantity||1))),'Item subtotal: '+money(total),'Payment not recorded. Approval reserves stock; this is not proof of payment.',shopPhone].join('\n');
- let modal=$('purchaseReceiptDialog');if(!modal){modal=document.createElement('dialog');modal.id='purchaseReceiptDialog';modal.style.cssText='max-width:600px;width:92%;padding:24px;border-radius:20px;color:#0f172a;background:white';document.body.append(modal);}
- modal.innerHTML='<h2 style="font-weight:900">Customer Receipt</h2><pre style="white-space:pre-wrap;font:14px/1.7 system-ui;margin:20px 0"></pre><div style="display:flex;flex-wrap:wrap;gap:12px"><button class="btn" data-share>Share Receipt</button><button class="btn" data-print>Print / Save PDF</button><button class="btn" data-close>Close</button></div><p data-status role="status"></p>';
- modal.querySelector('pre').textContent=text;
- modal.querySelector('[data-close]').onclick=()=>modal.close();
- modal.querySelector('[data-share]').onclick=async()=>{try{if(navigator.share)await navigator.share({title:"AJD's Wireless Repairs Receipt",text});else{await navigator.clipboard.writeText(text);modal.querySelector('[data-status]').textContent='Receipt copied. Paste it into your message.';}}catch(e){if(e.name!=='AbortError')modal.querySelector('[data-status]').textContent='Sharing unavailable. Use Print / Save PDF.';}};
- modal.querySelector('[data-print]').onclick=()=>{const w=window.open('','_blank');if(!w){modal.querySelector('[data-status]').textContent='Allow pop-ups to print your receipt.';return;}w.document.write('<!doctype html><html><head><title>AJD Receipt</title><style>body{font:15px/1.8 system-ui;padding:30px}pre{white-space:pre-wrap;font:inherit}</style></head><body><pre>'+esc(text)+'</pre></body></html>');w.document.close();w.focus();w.print();};
- modal.showModal();
+async function openPurchaseReceipt(id){
+ const o=storeOrders.find(r=>r.id===id&&r.status==='approved');if(!o||!isCloudAdmin)return;
+ const {data,error}=await sb.from('ajd_purchase_invoices').select('details').eq('request_id',id).maybeSingle();
+ if(error){toast('Invoice could not load: '+error.message);return;}
+ const original=o.cart_lines?.length?o.cart_lines:[{item_title:o.item_title,item_price:o.item_price,quantity:o.quantity||1}];
+ const draft=data?.details||{lines:original.map(l=>({title:l.item_title,price:Number(l.item_price)||0,quantity:Number(l.quantity)||1})),discountType:'amount',discount:0,date:new Date().toLocaleDateString('en-CA')};
+ const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+ let modal=$('purchaseReceiptDialog');if(!modal){modal=document.createElement('dialog');modal.id='purchaseReceiptDialog';document.body.append(modal);}
+ modal.style.cssText='max-width:900px;width:95%;padding:24px;border-radius:20px;color:#17243a;background:white;max-height:92vh;overflow:auto';
+ modal.innerHTML='<h2 style="font-weight:900;font-size:24px">Purchase Invoice</h2><p>Edit invoice prices and choose a discount. Product catalog prices stay unchanged.</p><form data-editor><div data-lines></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0"><label>Discount type<select class="field" data-type><option value="amount">Dollar amount ($)</option><option value="percent">Percentage (%)</option></select></label><label>Discount<input class="field" data-discount type="number" min="0" step="0.01" required></label></div><div data-preview></div><div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:20px"><button class="btn" type="submit">Save Invoice</button><button class="btn" type="button" data-share>Share Invoice</button><button class="btn" type="button" data-print>Print / Save PDF</button><button class="btn" type="button" data-close>Close</button></div></form><p data-status role="status"></p>';
+ const form=modal.querySelector('form'),status=modal.querySelector('[data-status]');
+ modal.querySelector('[data-lines]').innerHTML=draft.lines.map((l,i)=>'<label style="display:block;margin:12px 0">'+esc(l.title)+' · Quantity '+esc(l.quantity)+'<input aria-label="Unit price for '+esc(l.title)+'" class="field" data-price="'+i+'" type="number" min="0" max="1000000" step="0.01" required value="'+esc(l.price)+'"></label>').join('');
+ modal.querySelector('[data-type]').value=draft.discountType;modal.querySelector('[data-discount]').value=draft.discount;
+ const style='body{font:14px/1.6 Arial;color:#17243a;padding:32px}h1{color:#2257a5}table{width:100%;border-collapse:collapse;margin:24px 0}th,td{text-align:left;border-bottom:1px solid #ddd;padding:10px}th{background:#edf3fb}.totals{text-align:right;font-size:16px}header{border-bottom:3px solid #2257a5;padding-bottom:16px}footer{margin-top:30px;font-size:12px}@media print{@page{size:letter;margin:15mm}body{padding:0}tr,.totals{break-inside:avoid}}';
+ let dirty=!data,html='',text='';
+ function calculate(){
+  draft.lines.forEach((l,i)=>l.price=Number(modal.querySelector('[data-price="'+i+'"]').value));
+  draft.discountType=modal.querySelector('[data-type]').value;draft.discount=Number(modal.querySelector('[data-discount]').value);
+  const subtotal=draft.lines.reduce((sum,l)=>sum+Math.round(l.price*100)*l.quantity,0);
+  const input=modal.querySelector('[data-discount]');input.max=draft.discountType==='percent'?100:subtotal/100;
+  const reduction=Math.min(subtotal,Math.max(0,draft.discountType==='percent'?Math.round(subtotal*draft.discount/100):Math.round(draft.discount*100)));
+  const total=(subtotal-reduction)/100,ref='INV-'+id;
+  html='<header><h1>INVOICE</h1><h2>AJD’s Wireless Repairs</h2><p>'+esc(shopPhone)+'</p><p style="overflow-wrap:anywhere">'+esc(ref)+'<br>Date: '+esc(draft.date)+'</p></header><h3>Bill To</h3><p>'+esc(o.customer_name)+'<br>'+esc(o.customer_phone||'')+'<br>'+esc(o.customer_email||'')+'</p><table><thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>'+draft.lines.map(l=>'<tr><td>'+esc(l.title)+'</td><td>'+l.quantity+'</td><td>'+money(l.price)+'</td><td>'+money(Math.round(l.price*100)*l.quantity/100)+'</td></tr>').join('')+'</tbody></table><div class="totals"><p>Subtotal: '+money(subtotal/100)+'</p><p>Discount'+(draft.discountType==='percent'?' ('+draft.discount+'%)':'')+': −'+money(reduction/100)+'</p><h2>Total: '+money(total)+'</h2></div><footer>Payment not recorded. This invoice is not proof of payment.<br>Thank you for choosing AJD’s Wireless Repairs.</footer>';
+  text=["AJD's Wireless Repairs — INVOICE",ref,'Date: '+draft.date,'Bill to: '+o.customer_name,...draft.lines.map(l=>l.title+' ×'+l.quantity+' @ '+money(l.price)),'Subtotal: '+money(subtotal/100),'Discount: '+money(reduction/100),'Total: '+money(total),'Payment not recorded. This invoice is not proof of payment.'].join('\n');
+  modal.querySelector('[data-preview]').innerHTML='<div style="border:1px solid #ddd;padding:20px;overflow:auto">'+html+'</div>';
+ }
+ calculate();form.addEventListener('input',()=>{dirty=true;calculate();status.textContent='Unsaved changes — save before sharing.';});
+ form.onsubmit=async e=>{e.preventDefault();calculate();if(!form.reportValidity())return;const button=form.querySelector('[type=submit]');button.disabled=true;try{const {error}=await sb.from('ajd_purchase_invoices').upsert({request_id:id,details:draft,updated_at:new Date().toISOString()},{onConflict:'request_id'});if(error)throw error;dirty=false;status.textContent='Invoice saved to cloud.';}catch(e){status.textContent='Not saved: '+e.message;}finally{button.disabled=false;}};
+ const ready=()=>{calculate();if(!form.reportValidity())return false;if(dirty){status.textContent='Save your changes before sharing or printing.';return false;}return true;};
+ modal.querySelector('[data-share]').onclick=async()=>{if(!ready())return;try{if(navigator.share)await navigator.share({title:'AJD Invoice',text});else{await navigator.clipboard.writeText(text);status.textContent='Invoice copied for sharing.';}}catch(e){if(e.name!=='AbortError')status.textContent='Use Print / Save PDF to share.';}};
+ modal.querySelector('[data-print]').onclick=()=>{if(!ready())return;const w=window.open('','_blank');if(!w){status.textContent='Allow pop-ups to print.';return;}w.document.write('<!doctype html><html><head><title>AJD Invoice</title><style>'+style+'</style></head><body>'+html+'</body></html>');w.document.close();w.focus();w.print();};
+ const close=()=>{if(!dirty||confirm('Discard unsaved invoice changes?'))modal.close();};modal.querySelector('[data-close]').onclick=close;modal.oncancel=e=>{e.preventDefault();close();};modal.showModal();
 }
 
 function updateRequestBadge(){
