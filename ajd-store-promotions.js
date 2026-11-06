@@ -13,28 +13,90 @@ async function getPromos(){const {data,error}=await client.from('ajd_store_promo
 function element(tag,cl,text){const e=document.createElement(tag);if(cl)e.className=cl;if(text!==undefined)e.textContent=text;return e}
 function enableTilt(root){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;root.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=root.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;root.style.setProperty('--ajd-mx',x*16+'px');root.style.setProperty('--ajd-my',y*14+'px');root.style.setProperty('--ajd-rx',-y*5+'deg');root.style.setProperty('--ajd-ry',x*7+'deg')});root.addEventListener('pointerleave',()=>{root.style.setProperty('--ajd-mx','0px');root.style.setProperty('--ajd-my','0px');root.style.setProperty('--ajd-rx','0deg');root.style.setProperty('--ajd-ry','0deg')})}
 async function startStore(){
-const main=document.querySelector('main.wrap');if(!main)return;
-const section=element('section','ajd-promos');section.id='ajdFeatured';section.hidden=true;section.setAttribute('aria-label','Featured products');
-const head=element('div','ajd-promos-heading');head.append(element('span','ajd-promos-kicker','CURATED BY AJD'),element('h2','','Featured tech & deals'));section.append(head);
-const row=element('div','ajd-promos-grid');section.append(row);main.insertBefore(section,main.firstChild);enableTilt(section);
-let lastSignature='';
-async function render(){
-try{
-const items=window.AJDStoreCatalog?.()||[];if(!items.length)return;
-const promos=(await getPromos()).filter(p=>p.active);const matches=promos.map(p=>({config:p,item:items.find(i=>String(i.id)===p.product_id&&i.status!=='hidden')})).filter(x=>x.item);
-const signature=JSON.stringify(matches.map(x=>[x.item.id,x.config.position,x.config.headline,x.config.subtitle,x.item.price,x.item.image_url,x.item.image_urls]));if(signature===lastSignature)return;lastSignature=signature;
-row.replaceChildren();section.hidden=!matches.length;
-matches.slice(0,6).forEach(({item:p,config:c},idx)=>{
-const card=element('article','ajd-promo-card');card.style.setProperty('--card-index',idx);
-const art=element('div','ajd-promo-art');const src=photo(p);if(src){const img=element('img');img.src=src;img.alt=p.title;img.loading=idx===0?'eager':'lazy';art.append(img)}else art.append(element('div','ajd-promo-placeholder','✦'));
-const body=element('div','ajd-promo-copy');body.append(element('span','ajd-promo-label',idx===0?'★ FEATURED PICK':'✦ SPOTLIGHT'),element('h3','',c.headline||p.title),element('p','',c.subtitle||p.description||'Explore this featured product at AJD’s Wireless Repairs.'),element('strong','ajd-promo-price',money(p.price)));
-const actions=element('div','ajd-promo-actions');const info=element('button','ajd-promo-cta','View Product ↗');info.type='button';info.addEventListener('click',()=>window.AJDStoreDetails?.open(p));actions.append(info);
-const available=p.status==='available'&&Number(p.stock_quantity)>Number(p.reserved_quantity||0);if(available){const request=element('button','ajd-promo-secondary','Request Item');request.type='button';request.addEventListener('click',()=>window.AJDStoreRequest?.(p.id));actions.append(request)}body.append(actions);card.append(art,body);row.append(card);
-});
-}catch(e){console.warn('Unable to load featured promotions:',e)}
+ const main=document.querySelector('main.wrap');if(!main)return;
+ const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ const section=element('section','ajd-promos');section.id='ajdFeatured';section.hidden=true;section.setAttribute('aria-label','Featured products carousel');
+ const head=element('div','ajd-promos-heading');head.append(element('span','ajd-promos-kicker','CURATED BY AJD'),element('h2','','Featured tech & deals'));section.append(head);
+ const frame=element('div','ajd-promo-carousel');frame.setAttribute('aria-roledescription','carousel');frame.setAttribute('aria-label','Featured store products');
+ const viewport=element('div','ajd-promo-viewport');viewport.setAttribute('aria-live','off');
+ const track=element('div','ajd-promo-track');viewport.append(track);
+ const controlBar=element('div','ajd-promo-carousel-controls');
+ const prev=element('button','ajd-promo-nav','‹');prev.type='button';prev.setAttribute('aria-label','Previous featured product');
+ const dots=element('div','ajd-promo-dots');dots.setAttribute('aria-label','Choose featured product');
+ const next=element('button','ajd-promo-nav','›');next.type='button';next.setAttribute('aria-label','Next featured product');
+ controlBar.append(prev,dots,next);frame.append(viewport,controlBar);section.append(frame);
+ main.insertBefore(section,main.firstChild);enableTilt(frame);
+ let current=0,lastSignature='',cards=[],timer=null,paused=false,loading=false;
+ function stop(){if(timer){clearInterval(timer);timer=null}}
+ function start(){stop();if(cards.length<2||reduceMotion||paused||document.hidden)return;timer=setInterval(()=>setSlide(current+1,false),5500)}
+ function setSlide(index,manual=true){
+  if(!cards.length)return;
+  current=(index+cards.length)%cards.length;
+  track.style.transform='translate3d(-'+(current*100)+'%,0,0)';
+  cards.forEach((card,i)=>{card.setAttribute('aria-hidden',String(i!==current));card.inert=i!==current});
+  [...dots.children].forEach((button,i)=>{button.setAttribute('aria-current',String(i===current));button.setAttribute('aria-label','Show featured product '+(i+1)+(i===current?' (current)':''))});
+  if(manual)start();
+ }
+ prev.onclick=()=>setSlide(current-1);
+ next.onclick=()=>setSlide(current+1);
+ dots.addEventListener('click',e=>{const button=e.target.closest('button[data-index]');if(button)setSlide(Number(button.dataset.index))});
+ frame.addEventListener('mouseenter',()=>{paused=true;stop()});
+ frame.addEventListener('mouseleave',()=>{paused=false;start()});
+ frame.addEventListener('focusin',()=>{paused=true;stop()});
+ frame.addEventListener('focusout',e=>{if(!frame.contains(e.relatedTarget)){paused=false;start()}});
+ let touchX=null,touchY=null;
+ viewport.addEventListener('touchstart',e=>{if(e.touches.length===1){touchX=e.touches[0].clientX;touchY=e.touches[0].clientY}},{passive:true});
+ viewport.addEventListener('touchend',e=>{if(touchX===null)return;const dx=e.changedTouches[0].clientX-touchX;const dy=e.changedTouches[0].clientY-touchY;touchX=null;touchY=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)setSlide(current+(dx<0?1:-1))},{passive:true});
+ function photoUrls(product){
+  if(window.AJDProductImages?.urls)return window.AJDProductImages.urls(product);
+  const photos=Array.isArray(product.image_urls)?product.image_urls:[product.image_url];
+  return [...new Set(photos.map(value=>{try{const url=new URL(value);return ['https:','http:'].includes(url.protocol)?url.href:''}catch{return ''}}).filter(Boolean))];
+ }
+ function buildCard(p,c,idx){
+  const card=element('article','ajd-promo-card');
+  card.setAttribute('aria-roledescription','slide');card.setAttribute('aria-label','Featured product '+(idx+1)+': '+p.title);
+  const art=element('div','ajd-promo-art');
+  const urls=photoUrls(p);const src=urls[0];
+  if(src){
+   const picture=element('img');picture.src=src;picture.alt=p.title;picture.loading=idx===0?'eager':'lazy';picture.decoding='async';
+   picture.onerror=()=>{picture.hidden=true;if(!art.querySelector('.ajd-promo-placeholder'))art.append(element('div','ajd-promo-placeholder','📷'))};
+   art.append(picture);
+  }else{const missing=element('div','ajd-promo-placeholder','📷');missing.setAttribute('aria-label','No photo available for '+p.title);art.append(missing)}
+  const body=element('div','ajd-promo-copy');
+  body.append(element('span','ajd-promo-label',idx===0?'★ FEATURED PICK':'✦ SPOTLIGHT'),element('h3','',c.headline||p.title),element('p','',c.subtitle||p.description||'Explore this featured product at AJD’s Wireless Repairs.'),element('strong','ajd-promo-price',money(p.price)));
+  const actions=element('div','ajd-promo-actions');
+  const info=element('button','ajd-promo-cta','View Product ↗');info.type='button';info.onclick=()=>window.AJDStoreDetails?.open(p);actions.append(info);
+  const available=p.status==='available'&&Number(p.stock_quantity)>Number(p.reserved_quantity||0);
+  if(available){const request=element('button','ajd-promo-secondary','Request Item');request.type='button';request.onclick=()=>window.AJDStoreRequest?.(p.id);actions.append(request)}
+  body.append(actions);card.append(art,body);
+  return card;
+ }
+ async function render(){
+  if(loading)return;loading=true;
+  try{
+   const items=window.AJDStoreCatalog?.()||[];
+   if(!items.length)return;
+   const promos=(await getPromos()).filter(p=>p.active);
+   const matches=promos.map(p=>({config:p,item:items.find(i=>String(i.id)===p.product_id&&i.status!=='hidden')})).filter(x=>x.item);
+   const signature=JSON.stringify(matches.map(x=>[x.item.id,x.config.position,x.config.headline,x.config.subtitle,x.item.price,x.item.status,x.item.image_url,x.item.image_urls,x.item.stock_quantity,x.item.reserved_quantity]));
+   if(signature===lastSignature)return;
+   lastSignature=signature;section.hidden=!matches.length;
+   stop();const selectedId=cards[current]?.dataset.productId;
+   cards=matches.slice(0,12).map(({item,config},idx)=>{const card=buildCard(item,config,idx);card.dataset.productId=String(item.id);return card});
+   track.replaceChildren(...cards);
+   dots.replaceChildren(...cards.map((_,i)=>{const button=element('button','ajd-promo-dot');button.type='button';button.dataset.index=i;button.textContent=String(i+1);return button}));
+   current=Math.max(0,cards.findIndex(c=>c.dataset.productId===selectedId));
+   controlBar.hidden=cards.length<2;
+   setSlide(current,false);start();
+  }catch(e){console.warn('Unable to load featured promotions:',e)}
+  finally{loading=false}
+ }
+ await render();
+ let startupTries=0;const startup=setInterval(()=>{if(section.hidden&&startupTries++<20)void render();else clearInterval(startup)},900);
+ setInterval(()=>{if(!document.hidden)void render()},15000);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else{void render();start()}});
 }
-await render();setInterval(()=>{if(!document.hidden)void render()},12000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void render()});
-}
+
 async function startAdmin(){
 const content=$('appContent');if(!content)return;
 const section=element('section','ajd-promo-manager panel');section.id='ajdPromoManager';
