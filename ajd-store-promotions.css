@@ -21,3 +21,24 @@
 .ajd-promo-dot:focus-visible{outline:2px solid white;outline-offset:3px}
 @media(max-width:640px){.ajd-promo-track>.ajd-promo-card{grid-template-columns:1fr;min-height:490px}.ajd-promo-track .ajd-promo-art{padding:19px 22px 0;min-height:205px}.ajd-promo-track .ajd-promo-art img{max-height:225px}.ajd-promo-track .ajd-promo-copy{padding:8px 23px 62px}.ajd-promo-track .ajd-promo-copy h3{font-size:1.65rem;margin:9px 0}.ajd-promo-track .ajd-promo-copy p{margin:2px 0}.ajd-promo-track .ajd-promo-price{margin:8px 0}}
 @media(prefers-reduced-motion:reduce){.ajd-promo-track,.ajd-promo-track .ajd-promo-art img{transition:none!important}.ajd-promo-track .ajd-promo-art img{transform:none!important}}
+
+/* Featured-product admin cards: responsive visual campaign manager */
+.ajd-promo-manager{background:linear-gradient(145deg,rgba(25,70,105,.18),transparent 58%),var(--surface,#0f172a);border:1px solid rgba(125,211,252,.23)}
+.ajd-promo-manager-head>a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 15px;border:1px solid #38bdf8;border-radius:12px;text-decoration:none;color:inherit;font-weight:700}
+.ajd-promo-manager-controls{align-items:end}
+.ajd-promo-manager-controls>button{min-height:46px;background:#0e7490;color:white;border:1px solid #22d3ee;font-weight:800}
+.ajd-promo-manager #promoStatus:not(:empty){margin:12px 0;padding:10px 12px;background:rgba(14,165,233,.09);border-radius:10px;overflow-wrap:anywhere}
+.ajd-promo-selected-item{display:grid;grid-template-columns:100px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px;background:rgba(128,167,191,.065)}
+.ajd-promo-admin-image{display:grid;place-items:center;width:100px;height:92px;border-radius:14px;background:rgba(88,140,180,.12);border:1px solid rgba(125,211,252,.2);overflow:hidden;text-decoration:none;font-size:28px}
+.ajd-promo-admin-image img{display:block;width:100%;height:100%;object-fit:contain;padding:6px}
+.ajd-promo-admin-info{display:grid;gap:6px;min-width:0}
+.ajd-promo-admin-title{font-size:1.05rem;font-weight:800;text-decoration:none;color:inherit;overflow-wrap:anywhere}
+.ajd-promo-admin-title:hover{text-decoration:underline}
+.ajd-promo-admin-meta{font-size:.83rem;opacity:.76}
+.ajd-promo-admin-info small{font-size:.79rem;opacity:.72}
+.ajd-promo-admin-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+.ajd-promo-admin-actions>a,.ajd-promo-admin-actions>button{display:inline-flex;align-items:center;justify-content:center;min-height:37px;padding:8px 12px;border:1px solid rgba(125,211,252,.34);border-radius:10px;text-decoration:none;color:inherit;background:rgba(125,211,252,.06);font-size:.86rem;cursor:pointer}
+.ajd-promo-admin-actions .ajd-promo-admin-visit{color:#67e8f9;background:rgba(14,116,144,.16);font-weight:750}
+.ajd-promo-admin-actions .ajd-promo-remove{border-color:rgba(248,113,113,.35);color:#fb7185}
+.ajd-promo-admin-actions button:disabled{opacity:.3;cursor:default}
+@media(max-width:760px){.ajd-promo-selected-item{grid-template-columns:76px minmax(0,1fr);gap:12px}.ajd-promo-admin-image{width:76px;height:76px}.ajd-promo-admin-actions{grid-column:1/-1;justify-content:flex-start}.ajd-promo-manager{padding:17px}.ajd-promo-admin-actions>a,.ajd-promo-admin-actions>button{min-height:42px}}
