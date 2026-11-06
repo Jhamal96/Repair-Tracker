@@ -33,3 +33,28 @@ body.ajd-product-open{overflow:hidden}
 #ajdPhotoError{padding:30px;color:var(--muted);text-align:center}
 .ajd-photo-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-top:1px solid var(--border-strong);font-size:12px;font-weight:800}.ajd-photo-navigation button{min-height:40px;font-size:12px}
 @media(max-width:700px){#ajdProductDialog{width:calc(100% - 18px);max-height:calc(100dvh - 20px);border-radius:17px}.ajd-detail-head{padding:14px 16px;gap:12px}.ajd-detail-head h2{font-size:17px}.ajd-detail-layout{grid-template-columns:1fr;gap:23px;padding:16px}#ajdProductDialog .ajd-product-gallery img.photo{height:300px}.ajd-detail-price{font-size:31px}.ajd-photo-head{align-items:flex-start;gap:10px}.ajd-photo-head h2{font-size:13px}.ajd-photo-head>div{gap:6px}#ajdPhotoZoom{font-size:10px;padding:7px 9px}.ajd-photo-navigation{padding:11px 12px}.ajd-photo-stage{height:65dvh}}
+
+/* Product descriptions are intentionally only shown in the product detail dialog. */
+#ajdProductDialog .ajd-detail-info h3{
+  margin:21px 0 0;
+  padding:14px 15px 0;
+  background:var(--surface-raised);
+  border:1px solid var(--border);
+  border-bottom:0;
+  border-radius:13px 13px 0 0;
+  color:var(--text);
+  font-size:14px;
+  font-weight:900;
+}
+#ajdProductDialog .ajd-detail-description{
+  padding:10px 15px 15px;
+  border:1px solid var(--border);
+  border-top:0;
+  border-radius:0 0 13px 13px;
+  background:var(--surface-raised);
+  color:var(--text);
+  font-size:13px;
+  line-height:1.8;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
