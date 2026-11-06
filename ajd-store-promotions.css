@@ -20,4 +20,4 @@
 .ajd-promo-dot[aria-current=true]{width:27px;background:#67e8f9}
 .ajd-promo-dot:focus-visible{outline:2px solid white;outline-offset:3px}
 @media(max-width:640px){.ajd-promo-track>.ajd-promo-card{grid-template-columns:1fr;min-height:490px}.ajd-promo-track .ajd-promo-art{padding:19px 22px 0;min-height:205px}.ajd-promo-track .ajd-promo-art img{max-height:225px}.ajd-promo-track .ajd-promo-copy{padding:8px 23px 62px}.ajd-promo-track .ajd-promo-copy h3{font-size:1.65rem;margin:9px 0}.ajd-promo-track .ajd-promo-copy p{margin:2px 0}.ajd-promo-track .ajd-promo-price{margin:8px 0}}
-@media(prefers-reduced-motion:reduce){.ajd-promo-track,.ajd-promo-track .ajd-promo-art img{transition:none!important;transform:none!important}.ajd-promo-track{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.ajd-promo-track,.ajd-promo-track .ajd-promo-art img{transition:none!important}.ajd-promo-track .ajd-promo-art img{transform:none!important}}
