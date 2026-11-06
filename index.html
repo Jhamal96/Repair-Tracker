@@ -1446,9 +1446,10 @@ async function fetchStoreOrders(){
  return true;
 }
 function renderStoreOrders(){
+ renderPurchaseHistory();
  updateRequestBadge();
  const root=$('storeOrders');
- root.innerHTML=storeOrders.length?storeOrders.map(o=>{
+ root.innerHTML=storeOrders.some(o=>o.status!=='declined')?storeOrders.filter(o=>o.status!=='declined').map(o=>{
    const status=String(o.status||'pending');
    const statusLabel=storeOrderStatusLabels[status]||status;
    const statusColor=storeOrderStatusColors[status]||'ajd-order-pending';
@@ -1485,6 +1486,8 @@ function renderStoreOrders(){
       '<button type="button" class="btn bg-amber-600 text-white" data-store-order-action="awaiting_restock" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">↻</span> Await Restock</button>'+
       '<button type="button" class="btn bg-rose-600 text-white" data-store-order-action="declined" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">✕</span> Decline</button>'+
     '</div>'+
+    (status==='approved'?'<button type="button" class="btn bg-blue-600 text-white" onclick="openPurchaseReceipt(\''+id+'\')">🧾 Create / Share Receipt</button>':'')+
+    '<div>'+ (lines.length?lines:[{item_id:o.item_id,item_title:o.item_title}]).filter(line=>line.item_id).map(line=>'<button type="button" class="btn text-blue-500" onclick="openRequestedProduct(\''+esc(line.item_id)+'\')">↗ '+esc(line.item_title||'View product')+'</button>').join(' ')+'</div>'+
     '<p class="ajd-order-feedback mini" data-store-order-feedback role="status" aria-live="polite"></p>'+
    '</article>';
  }).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>';
@@ -1520,6 +1523,7 @@ async function setStoreOrderStatus(id,status){
    request.status=status;
    request.shop_note=note;
    updateRequestBadge();
+   renderStoreOrders();
    // Update the status in place without clearing the response message or textbox.
    if(card){
      const badge=card.querySelector('.ajd-order-status');
@@ -1557,6 +1561,33 @@ $('storeOrders').addEventListener('click',event=>{
  void setStoreOrderStatus(id,status);
 });
 
+
+
+function openRequestedProduct(id){
+ switchTab('inventory');
+ const product=storeProducts.find(p=>p.id===id);
+ if(product)editStoreProduct(id);else toast('This product is no longer available in the catalog.');
+}
+function renderPurchaseHistory(){
+ let root=$('purchaseOrderHistory');
+ if(!root){root=document.createElement('div');root.id='purchaseOrderHistory';root.className='dark-card p-5 rounded-3xl space-y-3';$('viewHistory').append(root);}
+ const declined=storeOrders.filter(o=>o.status==='declined');
+ root.innerHTML='<h3 class="font-black">Declined Purchase Requests</h3>'+ (declined.length?declined.map(o=>'<article class="dark-card p-4 rounded-2xl"><strong>'+esc(o.customer_name)+'</strong><p>'+esc(o.item_title)+' · Declined</p><p class="mini">'+esc(new Date(o.created_at).toLocaleString())+'</p><p>'+esc(o.shop_note||'')+'</p></article>').join(''):'<p class="mini">No declined purchases.</p>');
+}
+function openPurchaseReceipt(id){
+ const o=storeOrders.find(r=>r.id===id&&r.status==='approved');if(!o)return;
+ const lines=o.cart_lines?.length?o.cart_lines:[{item_title:o.item_title,item_price:o.item_price,quantity:o.quantity||1}];
+ const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+ const total=lines.reduce((sum,l)=>sum+Number(l.item_price||0)*Number(l.quantity||1),0);
+ const text=["AJD's Wireless Repairs",'APPROVED ORDER RECEIPT','Order: '+o.id,'Customer: '+o.customer_name,'Requested: '+new Date(o.created_at).toLocaleString(),...lines.map(l=>l.item_title+' x'+l.quantity+' — '+money(Number(l.item_price||0)*Number(l.quantity||1))),'Item subtotal: '+money(total),'Payment not recorded. Approval reserves stock; this is not proof of payment.',shopPhone].join('\n');
+ let modal=$('purchaseReceiptDialog');if(!modal){modal=document.createElement('dialog');modal.id='purchaseReceiptDialog';modal.style.cssText='max-width:600px;width:92%;padding:24px;border-radius:20px;color:#0f172a;background:white';document.body.append(modal);}
+ modal.innerHTML='<h2 style="font-weight:900">Customer Receipt</h2><pre style="white-space:pre-wrap;font:14px/1.7 system-ui;margin:20px 0"></pre><div style="display:flex;flex-wrap:wrap;gap:12px"><button class="btn" data-share>Share Receipt</button><button class="btn" data-print>Print / Save PDF</button><button class="btn" data-close>Close</button></div><p data-status role="status"></p>';
+ modal.querySelector('pre').textContent=text;
+ modal.querySelector('[data-close]').onclick=()=>modal.close();
+ modal.querySelector('[data-share]').onclick=async()=>{try{if(navigator.share)await navigator.share({title:"AJD's Wireless Repairs Receipt",text});else{await navigator.clipboard.writeText(text);modal.querySelector('[data-status]').textContent='Receipt copied. Paste it into your message.';}}catch(e){if(e.name!=='AbortError')modal.querySelector('[data-status]').textContent='Sharing unavailable. Use Print / Save PDF.';}};
+ modal.querySelector('[data-print]').onclick=()=>{const w=window.open('','_blank');if(!w){modal.querySelector('[data-status]').textContent='Allow pop-ups to print your receipt.';return;}w.document.write('<!doctype html><html><head><title>AJD Receipt</title><style>body{font:15px/1.8 system-ui;padding:30px}pre{white-space:pre-wrap;font:inherit}</style></head><body><pre>'+esc(text)+'</pre></body></html>');w.document.close();w.focus();w.print();};
+ modal.showModal();
+}
 
 function updateRequestBadge(){
  const count=[...purchaseRequests,...onlineRepairRequests,...storeOrders].filter(r=>r.status==='pending').length;
