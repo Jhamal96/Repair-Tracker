@@ -168,7 +168,9 @@ promos.forEach((p,index)=>{
  wrap.append(imgLink,details,actions);selected.append(wrap);
 });
 if(!promos.length)selected.append(element('p','','No featured products selected yet.'));
+
 }
+window.addEventListener('ajd-featured-changed',()=>{void refresh().catch(error=>say('Could not update featured list: '+error.message))});
 async function move(index,direction){try{const reordered=[...promos];const target=index+direction;[reordered[index],reordered[target]]=[reordered[target],reordered[index]];const results=await Promise.all(reordered.map((p,i)=>client.from('ajd_store_promotions').update({position:i}).eq('product_id',p.product_id)));const failed=results.find(x=>x.error);if(failed)throw failed.error;await refresh();say('Featured order updated.')}catch(e){say('Unable to reorder: '+e.message)}}
 $('promoAdd').onclick=async()=>{const id=picker.value;if(!id){say('Select a published product first.');return}try{$('promoAdd').disabled=true;const row={product_id:String(id),position:promos.find(p=>p.product_id===id)?.position??promos.length,active:true,headline:$('promoHeadline').value.trim()||null,subtitle:$('promoSubtitle').value.trim()||null,updated_at:new Date().toISOString()};const {error}=await client.from('ajd_store_promotions').upsert(row,{onConflict:'product_id'});if(error)throw error;await refresh();say('Featured product saved and visible to customers.');$('promoHeadline').value='';$('promoSubtitle').value=''}catch(e){say('Unable to save promotion: '+e.message)}finally{$('promoAdd').disabled=false}};
 while(content.hidden)await new Promise(resolve=>setTimeout(resolve,350));
