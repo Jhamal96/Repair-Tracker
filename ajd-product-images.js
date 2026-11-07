@@ -15,7 +15,7 @@ function gallery(record,{onPhotoClick,initialIndex=0,autoRotate=false}={}){
  let selected=0;const buttons=[];let timer=null,isVisible=false,hovered=false,focused=false;
  const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  function stop(){if(timer){clearInterval(timer);timer=null}}
- function schedule(){stop();if(!autoRotate||reducedMotion||list.length<2||!isVisible||hovered||focused||document.hidden)return;timer=setInterval(()=>show(selected+1),5500)}
+ function schedule(){stop();if(!autoRotate||reducedMotion||list.length<2||!isVisible||hovered||focused||document.hidden)return;timer=setInterval(()=>show(selected+1),window.AJDCarouselSettings?.getMs('product')||3000)}
  const count=document.createElement('span');count.className='ajd-gallery-count';count.setAttribute('role','status');count.setAttribute('aria-live','polite');
  function show(index){
   selected=(index+list.length)%list.length;
@@ -68,6 +68,7 @@ function gallery(record,{onPhotoClick,initialIndex=0,autoRotate=false}={}){
    mutationObserver.observe(document.body,{childList:true,subtree:true});
   }else if(autoRotate){isVisible=true;schedule()}
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else schedule()});
+  window.addEventListener('ajd-carousel-speed-change',schedule);
  }
  show(Number.isInteger(initialIndex)?Math.max(0,Math.min(list.length-1,initialIndex)):0);return root;
 }
