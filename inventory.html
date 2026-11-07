@@ -14,7 +14,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="/ajd-admin-menu.js?v=20261026-invoice1" defer></script>
 <script src="/ajd-product-images.js?v=20261026-photos1" defer></script>
-<script src="/ajd-inventory.js?v=20261026-photos1" defer></script>
+<script src="/ajd-inventory-image-enhance.js?v=20261106-enhance1" defer></script>
+<script src="/ajd-inventory.js?v=20261106-enhance1" defer></script>
 <link rel="stylesheet" href="/ajd-logo.css?v=20261026-home1"><script src="/ajd-pricing.js?v=20261026-1" defer></script>
 <!-- AJD opening animation: decorative and never blocks the page. -->
 <style>
@@ -423,7 +424,7 @@ html.ajd-opening-enabled .ajd-opening{position:fixed;inset:0;z-index:2147483647;
      <label class="inv-wide">Customer-Facing Description<textarea id="publicDescription" maxlength="2500" rows="2" placeholder="What will customers see? Describe compatibility, specifications, package contents, etc."></textarea></label>
      <label class="inv-wide">Internal Notes — Private<textarea id="notes" maxlength="2500" rows="2" placeholder="Supplier costs, shelf notes, special ordering details…"></textarea></label>
      <div class="inv-wide inv-image-field">
-      <div><strong>📸 Product Photos (optional)</strong><p>Add up to 10 JPG, PNG or WebP photos, up to 5 MB each. Choose the cover photo and remove any you don't want. Published items show these photos in the customer store.</p></div>
+      <div><strong>📸 Product Photos (optional)</strong><p>Add up to 10 JPG, PNG or WebP photos, up to 5 MB each. New uploads are enhanced automatically for lighting, color and clarity. You can switch individual photos back to the original. Published items show these photos in the customer store.</p></div>
       <div class="inv-image-inputs">
        <label>Image URL<input id="imageUrl" type="url" maxlength="2000" placeholder="https://example.com/image.jpg"></label>
        <button id="addImageUrl" type="button" class="secondary">Add Image URL</button>
