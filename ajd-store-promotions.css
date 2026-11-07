@@ -42,3 +42,10 @@
 .ajd-promo-admin-actions .ajd-promo-remove{border-color:rgba(248,113,113,.35);color:#fb7185}
 .ajd-promo-admin-actions button:disabled{opacity:.3;cursor:default}
 @media(max-width:760px){.ajd-promo-selected-item{grid-template-columns:76px minmax(0,1fr);gap:12px}.ajd-promo-admin-image{width:76px;height:76px}.ajd-promo-admin-actions{grid-column:1/-1;justify-content:flex-start}.ajd-promo-manager{padding:17px}.ajd-promo-admin-actions>a,.ajd-promo-admin-actions>button{min-height:42px}}
+
+.ajd-promo-track .ajd-promo-art{position:relative}
+.ajd-promo-photo-controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:5px 9px;border-radius:30px;background:rgba(6,19,36,.82);border:1px solid rgba(150,214,247,.22);backdrop-filter:blur(12px);z-index:2;color:#fff;white-space:nowrap}
+.ajd-promo-photo-controls button{width:31px;height:31px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:23px}
+.ajd-promo-photo-controls button:focus-visible,.ajd-promo-photo-controls button:hover{background:#67e8f9;color:#082033}
+.ajd-promo-photo-controls span{font-size:.75rem;font-weight:800}
+@media(max-width:640px){.ajd-promo-photo-controls{bottom:5px}}
