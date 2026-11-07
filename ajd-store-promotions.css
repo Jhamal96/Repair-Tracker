@@ -49,3 +49,15 @@
 .ajd-promo-photo-controls button:focus-visible,.ajd-promo-photo-controls button:hover{background:#67e8f9;color:#082033}
 .ajd-promo-photo-controls span{font-size:.75rem;font-weight:800}
 @media(max-width:640px){.ajd-promo-photo-controls{bottom:5px}}
+
+
+/* Unified centered icons and button content on product ads / admin */
+.ajd-promo-nav,.ajd-promo-photo-controls button{display:grid;place-items:center;text-align:center;line-height:1;padding:0!important;flex-shrink:0}
+.ajd-promo-photo-controls{align-items:center;justify-content:center}
+.ajd-promo-photo-controls span{display:inline-flex;align-items:center;justify-content:center;min-width:42px;text-align:center}
+.ajd-promo-carousel-controls,.ajd-promo-dots{justify-content:center}
+.ajd-promo-actions{justify-content:center;align-items:center;width:100%}
+.ajd-promo-actions button{display:inline-flex;justify-content:center;align-items:center;gap:6px;text-align:center;line-height:1.3}
+.ajd-promo-admin-actions{align-items:center}
+.ajd-promo-admin-actions>a,.ajd-promo-admin-actions>button{justify-content:center;align-items:center;text-align:center;line-height:1.25}
+@media(max-width:640px){.ajd-promo-actions{justify-content:center}.ajd-promo-admin-actions{justify-content:center}}
