@@ -82,3 +82,9 @@ body.ajd-cart-open{overflow:hidden}
  backdrop-filter:none!important;padding:0!important}
 #cartCheckoutForm[hidden]{display:none!important}
 #cartOverlay .cart-panel{isolation:isolate}
+
+
+/* Center product action buttons and their icons at every breakpoint */
+.card .ajd-store-card-actions{align-items:stretch;justify-items:stretch}
+.card .ajd-store-card-actions button{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;white-space:normal}
+.card .ajd-product-details-button{display:inline-flex;align-items:center;justify-content:center;text-align:center}
