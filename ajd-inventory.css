@@ -150,3 +150,11 @@ body[data-page="parts"] .wrap{max-width:1240px}
 .inv-enhance-setting small{font-size:.78rem;line-height:1.5;color:var(--muted)}
 .inv-photo-tile .inv-enhance-label{display:inline-flex;margin:0 0 7px;padding:4px 8px;border-radius:20px;background:rgba(14,165,233,.13);color:#0284c7;font-weight:750;font-size:10px}
 .dark .inv-photo-tile .inv-enhance-label{color:#7dd3fc}
+
+/* One-click featured advertisement actions on inventory cards */
+.inv-item-buttons .inv-feature{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:rgba(14,165,233,.11);color:#0e7490;border:1px solid rgba(14,165,233,.4);font-weight:800;text-align:center}
+.dark .inv-item-buttons .inv-feature{color:#67e8f9}
+.inv-item-buttons .inv-feature-active{display:inline-flex;align-items:center;justify-content:center;background:rgba(245,158,11,.15);color:#b45309;border:1px solid rgba(245,158,11,.45);font-weight:800;text-align:center}
+.dark .inv-item-buttons .inv-feature-active{color:#fbbf24}
+.inv-item-tags .inv-tag.is-featured{background:rgba(245,158,11,.16);color:#b45309;border-color:rgba(245,158,11,.4);font-weight:800}
+.dark .inv-item-tags .inv-tag.is-featured{color:#fbbf24}
