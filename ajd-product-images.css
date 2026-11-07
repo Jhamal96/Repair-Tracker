@@ -13,3 +13,17 @@
 .ajd-product-gallery .ajd-gallery-thumbs img{display:block;width:100%;height:100%;object-fit:contain;border-radius:4px}
 .ajd-product-gallery button:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 .dark .ajd-product-gallery img.photo{background:#101c2d}.dark .ajd-product-gallery .ajd-gallery-thumbs{background:#101c2d}
+
+
+/* Automatic carousel for any storefront item with multiple photos */
+.ajd-product-gallery.ajd-gallery-carousel{position:relative;overflow:hidden;border-radius:12px}
+.ajd-gallery-carousel .ajd-gallery-stage{overflow:hidden;border-radius:12px}
+.ajd-gallery-carousel .ajd-gallery-open{touch-action:pan-y}
+.ajd-gallery-carousel img.photo{transition:opacity .25s ease}
+.ajd-gallery-carousel .ajd-gallery-controls{bottom:14px;z-index:1}
+.ajd-gallery-carousel .ajd-gallery-controls button{width:40px;height:40px;min-height:40px;background:rgba(8,23,44,.85);color:#fff;border-color:rgba(255,255,255,.4);backdrop-filter:blur(8px)}
+.ajd-gallery-carousel .ajd-gallery-controls button:hover,.ajd-gallery-carousel .ajd-gallery-controls button:focus-visible{background:#2563eb}
+.ajd-gallery-carousel .ajd-gallery-thumbs{scroll-snap-type:x proximity}
+.ajd-gallery-carousel .ajd-gallery-thumbs button{scroll-snap-align:center;min-width:43px}
+.ajd-gallery-carousel:after{content:'';position:absolute;left:0;bottom:0;height:3px;width:var(--ajd-gallery-progress,0%);background:#38bdf8;pointer-events:none;transition:width .3s ease}
+@media(prefers-reduced-motion:reduce){.ajd-gallery-carousel img.photo,.ajd-gallery-carousel:after{transition:none!important}}
