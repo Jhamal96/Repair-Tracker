@@ -61,3 +61,17 @@
 .ajd-promo-admin-actions{align-items:center}
 .ajd-promo-admin-actions>a,.ajd-promo-admin-actions>button{justify-content:center;align-items:center;text-align:center;line-height:1.25}
 @media(max-width:640px){.ajd-promo-actions{justify-content:center}.ajd-promo-admin-actions{justify-content:center}}
+
+/* Adjustable carousel speed controls */
+.ajd-carousel-speed-settings{margin:20px 0;padding:18px;border:1px solid rgba(103,232,249,.3);border-radius:16px;background:rgba(8,145,178,.075)}
+.ajd-carousel-speed-heading{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.ajd-carousel-speed-heading strong{font-size:1.04rem}
+.ajd-carousel-speed-heading span{color:var(--muted,#94a3b8);font-size:.84rem}
+.ajd-carousel-speed-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:12px;align-items:end}
+.ajd-carousel-speed-fields label{display:flex;flex-direction:column;gap:7px;font-size:.85rem;font-weight:700}
+.ajd-carousel-speed-fields select{box-sizing:border-box;min-height:44px;width:100%;min-width:0;border-radius:10px;border:1px solid #64748b;background:var(--surface,#15253a);color:inherit;padding:9px}
+.ajd-carousel-speed-fields button{min-height:44px;border-radius:10px;border:1px solid #22d3ee;background:#0e7490;color:#fff;font-weight:800;padding:10px 16px;cursor:pointer}
+.ajd-carousel-speed-fields button:disabled{opacity:.5}
+#ajdSpeedStatus:not(:empty){font-size:.83rem;line-height:1.5;margin:12px 0 0}
+@media(max-width:680px){.ajd-carousel-speed-fields{grid-template-columns:1fr 1fr}.ajd-carousel-speed-fields button{grid-column:1/-1}}
+@media(max-width:390px){.ajd-carousel-speed-fields{grid-template-columns:1fr}}
