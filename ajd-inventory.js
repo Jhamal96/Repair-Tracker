@@ -63,6 +63,7 @@ function addPhotoUrl(){
  photos.push({url});$('imageUrl').value='';renderPhotos();
 }
 async function addPhotoFiles(files){
+ if(processingPhotos)throw Error('Photo enhancement is already running. Finish adding the selected photos first.');
  const next=[];
  for(const file of files){
   allowedPhoto(file);const fileKey=[file.name,file.size,file.lastModified].join(':');
@@ -215,7 +216,7 @@ function openEditor(row){
  releasePhotos();photos=window.AJDProductImages.urls(row).map(url=>({url}));$('imageFile').value='';renderPhotos();
  $('editorPanel').hidden=false;$('editorPanel').scrollIntoView({behavior:'smooth',block:'start'});$('itemName').focus();
 }
-function closeEditor(force=false){if(busy&&force!==true)return;$('editorPanel').hidden=true;releasePhotos();$('imageFile').value='';$('imageUrl').value=''}
+function closeEditor(force=false){if((busy||processingPhotos)&&force!==true)return;$('editorPanel').hidden=true;releasePhotos();$('imageFile').value='';$('imageUrl').value=''}
 async function uploadPhoto(photo,id){
  const file=photo.file;
  allowedPhoto(file);
