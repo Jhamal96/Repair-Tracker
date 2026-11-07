@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const money=x=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);
 const digits=x=>new Intl.NumberFormat('en-US').format(Number(x)||0);
 const table='ajd_parts_inventory';
-let sb=null,records=[],store=new Map(),admin=false,busy=false,photos=[],returnFocus=null;
+let sb=null,records=[],store=new Map(),admin=false,busy=false,photos=[],returnFocus=null,processingPhotos=0;
 const MAX_PHOTOS=10;
 function dom(tag,label,cls){const e=document.createElement(tag);if(label!==undefined&&label!==null)e.textContent=String(label);if(cls)e.className=cls;return e}
 function message(msg,error=false){
@@ -46,8 +46,10 @@ function renderPhotos(){
  photos.forEach((photo,index)=>{
   const tile=dom('div',null,'inv-photo-tile'+(index===0?' is-cover':'')),image=dom('img');
   image.src=photo.preview||photo.url;image.alt='Product photo '+(index+1);tile.append(image);
-  tile.append(dom('small',(index===0?'Cover photo · ':'Photo '+(index+1)+' · ')+(photo.file?photo.file.name:'Saved image')));
+  tile.append(dom('small',(index===0?'Cover photo · ':'Photo '+(index+1)+' · ')+(photo.originalFile?photo.originalFile.name:photo.file?photo.file.name:'Saved image')));
+  if(photo.originalFile)tile.append(dom('span',photo.enhanced?'✦ Enhanced':'Original','inv-enhance-label'))
   const actions=dom('div',null,'inv-photo-actions');
+  if(photo.originalFile)actions.append(button(photo.enhanced?'Use Original':'Enhance','secondary',async()=>{if(busy||processingPhotos)return;try{processingPhotos++;$('saveButton').disabled=true;if(photo.enhanced){photo.file=photo.originalFile;photo.enhanced=false}else{photo.file=photo.enhancedFile||(photo.enhancedFile=await window.AJDInventoryImageEnhancer.enhance(photo.originalFile));photo.enhanced=true}if(photo.preview)URL.revokeObjectURL(photo.preview);photo.preview=URL.createObjectURL(photo.file);delete photo.url;delete photo.uploadKey;renderPhotos()}catch(e){message('Image processing: '+e.message,true)}finally{processingPhotos--;$('saveButton').disabled=busy||processingPhotos>0}}));
   if(index>0)actions.append(button('Make Cover','secondary',()=>{if(busy)return;photos.splice(index,1);photos.unshift(photo);renderPhotos()}));
   actions.append(button('Remove','inv-photo-remove',()=>{if(busy)return;if(photo.preview)URL.revokeObjectURL(photo.preview);photos.splice(index,1);renderPhotos()}));
   tile.append(actions);list.append(tile);
@@ -60,7 +62,7 @@ function addPhotoUrl(){
  if(photos.length>=MAX_PHOTOS)throw Error('You can add up to '+MAX_PHOTOS+' photos. Remove one before adding another.');
  photos.push({url});$('imageUrl').value='';renderPhotos();
 }
-function addPhotoFiles(files){
+async function addPhotoFiles(files){
  const next=[];
  for(const file of files){
   allowedPhoto(file);const fileKey=[file.name,file.size,file.lastModified].join(':');
@@ -68,7 +70,15 @@ function addPhotoFiles(files){
   next.push({file,fileKey});
  }
  if(photos.length+next.length>MAX_PHOTOS)throw Error('You can add up to '+MAX_PHOTOS+' photos. Remove some or choose fewer files.');
- for(const photo of next){photo.preview=URL.createObjectURL(photo.file);photos.push(photo)}
+ const auto=$('autoEnhancePhotos')?.checked!==false;
+ processingPhotos++;$('saveButton').disabled=true;
+ try{
+  for(const photo of next){
+   photo.originalFile=photo.file;
+   if(auto){try{photo.enhancedFile=await window.AJDInventoryImageEnhancer.enhance(photo.originalFile);photo.file=photo.enhancedFile;photo.enhanced=true}catch(err){console.warn('Image enhancement skipped:',err);photo.enhanced=false}}
+   photo.preview=URL.createObjectURL(photo.file);photos.push(photo);renderPhotos();
+  }
+ }finally{processingPhotos--;$('saveButton').disabled=busy||processingPhotos>0}
  renderPhotos();
 }
 function integer(id){
@@ -219,7 +229,7 @@ async function uploadPhoto(photo,id){
  return data.publicUrl;
 }
 async function save(event){
- event.preventDefault();if(!admin||busy)return;
+ event.preventDefault();if(!admin||busy||processingPhotos)return;
  let id=$('editId').value,editing=Boolean(id),saved=false;
  const alsoPublish=$('publishAfterSave').checked;
  try{
@@ -388,9 +398,9 @@ async function init(){
  $('cancelButton').addEventListener('click',closeEditor);$('cancelBottom').addEventListener('click',closeEditor);
  $('refreshButton').addEventListener('click',load);$('exportButton').addEventListener('click',exportCSV);
  $('editorForm').addEventListener('submit',save);
- $('imageFile').addEventListener('change',event=>{
+ $('imageFile').addEventListener('change',async event=>{
   if(busy)return;
-  try{addPhotoFiles(Array.from(event.target.files||[]))}catch(err){message(err.message,true)}
+  try{await addPhotoFiles(Array.from(event.target.files||[]))}catch(err){message(err.message,true)}
   finally{event.target.value=''}
  });
  $('addImageUrl').addEventListener('click',()=>{if(busy)return;try{addPhotoUrl()}catch(err){message(err.message,true)}});
