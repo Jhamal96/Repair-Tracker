@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const money=x=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);
 const digits=x=>new Intl.NumberFormat('en-US').format(Number(x)||0);
 const table='ajd_parts_inventory';
-let sb=null,records=[],store=new Map(),admin=false,busy=false,photos=[],returnFocus=null,processingPhotos=0;
+let sb=null,records=[],store=new Map(),featured=new Set(),admin=false,busy=false,photos=[],returnFocus=null,processingPhotos=0;
 const MAX_PHOTOS=10;
 function dom(tag,label,cls){const e=document.createElement(tag);if(label!==undefined&&label!==null)e.textContent=String(label);if(cls)e.className=cls;return e}
 function message(msg,error=false){
@@ -181,6 +181,9 @@ function renderCard(r){
  else{
   actions.appendChild(button(shop?.status==='hidden'?'↗ Republish':shop?'↻ Publish / Sync':'↗ Publish to Store','inv-publish',()=>publish(r)));
   if(shop&&shop.status!=='hidden')actions.appendChild(button('Hide from Store','inv-unpublish',()=>unpublish(r)));
+  const featuredActive=Boolean(shop&&shop.status!=='hidden'&&featured.has(String(shop.id)));
+  const featureLabel=featuredActive?'★ Remove Feature':shop&&shop.status!=='hidden'?'☆ Feature in Store':'☆ Publish & Feature';
+  actions.appendChild(button(featureLabel,featuredActive?'inv-feature-active':'inv-feature',()=>toggleFeatured(r)));
   if(shop&&shop.status!=='hidden'){const a=dom('a','Store ↗');a.href='/store';a.target='_blank';a.rel='noopener noreferrer';actions.appendChild(a)}
   actions.appendChild(button('Archive','inv-archive',()=>archive(r)));
  }
@@ -308,6 +311,42 @@ async function showHistory(row){
   }
  }catch(err){$('historyList').textContent='Could not load movement history: '+err.message}
 }
+async function toggleFeatured(row){
+ if(!admin||busy||row.archived)return;
+ const shop=linked(row),currentlyFeatured=Boolean(shop&&featured.has(String(shop.id)));
+ const needsPublish=!shop||shop.status==='hidden';
+ if(needsPublish){
+  if(!confirm('Publish "'+row.item_name+'" to the customer store and add it to Featured Products? This will make the item publicly visible.'))return;
+  if(Number(row.sale_price)===0&&!confirm('The selling price is $0.00. Continue publishing?'))return;
+ }
+ try{
+  busy=true;status(currentlyFeatured?'Removing featured product…':'Updating featured product…');
+  let productId=shop?.id;
+  if(needsPublish){
+   const {error:pubError}=await sb.rpc('ajd_inventory_publish',{p_inventory_id:row.id});
+   if(pubError)throw pubError;
+   const {data:updated,error:itemError}=await sb.from(table).select('store_item_id').eq('id',row.id).single();
+   if(itemError)throw itemError;
+   productId=updated?.store_item_id;
+   if(!productId)throw Error('Item was published but its storefront ID could not be confirmed. Refresh inventory and retry.');
+  }
+  if(!productId)throw Error('A storefront item ID is required.');
+  if(currentlyFeatured){
+   const {error}=await sb.from('ajd_store_promotions').delete().eq('product_id',String(productId));
+   if(error)throw error;
+  }else{
+   const {data:existing,error:readError}=await sb.from('ajd_store_promotions').select('position').order('position',{ascending:false}).limit(1);
+   if(readError)throw readError;
+   const position=(Number(existing?.[0]?.position)||0)+(existing?.length?1:0);
+   const {error}=await sb.from('ajd_store_promotions').upsert({product_id:String(productId),active:true,position,updated_at:new Date().toISOString()},{onConflict:'product_id'});
+   if(error)throw error;
+  }
+  await load();
+  window.dispatchEvent(new CustomEvent('ajd-featured-changed'));
+  message(currentlyFeatured?'Removed from featured advertisements. Item remains on the storefront.':'★ '+row.item_name+' is now featured on the customer storefront.');
+ }catch(err){message('Could not update featured product: '+err.message,true)}
+ finally{busy=false;status('')}
+}
 async function publish(row){
  if(!admin||busy||row.archived)return;
  if(row.sale_price===0&&!confirm('This item will be published with a $0.00 selling price. Continue?'))return;
@@ -370,7 +409,13 @@ async function load(){
    const {data:list,error:err}=await sb.from('store_items').select('id,status,reserved_quantity,stock_quantity').in('id',ids.slice(i,i+100));
    if(err)throw err;for(const row of list||[])map.set(row.id,row);
   }
-  records=next;store=map;render();
+  records=next;store=map;
+  try{
+   const {data:promos,error:promosError}=await sb.from('ajd_store_promotions').select('product_id').eq('active',true);
+   if(promosError)throw promosError;
+   featured=new Set((promos||[]).map(p=>String(p.product_id)));
+  }catch(err){console.warn('Could not refresh featured indicators:',err)}
+  render();
  }catch(err){$('inventoryGrid').replaceChildren(dom('div','Could not load inventory: '+err.message,'inv-empty'));message('Inventory connection error: '+err.message,true)}
  finally{status('')}
 }
