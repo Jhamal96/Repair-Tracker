@@ -62,6 +62,15 @@ async function startStore(){
    const picture=element('img');picture.src=src;picture.alt=p.title;picture.loading=idx===0?'eager':'lazy';picture.decoding='async';
    picture.onerror=()=>{picture.hidden=true;if(!art.querySelector('.ajd-promo-placeholder'))art.append(element('div','ajd-promo-placeholder','📷'))};
    art.append(picture);
+   if(urls.length>1){
+    let imageIndex=0;
+    const nav=element('div','ajd-promo-photo-controls');
+    const counter=element('span','', '1 / '+urls.length);
+    const showImage=n=>{imageIndex=(n+urls.length)%urls.length;picture.hidden=false;picture.src=urls[imageIndex];picture.alt=p.title+' - photo '+(imageIndex+1)+' of '+urls.length;counter.textContent=(imageIndex+1)+' / '+urls.length};
+    const back=element('button','','‹');back.type='button';back.setAttribute('aria-label','Previous photo of '+p.title);back.onclick=()=>showImage(imageIndex-1);
+    const forward=element('button','','›');forward.type='button';forward.setAttribute('aria-label','Next photo of '+p.title);forward.onclick=()=>showImage(imageIndex+1);
+    nav.append(back,counter,forward);art.append(nav);
+   }
   }else{const missing=element('div','ajd-promo-placeholder','📷');missing.setAttribute('aria-label','No photo available for '+p.title);art.append(missing)}
   const body=element('div','ajd-promo-copy');
   body.append(element('span','ajd-promo-label',idx===0?'★ FEATURED PICK':'✦ SPOTLIGHT'),element('h3','',c.headline||p.title),element('p','',c.subtitle||p.description||'Explore this featured product at AJD’s Wireless Repairs.'),element('strong','ajd-promo-price',money(p.price)));
