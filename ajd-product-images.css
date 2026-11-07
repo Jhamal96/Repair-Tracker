@@ -27,3 +27,11 @@
 .ajd-gallery-carousel .ajd-gallery-thumbs button{scroll-snap-align:center;min-width:43px}
 .ajd-gallery-carousel:after{content:'';position:absolute;left:0;bottom:0;height:3px;width:var(--ajd-gallery-progress,0%);background:#38bdf8;pointer-events:none;transition:width .3s ease}
 @media(prefers-reduced-motion:reduce){.ajd-gallery-carousel img.photo,.ajd-gallery-carousel:after{transition:none!important}}
+
+
+/* Center carousel navigation glyphs, photo counts and thumbnails */
+.ajd-product-gallery .ajd-gallery-controls{align-items:center}
+.ajd-product-gallery .ajd-gallery-controls button{display:grid;place-items:center;text-align:center;line-height:1;padding:0!important;flex-shrink:0}
+.ajd-product-gallery .ajd-gallery-count{display:inline-flex;align-items:center;justify-content:center;min-height:26px;text-align:center;font-variant-numeric:tabular-nums}
+.ajd-product-gallery .ajd-gallery-thumbs{justify-content:safe center;align-items:center}
+.ajd-product-gallery .ajd-gallery-thumbs button{display:grid;place-items:center}
