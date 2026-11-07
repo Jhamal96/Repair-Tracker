@@ -29,7 +29,7 @@ async function startStore(){
  main.insertBefore(section,main.firstChild);enableTilt(frame);
  let current=0,lastSignature='',cards=[],timer=null,paused=false,loading=false,deepLinkOpened=false;
  function stop(){if(timer){clearInterval(timer);timer=null}}
- function start(){stop();if(cards.length<2||reduceMotion||paused||document.hidden)return;timer=setInterval(()=>setSlide(current+1,false),5500)}
+ function start(){stop();if(cards.length<2||reduceMotion||paused||document.hidden)return;timer=setInterval(()=>setSlide(current+1,false),window.AJDCarouselSettings?.getMs('featured')||3000)}
  function setSlide(index,manual=true){
   if(!cards.length)return;
   current=(index+cards.length)%cards.length;
@@ -45,6 +45,7 @@ async function startStore(){
  frame.addEventListener('mouseleave',()=>{paused=false;start()});
  frame.addEventListener('focusin',()=>{paused=true;stop()});
  frame.addEventListener('focusout',e=>{if(!frame.contains(e.relatedTarget)){paused=false;start()}});
+ window.addEventListener('ajd-carousel-speed-change',start);
  let touchX=null,touchY=null;
  viewport.addEventListener('touchstart',e=>{if(e.touches.length===1){touchX=e.touches[0].clientX;touchY=e.touches[0].clientY}},{passive:true});
  viewport.addEventListener('touchend',e=>{if(touchX===null)return;const dx=e.changedTouches[0].clientX-touchX;const dy=e.changedTouches[0].clientY-touchY;touchX=null;touchY=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)setSlide(current+(dx<0?1:-1))},{passive:true});
@@ -113,6 +114,33 @@ const content=$('appContent');if(!content)return;
 const section=element('section','ajd-promo-manager panel');section.id='ajdPromoManager';
 section.innerHTML='<div class="ajd-promo-manager-head"><div><span class="ajd-promos-kicker">STORE CAMPAIGNS</span><h2>Featured products & advertising</h2><p>Choose published products for the animated top section of your customer store. Arrange your featured items, preview their actual images, and open or copy a direct storefront product link.</p></div><a href="/store#ajdFeatured" target="_blank" rel="noopener">↗ Preview Store</a></div><div class="ajd-promo-manager-controls"><label>Published product<select id="promoProduct"><option value="">Select a store item…</option></select></label><label>Headline (optional)<input id="promoHeadline" maxlength="100" placeholder="Featured this week"></label><label>Caption (optional)<input id="promoSubtitle" maxlength="240" placeholder="Short message for shoppers"></label><button id="promoAdd" type="button">＋ Feature Product</button></div><p id="promoStatus" role="status" aria-live="polite"></p><div id="promoSelected" class="ajd-promo-selected"></div>';
 content.insertBefore(section,content.children[1]||null);
+
+const speedPanel=element('div','ajd-carousel-speed-settings');
+speedPanel.innerHTML='<div class="ajd-carousel-speed-heading"><strong>⏱ Carousel timing</strong><span>Choose how quickly slides change. Settings apply to the customer storefront.</span></div><div class="ajd-carousel-speed-fields"><label>Product photo carousel <select id="ajdProductSpeed" aria-label="Product photo carousel seconds"></select></label><label>Featured ad carousel <select id="ajdFeaturedSpeed" aria-label="Featured ad carousel seconds"></select></label><button type="button" id="ajdSaveSpeed">Save Timing</button></div><p id="ajdSpeedStatus" role="status" aria-live="polite"></p>';
+section.insertBefore(speedPanel,section.querySelector('.ajd-promo-manager-controls'));
+const intervals=[1,2,3,4,5,6,7,8,10,12,15];
+for(const id of ['ajdProductSpeed','ajdFeaturedSpeed']){
+ const select=$(id);
+ for(const n of intervals){const option=element('option','',n+' second'+(n===1?'':'s'));option.value=String(n);select.append(option)}
+}
+const speedValues=window.AJDCarouselSettings?.values?.()||{product_seconds:3,featured_seconds:3};
+$('ajdProductSpeed').value=String(speedValues.product_seconds);
+$('ajdFeaturedSpeed').value=String(speedValues.featured_seconds);
+$('ajdSaveSpeed').addEventListener('click',async()=>{
+ const button=$('ajdSaveSpeed'),feedback=$('ajdSpeedStatus');
+ try{
+  button.disabled=true;feedback.textContent='Saving timing…';
+  const result=await window.AJDCarouselSettings.save(Number($('ajdProductSpeed').value),Number($('ajdFeaturedSpeed').value));
+  feedback.textContent='Saved! Product photos: '+result.product_seconds+'s · Featured ads: '+result.featured_seconds+'s.';
+ }catch(error){feedback.textContent='Unable to save carousel timing: '+error.message}
+ finally{button.disabled=false}
+});
+void window.AJDCarouselSettings?.refresh().then(values=>{
+ if(!values)return;
+ $('ajdProductSpeed').value=String(values.product_seconds);
+ $('ajdFeaturedSpeed').value=String(values.featured_seconds);
+}).catch(error=>{$('ajdSpeedStatus').textContent='Current timing could not be loaded: '+error.message});
+
 const status=$('promoStatus'),selected=$('promoSelected'),picker=$('promoProduct');let promos=[],items=[];
 function say(t){status.textContent=t}
 async function refresh(){
