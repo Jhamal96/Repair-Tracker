@@ -64,7 +64,7 @@ function open(product,initialIndex=0,trigger=document.activeElement){
  }
  $('ajdProductDescription').textContent=current.description||'Contact the shop for more information about this item.';
  $('ajdProductAdd').disabled=!available;$('ajdProductRequest').disabled=!available;
- const gallery=window.AJDProductImages.gallery(current,{initialIndex,onPhotoClick:openPhoto});
+ const gallery=window.AJDProductImages.gallery(current,{initialIndex,autoRotate:true,onPhotoClick:openPhoto});
  $('ajdProductGallery').replaceChildren(gallery);
  dialog.querySelector('.ajd-detail-photo-hint').hidden=!window.AJDProductImages.urls(current).length;
  document.body.classList.add('ajd-product-open');if(!dialog.open)dialog.showModal();dialog.scrollTop=0;$('ajdProductClose').focus({preventScroll:true});
