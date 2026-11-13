@@ -1474,13 +1474,10 @@ function renderStoreOrders(){
    const pending=storeOrderUpdating.has(o.id);
    const date=o.created_at?new Date(o.created_at).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
    return '<article class="ajd-store-request-card dark-card rounded-2xl p-4 space-y-3 text-xs" data-request-id="'+id+'">'+
-    '<div class="flex flex-wrap justify-between gap-2">'+
-      '<div class="min-w-0 flex-1"><strong class="text-sm">'+name+'</strong>'+
-        itemDetails+
-        '<p class="mini mt-1">'+esc(o.customer_email||'')+' · '+esc(o.customer_phone||'')+'</p>'+
-        (date?'<p class="mini mt-1">Requested '+esc(date)+'</p>':'')+
-      '</div><span class="ajd-order-status '+statusColor+'">'+esc(statusLabel)+'</span>'+
-    '</div>'+
+    '<div class="ajd-order-summary-head"><strong class="text-sm ajd-order-customer-name">'+name+'</strong><span class="ajd-order-status '+statusColor+'">'+esc(statusLabel)+'</span></div>'+
+    itemDetails+
+    '<div class="ajd-order-contact"><p class="mini mt-1">'+esc(o.customer_email||'')+' · '+esc(o.customer_phone||'')+'</p>'+
+     (date?'<p class="mini mt-1">Requested '+esc(date)+'</p>':'')+'</div>'+
     (o.notes?'<p class="ajd-order-customer-note">'+esc(o.notes)+'</p>':'')+
     '<label class="ajd-order-note-label" for="storeRequestNote-'+id+'">Shop note (optional)</label>'+
     '<textarea id="storeRequestNote-'+id+'" class="field ajd-order-note-input" rows="2" maxlength="2000" data-store-order-note placeholder="Add a message or note for this request…">'+note+'</textarea>'+
@@ -1490,7 +1487,9 @@ function renderStoreOrders(){
       '<button type="button" class="btn bg-rose-600 text-white" data-store-order-action="declined" data-store-order-id="'+id+'" '+(pending?'disabled':'')+'><span aria-hidden="true">✕</span> Decline</button>'+
     '</div>'+
     (status==='approved'?'<button type="button" class="btn bg-blue-600 text-white" onclick="openPurchaseReceipt(\''+id+'\')">🧾 Create / Edit Invoice</button>':'')+
-    '<div>'+ (lines.length?lines:[{item_id:o.item_id,item_title:o.item_title}]).filter(line=>line.item_id).map(line=>'<button type="button" class="btn text-blue-500" onclick="openRequestedProduct(\''+esc(line.item_id)+'\')">↗ '+esc(line.item_title||'View product')+'</button>').join(' ')+'</div>'+
+    '<div class="ajd-request-product-links" aria-label="Products in this order">'+
+      (lines.length?lines:[{item_id:o.item_id,item_title:o.item_title}]).filter(line=>line.item_id)
+      .map(line=>'<a class="ajd-request-product-link" href="/store?product='+encodeURIComponent(String(line.item_id))+'" target="_blank" rel="noopener noreferrer" aria-label="View '+esc(line.item_title||'product')+' in customer store">↗ '+esc(line.item_title||'View product')+'</a>').join('')+'</div>'+
     '<p class="ajd-order-feedback mini" data-store-order-feedback role="status" aria-live="polite"></p>'+
    '</article>';
  }).join(''):'<p class="mini text-center py-6">No customer purchase requests yet.</p>';
